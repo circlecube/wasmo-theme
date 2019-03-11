@@ -17,6 +17,18 @@ get_header();
 			<?php
 
 			/* Start the Loop */
+			while ( have_posts() ) :
+				the_post();
+
+				get_template_part( 'template-parts/content/content', 'page' );
+
+			endwhile; // End of the loop.
+			?>
+<div class="directory">
+			<?php
+// Directory
+
+			/* Start the Loop */
 			$args = array(
 				'role'         => '',
 				'role__in'     => array(),
@@ -37,13 +49,22 @@ get_header();
 				'fields'       => 'all',
 				'who'          => '',
 			); 
-			$wasmos = get_users( $args );
+			$users = get_users( $args );
 			// Array of WP_User objects.
-			foreach ( $wasmos as $wasmo ) {
-				echo '<span>' . esc_html( $wasmo->display_name ) . '</span>';
+			foreach ( $users as $user ) { 
+				$userid = $user->ID;
+
+				// only add to directory if user includes themself
+				if ( get_field( 'in_directory', 'user_' . $userid ) ) {
+			?>
+			<div class="person person-<?php echo $userid; ?>">
+				<span><?php the_field( 'photo', 'user_' . $userid ); ?></span>
+				<span><?php esc_html( $user->display_name ); ?></span>
+			</div>
+			<?php }
 			}
 			?>
-
+</div>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 

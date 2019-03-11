@@ -19,6 +19,7 @@ get_header();
 				$user = wp_get_current_user();
 				$userid = $user->ID;
 			?>
+
 			<?php set_query_val( 'userid', $userid ); ?>
 			<?php get_template_part( 'partials/content', 'user' ); ?>
 

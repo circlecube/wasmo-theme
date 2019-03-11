@@ -53,13 +53,40 @@ add_shortcode( 'my_acf_user_form', 'my_acf_user_form_func' );
 
 
 //adding AFC form head
-function add_acf_form_head(){
+function wasmo_add_acf_form_head(){
     global $post;
     
   if ( !empty($post) && has_shortcode( $post->post_content, 'my_acf_user_form' ) ) {
         acf_form_head();
     }
 }
-add_action( 'wp_head', 'add_acf_form_head', 7 );
+add_action( 'wp_head', 'wasmo_add_acf_form_head', 7 );
+
+
+// hide admin bar for non admin users
+add_action( 'set_current_user', 'wasmo_hide_admin_bar' );
+function wasmo_hide_admin_bar() {
+	if ( !current_user_can( 'edit_posts' ) ) {
+		show_admin_bar( false );
+	}
+}
+
+// function wasmo_member_template_redirect() {
+//     global $wp_query;
+
+//     if( 
+// 		array_key_exists('author_name', $wp_query->query_vars) && 
+// 		!empty($wp_query->query_vars['author_name'])
+// 	) {
+// 		global $member;
+// 		$member = new WP_User( $wp_query->query_vars["author_name"] );
+// 		if( $member ) {
+// 			include( TEMPLATEPATH . "/member.php" );
+// 			exit;
+// 		}
+// 	}
+// }
+// add_action( 'template_redirect', 'wasmo_member_template_redirect' );
+
 
 ?>
