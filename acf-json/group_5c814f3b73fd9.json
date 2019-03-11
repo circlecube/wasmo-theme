@@ -117,7 +117,7 @@
                     },
                     "taxonomy": "question",
                     "field_type": "select",
-                    "allow_null": 0,
+                    "allow_null": 1,
                     "add_term": 1,
                     "save_terms": 0,
                     "load_terms": 0,
@@ -231,5 +231,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552344578
+    "modified": 1552344864
 }
