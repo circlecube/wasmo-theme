@@ -3,7 +3,7 @@
 * @var $userid
 */
 ?>
-<div class="name"><?php echo esc_html( $user->display_name ); ?></div>
+
 <div class="user_photo"><?php 
 $userimg = get_field( 'photo', 'user_' . $userid );
 if ( $userimg ) {
@@ -14,11 +14,15 @@ if ( $userimg ) {
 <div class="tagline"><?php echo get_field( 'tagline', 'user_' . $userid ); ?></div>
 <h3>Why I left</h3>
 <div class="why_i_left"><?php echo get_field( 'why_i_left', 'user_' . $userid ); ?></div>
-<h3>Questions</h3>
+
 <?php
 //questions repeater
 if( have_rows( 'questions', 'user_' . $userid ) ):
+	?>
 
+	<h3>Questions</h3>
+	
+	<?php
  	// loop through the rows of data
 	while ( have_rows( 'questions', 'user_' . $userid ) ) : 
 		the_row();

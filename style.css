@@ -12,3 +12,38 @@
  GitHub Theme URI: https://github.com/circlecube/wasmo-theme
 */
 
+.directory {
+	display: flex;
+	flex-wrap: wrap;
+}
+.directory .person {
+	position: relative;
+	width: 20%;
+	padding-top: 20%;
+}
+.directory .person:hover .directory-name {
+	opacity:1;
+}
+.directory .person .directory-img {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	top: 0;
+	left: 0;
+}
+.directory .person .directory-name {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	z-index: 1;
+	background: rgba(0,0,0,.25);
+	padding: .25rem;
+	text-align: center;
+	text-decoration: none;
+	color: #eee;
+	line-height: 1.1em;
+	opacity: 0;
+	transition: all .2s ease;
+}
