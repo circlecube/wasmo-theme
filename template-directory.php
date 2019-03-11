@@ -24,9 +24,10 @@ get_header();
 
 			endwhile; // End of the loop.
 			?>
-<div class="directory">
+
+			<div class="directory">
 			<?php
-// Directory
+			// Directory
 
 			/* Start the Loop */
 			$args = array(
@@ -56,15 +57,21 @@ get_header();
 
 				// only add to directory if user includes themself
 				if ( get_field( 'in_directory', 'user_' . $userid ) ) {
-			?>
-			<div class="person person-<?php echo $userid; ?>">
-				<span><?php the_field( 'photo', 'user_' . $userid ); ?></span>
-				<span><?php esc_html( $user->display_name ); ?></span>
-			</div>
-			<?php }
+				?>
+				<div class="person person-<?php echo $userid; ?>">
+					<span><?php 
+						$userimg = get_field( 'photo', 'user_' . $userid );
+						if ( $userimg ) {
+							echo wp_get_attachment_image( $userimg, 'medium' );
+						}
+					?></span>
+					<span><?php esc_html( $user->display_name ); ?></span>
+				</div>
+				<?php 
+				}
 			}
 			?>
-</div>
+			</div>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 
