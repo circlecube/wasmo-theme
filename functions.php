@@ -88,5 +88,10 @@ function wasmo_hide_admin_bar() {
 // }
 // add_action( 'template_redirect', 'wasmo_member_template_redirect' );
 
+function my_acf_init() {
+	acf_update_setting('google_api_key', 'AIzaSyAF3HYVew1ZS_9i0mY1wymX1Hs885AJtIw');
+}
+
+add_action('acf/init', 'my_acf_init');
 
 ?>
