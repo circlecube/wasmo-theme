@@ -27,8 +27,10 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 	while ( have_rows( 'questions', 'user_' . $userid ) ) : 
 		the_row();
 
-        echo '<h4 class="question">';
-        echo get_sub_field( 'question', 'users_' . $userid );
+		echo '<h4 class="question">';
+		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
+		$questionterm = get_term( $termtaxid, 'question' );
+		echo $questionterm->name;
 		echo '</h4>';
 		echo get_sub_field( 'answer', 'users_' . $userid );
 
