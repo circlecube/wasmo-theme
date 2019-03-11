@@ -26,7 +26,7 @@ get_header();
 <div class="user_photo"><?php 
 $userimg = get_field( 'photo', 'user_' . $userid );
 if ( $userimg ) {
-	echo wp_get_attachment_image( $userimg, 'medium' );
+	echo wp_get_attachment_image( $userimg, 'full' );
 }
 ?></div>
 <div class="hi"><?php echo get_field( 'hi', 'user_' . $userid ); ?></div>
