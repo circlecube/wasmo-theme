@@ -146,6 +146,40 @@
             ]
         },
         {
+            "key": "field_5c86de1946f80",
+            "label": "Location",
+            "name": "location",
+            "type": "google_map",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "center_lat": "40.7670126",
+            "center_lng": "-111.8904308",
+            "zoom": "",
+            "height": ""
+        },
+        {
+            "key": "field_5c86dea246f81",
+            "label": "Link",
+            "name": "link",
+            "type": "url",
+            "instructions": "You may link to your own website or your social media profile if you wish others to be able to find you.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": ""
+        },
+        {
             "key": "field_5c815bccdf64c",
             "label": "Include me in the directory?",
             "name": "in_directory",
@@ -159,7 +193,7 @@
                 "id": ""
             },
             "message": "",
-            "default_value": 1,
+            "default_value": 0,
             "ui": 0,
             "ui_on_text": "",
             "ui_off_text": ""
@@ -170,7 +204,7 @@
             {
                 "param": "user_form",
                 "operator": "==",
-                "value": "all"
+                "value": "edit"
             }
         ]
     ],
@@ -197,5 +231,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552328625
+    "modified": 1552342786
 }
