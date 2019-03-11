@@ -50,7 +50,7 @@
             "label": "Tagline",
             "name": "tagline",
             "type": "text",
-            "instructions": "",
+            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -58,8 +58,8 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "Hi, I was mormon.",
-            "placeholder": "Hi, I was mormon.",
+            "default_value": "I was a mormon.",
+            "placeholder": "I was a mormon.",
             "prepend": "",
             "append": "",
             "maxlength": ""
@@ -231,5 +231,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552342786
+    "modified": 1552344578
 }
