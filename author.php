@@ -14,14 +14,19 @@ get_header();
 	<section id="primary" class="content-area">
 		<main id="main" class="site-main">
 
-			<?php
-				$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
-				$userid = $curauth->ID;
-			?>
+			<article class="entry">
+				<div class="entry-content">
 
-			<?php set_query_var( 'userid', $userid ); ?>
-			<?php get_template_part( 'partials/content', 'user' ); ?>
+					<?php
+						$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+						$userid = $curauth->ID;
+					?>
 
+					<?php set_query_var( 'userid', $userid ); ?>
+					<?php get_template_part( 'partials/content', 'user' ); ?>
+					
+				</div>
+			</article>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 

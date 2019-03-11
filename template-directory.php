@@ -52,33 +52,35 @@ get_header();
 			$users = get_users( $args );
 
 			?>
-			<div class="directory">
+			<article class="entry">
+				<div class="entry-content directory">
 
-			<?php
-			// Array of WP_User objects.
-			foreach ( $users as $user ) { 
-				$userid = $user->ID;
+				<?php
+				// Array of WP_User objects.
+				foreach ( $users as $user ) { 
+					$userid = $user->ID;
 
-				// only add to directory if user includes themself
-				if ( get_field( 'in_directory', 'user_' . $userid ) ) {
-					$userimg = get_field( 'photo', 'user_' . $userid );
-					$username = esc_html( $user->display_name );
-				?>
-				<a class="person person-<?php echo $userid; ?>" href="<?php echo get_author_posts_url( $userid ); ?>">
-					<span class="directory-img"><?php 
-						if ( $userimg ) {
-							echo wp_get_attachment_image( $userimg, 'medium' );
-						} else {
-							echo '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
-						}
-					?></span>
-					<span class="directory-name"><?php echo $username; ?></span>
-				</a>
-				<?php 
+					// only add to directory if user includes themself
+					if ( get_field( 'in_directory', 'user_' . $userid ) ) {
+						$userimg = get_field( 'photo', 'user_' . $userid );
+						$username = esc_html( $user->display_name );
+					?>
+					<a class="person person-<?php echo $userid; ?>" href="<?php echo get_author_posts_url( $userid ); ?>">
+						<span class="directory-img"><?php 
+							if ( $userimg ) {
+								echo wp_get_attachment_image( $userimg, 'medium' );
+							} else {
+								echo '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+							}
+						?></span>
+						<span class="directory-name"><?php echo $username; ?></span>
+					</a>
+					<?php 
+					}
 				}
-			}
-			?>
-			</div>
+				?>
+				</div>
+			</article>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 
