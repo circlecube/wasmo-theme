@@ -143,25 +143,28 @@ endif;
 add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
-   if ($args->theme_location == 'utility') {
-      if (is_user_logged_in()) {
-         $items .= '<li><a href="'. wp_logout_url() .'">'. __("Log Out") .'</a></li>';
-      } else {
-         $items .= '<li><a href="/login">'. __("Log In") .'</a></li>';
-      }
-   }
-   return $items;
+	if ($args->theme_location == 'utility') {
+		$login = '<li><a href="' . home_url('/login/') . '">' . __("Log In") . '</a></li>';
+		$logout = '<li><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
+		$profile = '<li><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
+		if ( is_user_logged_in() ) {
+			$items = $profile . $items . $logout;
+		} else {
+			$items .= $login;
+		}
+	}
+	return $items;
 }
 add_filter( 'wp_nav_menu_items', 'wasmo_loginout_menu_link', 10, 2 );
 
 
 function wasmo_login_redirect_page() {
-  return '/edit';
+  return home_url('/edit/');
 }
 add_filter('login_redirect', 'wasmo_login_redirect_page');
 
 function wasmo_logout_redirect_page() {
-  return '/login';
+  return home_url('/login/');
 }
 add_filter('logout_redirect', 'wasmo_logout_redirect_page');
 
