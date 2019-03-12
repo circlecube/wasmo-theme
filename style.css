@@ -55,16 +55,16 @@
 }
 
 /* menu visibility toggles */
-.main-navigation .main-menu .menu-item.not-logged-in {
+.menu-item.not-logged-in {
 	display: initial;
 }
-.main-navigation .main-menu .menu-item.logged-in {
+.menu-item.logged-in {
 	display: none;
 }
-body.logged-in .main-navigation .main-menu .menu-item.not-logged-in {
+body.logged-in .menu-item.not-logged-in {
 	display: none;
 }
-body.logged-in .main-navigation .main-menu .menu-item.logged-in {
+body.logged-in .menu-item.logged-in {
 	display: initial;
 }
 
