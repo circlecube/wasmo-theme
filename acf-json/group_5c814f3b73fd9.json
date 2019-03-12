@@ -65,6 +65,25 @@
             "maxlength": ""
         },
         {
+            "key": "field_5c87b7a994494",
+            "label": "About Me",
+            "name": "about_me",
+            "type": "textarea",
+            "instructions": "Describe your background within a mormon context.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": 5,
+            "new_lines": "wpautop"
+        },
+        {
             "key": "field_5c815ad1df647",
             "label": "Why I left",
             "name": "why_i_left",
@@ -306,5 +325,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552397635
+    "modified": 1552398299
 }
