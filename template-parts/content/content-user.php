@@ -10,6 +10,8 @@
 		$userimg = get_field( 'photo', 'user_' . $userid );
 		if ( $userimg ) {
 			echo wp_get_attachment_image( $userimg, 'medium' );
+		} else {
+			echo '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
 		}
 		?></div>
 		<?php 
