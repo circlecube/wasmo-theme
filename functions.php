@@ -142,6 +142,30 @@ endif;
 
 add_action( 'after_setup_theme', 'wasmo_setup' );
 
+function wasmo_loginout_menu_link( $items, $args ) {
+   if ($args->theme_location == 'utility') {
+      if (is_user_logged_in()) {
+         $items .= '<li><a href="'. wp_logout_url() .'">'. __("Log Out") .'</a></li>';
+      } else {
+         $items .= '<li><a href="/login">'. __("Log In") .'</a></li>';
+      }
+   }
+   return $items;
+}
+add_filter( 'wp_nav_menu_items', 'wasmo_loginout_menu_link', 10, 2 );
+
+
+function wasmo_login_redirect_page() {
+  return '/edit';
+}
+add_filter('login_redirect', 'wasmo_login_redirect_page');
+
+function wasmo_logout_redirect_page() {
+  return '/login';
+}
+add_filter('logout_redirect', 'wasmo_logout_redirect_page');
+
+
 function my_acf_init() {
 	acf_update_setting('google_api_key', 'AIzaSyAF3HYVew1ZS_9i0mY1wymX1Hs885AJtIw');
 }
