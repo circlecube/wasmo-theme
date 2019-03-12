@@ -23,7 +23,7 @@ get_header();
 					?>
 
 					<?php set_query_var( 'userid', $userid ); ?>
-					<?php get_template_part( 'partials/content', 'user' ); ?>
+					<?php get_template_part( 'template-parts/content/content', 'user' ); ?>
 					
 				</div>
 			</article>

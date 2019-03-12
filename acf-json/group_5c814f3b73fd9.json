@@ -16,7 +16,7 @@
                 "id": ""
             },
             "return_format": "id",
-            "preview_size": "medium",
+            "preview_size": "thumbnail",
             "library": "uploadedTo",
             "min_width": "",
             "min_height": "",
@@ -31,7 +31,7 @@
             "label": "Hi",
             "name": "hi",
             "type": "text",
-            "instructions": "",
+            "instructions": "Quick introductions.\r\n\r\nFor example: Hi, I'm Joe.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -50,7 +50,7 @@
             "label": "Tagline",
             "name": "tagline",
             "type": "text",
-            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.",
+            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -146,29 +146,11 @@
             ]
         },
         {
-            "key": "field_5c86de1946f80",
+            "key": "field_5c87a1f5c2b0c",
             "label": "Location",
             "name": "location",
-            "type": "google_map",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "center_lat": "40.7670126",
-            "center_lng": "-111.8904308",
-            "zoom": "",
-            "height": ""
-        },
-        {
-            "key": "field_5c86dea246f81",
-            "label": "Link",
-            "name": "link",
-            "type": "url",
-            "instructions": "You may link to your own website or your social media profile if you wish others to be able to find you.",
+            "type": "text",
+            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -177,13 +159,97 @@
                 "id": ""
             },
             "default_value": "",
-            "placeholder": ""
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c86dea246f81",
+            "label": "Links",
+            "name": "links",
+            "type": "group",
+            "instructions": "You may link to your social media profiles or your own website if you wish others to be able to find you.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_5c87a7c3a86a5",
+                    "label": "Facebook",
+                    "name": "facebook",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a87ba86a8",
+                    "label": "Instagram",
+                    "name": "instagram",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a7d8a86a6",
+                    "label": "Twitter",
+                    "name": "twitter",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a7fda86a7",
+                    "label": "Other",
+                    "name": "other",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                }
+            ]
         },
         {
             "key": "field_5c815bccdf64c",
             "label": "Include me in the directory?",
             "name": "in_directory",
-            "type": "true_false",
+            "type": "select",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -192,11 +258,20 @@
                 "class": "",
                 "id": ""
             },
-            "message": "",
-            "default_value": 0,
-            "ui": 0,
-            "ui_on_text": "",
-            "ui_off_text": ""
+            "choices": {
+                "false": "Not at all",
+                "private": "Yes, but only to users who are logged in",
+                "true": "Yes display my profile in the public directory"
+            },
+            "default_value": [
+                "private"
+            ],
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 1,
+            "ajax": 0,
+            "return_format": "value",
+            "placeholder": ""
         }
     ],
     "location": [
@@ -231,5 +306,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552344864
+    "modified": 1552397635
 }

@@ -12,6 +12,48 @@
  GitHub Theme URI: https://github.com/circlecube/wasmo-theme
 */
 
+:root {
+  --color-orange:#F07C27;
+  --color-pink:  #D80C81;
+  --color-blue:  #00AEEB;
+  --color-white: #FFFFFF;
+  --color-gray0: #F2F2F2;
+  --color-gray1: #E8E8EA;
+  --color-gray2: #A5A6AB;
+  --color-gray3: #333333;
+}
+
+
+.site-header {
+	background: var(--color-orange);
+	color: var(--color-white);
+}
+.site-header a,
+.main-navigation .main-menu > li > a {
+	color: var(--color-white);
+	text-transform: uppercase;
+	font-family: sans-serif;
+}
+.site-title a:link,
+.site-title a:visited,
+.site-description,
+.main-navigation .main-menu > li {
+	color: var(--color-white);
+}
+
+.site-header {
+	padding: 2rem 1rem 1rem;
+}
+@media only screen and (min-width: 768px) {
+  .site-header {
+    padding: 3rem 0 3rem;
+  }
+}
+
+.site-footer {
+	background: var(--color-gray3);
+}
+
 /* menu visibility toggles */
 .main-navigation .main-menu .menu-item.not-logged-in {
 	display: initial;
@@ -24,6 +66,24 @@ body.logged-in .main-navigation .main-menu .menu-item.not-logged-in {
 }
 body.logged-in .main-navigation .main-menu .menu-item.logged-in {
 	display: initial;
+}
+
+.site-branding-container {
+	position: relative;
+}
+
+.utility-navigation {
+	float: right;
+	font-size: .67rem;
+}
+.utility-navigation ul {
+	list-style: none;
+	margin: -2rem 0 0;
+	padding: 0;
+}
+.utility-navigation li {
+	display: inline-block;
+	margin-left: .67em;
 }
 
 
@@ -58,8 +118,16 @@ body.logged-in .main-navigation .main-menu .menu-item.logged-in {
 	padding: .25rem;
 	text-align: center;
 	text-decoration: none;
-	color: #eee;
+	color: var(--color-white);
 	line-height: 1.1em;
 	opacity: 0;
 	transition: all .2s ease;
+}
+
+
+
+
+/* profile */
+.acf-input .acf-url i {
+	top: 12px;
 }

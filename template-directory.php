@@ -61,9 +61,12 @@ get_header();
 					$userid = $user->ID;
 
 					// only add to directory if user includes themself
-					if ( get_field( 'in_directory', 'user_' . $userid ) ) {
+					// true = public
+					// private = only to a logged in user
+					if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ||
+						'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
 						$userimg = get_field( 'photo', 'user_' . $userid );
-						$username = esc_html( $user->display_name );
+						$username = esc_html( $user->nickname );
 					?>
 					<a class="person person-<?php echo $userid; ?>" href="<?php echo get_author_posts_url( $userid ); ?>">
 						<span class="directory-img"><?php 
