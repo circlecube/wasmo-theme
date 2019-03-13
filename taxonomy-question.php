@@ -26,7 +26,7 @@ $term = get_term_by( 'id', $termid, 'question' );
 
 //define transient name - taxid + user state.
 $transient_name = 'answers-tax-question-' . $termid . '-' . is_user_logged_in();
-if ( current_user_can('administrator') ) {
+if ( current_user_can('administrator') && WP_DEBUG ) {
 	$transient_name = time();
 }
 //use transient to cache data
@@ -94,12 +94,12 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 }
 
 ?>
-				<div class="entry-content answers">
-					<?php echo $the_answers; ?>
-				</div>
+					<div class="entry-content answers">
+						<?php echo $the_answers; ?>
+					</div>
 
-				<footer class="entry-footer">
-				</footer>
+					<footer class="entry-footer">
+					</footer>
 
 			</article>
 
