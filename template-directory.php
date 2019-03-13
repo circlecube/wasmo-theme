@@ -30,24 +30,9 @@ get_header();
 
 			/* Start the Loop */
 			$args = array(
-				'role'         => '',
-				'role__in'     => array(),
-				'role__not_in' => array(),
-				'meta_key'     => '',
-				'meta_value'   => '',
-				'meta_compare' => '',
-				'meta_query'   => array(),
-				'date_query'   => array(),        
-				'include'      => array(),
-				'exclude'      => array(),
-				'orderby'      => 'login',
+				'orderby'      => 'ID',
 				'order'        => 'ASC',
-				'offset'       => '',
-				'search'       => '',
-				'number'       => '',
-				'count_total'  => false,
 				'fields'       => 'all',
-				'who'          => '',
 			); 
 			$users = get_users( $args );
 

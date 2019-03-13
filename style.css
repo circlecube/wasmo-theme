@@ -136,6 +136,7 @@ body.logged-in .menu-item.logged-in {
 	padding: .5rem;
 }
 
+
 .acf-input .acf-url i {
 	top: 12px;
 }
@@ -183,4 +184,18 @@ h2.tagline {
 }
 .social-links li {
 	display: inline-block;
+}
+
+
+cite {
+	text-align: right;
+	display: block;
+}
+cite .directory-img {
+	width: 1.5rem;
+}
+cite span {
+	display: inline-block;
+	vertical-align: text-top;
+	margin-left: .5rem;
 }
