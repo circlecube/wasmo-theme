@@ -71,7 +71,7 @@
 
 @media only screen and (min-width: 768px) { /* desktop */
   .site-header {
-    padding: 1rem 0 2rem;
+    padding: 1rem 0 1rem;
   }
   .site-logo {
 	  position: relative;
@@ -188,22 +188,22 @@ h2.tagline:before {
 	width: 100%;
 	flex-direction: column-reverse;
 }
-.content-left {
+.entry .content-header .content-left {
 	flex-basis: 200px;
 	min-width: 200px;
-	margin-right: 1rem;
+	margin: 1rem 0;
 	text-align: center;
 }
 .content-left img {
-	max-width: 300px;
+	max-width: 100%;
 }
 
 @media only screen and (min-width: 768px) { /* desktop */
 	.entry .entry-content .content-header {
 		flex-direction: row;
 	}
-	.content-left {
-		text-align: left;
+	.entry .content-header .content-left {
+		margin: .75rem 1rem 1rem 0;
 	}
 	
 }
