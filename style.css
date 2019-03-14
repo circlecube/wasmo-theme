@@ -262,11 +262,11 @@ cite span {
 .lwa-avatar {
 	display: none;
 }
-.lwa-info a {
+.widget .lwa-info a {
 	display: none;
 }
-a#wp-logout,
-a.lwa-links-modal {
+.widget a#wp-logout,
+.widget a.lwa-links-modal {
 	color: var(--color-gray1);
 	display: inline-block;
 	border: 2px solid var(--color-gray1);
@@ -276,8 +276,8 @@ a.lwa-links-modal {
 	text-transform: capitalize;
 	transition: all .2s ease;
 }
-a#wp-logout:hover,
-a.lwa-links-modal:hover {
+.widget a#wp-logout:hover,
+.widget a.lwa-links-modal:hover {
 	background: rgba(255,255,255,.15);
 	color: var(--color-white);
 }
