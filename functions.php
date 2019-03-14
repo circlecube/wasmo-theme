@@ -1,6 +1,5 @@
 <?php
 
-
 // Enqueue styles - get parent theme styles first.
 function my_theme_enqueue_styles() {
 

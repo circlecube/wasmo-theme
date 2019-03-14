@@ -44,6 +44,30 @@
 .site-header {
 	padding: 2rem 1rem 1rem;
 }
+.site-description {
+	font-size: 18px;
+}
+.site-title:not(:empty) + .site-description:not(:empty):before {
+	content: none;
+}
+.site-title {
+	text-transform: lowercase;
+	font-style: italic;
+}
+.site-logo + .site-title {
+	display: none;
+}
+.site-logo .custom-logo-link {
+	border-radius: 0;
+	width: 80px;
+	height: 80px;
+}
+.site-logo .custom-logo-link:hover, 
+.site-logo .custom-logo-link:active, 
+.site-logo .custom-logo-link:focus {
+	box-shadow: 0 0 0 2px var(--color-white);
+}
+
 @media only screen and (min-width: 768px) {
   .site-header {
     padding: 3rem 0 3rem;
@@ -162,11 +186,17 @@ h2.tagline:before {
 	margin-right: 1rem;
 }
 
-/* @media only screen and (min-width: 768px) {
-	.content-left {
-		width: 25%;
+@media only screen and (min-width: 768px) {
+	.entry .entry-content .content-header {
+		flex-direction: column-reverse;
 	}
-} */
+	.content-left {
+		text-align: center;
+	}
+	.content-left img {
+		max-width: 300px;
+	}
+}
 
 h2.tagline {
 	color: var(--color-gray2);

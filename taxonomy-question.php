@@ -96,6 +96,10 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 ?>
 					<div class="entry-content answers">
 						<?php echo $the_answers; ?>
+
+						<?php if ( '' === $the_answers ) { ?>
+							<h3>There are no currently available answers for this question, add your own and be the first!</h3>
+						<?php } ?>
 					</div>
 
 					<footer class="entry-footer">
