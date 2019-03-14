@@ -37,7 +37,7 @@ get_header();
 			$users = get_users( $args );
 
 			?>
-			<article class="entry">
+			<article class="entry the-directory">
 				<div class="entry-content directory">
 
 				<?php

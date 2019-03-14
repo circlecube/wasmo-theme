@@ -125,6 +125,9 @@ body.logged-in .menu-item.logged-in {
 
 
 /* Directory */
+.the-directory {
+	margin: 0 0 8rem;
+}
 .directory {
 	display: flex;
 	flex-wrap: wrap;
@@ -133,9 +136,10 @@ body.logged-in .menu-item.logged-in {
 	position: relative;
 	width: 20%;
 	padding-top: 20%;
+	margin: 0 0 1rem;
 }
 .directory .person:hover .directory-name {
-	opacity:1;
+	opacity: 1;
 }
 .directory .person .directory-img {
 	position: absolute;
