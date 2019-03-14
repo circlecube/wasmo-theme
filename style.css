@@ -159,6 +159,9 @@ body.logged-in .menu-item.logged-in {
 
 
 /* profile */
+article.user-profile {
+	padding-bottom: 8rem;
+}
 .acf-field textarea {
 	font-size: 18px;
 	overflow-wrap: normal;
@@ -214,8 +217,8 @@ h2.tagline {
 	font-style: italic;
 	font-size: 1.5rem;
 	font-weight: normal;
-	line-height: 1.2em;
-	margin-top: .5rem;
+	line-height: 1.375em;
+    margin-top: .75rem;
 }
 .social-links {
 	list-style: none;

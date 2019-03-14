@@ -14,7 +14,7 @@ get_header();
 	<section id="primary" class="content-area">
 		<main id="main" class="site-main">
 
-			<article class="entry">
+			<article class="entry user-profile">
 				<div class="entry-content">
 
 					<?php
