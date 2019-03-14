@@ -42,7 +42,7 @@
 }
 
 .site-header {
-	padding: 2rem 1rem 1rem;
+	padding: 0rem 1rem 1rem;
 }
 .site-description {
 	font-size: 18px;
@@ -71,7 +71,7 @@
 
 @media only screen and (min-width: 768px) { /* desktop */
   .site-header {
-    padding: 3rem 0 3rem;
+    padding: 1rem 0 3rem;
   }
   .site-logo {
 	  position: relative;
@@ -109,7 +109,7 @@ body.logged-in .menu-item.logged-in {
 }
 .utility-navigation ul {
 	list-style: none;
-	margin: -2rem 0 0;
+	margin: 0;
 	padding: 0;
 }
 .utility-navigation li {
