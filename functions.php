@@ -174,4 +174,17 @@ function my_acf_init() {
 
 add_action('acf/init', 'my_acf_init');
 
+
+function wasmo_filter_product_wpseo_title($title) {
+    if( is_author() ) {
+		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+		$userid = $curauth->ID;
+		$title = get_field( 'hi', 'user_' . $userid ) . ' at wasMormon.org';
+		// $username = esc_html( $curauth->user_login );
+		// $title = $username . ' at wasMormon.org';
+    }
+    return $title;
+}
+add_filter('wpseo_title', 'wasmo_filter_product_wpseo_title');
+
 ?>
