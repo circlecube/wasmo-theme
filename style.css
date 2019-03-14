@@ -62,6 +62,7 @@
 	border-radius: 0;
 	width: 80px;
 	height: 80px;
+	max-width: 80px;
 }
 .site-logo .custom-logo-link:hover, 
 .site-logo .custom-logo-link:active, 
@@ -241,4 +242,37 @@ cite span {
 	display: inline-block;
 	vertical-align: text-top;
 	margin-left: .5rem;
+}
+
+
+
+
+
+/* footer widget / lwa modal */
+.lwa-modal {
+	width: 50%;
+	max-width: 500px;
+	min-width: 400px;
+}
+.lwa-avatar {
+	display: none;
+}
+.lwa-info a {
+	display: none;
+}
+a#wp-logout,
+a.lwa-links-modal {
+	color: var(--color-gray1);
+	display: inline-block;
+	border: 2px solid var(--color-gray1);
+	padding: .15rem .5rem;
+	border-radius: 5px;
+	font-size: .75rem;
+	text-transform: capitalize;
+	transition: all .2s ease;
+}
+a#wp-logout:hover,
+a.lwa-links-modal:hover {
+	background: rgba(255,255,255,.15);
+	color: var(--color-white);
 }
