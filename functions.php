@@ -211,11 +211,15 @@ add_filter("lostpassword_url", function ($url, $redirect) {
 
 // fixes other password reset related urls
 add_filter( 'network_site_url', function($url, $path, $scheme) {
-  
-  	if (stripos($url, "action=lostpassword") !== false)
+	
+	if (stripos($url, "action=rp") !== false)
+		// return site_url('wp-login.php?action=lostpassword', $scheme);
+		return str_replace( 'circlecube.com', 'wasmormon.org', $url );
+	  
+	if (stripos($url, "action=lostpassword") !== false)
 		return site_url('wp-login.php?action=lostpassword', $scheme);
   
-   	if (stripos($url, "action=resetpass") !== false)
+	if (stripos($url, "action=resetpass") !== false)
 		return site_url('wp-login.php?action=resetpass', $scheme);
   
 	return $url;
