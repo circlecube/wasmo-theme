@@ -54,6 +54,11 @@
 	text-transform: lowercase;
 	font-style: italic;
 }
+
+.site-logo {
+	max-width: 80px;
+}
+
 .site-logo + .site-title {
 	display: none;
 }
@@ -62,8 +67,8 @@
 	border-radius: 0;
 	width: 80px;
 	height: 80px;
-	max-width: 80px;
 }
+
 .site-logo .custom-logo-link:hover, 
 .site-logo .custom-logo-link:active, 
 .site-logo .custom-logo-link:focus {
