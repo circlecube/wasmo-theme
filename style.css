@@ -262,13 +262,15 @@ cite span {
 .lwa-avatar {
 	display: none;
 }
-.widget .lwa-info a {
+.lwa-info a {
 	display: none;
+}
+.lwa-info a#wp-logout {
+	display: inline-block;
 }
 .widget a#wp-logout,
 .widget a.lwa-links-modal {
 	color: var(--color-gray1);
-	display: inline-block;
 	border: 2px solid var(--color-gray1);
 	padding: .15rem .5rem;
 	border-radius: 5px;
