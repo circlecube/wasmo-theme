@@ -220,6 +220,10 @@ h2.tagline:before {
 .content-left img {
 	max-width: 100%;
 }
+.entry .entry-content p {
+	line-height: 1.6;
+	font-size: 20px;
+}
 
 @media only screen and (min-width: 768px) { /* desktop */
 	.entry .entry-content .content-header {
