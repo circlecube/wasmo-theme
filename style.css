@@ -144,11 +144,21 @@ body.logged-in .menu-item.logged-in {
 .directory .person .directory-img {
 	position: absolute;
 	width: 100%;
+	height: 0;
+	padding-top: 100%;
+	overflow: hidden;
+	top: 0;
+	left: 0;
+}
+.directory .person .directory-img img {
+	position: absolute;
+	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	object-position: center;
 	top: 0;
 	left: 0;
+
 }
 .directory .person .directory-name {
 	position: absolute;
