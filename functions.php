@@ -234,3 +234,17 @@ add_filter("retrieve_password_message", function ($message, $key) {
 add_filter("retrieve_password_title", function($title) {
 	return "[" . wp_specialchars_decode(get_option('blogname'), ENT_QUOTES) . "] Password Reset";
 });
+
+
+// Capture user login and add it as timestamp in user meta data
+function wasmo_user_lastlogin( $user_login, $user ) {
+    update_user_meta( $user->ID, 'last_login', time() );
+}
+add_action( 'wp_login', 'wasmo_user_lastlogin', 10, 2 );
+ 
+// Display last login time
+function wasmo_get_lastlogin() { 
+    $last_login = get_the_author_meta('last_login');
+    $the_login_date = human_time_diff($last_login);
+    return $the_login_date; 
+} 

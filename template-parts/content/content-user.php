@@ -99,3 +99,22 @@ else :
     // no questions found
 endif;
 ?>
+<div class="content-footer">
+	<?php 
+		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+		$registered = $curauth->user_registered;
+		$registered_rel = human_time_diff( strtotime( $registered ) );
+		$last_login = get_user_meta( $userid, 'last_login', true );
+		$last_login_rel = human_time_diff( $last_login );
+	?>
+	<span class="user-meta" 
+		data-key="member-since" 
+		data-value="<?php echo esc_attr( strtotime( $registered ) ); ?>" 
+		data-relval="<?php echo esc_attr( $registered_rel ); ?>">
+	</span>
+	<span class="user-meta" 
+		data-key="last-login" 
+		data-value="<?php echo esc_attr( $last_login ); ?>"
+		data-relval="<?php echo esc_attr( $last_login_rel ); ?>">
+	</span>
+</div>
