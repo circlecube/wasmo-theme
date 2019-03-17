@@ -38,7 +38,8 @@ get_header();
 
 			?>
 			<article class="entry the-directory">
-				<div class="entry-content directory">
+				<div class="entry-content">
+					<div class="directory">
 
 				<?php
 				// Array of WP_User objects.
@@ -67,7 +68,7 @@ get_header();
 					}
 				}
 				?>
-				</div>
+				</div></div>
 			</article>
 		</main><!-- #main -->
 	</section><!-- #primary -->

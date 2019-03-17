@@ -128,15 +128,25 @@ body.logged-in .menu-item.logged-in {
 .the-directory {
 	margin: 0 0 8rem;
 }
-.directory {
+.the-directory .directory {
+	width: 100%;
 	display: flex;
-	flex-wrap: wrap;
+	flex-flow: row wrap;
+	justify-content: space-around;
 }
-.directory .person {
+.the-directory .directory .person {
 	position: relative;
-	width: 20%;
-	padding-top: 20%;
+	width: 30%;
+	padding-top: 30%;
 	margin: 0 0 1rem;
+    text-decoration: none;
+}
+
+@media only screen and (min-width: 768px) { /* desktop */
+	.the-directory .directory .person {
+		width: 18%;
+		padding-top: 18%;
+	}
 }
 .directory .person:hover .directory-name {
 	opacity: 1;
