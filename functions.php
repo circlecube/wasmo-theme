@@ -158,12 +158,12 @@ add_filter( 'wp_nav_menu_items', 'wasmo_loginout_menu_link', 10, 2 );
 
 
 function wasmo_login_redirect_page() {
-  return home_url('/edit/');
+  return home_url('/directory/');
 }
 add_filter('login_redirect', 'wasmo_login_redirect_page');
 
 function wasmo_logout_redirect_page() {
-  return home_url('/login/');
+  return home_url('/directory/');
 }
 add_filter('logout_redirect', 'wasmo_logout_redirect_page');
 
