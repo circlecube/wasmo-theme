@@ -125,7 +125,7 @@ endif;
 
 	<div class="buttons">
 		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="/directory/">Back to the Directoory</a>
+			<a class="wp-block-button__link" href="/directory/">Back to the Directory</a>
 		</span>
 		<span class="wp-block-button">
 			<a class="wp-block-button__link" href="/login/">Contribute your own story</a>
