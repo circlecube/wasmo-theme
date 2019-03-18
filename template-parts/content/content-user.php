@@ -55,23 +55,28 @@
 
 	<div class="content-right">
 		<?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
-			<h1 class="hi"><?php echo get_field( 'hi', 'user_' . $userid ); ?></h1>
+			<h1 class="hi"><?php echo esc_textarea( get_field( 'hi', 'user_' . $userid ) ); ?></h1>
 		<?php } ?>
 
 		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
-			<h2 class="tagline"><?php echo get_field( 'tagline', 'user_' . $userid ); ?></h2>
+			<h2 class="tagline"><?php echo esc_textarea( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
 		<?php } ?>
 	</div>
 </div>
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<h3>About me</h3>
-	<div class="about_me"><?php echo get_field( 'about_me', 'user_' . $userid ); ?></div>
+	<div class="about_me"><?php echo esc_textarea( get_field( 'about_me', 'user_' . $userid ) ); ?></div>
 <?php } ?>
+
+<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
+	<div class="location"><?php echo esc_textarea( get_field( 'location', 'user_' . $userid ) ); ?></div>
+<?php } ?>
+
 
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
 	<h3>Why I left</h3>
-	<div class="why_i_left"><?php echo get_field( 'why_i_left', 'user_' . $userid ); ?></div>
+	<div class="why_i_left"><?php echo esc_textarea( get_field( 'why_i_left', 'user_' . $userid ) ); ?></div>
 <?php } ?>
 
 <?php
@@ -89,9 +94,9 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 		echo '<h4 class="question">';
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
 		$questionterm = get_term( $termtaxid, 'question' );
-		echo $questionterm->name;
+		echo esc_textarea( $questionterm->name );
 		echo '</h4>';
-		echo get_sub_field( 'answer', 'users_' . $userid );
+		echo esc_textarea( get_sub_field( 'answer', 'users_' . $userid ) );
 
     endwhile;
 
