@@ -125,11 +125,13 @@ body.logged-in .menu-item.logged-in {
 
 
 /* Directory */
-.the-directory {
-	margin: 0 0 8rem;
+.entry .the-directory {
+	margin-bottom: 8rem;
+	max-width: 100%;
 }
 .the-directory .directory {
 	width: 100%;
+	max-width: 100%;
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-between;
