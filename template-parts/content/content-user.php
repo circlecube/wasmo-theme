@@ -122,4 +122,13 @@ endif;
 		data-value="<?php echo esc_attr( $last_login ); ?>"
 		data-relval="<?php echo esc_attr( $last_login_rel ); ?>">
 	</span>
+
+	<div class="buttons">
+		<span class="wp-block-button is-style-outline">
+			<a class="wp-block-button__link" href="/directory/">Back to the Directoory</a>
+		</span>
+		<span class="wp-block-button">
+			<a class="wp-block-button__link" href="/login/">Contribute your own story</a>
+		</span>
+	</div>
 </div>

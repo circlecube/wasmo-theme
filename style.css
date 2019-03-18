@@ -238,6 +238,10 @@ h2.tagline:before {
 	font-size: 20px;
 }
 
+.buttons {
+	margin: 6rem 0;
+}
+
 @media only screen and (min-width: 768px) { /* desktop */
 	.entry .entry-content .content-header {
 		flex-direction: row;
