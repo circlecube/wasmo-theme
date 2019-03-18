@@ -242,6 +242,11 @@ h2.tagline:before {
 	margin: 6rem 0;
 }
 
+.entry .entry-content > *,
+.entry .entry-summary > * {
+	/* max-width: 100%; */
+}
+
 @media only screen and (min-width: 768px) { /* desktop */
 	.entry .entry-content .content-header {
 		flex-direction: row;
@@ -249,7 +254,6 @@ h2.tagline:before {
 	.entry .content-header .content-left {
 		margin: .75rem 1rem 1rem 0;
 	}
-	
 }
 
 h2.tagline {
