@@ -27,163 +27,6 @@
             "mime_types": ""
         },
         {
-            "key": "field_5c815b51df649",
-            "label": "Hi",
-            "name": "hi",
-            "type": "text",
-            "instructions": "Quick introductions.\r\n\r\nFor example: Hi, I'm Joe.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "Hi,",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
-            "key": "field_5c815af4df648",
-            "label": "Tagline",
-            "name": "tagline",
-            "type": "text",
-            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "I was a mormon.",
-            "placeholder": "I was a mormon.",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
-            "key": "field_5c87b7a994494",
-            "label": "About Me",
-            "name": "about_me",
-            "type": "textarea",
-            "instructions": "Describe your background within a mormon context.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "maxlength": "",
-            "rows": 5,
-            "new_lines": "wpautop"
-        },
-        {
-            "key": "field_5c815ad1df647",
-            "label": "Why I left",
-            "name": "why_i_left",
-            "type": "textarea",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "maxlength": "",
-            "rows": "",
-            "new_lines": "wpautop"
-        },
-        {
-            "key": "field_5c82b3ec902d9",
-            "label": "Questions",
-            "name": "questions",
-            "type": "repeater",
-            "instructions": "Add as many questions as you wish to answer to tell your story. Some find it therapeutic to answer some of these. None are required. You may also write your own questions to answer if you don't find a suitable question for your story.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "collapsed": "field_5c82c9d1902db",
-            "min": 0,
-            "max": 0,
-            "layout": "block",
-            "button_label": "Add Question",
-            "sub_fields": [
-                {
-                    "key": "field_5c82b49f902da",
-                    "label": "Question",
-                    "name": "question",
-                    "type": "taxonomy",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "taxonomy": "question",
-                    "field_type": "select",
-                    "allow_null": 1,
-                    "add_term": 1,
-                    "save_terms": 0,
-                    "load_terms": 0,
-                    "return_format": "id",
-                    "multiple": 0
-                },
-                {
-                    "key": "field_5c82c9d1902db",
-                    "label": "Answer",
-                    "name": "answer",
-                    "type": "textarea",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": "",
-                    "maxlength": "",
-                    "rows": 5,
-                    "new_lines": "wpautop"
-                }
-            ]
-        },
-        {
-            "key": "field_5c87a1f5c2b0c",
-            "label": "Location",
-            "name": "location",
-            "type": "text",
-            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
             "key": "field_5c86dea246f81",
             "label": "Links",
             "name": "links",
@@ -265,6 +108,163 @@
             ]
         },
         {
+            "key": "field_5c815b51df649",
+            "label": "Hi",
+            "name": "hi",
+            "type": "text",
+            "instructions": "Quick introductions.\r\n\r\nFor example: Hi, I'm Joe.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "Hi,",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c815af4df648",
+            "label": "Tagline",
+            "name": "tagline",
+            "type": "text",
+            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "I was a mormon.",
+            "placeholder": "I was a mormon.",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c87b7a994494",
+            "label": "About Me",
+            "name": "about_me",
+            "type": "textarea",
+            "instructions": "Describe your background within a mormon context.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": 6,
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_5c87a1f5c2b0c",
+            "label": "Location",
+            "name": "location",
+            "type": "text",
+            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c815ad1df647",
+            "label": "Why I left",
+            "name": "why_i_left",
+            "type": "textarea",
+            "instructions": "Describe your struggles and conclusions.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": 6,
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_5c82b3ec902d9",
+            "label": "Questions",
+            "name": "questions",
+            "type": "repeater",
+            "instructions": "Add as many questions as you wish to answer to tell your story. Some find it therapeutic to answer some of these. None are required. You may also write your own questions to answer if you don't find a suitable question for your story.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "field_5c82c9d1902db",
+            "min": 0,
+            "max": 0,
+            "layout": "block",
+            "button_label": "Add Question",
+            "sub_fields": [
+                {
+                    "key": "field_5c82b49f902da",
+                    "label": "Question",
+                    "name": "question",
+                    "type": "taxonomy",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "taxonomy": "question",
+                    "field_type": "select",
+                    "allow_null": 1,
+                    "add_term": 1,
+                    "save_terms": 0,
+                    "load_terms": 0,
+                    "return_format": "id",
+                    "multiple": 0
+                },
+                {
+                    "key": "field_5c82c9d1902db",
+                    "label": "Answer",
+                    "name": "answer",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": "",
+                    "maxlength": "",
+                    "rows": 5,
+                    "new_lines": "wpautop"
+                }
+            ]
+        },
+        {
             "key": "field_5c815bccdf64c",
             "label": "Include me in the directory?",
             "name": "in_directory",
@@ -283,7 +283,7 @@
                 "true": "Yes display my profile in the public directory"
             },
             "default_value": [
-                "private"
+                "true"
             ],
             "allow_null": 0,
             "multiple": 0,
@@ -325,5 +325,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552398299
+    "modified": 1552916923
 }
