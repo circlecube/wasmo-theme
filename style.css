@@ -132,7 +132,7 @@ body.logged-in .menu-item.logged-in {
 	width: 100%;
 	display: flex;
 	flex-flow: row wrap;
-	justify-content: space-around;
+	justify-content: space-between;
 }
 .the-directory .directory .person {
 	position: relative;
@@ -144,12 +144,13 @@ body.logged-in .menu-item.logged-in {
 
 @media only screen and (min-width: 768px) { /* desktop */
 	.the-directory .directory .person {
-		width: 18%;
-		padding-top: 18%;
+		width: 21%;
+		padding-top: 21%;
 	}
-}
-.directory .person:hover .directory-name {
-	opacity: 1;
+
+	.directory .person:hover .directory-name {
+		opacity: 1;
+	}
 }
 .directory .person .directory-img {
 	position: absolute;
