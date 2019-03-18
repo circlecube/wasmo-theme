@@ -51,6 +51,9 @@
 			<?php } ?>
 			</ul>
 		<?php } ?>
+		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
+			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
+		<?php } ?>
 	</div>
 
 	<div class="content-right">
@@ -69,9 +72,6 @@
 	<div class="about_me"><?php echo wp_kses_post( get_field( 'about_me', 'user_' . $userid ) ); ?></div>
 <?php } ?>
 
-<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
-	<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
-<?php } ?>
 
 
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
