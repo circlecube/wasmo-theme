@@ -5,6 +5,17 @@
 ?>
 
 <div class="content-header">
+
+	<div class="content-right">
+		<?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
+			<h1 class="hi"><?php echo wp_kses_post( get_field( 'hi', 'user_' . $userid ) ); ?></h1>
+		<?php } ?>
+
+		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
+			<h2 class="tagline"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
+		<?php } ?>
+	</div>
+
 	<div class="content-left">
 		<div class="user_photo"><?php 
 		$userimg = get_field( 'photo', 'user_' . $userid );
@@ -55,16 +66,7 @@
 			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
 		<?php } ?>
 	</div>
-
-	<div class="content-right">
-		<?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
-			<h1 class="hi"><?php echo wp_kses_post( get_field( 'hi', 'user_' . $userid ) ); ?></h1>
-		<?php } ?>
-
-		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
-			<h2 class="tagline"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
-		<?php } ?>
-	</div>
+	
 </div>
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
