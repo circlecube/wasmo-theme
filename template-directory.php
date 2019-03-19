@@ -29,7 +29,19 @@ get_header();
 	<?php endif; ?>
 
 	<?php
-	// Directory
+	// Directory transient
+
+//define transient name - taxid + user state.
+$transient_name = 'directory-' . is_user_logged_in();
+if ( current_user_can('administrator') && WP_DEBUG ) {
+	$transient_name = time();
+}
+//use transient to cache data
+if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
+	$the_directory = 'test';
+	set_transient( $transient_name, $the_directory, 24 * HOUR_IN_SECONDS );
+}
+
 	/* Start the Loop */
 	$args = array(
 		'orderby'      => 'meta_value',
