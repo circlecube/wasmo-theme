@@ -205,4 +205,31 @@ function wasmo_get_lastlogin() {
     $last_login = get_the_author_meta('last_login');
     $the_login_date = human_time_diff($last_login);
     return $the_login_date; 
-} 
+}
+
+// function wasmo_update_extra_profile_fields($user_id) {
+// 	// clear directory transients
+// 	delete_transient( 'directory-1' );
+// 	delete_transient( 'directory-0' );
+	
+// 	// update last_save timestamp
+// 	update_user_meta( $user->ID, 'last_save', time() );
+// 	die('My filter is running');
+// }
+// add_action('personal_options_update', 'wasmo_update_extra_profile_fields'); // own profile
+// add_action('edit_user_profile_update', 'update_extra_profile_fields'); // other profiles
+
+function wasmo_update_user( $post_id ) {
+	if ( strpos( $post_id, 'user_' ) !== 0 )
+		return;
+	
+	// update last_save timestamp for this user
+	$user_id = intval( substr( $post_id, 5 ) );
+	update_user_meta( $user_id, 'last_save', time() );
+	
+	// clear directory transients
+	delete_transient( 'directory-1' );
+	delete_transient( 'directory-0' );
+
+}
+add_action( 'acf/save_post', 'wasmo_update_user', 5 );
