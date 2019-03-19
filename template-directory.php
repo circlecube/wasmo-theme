@@ -48,10 +48,12 @@ get_header();
 		foreach ( $users as $user ) { 
 			$userid = $user->ID;
 
-			// only add to directory if user includes themself
+			// only add to directory if user includes themself and has filled out the first two fields
 			// true = public
 			// private = only to a logged in user
-			if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ||
+			if ( get_field( 'hi', 'user_' . $userid ) && 
+				get_field( 'tagline', 'user_' . $userid ) &&
+				'true' === get_field( 'in_directory', 'user_' . $userid ) ||
 				'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
 				$userimg = get_field( 'photo', 'user_' . $userid );
 				$username = esc_html( $user->nickname );
