@@ -111,6 +111,8 @@ endif;
 		$registered_rel = human_time_diff( strtotime( $registered ) );
 		$last_login = get_user_meta( $userid, 'last_login', true );
 		$last_login_rel = human_time_diff( $last_login );
+		$last_save = get_user_meta( $userid, 'last_save', true );
+		$last_save_rel = human_time_diff( $last_save );
 	?>
 	<span class="user-meta" 
 		data-key="member-since" 
@@ -121,6 +123,11 @@ endif;
 		data-key="last-login" 
 		data-value="<?php echo esc_attr( $last_login ); ?>"
 		data-relval="<?php echo esc_attr( $last_login_rel ); ?>">
+	</span>
+	<span class="user-meta" 
+		data-key="last-save" 
+		data-value="<?php echo esc_attr( $last_save ); ?>"
+		data-relval="<?php echo esc_attr( $last_save_rel ); ?>">
 	</span>
 
 	<div class="buttons">
