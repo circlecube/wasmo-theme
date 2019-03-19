@@ -27,87 +27,6 @@
             "mime_types": ""
         },
         {
-            "key": "field_5c86dea246f81",
-            "label": "Links",
-            "name": "links",
-            "type": "group",
-            "instructions": "You may link to your social media profiles or your own website if you wish others to be able to find you.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "layout": "block",
-            "sub_fields": [
-                {
-                    "key": "field_5c87a7c3a86a5",
-                    "label": "Facebook",
-                    "name": "facebook",
-                    "type": "url",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": ""
-                },
-                {
-                    "key": "field_5c87a87ba86a8",
-                    "label": "Instagram",
-                    "name": "instagram",
-                    "type": "url",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": ""
-                },
-                {
-                    "key": "field_5c87a7d8a86a6",
-                    "label": "Twitter",
-                    "name": "twitter",
-                    "type": "url",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": ""
-                },
-                {
-                    "key": "field_5c87a7fda86a7",
-                    "label": "Other",
-                    "name": "other",
-                    "type": "url",
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "placeholder": ""
-                }
-            ]
-        },
-        {
             "key": "field_5c815b51df649",
             "label": "Hi",
             "name": "hi",
@@ -120,8 +39,8 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "Hi,",
-            "placeholder": "",
+            "default_value": "",
+            "placeholder": "Hi,",
             "prepend": "",
             "append": "",
             "maxlength": ""
@@ -139,8 +58,8 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "I was a mormon.",
-            "placeholder": "I was a mormon.",
+            "default_value": "",
+            "placeholder": "... I was a mormon.",
             "prepend": "",
             "append": "",
             "maxlength": ""
@@ -265,6 +184,87 @@
             ]
         },
         {
+            "key": "field_5c86dea246f81",
+            "label": "Links",
+            "name": "links",
+            "type": "group",
+            "instructions": "You may link to your social media profiles or your own website if you wish others to be able to find you.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_5c87a7c3a86a5",
+                    "label": "Facebook",
+                    "name": "facebook",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a87ba86a8",
+                    "label": "Instagram",
+                    "name": "instagram",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a7d8a86a6",
+                    "label": "Twitter",
+                    "name": "twitter",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a7fda86a7",
+                    "label": "Other",
+                    "name": "other",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                }
+            ]
+        },
+        {
             "key": "field_5c815bccdf64c",
             "label": "Include me in the directory?",
             "name": "in_directory",
@@ -325,5 +325,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1552916923
+    "modified": 1553002733
 }
