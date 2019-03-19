@@ -15,7 +15,7 @@ if ( !is_user_logged_in() ) {
 	wp_safe_redirect( home_url( '/login/' ) );
 	exit;
 }
-
+acf_form_head();
 get_header(); ?>
 
 <div class="wrap">
@@ -38,8 +38,14 @@ get_header(); ?>
 	<div class="entry-content">
 		<?php 
 			the_content();
-			//echo do_shortcode( '[my_acf_user_form field_group="4"]' );
-		?>
+			acf_form(
+				array(
+					'post_id' => 'user_' . get_current_user_id(),
+					'field_groups' => array( 4 ),
+					'return' => get_author_posts_url( get_current_user_id() )
+				)
+			);
+			?>
 	</div><!-- .entry-content -->
 
 	<?php if ( get_edit_post_link() ) : ?>
