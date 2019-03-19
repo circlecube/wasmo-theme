@@ -66,7 +66,7 @@
 			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
 		<?php } ?>
 	</div>
-	
+
 </div>
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
@@ -111,9 +111,9 @@ endif;
 		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
 		$registered = $curauth->user_registered;
 		$registered_rel = human_time_diff( strtotime( $registered ) );
-		$last_login = get_user_meta( $userid, 'last_login', true );
+		$last_login = intval( get_user_meta( $userid, 'last_login', true ) );
 		$last_login_rel = human_time_diff( $last_login );
-		$last_save = get_user_meta( $userid, 'last_save', true );
+		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
 		$last_save_rel = human_time_diff( $last_save );
 	?>
 	<span class="user-meta" 
@@ -132,12 +132,21 @@ endif;
 		data-relval="<?php echo esc_attr( $last_save_rel ); ?>">
 	</span>
 
+
 	<div class="buttons">
+		<?php if ( 
+				is_user_logged_in() &&
+				$userid === get_current_user_id() 
+			) { ?>
+			<span class="edit-link">
+				<a href="<?php echo home_url( '/edit/' ); ?>">Edit Your Profile</a>
+			</span>
+		<?php } ?>
 		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="/directory/">Back to the Directory</a>
+			<a class="wp-block-button__link" href="<?php echo home_url( '/directory/' ); ?>">Back to the Directory</a>
 		</span>
 		<span class="wp-block-button">
-			<a class="wp-block-button__link" href="/login/">Contribute your own story</a>
+			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
 		</span>
 	</div>
 </div>
