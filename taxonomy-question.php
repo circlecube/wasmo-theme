@@ -19,7 +19,7 @@ $term = get_term_by( 'id', $termid, 'question' );
 		<main id="main" class="site-main">
 			<article class="entry">
 				<header class="entry-header">
-					<h1 class="entry-title"><?php echo $term->name ?></h1>
+					<h1 class="entry-title"><?php echo wp_kses_post( $term->name ); ?></h1>
 				</header><!-- .page-header -->
 
 <?php
@@ -34,11 +34,9 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 
 	//get users
 	$args = array(
-		'orderby'      => 'ID',
-		'order'        => 'ASC',
-		'count_total'  => false,
-		'fields'       => 'all',
-		'who'          => '',
+		'orderby'      => 'meta_value',
+		'meta_key'     => 'last_save',
+		'order'        => 'DESC',
 	); 
 	$users = get_users( $args );
 	//user loop
@@ -60,7 +58,7 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 					// answer
 					$the_answers .= '<div class="answer answer-' . $userid . '">';
 					$the_answers .= '<blockquote>';
-					$the_answers .= get_sub_field( 'answer', 'users_' . $userid );
+					$the_answers .= wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
 					$the_answers .= '</blockquote>';
 
 					// user attribution - photo and name and link (only if they want to be listed in directory)
@@ -71,7 +69,7 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 						$username = esc_html( $user->nickname );
 
 						$the_answers .= '<cite>';
-						$the_answers .= '<a class="person person-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
+						$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
 						$the_answers .= '<span class="directory-img">';
 						if ( $userimg ) {
 							$the_answers .= wp_get_attachment_image( $userimg, 'medium' );

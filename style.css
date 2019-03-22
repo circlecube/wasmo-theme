@@ -300,6 +300,10 @@ cite {
 }
 cite .directory-img {
 	width: 1.5rem;
+	height: 1.5rem;
+}
+cite .directory-img img {
+	object-fit: cover;
 }
 cite span {
 	display: inline-block;
