@@ -31,7 +31,7 @@ get_header();
 			/* Start the Loop */
 			$terms = get_terms([
 				'taxonomy' => 'question',
-				'hide_empty' => false,
+				'hide_empty' => true,
 			]);
 
 			?>
@@ -39,10 +39,11 @@ get_header();
 				<div class="entry-content">
 					<ul class="questions">
 				<?php
-				// Array of WP_User objects.
+				// Array of WP_Term objects.
 				foreach ( $terms as $term ) { 
 					$termid = $term->term_id;
 
+					// if has answers
 					?>
 					<li><a class="question question-<?php echo $termid; ?>" 
 						href="<?php echo get_term_link( $termid ); ?>">

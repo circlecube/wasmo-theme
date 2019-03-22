@@ -231,69 +231,123 @@ function wasmo_update_user( $post_id ) {
 	delete_transient( 'directory-1' );
 	delete_transient( 'directory-0' );
 
+	// update question counts if user includes any
+	if( have_rows( 'questions', 'user_' . $user_id ) ){
+		wasmo_update_user_question_count();
+	}
+
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 5 );
 
+function wasmo_update_user_question_count(){
+	global $wpdb;
 
+	//get terms
+	$tempterms = [];
+	$terms = get_terms( 'question' );
+	$terms = get_terms([
+		'taxonomy' => 'question',
+		'hide_empty' => false,
+	]);
+	// set count to 0 for each term - reset to count fresh
+	foreach ( $terms as $term ) { 
+		$termtaxid = $term->id;
+		$tempterms[$termtaxid] = 0;
+	}
+	// reset terms to empty array
+	// $terms = ['users'=>0];
 
+	// get all users
+	$users = get_users();
+	// user loop
+	foreach ( $users as $user ) { 
+		$userid = $user->ID;
+		$tempterms['users']++;
+		// only use public users - so we don't end up with blank question pages
+		if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ) {
+			// get questions for user
+			if( have_rows( 'questions', 'user_' . $userid ) ) {
+				
+				// question loop
+				while ( have_rows( 'questions', 'user_' . $userid ) ) {
+					the_row();
+					$termtaxid = get_sub_field( 'question', 'users_' . $userid );
+					$term = get_term( $termtaxid, 'questions' );
+					$tempterms[$termtaxid]++; // increment term
+				}
+			}
+		}
+	}
+	// write new counts to db
+	foreach ( $tempterms as $key => $value ) { 
+		$termtaxid = $key;
+		$termcount = $value;
+		$wpdb->update( 
+			$wpdb->term_taxonomy, 
+			array( 'count' => $termcount ), 
+			array( 'term_taxonomy_id' => $termtaxid ) 
+		);
+	}
+
+}
 
 //override twentynineteen_entry_footer
 function wasmo_entry_footer() {
 
-		// Hide author, post date, category and tag text for pages.
-		if ( 'post' === get_post_type() ) {
+	// Hide author, post date, category and tag text for pages.
+	if ( 'post' === get_post_type() ) {
 
-			// Posted by
-			//twentynineteen_posted_by();
+		// Posted by
+		//twentynineteen_posted_by();
 
-			// Posted on
-			twentynineteen_posted_on();
+		// Posted on
+		twentynineteen_posted_on();
 
-			/* translators: used between list items, there is a space after the comma. */
-			$categories_list = get_the_category_list( __( ', ', 'twentynineteen' ) );
-			if ( $categories_list ) {
-				printf(
-					/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of categories. */
-					'<span class="cat-links">%1$s<span class="screen-reader-text">%2$s</span>%3$s</span>',
-					twentynineteen_get_icon_svg( 'archive', 16 ),
-					__( 'Posted in', 'twentynineteen' ),
-					$categories_list
-				); // WPCS: XSS OK.
-			}
-
-			/* translators: used between list items, there is a space after the comma. */
-			$tags_list = get_the_tag_list( '', __( ', ', 'twentynineteen' ) );
-			if ( $tags_list ) {
-				printf(
-					/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
-					'<span class="tags-links">%1$s<span class="screen-reader-text">%2$s </span>%3$s</span>',
-					twentynineteen_get_icon_svg( 'tag', 16 ),
-					__( 'Tags:', 'twentynineteen' ),
-					$tags_list
-				); // WPCS: XSS OK.
-			}
+		/* translators: used between list items, there is a space after the comma. */
+		$categories_list = get_the_category_list( __( ', ', 'twentynineteen' ) );
+		if ( $categories_list ) {
+			printf(
+				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of categories. */
+				'<span class="cat-links">%1$s<span class="screen-reader-text">%2$s</span>%3$s</span>',
+				twentynineteen_get_icon_svg( 'archive', 16 ),
+				__( 'Posted in', 'twentynineteen' ),
+				$categories_list
+			); // WPCS: XSS OK.
 		}
 
-		// Comment count.
-		if ( ! is_singular() ) {
-			twentynineteen_comment_count();
+		/* translators: used between list items, there is a space after the comma. */
+		$tags_list = get_the_tag_list( '', __( ', ', 'twentynineteen' ) );
+		if ( $tags_list ) {
+			printf(
+				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
+				'<span class="tags-links">%1$s<span class="screen-reader-text">%2$s </span>%3$s</span>',
+				twentynineteen_get_icon_svg( 'tag', 16 ),
+				__( 'Tags:', 'twentynineteen' ),
+				$tags_list
+			); // WPCS: XSS OK.
 		}
-
-		// Edit post link.
-		edit_post_link(
-			sprintf(
-				wp_kses(
-					/* translators: %s: Name of current post. Only visible to screen readers. */
-					__( 'Edit <span class="screen-reader-text">%s</span>', 'twentynineteen' ),
-					array(
-						'span' => array(
-							'class' => array(),
-						),
-					)
-				),
-				get_the_title()
-			),
-			'<span class="edit-link">' . twentynineteen_get_icon_svg( 'edit', 16 ),
-			'</span>'
-		);
 	}
+
+	// Comment count.
+	if ( ! is_singular() ) {
+		twentynineteen_comment_count();
+	}
+
+	// Edit post link.
+	edit_post_link(
+		sprintf(
+			wp_kses(
+				/* translators: %s: Name of current post. Only visible to screen readers. */
+				__( 'Edit <span class="screen-reader-text">%s</span>', 'twentynineteen' ),
+				array(
+					'span' => array(
+						'class' => array(),
+					),
+				)
+			),
+			get_the_title()
+		),
+		'<span class="edit-link">' . twentynineteen_get_icon_svg( 'edit', 16 ),
+		'</span>'
+	);
+}
