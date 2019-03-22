@@ -35,7 +35,7 @@ get_header();
 			]);
 
 			?>
-			<article class="entry">
+			<article class="entry the-questions">
 				<div class="entry-content">
 					<ul class="questions">
 				<?php

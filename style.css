@@ -379,3 +379,7 @@ a:active {
   background: var(--color-blue-3);
 }
 */
+
+.the-questions {
+	margin-top: 0;
+}
