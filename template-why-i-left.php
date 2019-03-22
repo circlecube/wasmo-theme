@@ -42,38 +42,38 @@ get_header();
 	//user loop
 	foreach ( $users as $user ) { 
 		$userid = $user->ID;
+		if ( '' !== get_field( 'why_i_left', 'user_' . $userid ) ) {
+			// questions loop
+			// answer
+			$the_answers .= '<div class="answer answer-' . $userid . '">';
+			$the_answers .= '<blockquote>';
+			$the_answers .= wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) );
+			$the_answers .= '</blockquote>';
 
-		// questions loop
-		// answer
-		$the_answers .= '<div class="answer answer-' . $userid . '">';
-		$the_answers .= '<blockquote>';
-		$the_answers .= wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) );
-		$the_answers .= '</blockquote>';
+			// user attribution - photo and name and link (only if they want to be listed in directory)
+			if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ||
+				'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
+				
+				$userimg = get_field( 'photo', 'user_' . $userid );
+				$username = esc_html( $user->nickname );
 
-		// user attribution - photo and name and link (only if they want to be listed in directory)
-		if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ||
-			'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
-			
-			$userimg = get_field( 'photo', 'user_' . $userid );
-			$username = esc_html( $user->nickname );
-
-			$the_answers .= '<cite>';
-			$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
-			$the_answers .= '<span class="directory-img">';
-			if ( $userimg ) {
-				$the_answers .= wp_get_attachment_image( $userimg, 'medium' );
-			} else {
-				$the_answers .= '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+				$the_answers .= '<cite>';
+				$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
+				$the_answers .= '<span class="directory-img">';
+				if ( $userimg ) {
+					$the_answers .= wp_get_attachment_image( $userimg, 'medium' );
+				} else {
+					$the_answers .= '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+				}
+				$the_answers .= '</span>';
+				$the_answers .= '<span class="directory-name">' . $username . '</span>';
+				$the_answers .= '</a>';
+				$the_answers .= '</cite>';
+				
 			}
-			$the_answers .= '</span>';
-			$the_answers .= '<span class="directory-name">' . $username . '</span>';
-			$the_answers .= '</a>';
-			$the_answers .= '</cite>';
-			
+
+			$the_answers .= '</div>';
 		}
-
-		$the_answers .= '</div>';
-
 	}
 	// set_transient( $transient_name, $the_answers, 24 * HOUR_IN_SECONDS );
 // }

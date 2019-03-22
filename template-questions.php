@@ -38,6 +38,7 @@ get_header();
 			<article class="entry the-questions">
 				<div class="entry-content">
 					<ul class="questions">
+						<li><a href="<?php echo home_url( '/why-i-left/' ); ?>" class="question">Why I left?</a></li>
 				<?php
 				// Array of WP_Term objects.
 				foreach ( $terms as $term ) { 

@@ -53,12 +53,12 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 				$termtaxid = get_sub_field( 'question', 'users_' . $userid );
 
 				//check if they answered this question
-				if ( $termtaxid === $termid ) {
+				if ( $termtaxid === $termid && '' != get_sub_field( 'answer', 'user_' . $userid ) ) {
 
 					// answer
 					$the_answers .= '<div class="answer answer-' . $userid . '">';
 					$the_answers .= '<blockquote>';
-					$the_answers .= wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
+					$the_answers .= wp_kses_post( get_sub_field( 'answer', 'user_' . $userid ) );
 					$the_answers .= '</blockquote>';
 
 					// user attribution - photo and name and link (only if they want to be listed in directory)
