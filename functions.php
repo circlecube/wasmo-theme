@@ -101,7 +101,7 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$login = '<li class="lwa lwa-template-modal"><a class="lwa-links-modal" href="' . home_url('/wp-login.php?itsec-hb-token=bagpress') . '">' . __("Log In") . '</a></li>';
+		$login = '<li><a href="' . home_url('/login/') . '">' . __("Log In") . '</a></li>';
 		$logout = '<li><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
 		$profile = '<li><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
 		if ( is_user_logged_in() ) {
