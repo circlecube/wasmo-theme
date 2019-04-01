@@ -1,18 +1,30 @@
 <?php
 
 // Enqueue styles - get parent theme styles first.
-function my_theme_enqueue_styles() {
+function wasmo_enqueue() {
 
     $parent_style = 'parent-style'; // This is 'twentynineteen-style' for the Twenty Nineteen theme.
 
-    wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css' );
-    wp_enqueue_style( 'child-style',
+    wp_enqueue_style( 
+		$parent_style, 
+		get_template_directory_uri() . '/style.css'
+	);
+    wp_enqueue_style( 
+		'wasmo-style',
         get_stylesheet_directory_uri() . '/style.css',
         array( $parent_style ),
         wp_get_theme()->get('Version')
-    );
+	);
+	
+	wp_enqueue_script( 
+		'wasmo-script', 
+		get_stylesheet_directory_uri() . '/js/script.js', 
+		array ( 'jquery' ), 
+		wp_get_theme()->get('Version'),
+		true
+	);
 }
-add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
 
 
 // theme mods
@@ -101,7 +113,7 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$login = '<li><a href="' . home_url('/login/') . '">' . __("Log In") . '</a></li>';
+		$login = '<li><a href="' . home_url('/login/') . '" class="nav-login">' . __("Log In") . '</a></li>';
 		$logout = '<li><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
 		$profile = '<li><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
 		if ( is_user_logged_in() ) {
