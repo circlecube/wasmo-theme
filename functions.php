@@ -310,7 +310,7 @@ function wasmo_entry_footer() {
 	if ( 'post' === get_post_type() ) {
 
 		// Posted by
-		//twentynineteen_posted_by();
+		//twentynineteen_posted_by(); // hide author
 
 		// Posted on
 		twentynineteen_posted_on();
