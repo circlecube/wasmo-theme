@@ -94,6 +94,9 @@
 .site-footer {
 	background: var(--color-gray3);
 }
+.jetpack_widget_social_icons svg {
+	color: var(--color-gray2);
+}
 
 /* menu visibility toggles */
 .menu-item.not-logged-in {
