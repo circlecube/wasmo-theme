@@ -94,7 +94,7 @@
 .site-footer {
 	background: var(--color-gray3);
 }
-.jetpack_widget_social_icons svg {
+.jetpack_widget_social_icons svg.icon {
 	color: var(--color-gray2);
 }
 
