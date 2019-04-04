@@ -250,17 +250,22 @@ function wasmo_update_user( $post_id ) {
 
 	// notify email
 	$notify_mail_to = get_bloginfo( 'admin_email' );
-	$notify_mail_subject = 'User Profile Updated - ' . $user_id;
+	$sitename = get_bloginfo( 'name' );
 	$user_info = get_userdata( $user_id );
 	$user_loginname = $user_info->user_login;
 	$user_nicename = $user_info->user_nicename;
-	$headers = 'From: '. $user_infop->user_email . "\r\n" .
-    'Reply-To: ' . $notify_mail_to;
-	$notify_mail_message = $user_nicename . '(' . $user_loginname . ') has just updated thier user profile:' . get_author_posts_url( $user_id );
-	wp_mail( $to, $subject, $message, $headers );
+	$headers = 'From: '. $notify_mail_to;
+	$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
+	$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
+
+' . get_author_posts_url( $user_id ) . '
+
+Best,
+'. $sitename;
+	wp_mail( $notify_mail_to, $notify_mail_subject, $notify_mail_message, $headers );
 
 }
-add_action( 'acf/save_post', 'wasmo_update_user', 5 );
+add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
