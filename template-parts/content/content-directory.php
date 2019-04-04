@@ -43,7 +43,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			$userimg = get_field( 'photo', 'user_' . $userid );
 			$username = esc_html( $user->nickname );
 
-			$the_directory .= '<a class="person person-' . $userid . '" href="' . get_author_posts_url( $userid ) . '>">';
+			$the_directory .= '<a class="person person-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
 				$the_directory .= '<span class="directory-img">';
 					if ( $userimg ) {
 						$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
