@@ -28,64 +28,7 @@ get_header();
 	</header>
 	<?php endif; ?>
 
-	<?php
-	// Directory transient
-
-//define transient name - taxid + user state.
-$transient_name = 'directory-' . is_user_logged_in();
-if ( current_user_can('administrator') && WP_DEBUG ) {
-	$transient_name = time();
-}
-//use transient to cache data
-if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
-	$the_directory = 'test';
-	set_transient( $transient_name, $the_directory, 24 * HOUR_IN_SECONDS );
-}
-
-	/* Start the Loop */
-	$args = array(
-		'orderby'      => 'meta_value',
-		'meta_key'     => 'last_save',
-		'order'        => 'DESC',
-		'fields'       => 'all',
-	); 
-	$users = get_users( $args );
-
-	?>
-	<section class="entry-content the-directory">
-		<div class="directory">
-
-		<?php
-		// Array of WP_User objects.
-		foreach ( $users as $user ) { 
-			$userid = $user->ID;
-
-			// only add to directory if user includes themself and has filled out the first two fields
-			// true = public
-			// private = only to a logged in user
-			if ( get_field( 'hi', 'user_' . $userid ) && 
-				get_field( 'tagline', 'user_' . $userid ) &&
-				'true' === get_field( 'in_directory', 'user_' . $userid ) ||
-				'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
-				$userimg = get_field( 'photo', 'user_' . $userid );
-				$username = esc_html( $user->nickname );
-			?>
-			<a class="person person-<?php echo $userid; ?>" href="<?php echo get_author_posts_url( $userid ); ?>">
-				<span class="directory-img"><?php 
-					if ( $userimg ) {
-						echo wp_get_attachment_image( $userimg, 'medium' );
-					} else {
-						echo '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
-					}
-				?></span>
-				<span class="directory-name"><?php echo $username; ?></span>
-			</a>
-			<?php 
-			}
-		}
-		?>
-		</div>
-	</section>
+	<?php get_template_part( 'template-parts/content/content', 'directory' ); ?>
 
 	<div class="entry-content">
 		<?php
