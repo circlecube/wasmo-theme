@@ -2,8 +2,12 @@
 // Directory
 
 // define transient name - taxid + user state.
-$transient_name = 'directory-' . is_user_logged_in();
-$transient_exp = 24 * HOUR_IN_SECONDS;
+if ( is_user_logged_in() ) {
+	$transient_name = 'directory-private';
+} else {
+	$transient_name = 'directory-public';
+}
+$transient_exp = 7 * 24 * HOUR_IN_SECONDS; // 1 week
 // debug
 // if ( current_user_can('administrator') && WP_DEBUG ) {
 // 	$transient_name = time();

@@ -240,8 +240,8 @@ function wasmo_update_user( $post_id ) {
 	update_user_meta( $user_id, 'last_save', time() );
 
 	// clear directory transients
-	delete_transient( 'directory-1' );
-	delete_transient( 'directory-0' );
+	delete_transient( 'directory-private' );
+	delete_transient( 'directory-public' );
 
 	// update question counts if user includes any
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
