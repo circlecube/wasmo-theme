@@ -238,7 +238,7 @@ function wasmo_update_user( $post_id ) {
 	// update last_save timestamp for this user
 	$user_id = intval( substr( $post_id, 5 ) );
 	update_user_meta( $user_id, 'last_save', time() );
-	
+
 	// clear directory transients
 	delete_transient( 'directory-1' );
 	delete_transient( 'directory-0' );
@@ -247,6 +247,17 @@ function wasmo_update_user( $post_id ) {
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
 		wasmo_update_user_question_count();
 	}
+
+	// notify email
+	$notify_mail_to = get_bloginfo( 'admin_email' );
+	$notify_mail_subject = 'User Profile Updated - ' . $user_id;
+	$user_info = get_userdata( $user_id );
+	$user_loginname = $user_info->user_login;
+	$user_nicename = $user_info->user_nicename;
+	$headers = 'From: '. $user_infop->user_email . "\r\n" .
+    'Reply-To: ' . $notify_mail_to;
+	$notify_mail_message = $user_nicename . '(' . $user_loginname . ') has just updated thier user profile:' . get_author_posts_url( $user_id );
+	wp_mail( $to, $subject, $message, $headers );
 
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 5 );

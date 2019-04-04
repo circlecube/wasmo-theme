@@ -3,6 +3,7 @@
 
 // define transient name - taxid + user state.
 $transient_name = 'directory-' . is_user_logged_in();
+$transient_exp = 24 * HOUR_IN_SECONDS;
 // debug
 // if ( current_user_can('administrator') && WP_DEBUG ) {
 // 	$transient_name = time();
@@ -53,6 +54,6 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$the_directory .= '</div>';
 	$the_directory .= '</section>';
 
-	set_transient( $transient_name, $the_directory, 24 * HOUR_IN_SECONDS );
+	set_transient( $transient_name, $the_directory, $transient_exp );
 }
 echo $the_directory;
