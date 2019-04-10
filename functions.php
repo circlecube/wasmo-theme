@@ -379,3 +379,9 @@ function wasmo_entry_footer() {
 		'</span>'
 	);
 }
+
+
+function wasmo_excerpt_link() {
+    return '<a class="more-link button button-small" href="' . get_permalink() . '">Read more</a>';
+}
+add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
