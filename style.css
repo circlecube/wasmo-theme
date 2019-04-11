@@ -401,10 +401,10 @@ cite span {
 .blog-main article.post .post-thumbnail {
 	margin-top: 1rem;
 }
-.image-filters-enabled .entry .post-thumbnail {
+.entry .post-thumbnail {
 	margin-bottom: 0;
 }
-.image-filters-enabled .entry .post-thumbnail .post-thumbnail-inner {
+.entry .post-thumbnail .post-thumbnail-inner {
 	filter: none;
 	width: 100%;
     overflow: hidden;
@@ -412,8 +412,7 @@ cite span {
     height: 0;
     padding-top: 56%;
 }
-
-.image-filters-enabled .entry .post-thumbnail .post-thumbnail-inner img {
+.entry .post-thumbnail .post-thumbnail-inner img {
 	object-fit: cover;
 	object-position: center center;
 	position: absolute;
@@ -426,6 +425,19 @@ cite span {
 }
 .image-filters-enabled .entry .post-thumbnail:after {
 	content: none;
+}
+
+.widget .recent_posts {
+	list-style: none;
+	margin: 0 0 2rem;
+	padding: 0;
+}
+.widget .recent_posts h3 {
+	margin-top: 0;
+	font-size: 1.5em;
+}
+.widget .recent_posts .post-thumbnail {
+	margin: 0;
 }
 
 /* footer widget / lwa modal */

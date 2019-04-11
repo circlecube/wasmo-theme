@@ -1,12 +1,14 @@
 <?php
 
 require_once( get_stylesheet_directory() . '/includes/wasmo-directory-widget.php' );
+require_once( get_stylesheet_directory() . '/includes/wasmo-posts-widget.php' );
 
 // register Foo_Widget widget
-function register_directory_widget() {
+function register_wasmo_widgets() {
     register_widget( 'wasmo\Directory_Widget' );
+    register_widget( 'wasmo\Posts_Widget' );
 }
-add_action( 'widgets_init', 'register_directory_widget' );
+add_action( 'widgets_init', 'register_wasmo_widgets' );
 
 // Enqueue styles - get parent theme styles first.
 function wasmo_enqueue() {
@@ -141,6 +143,7 @@ if ( ! function_exists( 'wasmo_setup' ) ) :
 				'utility' => __( 'Utility Menu', 'twentynineteen' ),
 			)
 		);
+		set_theme_mod( 'image_filter', 0 );
 	}
 endif;
 
