@@ -83,7 +83,6 @@ function cptui_register_my_taxes() {
 				'delete_terms'  => 'edit_posts',
 				'assign_terms'  => 'edit_posts'
 			)
-		);
 	);
 	register_taxonomy( "question", array( "post" ), $args );
 
