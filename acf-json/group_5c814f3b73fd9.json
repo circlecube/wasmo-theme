@@ -291,6 +291,28 @@
             "ajax": 0,
             "return_format": "value",
             "placeholder": ""
+        },
+        {
+            "key": "field_5cadf1eccb472",
+            "label": "Spectrum",
+            "name": "spectrum",
+            "type": "taxonomy",
+            "instructions": "Where are you on the spectrum? (add \"labels\" as needed)",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "spectrum",
+            "field_type": "multi_select",
+            "allow_null": 0,
+            "add_term": 1,
+            "save_terms": 1,
+            "load_terms": 1,
+            "return_format": "id",
+            "multiple": 0
         }
     ],
     "location": [
@@ -325,5 +347,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1553002733
+    "modified": 1554903603
 }

@@ -194,8 +194,28 @@ body.logged-in .menu-item.logged-in {
 	opacity: 0;
 	transition: all .2s ease;
 }
-
-
+/* directory widget */
+.widget .the-directory {
+	max-width: 90%;
+	margin: 0 auto 2rem;
+}
+.widget .the-directory .directory .person {
+	width: 30%;
+	padding-top: 30%;
+}
+@media only screen and (min-width: 768px) { /* desktop - sidebar */
+	.widget .the-directory {
+		max-width: 100%;
+		margin: 0 auto 2rem;
+	}
+	.widget .the-directory .directory .person {
+		width: 30%;
+		padding-top: 30%;
+	}
+	.widget .directory .person:hover .directory-name {
+		opacity: 0;
+	}
+}
 
 
 /* profile */

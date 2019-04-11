@@ -1,14 +1,25 @@
 <?php
 // Directory
 
+if ( 'widget' !== $context ) {
+	$context = 'full';
+}
+
 // define transient name - taxid + user state.
 if ( is_user_logged_in() ) {
-	$transient_name = 'directory-private';
+	$state = 'private';
 } else {
-	$transient_name = 'directory-public';
+	$state = 'public';
 }
-$transient_exp = 7 * 24 * HOUR_IN_SECONDS; // 1 week
+
+$transient_name = 'directory-'.$state.'-'.$context;
+$transient_exp = 7 * 24 * HOUR_IN_SECONDS; // one week
+
 // debug
+// delete_transient( 'directory-private-full' );
+// delete_transient( 'directory-public-full' );
+// delete_transient( 'directory-private-widget' );
+// delete_transient( 'directory-public-widget' );
 // if ( current_user_can('administrator') && WP_DEBUG ) {
 // 	$transient_name = time();
 // }
@@ -22,16 +33,18 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		'meta_key'     => 'last_save',
 		'order'        => 'DESC',
 		'fields'       => 'all',
-	); 
+	);
+	// if ( 'widget' === $context ) {
+		// $args['number'] = 10;
+	// }
 	$users = get_users( $args );
 
 	$the_directory .= '<section class="entry-content the-directory">';
 	$the_directory .= '<div class="directory">';
-
+	$counter = 0;
 	// Array of WP_User objects.
 	foreach ( $users as $user ) { 
 		$userid = $user->ID;
-
 		// only add to directory if user includes themself and has filled out the first two fields
 		// true = public
 		// private = only to a logged in user
@@ -39,11 +52,12 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			get_field( 'tagline', 'user_' . $userid ) &&
 			'true' === get_field( 'in_directory', 'user_' . $userid ) ||
 			'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
-
+			
+			$counter++;
 			$userimg = get_field( 'photo', 'user_' . $userid );
 			$username = esc_html( $user->nickname );
 
-			$the_directory .= '<a class="person person-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
+			$the_directory .= '<a class="person person-' . $counter . ' person-id-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
 				$the_directory .= '<span class="directory-img">';
 					if ( $userimg ) {
 						$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
@@ -53,6 +67,12 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 				$the_directory .= '</span>';
 				$the_directory .= '<span class="directory-name">' . $username . '</span>';
 			$the_directory .= '</a>';
+		}
+
+		// only include 9 if a widget
+		if ( 'widget' === $context &&
+			$counter >= 9 ) {
+			break;
 		}
 	}
 	$the_directory .= '</div>';

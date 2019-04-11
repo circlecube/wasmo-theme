@@ -1,5 +1,13 @@
 <?php
 
+require_once( get_stylesheet_directory() . '/includes/wasmo-directory-widget.php' );
+
+// register Foo_Widget widget
+function register_directory_widget() {
+    register_widget( 'wasmo\Directory_Widget' );
+}
+add_action( 'widgets_init', 'register_directory_widget' );
+
 // Enqueue styles - get parent theme styles first.
 function wasmo_enqueue() {
 
@@ -76,10 +84,38 @@ function cptui_register_my_taxes() {
 				'assign_terms'  => 'edit_posts'
 			)
 		);
+	);
 	register_taxonomy( "question", array( "post" ), $args );
+
+	/**
+	 * Taxonomy: Spectrum.
+	 */
+
+	$labels = array(
+		"name" => __( "Spectrum", "wasmo" ),
+		"singular_name" => __( "Spectrum", "wasmo" ),
+	);
+
+	$args = array(
+		"label" => __( "Spectrum", "wasmo" ),
+		"labels" => $labels,
+		"public" => true,
+		"publicly_queryable" => true,
+		"hierarchical" => false,
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'spectrum', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => true,
+		"rest_base" => "spectrum",
+		"rest_controller_class" => "WP_REST_Terms_Controller",
+		"show_in_quick_edit" => false,
+	);
+	register_taxonomy( "spectrum", array( "post", "user" ), $args );
 }
 add_action( 'init', 'cptui_register_my_taxes' );
-
 
 
 function wasmo_widgets_init() {
@@ -240,8 +276,10 @@ function wasmo_update_user( $post_id ) {
 	update_user_meta( $user_id, 'last_save', time() );
 
 	// clear directory transients
-	delete_transient( 'directory-private' );
-	delete_transient( 'directory-public' );
+	delete_transient( 'directory-private-full' );
+	delete_transient( 'directory-public-full' );
+	delete_transient( 'directory-private-widget' );
+	delete_transient( 'directory-public-widget' );
 
 	// update question counts if user includes any
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
