@@ -151,13 +151,16 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$login = '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . __("Join or Log In") . '</a></li>';
-		$logout = '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
-		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
+		$edit_svg = twentynineteen_get_icon_svg( 'edit', 26 );
+		$user_svg = twentynineteen_get_icon_svg( 'person', 26 );
+		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $user_svg . __("Join or Log In") . '</a></li>';
+		$logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
+		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">' . $user_svg . 'View</a></li>';
+		$edit =    '<li class="edit"><a href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
 		if ( is_user_logged_in() ) {
-			$items = $profile . $items . $logout;
+			$items = $profile . $edit . $logout;
 		} else {
-			$items .= $login;
+			$items = $login;
 		}
 	}
 	return $items;
