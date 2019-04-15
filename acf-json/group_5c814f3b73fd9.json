@@ -3,6 +3,60 @@
     "title": "Was Mormon Profile",
     "fields": [
         {
+            "key": "field_5cb48fcbb16dd",
+            "label": "Profile",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5c815b51df649",
+            "label": "Hi",
+            "name": "hi",
+            "type": "text",
+            "instructions": "Quick introductions.\r\n\r\nFor example: Hi, I'm Joe.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "Hi,",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c815af4df648",
+            "label": "Tagline",
+            "name": "tagline",
+            "type": "text",
+            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "... I was a mormon.",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
             "key": "field_5c815b7edf64a",
             "label": "Photo",
             "name": "photo",
@@ -27,11 +81,11 @@
             "mime_types": ""
         },
         {
-            "key": "field_5c815b51df649",
-            "label": "Hi",
-            "name": "hi",
+            "key": "field_5c87a1f5c2b0c",
+            "label": "Location",
+            "name": "location",
             "type": "text",
-            "instructions": "Quick introductions.\r\n\r\nFor example: Hi, I'm Joe.",
+            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -40,26 +94,7 @@
                 "id": ""
             },
             "default_value": "",
-            "placeholder": "Hi,",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
-            "key": "field_5c815af4df648",
-            "label": "Tagline",
-            "name": "tagline",
-            "type": "text",
-            "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "... I was a mormon.",
+            "placeholder": "",
             "prepend": "",
             "append": "",
             "maxlength": ""
@@ -82,25 +117,6 @@
             "maxlength": "",
             "rows": 6,
             "new_lines": "wpautop"
-        },
-        {
-            "key": "field_5c87a1f5c2b0c",
-            "label": "Location",
-            "name": "location",
-            "type": "text",
-            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
         },
         {
             "key": "field_5c815ad1df647",
@@ -196,7 +212,7 @@
                 "class": "",
                 "id": ""
             },
-            "layout": "block",
+            "layout": "row",
             "sub_fields": [
                 {
                     "key": "field_5c87a7c3a86a5",
@@ -281,6 +297,82 @@
             ]
         },
         {
+            "key": "field_5cadf1eccb472",
+            "label": "Spectrum",
+            "name": "spectrum",
+            "type": "taxonomy",
+            "instructions": "Where are you on the spectrum? (add \"labels\" as needed)",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "spectrum",
+            "field_type": "multi_select",
+            "allow_null": 0,
+            "add_term": 1,
+            "save_terms": 1,
+            "load_terms": 1,
+            "return_format": "id",
+            "multiple": 0
+        },
+        {
+            "key": "field_5cb48fbcb16dc",
+            "label": "Settings",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5cb486045a336",
+            "label": "Display Name",
+            "name": "display_name",
+            "type": "text",
+            "instructions": "This is the name used along with your photo on various places in the site such as the directory. It's nice to match the with your name used in your introduction.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5cb486165a337",
+            "label": "Profile Id",
+            "name": "profile_id",
+            "type": "text",
+            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
             "key": "field_5c815bccdf64c",
             "label": "Include me in the directory?",
             "name": "in_directory",
@@ -307,28 +399,6 @@
             "ajax": 0,
             "return_format": "value",
             "placeholder": ""
-        },
-        {
-            "key": "field_5cadf1eccb472",
-            "label": "Spectrum",
-            "name": "spectrum",
-            "type": "taxonomy",
-            "instructions": "Where are you on the spectrum? (add \"labels\" as needed)",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "taxonomy": "spectrum",
-            "field_type": "multi_select",
-            "allow_null": 0,
-            "add_term": 1,
-            "save_terms": 1,
-            "load_terms": 1,
-            "return_format": "id",
-            "multiple": 0
         }
     ],
     "location": [
@@ -363,5 +433,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1555334029
+    "modified": 1555337224
 }

@@ -272,10 +272,51 @@ function wasmo_get_lastlogin() {
 // add_action('personal_options_update', 'wasmo_update_extra_profile_fields'); // own profile
 // add_action('edit_user_profile_update', 'update_extra_profile_fields'); // other profiles
 
+function get_default_display_name_value($value, $post_id, $field) {
+	if ( $value === NULL || $value === '' ) {
+		$user_id = intval( substr( $post_id, 5 ) );
+		$user_info = get_userdata( $user_id );
+		$user_displayname = $user_info->display_name;
+		
+		$value = $user_displayname;
+	}
+	return $value;
+}
+add_filter('acf/load_value/name=display_name', 'get_default_display_name_value', 20, 3);
+
+function get_default_profile_id_value($value, $post_id, $field) {
+	if ( $value === NULL || $value === '' ) {
+		$user_id = intval( substr( $post_id, 5 ) );
+		$user_info = get_userdata( $user_id );
+		$user_nicename = $user_info->user_nicename;
+		
+		$value = $user_nicename;
+	}
+	return $value;
+}
+add_filter('acf/load_value/name=profile_id', 'get_default_profile_id_value', 20, 3);
+
 function wasmo_update_user( $post_id ) {
+	// only for users - skip for posts etc
 	if ( strpos( $post_id, 'user_' ) !== 0 ) {
 		return;
 	}
+
+	$user_id = intval( substr( $post_id, 5 ) );
+
+	// update user nicename/displayname from acf fields
+	wp_update_user( array( 
+		'ID' => $user_id, 
+		'user_nicename' => sanitize_title( get_field( 'profile_id', 'user_'. $user_id ) ),
+		'display_name' => sanitize_text_field( get_field( 'display_name', 'user_'. $user_id ) )
+	) );
+	// resave values back ot user acf fields
+	$user_info = get_userdata( $user_id );
+	$user_loginname = $user_info->user_login;
+	$user_displayname = $user_info->display_name;
+	$user_nicename = $user_info->user_nicename;
+	update_field( 'display_name', $user_displayname, 'user_' . $user_id );
+	update_field( 'profile_id', $user_nicename, 'user_' . $user_id );
 
 	// clear directory transients
 	delete_transient( 'directory-private-full' );
@@ -295,7 +336,6 @@ function wasmo_update_user( $post_id ) {
 	}
 
 	// update last_save timestamp for this user
-	$user_id = intval( substr( $post_id, 5 ) );
 	update_user_meta( $user_id, 'last_save', time() );
 
 	//increment save_count
@@ -309,9 +349,6 @@ function wasmo_update_user( $post_id ) {
 	// notify email
 	$notify_mail_to = get_bloginfo( 'admin_email' );
 	$sitename = get_bloginfo( 'name' );
-	$user_info = get_userdata( $user_id );
-	$user_loginname = $user_info->user_login;
-	$user_nicename = $user_info->user_nicename;
 	$headers = 'From: '. $notify_mail_to;
 	$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
 	$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
@@ -328,6 +365,8 @@ ___
 	$notify_mail_message .= ob_get_clean();
 	wp_mail( $notify_mail_to, $notify_mail_subject, $notify_mail_message, $headers );
 
+	wp_redirect( get_author_posts_url( $user_id ), 301);
+	exit;
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
