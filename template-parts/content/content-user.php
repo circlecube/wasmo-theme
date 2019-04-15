@@ -43,6 +43,13 @@
 					echo esc_url( $links['instagram'] ); 
 				?>"><span class="screen-reader-text">instagram</span><?php echo $svg; ?></a></li>
 			<?php } ?>
+			<?php if ( $links['reddit'] ) {
+				$svg = twentynineteen_get_social_link_svg( $links['reddit'], 26 );
+			?>
+				<li class="reddit"><a target="_blank" rel="noopener noreferrer" href="<?php 
+					echo esc_url( $links['reddit'] ); 
+				?>"><span class="screen-reader-text">reddit</span><?php echo $svg; ?></a></li>
+			<?php } ?>
 			<?php if ( $links['twitter'] ) {
 				$svg = twentynineteen_get_social_link_svg( $links['twitter'], 26 );
 			?>

@@ -215,9 +215,9 @@
                     "placeholder": ""
                 },
                 {
-                    "key": "field_5c87a87ba86a8",
-                    "label": "Instagram",
-                    "name": "instagram",
+                    "key": "field_5c87a7d8a86a6",
+                    "label": "Twitter",
+                    "name": "twitter",
                     "type": "url",
                     "instructions": "",
                     "required": 0,
@@ -231,9 +231,25 @@
                     "placeholder": ""
                 },
                 {
-                    "key": "field_5c87a7d8a86a6",
-                    "label": "Twitter",
-                    "name": "twitter",
+                    "key": "field_5cb4833aca24f",
+                    "label": "Reddit",
+                    "name": "reddit",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
+                    "key": "field_5c87a87ba86a8",
+                    "label": "Instagram",
+                    "name": "instagram",
                     "type": "url",
                     "instructions": "",
                     "required": 0,
@@ -347,5 +363,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1554903603
+    "modified": 1555334029
 }
