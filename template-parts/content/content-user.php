@@ -81,7 +81,18 @@
 	<div class="about_me"><?php echo wp_kses_post( get_field( 'about_me', 'user_' . $userid ) ); ?></div>
 <?php } ?>
 
-
+<?php 
+$spectrum_terms = get_field( 'spectrum', 'user_' . $userid );
+if ( $spectrum_terms ) { ?>
+	<h4>On the Mormon Spectrum</h4>
+	<ul class="tags">
+	<?php foreach( $spectrum_terms as $term ): ?>
+		<li><span class="tag"><?php echo $term->name; ?></span></li>
+		<?php /* <a href="<?php echo get_term_link( $term ); ?>">View all '<?php echo $term->name; ?>' posts</a> */ ?>
+	<?php endforeach; ?>
+	</ul>
+<?php } 
+?>
 
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
 	<h3>Why I left</h3>
@@ -113,6 +124,7 @@ else :
     // no questions found
 endif;
 ?>
+
 <div class="content-footer">
 	<?php 
 		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));

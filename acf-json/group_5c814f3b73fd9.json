@@ -301,7 +301,7 @@
             "label": "Spectrum",
             "name": "spectrum",
             "type": "taxonomy",
-            "instructions": "Where are you on the spectrum? (add \"labels\" as needed)",
+            "instructions": "Where are you on the spectrum? (add more as needed)",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -315,7 +315,7 @@
             "add_term": 1,
             "save_terms": 1,
             "load_terms": 1,
-            "return_format": "id",
+            "return_format": "object",
             "multiple": 0
         },
         {
@@ -433,5 +433,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1555342055
+    "modified": 1555343173
 }
