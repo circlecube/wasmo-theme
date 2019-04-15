@@ -115,6 +115,7 @@ endif;
 		$last_login_rel = human_time_diff( $last_login );
 		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
 		$last_save_rel = human_time_diff( $last_save );
+		$save_count = intval( get_user_meta( $userid, 'save_count', true ) );
 	?>
 	<span class="user-meta" 
 		data-key="member-since" 
@@ -130,6 +131,10 @@ endif;
 		data-key="last-save" 
 		data-value="<?php echo esc_attr( $last_save ); ?>"
 		data-relval="<?php echo esc_attr( $last_save_rel ); ?>">
+	</span>
+	<span class="user-meta" 
+		data-key="save-count" 
+		data-value="<?php echo esc_attr( $save_count ); ?>">
 	</span>
 
 
