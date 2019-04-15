@@ -358,7 +358,7 @@
             "label": "Profile Id",
             "name": "profile_id",
             "type": "text",
-            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username.",
+            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username. This must also be unique, so if there is another 'bob-smith' you cannot use the same, and it will automatically update to 'bob-smith-2'. Note that changing this will break any external links to your current profile.",
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
@@ -433,5 +433,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1555337224
+    "modified": 1555342055
 }
