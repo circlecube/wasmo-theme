@@ -151,9 +151,9 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$login = '<li><a href="' . home_url('/login/') . '" class="nav-login">' . __("Log In") . '</a></li>';
-		$logout = '<li><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
-		$profile = '<li><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
+		$login = '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . __("Join or Log In") . '</a></li>';
+		$logout = '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
+		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">View</a></li>';
 		if ( is_user_logged_in() ) {
 			$items = $profile . $items . $logout;
 		} else {
