@@ -169,7 +169,7 @@ add_filter( 'wp_nav_menu_items', 'wasmo_loginout_menu_link', 10, 2 );
 
 
 function wasmo_login_redirect_page() {
-  return home_url('/directory/');
+  return home_url('/edit/');
 }
 add_filter('login_redirect', 'wasmo_login_redirect_page');
 
@@ -200,7 +200,7 @@ add_filter('wpseo_title', 'wasmo_filter_product_wpseo_title');
 
 
 /**
- * Plugin Name: Multisite: Passwort Reset on Local Blog
+ * Plugin Name: Multisite: Password Reset on Local Blog
  * Plugin URI:  https://gist.github.com/eteubert/293e07a49f56f300ddbb
  * Description: By default, WordPress Multisite uses the main blog for passwort resets. This plugin enables users to stay in their blog during the whole reset process.
  * Version:     1.0.0
@@ -343,7 +343,7 @@ function wasmo_update_user( $post_id ) {
 	if ('' === $save_count ) {
 		$save_count = 0;
 	}
-	$save_count++;
+	$save_count = intval($save_count) + 1;
 	update_user_meta( $user_id, 'save_count', $save_count );
 
 	// notify email
@@ -369,6 +369,44 @@ ___
 	exit;
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
+
+function wasmo_register_add_meta($user_id) { 
+	add_user_meta( $user_id, 'has_received_welcome', false );
+}
+add_action( 'user_register', 'wasmo_register_add_meta' );
+
+function wasmo_first_user_login( $user_login, $user ) {
+	$user_id = $user->ID;
+	$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
+	if ( '' === $has_received_welcome ) {
+		$sitename = get_bloginfo( 'name' );
+		$sitemail = get_bloginfo( 'admin_email' );
+		$user_info = get_userdata( $user_id );
+		// $user_loginname = $user_info->user_login;
+		$user_displayname = $user_info->display_name;
+		// $user_nicename = $user_info->user_nicename;
+		$welcome_mail_to = $user_info->user_email;
+		$welcome_headers = 'From: '. $sitemail;
+		$welcome_mail_subject = 'Welcome to '.$sitename;
+		$welcome_mail_message = $user_displayname . ', 
+
+Welcome to ' . $sitename . '! We\'re glad you\'ve joined. Visit the following links (also found in the site header when you\'re logged in).
+
+	Edit your proflie: '.home_url('/edit/').'
+	View/share your profile: '. get_author_posts_url( $user_id ) .'
+
+We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site.
+
+Best,
+'. $sitename;
+		wp_mail( $welcome_mail_to, $welcome_mail_subject, $welcome_mail_message, $welcome_headers );
+		// set that user has received welcome email
+		update_user_meta( $user_id, 'has_received_welcome', true );
+	}
+}
+add_action('wp_login', 'wasmo_first_user_login', 10, 2);
+
+
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
