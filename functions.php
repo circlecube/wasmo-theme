@@ -151,8 +151,8 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$edit_svg = twentynineteen_get_icon_svg( 'edit', 26 );
-		$user_svg = twentynineteen_get_icon_svg( 'person', 26 );
+		$edit_svg = twentynineteen_get_icon_svg( 'edit', 20 );
+		$user_svg = twentynineteen_get_icon_svg( 'person', 20 );
 		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $user_svg . __("Join or Log In") . '</a></li>';
 		$logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
 		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">' . $user_svg . 'View</a></li>';
