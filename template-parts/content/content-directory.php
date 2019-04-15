@@ -55,7 +55,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			
 			$counter++;
 			$userimg = get_field( 'photo', 'user_' . $userid );
-			$username = esc_html( $user->nickname );
+			$username = esc_html( $user->display_name );
 
 			$the_directory .= '<a class="person person-' . $counter . ' person-id-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
 				$the_directory .= '<span class="directory-img">';
