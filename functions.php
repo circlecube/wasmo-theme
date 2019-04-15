@@ -270,12 +270,9 @@ function wasmo_get_lastlogin() {
 // add_action('edit_user_profile_update', 'update_extra_profile_fields'); // other profiles
 
 function wasmo_update_user( $post_id ) {
-	if ( strpos( $post_id, 'user_' ) !== 0 )
+	if ( strpos( $post_id, 'user_' ) !== 0 ) {
 		return;
-	
-	// update last_save timestamp for this user
-	$user_id = intval( substr( $post_id, 5 ) );
-	update_user_meta( $user_id, 'last_save', time() );
+	}
 
 	// clear directory transients
 	delete_transient( 'directory-private-full' );
@@ -283,10 +280,28 @@ function wasmo_update_user( $post_id ) {
 	delete_transient( 'directory-private-widget' );
 	delete_transient( 'directory-public-widget' );
 
+	// if user is not admin
+	$current_user = wp_get_current_user();
+	if ( user_can( $current_user, 'administrator' ) ) {
+		return;
+	}
+
 	// update question counts if user includes any
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
 		wasmo_update_user_question_count();
 	}
+
+	// update last_save timestamp for this user
+	$user_id = intval( substr( $post_id, 5 ) );
+	update_user_meta( $user_id, 'last_save', time() );
+
+	//increment save_count
+	$save_count = get_user_meta( $user_id, 'save_count', true );
+	if ('' === $save_count ) {
+		$save_count = 0;
+	}
+	$save_count++;
+	update_user_meta( $user_id, 'save_count', $save_count );
 
 	// notify email
 	$notify_mail_to = get_bloginfo( 'admin_email' );
@@ -297,11 +312,17 @@ function wasmo_update_user( $post_id ) {
 	$headers = 'From: '. $notify_mail_to;
 	$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
 	$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
-
 ' . get_author_posts_url( $user_id ) . '
 
 Best,
-'. $sitename;
+'. $sitename . '
+___
+
+';
+	ob_start();
+	set_query_var( 'userid', $user_id );
+	get_template_part( 'template-parts/content/content', 'user' );
+	$notify_mail_message .= ob_get_clean();
 	wp_mail( $notify_mail_to, $notify_mail_subject, $notify_mail_message, $headers );
 
 }
