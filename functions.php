@@ -526,3 +526,22 @@ function wasmo_excerpt_link() {
     return '<a class="more-link button button-small" href="' . get_permalink() . '">Read more</a>';
 }
 add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
+
+
+add_shortcode( 'wasmo_directory', 'wasmo_directory_shortcode' );
+function wasmo_directory_shortcode( $atts ) {
+	$atts = shortcode_atts( array(
+		'max' => 12,
+		'title' => ''
+	), $atts, 'wasmo_directory' );
+	$directory = '';
+	if ( $atts['title'] !== '' ) {
+		$directory .= '<h3>' . $atts['title'] . '</h3>';
+	}
+	ob_start();
+	set_query_var( 'max_profiles', $atts['max'] );
+	set_query_var( 'context', 'shortcode' );
+	get_template_part( 'template-parts/content/content', 'directory' );
+	$directory .= ob_get_clean();
+    return $directory;
+}

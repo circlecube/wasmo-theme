@@ -142,6 +142,12 @@ body.logged-in .menu-item.logged-in {
 	margin-bottom: 8rem;
 	max-width: 100%;
 }
+.entry .the-directory.directory-shortcode {
+	margin: 0 auto;
+	padding: 0;
+	max-width: 100%;
+	width: 100%;
+}
 .the-directory .directory {
 	width: 100%;
 	max-width: 100%;

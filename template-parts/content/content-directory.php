@@ -1,8 +1,17 @@
 <?php
 // Directory
+$context = get_query_var( 'context' );
+$max_profiles = get_query_var( 'max_profiles' );
 
-if ( 'widget' !== $context ) {
+if ( empty( $context ) ) {
 	$context = 'full';
+	$max_profiles = -1;
+}
+if ( 'widget' === $context ) {
+	$max_profiles = 9;
+}
+if ( empty( $max_profiles ) ) {
+	$max_profiles = 50;
 }
 
 // define transient name - taxid + user state.
@@ -12,14 +21,17 @@ if ( is_user_logged_in() ) {
 	$state = 'public';
 }
 
-$transient_name = 'directory-'.$state.'-'.$context;
+$transient_name = implode('-', array( 'directory', $state, $context, $max_profiles ) );
 $transient_exp = 7 * 24 * HOUR_IN_SECONDS; // one week
 
+delete_transient( 'directory-private-shortcode' );
 // debug
-// delete_transient( 'directory-private-full' );
-// delete_transient( 'directory-public-full' );
-// delete_transient( 'directory-private-widget' );
-// delete_transient( 'directory-public-widget' );
+// delete_transient( 'directory-private-full--1' );
+// delete_transient( 'directory-public-full--1' );
+// delete_transient( 'directory-private-widget-9' );
+// delete_transient( 'directory-public-widget-9' );
+// delete_transient( 'directory-private-shortcode-12' );
+// delete_transient( 'directory-public-shortcode-12' );
 // if ( current_user_can('administrator') && WP_DEBUG ) {
 // 	$transient_name = time();
 // }
@@ -39,7 +51,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	// }
 	$users = get_users( $args );
 
-	$the_directory .= '<section class="entry-content the-directory">';
+	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
 	$the_directory .= '<div class="directory">';
 	$counter = 0;
 	// Array of WP_User objects.
@@ -69,9 +81,8 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			$the_directory .= '</a>';
 		}
 
-		// only include 9 if a widget
-		if ( 'widget' === $context &&
-			$counter >= 9 ) {
+		// check counter against limit
+		if ( $max_profiles > 0 && $counter >= $max_profiles ) {
 			break;
 		}
 	}
