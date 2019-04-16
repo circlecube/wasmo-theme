@@ -323,6 +323,14 @@ function wasmo_update_user( $post_id ) {
 	delete_transient( 'directory-public-full' );
 	delete_transient( 'directory-private-widget' );
 	delete_transient( 'directory-public-widget' );
+	delete_transient( 'directory-private-full--1' );
+	delete_transient( 'directory-public-full--1' );
+	delete_transient( 'directory-private-widget-9' );
+	delete_transient( 'directory-public-widget-9' );
+	delete_transient( 'directory-private-shortcode-12' );
+	delete_transient( 'directory-public-shortcode-12' );
+	delete_transient( 'directory-private-shortcode--1' );
+	delete_transient( 'directory-public-shortcode--1' );
 
 	// if user is not admin
 	$current_user = wp_get_current_user();
