@@ -247,6 +247,34 @@ add_filter("retrieve_password_title", function($title) {
 });
 
 
+/*
+
+Custom user hook summary
+
+Register
+-add custom has_received_welcome and set to false
+
+Login
+-update Last login field
+-check if has_received_welcome
+-send welcome? 
+-update has_received_welcome
+
+Profile Save/Update
+-update user nicename/displayname from acf fields
+-resave values back ot user acf fields
+-clear directory transients
+- send belated welcome email if is_admin and not yet received welcome
+-update question counts if user includes any
+-update last_save timestamp for this user
+-increment save_count
+-notify email
+-redirect user to their own profile
+
+*/
+
+
+
 // Capture user login and add it as timestamp in user meta data
 function wasmo_user_lastlogin( $user_login, $user ) {
     update_user_meta( $user->ID, 'last_login', time() );
@@ -259,18 +287,6 @@ function wasmo_get_lastlogin() {
     $the_login_date = human_time_diff($last_login);
     return $the_login_date; 
 }
-
-// function wasmo_update_extra_profile_fields($user_id) {
-// 	// clear directory transients
-// 	delete_transient( 'directory-1' );
-// 	delete_transient( 'directory-0' );
-	
-// 	// update last_save timestamp
-// 	update_user_meta( $user->ID, 'last_save', time() );
-// 	die('My filter is running');
-// }
-// add_action('personal_options_update', 'wasmo_update_extra_profile_fields'); // own profile
-// add_action('edit_user_profile_update', 'update_extra_profile_fields'); // other profiles
 
 function get_default_display_name_value($value, $post_id, $field) {
 	if ( $value === NULL || $value === '' ) {
@@ -335,6 +351,13 @@ function wasmo_update_user( $post_id ) {
 	// if user is not admin
 	$current_user = wp_get_current_user();
 	if ( user_can( $current_user, 'administrator' ) ) {
+		// if admin - check if welcome email has been sent.
+		$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
+		if ( '' === $has_received_welcome ) {
+			// if not - send a belated welcome email
+			wasmo_send_user_email__belated_welcome( $user_id );
+			update_user_meta( $user_id, 'has_received_welcome', true );
+		}
 		return;
 	}
 
@@ -346,7 +369,7 @@ function wasmo_update_user( $post_id ) {
 	// update last_save timestamp for this user
 	update_user_meta( $user_id, 'last_save', time() );
 
-	//increment save_count
+	// increment save_count
 	$save_count = get_user_meta( $user_id, 'save_count', true );
 	if ('' === $save_count ) {
 		$save_count = 0;
@@ -355,42 +378,19 @@ function wasmo_update_user( $post_id ) {
 	update_user_meta( $user_id, 'save_count', $save_count );
 
 	// notify email
-	$notify_mail_to = get_bloginfo( 'admin_email' );
-	$sitename = get_bloginfo( 'name' );
-	$headers = 'From: '. $notify_mail_to;
-	$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
-	$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
-' . get_author_posts_url( $user_id ) . '
-
-Best,
-'. $sitename . '
-___
-
-';
-	ob_start();
-	set_query_var( 'userid', $user_id );
-	get_template_part( 'template-parts/content/content', 'user' );
-	$notify_mail_message .= ob_get_clean();
-	wp_mail( $notify_mail_to, $notify_mail_subject, $notify_mail_message, $headers );
+	wasmo_send_admin_email__profile_update( $user_id );
 
 	wp_redirect( get_author_posts_url( $user_id ), 301);
 	exit;
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
-function wasmo_register_add_meta($user_id) { 
-	add_user_meta( $user_id, 'has_received_welcome', false );
-}
-add_action( 'user_register', 'wasmo_register_add_meta' );
-
-function wasmo_first_user_login( $user_login, $user ) {
-	$user_id = $user->ID;
-	$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
-	if ( '' === $has_received_welcome ) {
-		$sitename = get_bloginfo( 'name' );
-		$sitemail = get_bloginfo( 'admin_email' );
-		$user_info = get_userdata( $user_id );
-		// $user_loginname = $user_info->user_login;
+function wasmo_send_user_email__welcome( $user_id ){
+	$sitename = get_bloginfo( 'name' );
+	$sitemail = get_bloginfo( 'admin_email' );
+	$user_info = get_userdata( $user_id );
+	// $user_loginname = $user_info->user_login;
+	if ( $user_info ) {
 		$user_displayname = $user_info->display_name;
 		// $user_nicename = $user_info->user_nicename;
 		$welcome_mail_to = $user_info->user_email;
@@ -407,14 +407,110 @@ We are genuinely excited to meet you and read your story. Please, don\'t hesitat
 
 Best,
 '. $sitename;
+		// the send
 		wp_mail( $welcome_mail_to, $welcome_mail_subject, $welcome_mail_message, $welcome_headers );
-		// set that user has received welcome email
+	}
+}
+
+function wasmo_send_user_email__belated_welcome( $user_id ){
+	$sitename = get_bloginfo( 'name' );
+	$sitemail = get_bloginfo( 'admin_email' );
+	$user_info = get_userdata( $user_id );
+	// $user_loginname = $user_info->user_login;
+	if ( $user_info ) {
+		$user_displayname = $user_info->display_name;
+		// $user_nicename = $user_info->user_nicename;
+		$welcome_mail_to = $user_info->user_email;
+		$welcome_headers = 'From: '. $sitemail;
+		$welcome_mail_subject = 'A belated welcome to '.$sitename;
+		$welcome_mail_message = $user_displayname . ', 
+
+Thank you for joining ' . $sitename . '! We want to personally welcome you to the site (sorry we\'re a little late). We hope you have appreciated seeing all the faith transition stories. We hope you will contribute your own profile too.
+
+	Edit your proflie: '.home_url('/edit/').'
+	View/share your own profile: '. get_author_posts_url( $user_id ) .'
+
+We are genuinely excited to meet you and read your story. Remember, you can return to the site anytime to update your story, so there is no need to write the whole thing in one go. Start with a basic couple sentences if you wish. Also, take note that there is a setting to control the visibility of your profile - you can select if you want your profile to be displayed publicly, only to other site members or even to not display it anywhere. 
+
+Thank you again for being a part of our mission to share honest faith transitions. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site.
+
+Best,
+'. $sitename . '
+
+P.S. We have a few thoughts published on the site as well as a facebook page if you want to follow along.';
+		// the send
+		wp_mail( $welcome_mail_to, $welcome_mail_subject, $welcome_mail_message, $welcome_headers );
+	}
+}
+
+function wasmo_send_admin_email__profile_update( $user_id ){
+	$user_info = get_userdata( $user_id );
+	$user_nicename = $user_info->user_nicename;
+	$notify_mail_to = get_bloginfo( 'admin_email' );
+	$sitename = get_bloginfo( 'name' );
+	$headers = 'From: '. $notify_mail_to;
+	if ( $user_info ) {
+		$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
+		$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
+' . get_author_posts_url( $user_id ) . '
+
+Best,
+'. $sitename . '
+___
+
+';
+		ob_start();
+		set_query_var( 'userid', $user_id );
+		get_template_part( 'template-parts/content/content', 'user' );
+		$notify_mail_message .= ob_get_clean();
+
+		// send mail
+		wp_mail( $notify_mail_to, $notify_mail_subject, esc_html( $notify_mail_message ), $headers );
+	}
+}
+
+function wasmo_register_add_meta($user_id) { 
+	add_user_meta( $user_id, 'has_received_welcome', false );
+}
+add_action( 'user_register', 'wasmo_register_add_meta' );
+
+function wasmo_first_user_login( $user_login, $user ) {
+	$user_id = $user->ID;
+	$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
+	if ( '' === $has_received_welcome ) {
+		wasmo_send_user_email__welcome( $user_id );
 		update_user_meta( $user_id, 'has_received_welcome', true );
 	}
 }
 add_action('wp_login', 'wasmo_first_user_login', 10, 2);
 
+/*
+// https://github.com/wp-plugins/oa-social-login/blob/master/filters.txt
+//This function will be called after Social Login has added a new user
+function oa_social_login_do_after_user_insert ($user_data, $identity) {
+	//These are the fields from the WordPress database
+	print_r($user_data);
+	//This is the full social network profile of this user
+	// print_r($identity);
 
+	//record last login
+	wasmo_user_lastlogin($user_data->user_login, $user_data);
+	wasmo_register_add_meta($user_data->ID);
+	//send welcome?
+	wasmo_first_user_login($user_data->user_login, $user_data);
+}
+// add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
+
+//This function will be called before Social Login logs the the user in
+function oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
+	//record last login
+	wasmo_user_lastlogin($user_data->user_login, $user_data);
+	//send welcome?
+	wasmo_first_user_login($user_data->user_login, $user_data);
+}
+
+add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
+*/
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
