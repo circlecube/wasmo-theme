@@ -48,8 +48,16 @@
 		<?php wasmo_entry_footer(); ?>
 	</footer><!-- .entry-footer -->
 
-	<?php if ( ! is_singular( 'attachment' ) ) : ?>
+	<?php /* if ( ! is_singular( 'attachment' ) ) : ?>
 		<?php get_template_part( 'template-parts/post/author', 'bio' ); ?>
-	<?php endif; ?>
+	<?php endif; */ ?>
+
+
+	<?php 
+	// If comments are open or we have at least one comment, load up the comment template.
+	if ( comments_open() || get_comments_number() ) {
+		comments_template();
+	} 
+	?>
 
 </article><!-- #post-${ID} -->
