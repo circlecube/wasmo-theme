@@ -478,7 +478,7 @@ cite span {
 .entry .post-thumbnail {
 	margin-bottom: 0;
 }
-.entry .post-thumbnail .post-thumbnail-inner {
+.entry .post-thumbnail.fit-ratio .post-thumbnail-inner {
 	filter: none;
 	width: 100%;
     overflow: hidden;
@@ -486,7 +486,7 @@ cite span {
     height: 0;
     padding-top: 56%;
 }
-.entry .post-thumbnail .post-thumbnail-inner img {
+.entry .post-thumbnail.fit-ratio .post-thumbnail-inner img {
 	object-fit: cover;
 	object-position: center center;
 	position: absolute;
