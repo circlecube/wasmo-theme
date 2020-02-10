@@ -268,7 +268,7 @@ Profile Save/Update
 -update question counts if user includes any
 -update last_save timestamp for this user
 -increment save_count
--notify email
+-admin notify email
 -redirect user to their own profile
 
 */
@@ -364,18 +364,20 @@ function wasmo_update_user( $post_id ) {
 	$save_count = intval($save_count) + 1;
 	update_user_meta( $user_id, 'save_count', $save_count );
 
-	// if user is not admin
+	// if user is admin
+	/*
 	$current_user = wp_get_current_user();
 	if ( user_can( $current_user, 'administrator' ) ) {
 		// if admin - check if welcome email has been sent.
 		$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
 		if ( '' === $has_received_welcome ) {
 			// if not - send a belated welcome email
-			// wasmo_send_user_email__belated_welcome( $user_id );
+			wasmo_send_user_email__belated_welcome( $user_id );
 			update_user_meta( $user_id, 'has_received_welcome', true );
 		}
 		return;
 	}
+	*/
 
 	// notify email
 	wasmo_send_admin_email__profile_update( $user_id );
@@ -675,7 +677,7 @@ function wasmo_before_after($content) {
 
 	// top
 	if ( get_field( 'before_post_callout', 'option' ) ) {
-		$top_callout = get_field( 'before_post_callout', 'option' );
+		$top_callout = '<div class="callout callout-top">' . get_field( 'before_post_callout', 'option' ) . '</div>';
 	} else {
 		ob_start();
 		?>
@@ -691,7 +693,7 @@ function wasmo_before_after($content) {
 
 	// bottom
 	if ( get_field( 'after_post_callout', 'option' ) ) {
-		$bottom_callout = get_field( 'after_post_callout', 'option' );
+		$bottom_callout = '<div class="callout callout-bottom">' . get_field( 'after_post_callout', 'option' ) . '</div>';
 	} else {
 		ob_start();
 		?>
