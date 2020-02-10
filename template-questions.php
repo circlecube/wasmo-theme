@@ -26,12 +26,12 @@ get_header();
 			?>
 
 			<?php
-			// Questions
-
-			/* Start the Loop */
+			// Answered Questions
 			$terms = get_terms([
-				'taxonomy' => 'question',
-				'hide_empty' => true,
+				'taxonomy'   => 'question',
+				'hide_empty' => false,
+				'count'      => true,
+				'orderby'    => 'count',
 			]);
 
 			?>
@@ -45,12 +45,18 @@ get_header();
 					$termid = $term->term_id;
 
 					// if has answers
+					if ( 0 < $termid->count ) {
 					?>
 					<li><a class="question question-<?php echo $termid; ?>" 
 						href="<?php echo get_term_link( $termid ); ?>">
 						<?php echo $term->name; ?>
 					</a></li>
+					<?php
+					} else {
+					?>
+					<li><?php echo $term->name; ?></li>
 					<?php 
+					}
 				}
 				?>
 				</ul>
