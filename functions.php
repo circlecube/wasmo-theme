@@ -180,10 +180,10 @@ add_filter('logout_redirect', 'wasmo_logout_redirect_page');
 
 
 function my_acf_init() {
-	acf_update_setting('google_api_key', 'AIzaSyAF3HYVew1ZS_9i0mY1wymX1Hs885AJtIw');
+	
 }
 
-add_action('acf/init', 'my_acf_init');
+// add_action('acf/init', 'my_acf_init');
 
 
 function wasmo_filter_product_wpseo_title($title) {
