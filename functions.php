@@ -348,19 +348,6 @@ function wasmo_update_user( $post_id ) {
 	delete_transient( 'directory-private-shortcode--1' );
 	delete_transient( 'directory-public-shortcode--1' );
 
-	// if user is not admin
-	$current_user = wp_get_current_user();
-	if ( user_can( $current_user, 'administrator' ) ) {
-		// if admin - check if welcome email has been sent.
-		$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
-		if ( '' === $has_received_welcome ) {
-			// if not - send a belated welcome email
-			wasmo_send_user_email__belated_welcome( $user_id );
-			update_user_meta( $user_id, 'has_received_welcome', true );
-		}
-		return;
-	}
-
 	// update question counts if user includes any
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
 		wasmo_update_user_question_count();
@@ -377,10 +364,24 @@ function wasmo_update_user( $post_id ) {
 	$save_count = intval($save_count) + 1;
 	update_user_meta( $user_id, 'save_count', $save_count );
 
+	// if user is not admin
+	$current_user = wp_get_current_user();
+	if ( user_can( $current_user, 'administrator' ) ) {
+		// if admin - check if welcome email has been sent.
+		$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
+		if ( '' === $has_received_welcome ) {
+			// if not - send a belated welcome email
+			// wasmo_send_user_email__belated_welcome( $user_id );
+			update_user_meta( $user_id, 'has_received_welcome', true );
+		}
+		return;
+	}
+
 	// notify email
 	wasmo_send_admin_email__profile_update( $user_id );
 
 	wp_redirect( get_author_posts_url( $user_id ), 301);
+
 	exit;
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
@@ -477,40 +478,39 @@ add_action( 'user_register', 'wasmo_register_add_meta' );
 function wasmo_first_user_login( $user_login, $user ) {
 	$user_id = $user->ID;
 	$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
-	if ( '' === $has_received_welcome ) {
+	if ( '' === $has_received_welcome || ! $has_received_welcome ) {
 		wasmo_send_user_email__welcome( $user_id );
 		update_user_meta( $user_id, 'has_received_welcome', true );
 	}
 }
 add_action('wp_login', 'wasmo_first_user_login', 10, 2);
 
-/*
+
 // https://github.com/wp-plugins/oa-social-login/blob/master/filters.txt
 //This function will be called after Social Login has added a new user
 function oa_social_login_do_after_user_insert ($user_data, $identity) {
-	//These are the fields from the WordPress database
-	print_r($user_data);
-	//This is the full social network profile of this user
+	// These are the fields from the WordPress database
+	// print_r($user_data);
+	// This is the full social network profile of this user
 	// print_r($identity);
 
-	//record last login
+	// record last login
 	wasmo_user_lastlogin($user_data->user_login, $user_data);
-	wasmo_register_add_meta($user_data->ID);
-	//send welcome?
+	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
-// add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
+add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
 
 //This function will be called before Social Login logs the the user in
 function oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
-	//record last login
+	// record last login
 	wasmo_user_lastlogin($user_data->user_login, $user_data);
-	//send welcome?
+	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
 
 add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
-*/
+
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
@@ -649,3 +649,64 @@ function wasmo_directory_shortcode( $atts ) {
 	$directory .= ob_get_clean();
     return $directory;
 }
+
+/**
+ * Add ACF options page
+ */
+if( function_exists('acf_add_options_page') ) {
+	
+	acf_add_options_page(array(
+		'page_title' 	=> 'wasmo Settings',
+		'menu_title'	=> 'wasmo Settings',
+		'menu_slug' 	=> 'wasmo-settings',
+		'capability'	=> 'edit_posts',
+		'redirect'		=> false
+	));
+}
+
+/**
+ * Add callout to create a profile to the top of each post
+ * Only when user is not logged in
+ */
+function wasmo_before_after($content) {
+	if ( is_user_logged_in() ) {
+		return $content;
+	}
+
+	// top
+	if ( get_field( 'before_post_callout', 'option' ) ) {
+		$top_callout = get_field( 'before_post_callout', 'option' );
+	} else {
+		ob_start();
+		?>
+		<div class="callout callout-top">
+			<h4>Thank you for visiting wasmormon.org!</h4>
+			<p>This site is mainly a repository of mormon faith transition stories. Hearing others stories is therapeutic, check out the <a href="/profiles/">was mormon profiles</a>.</p>
+			<p>Telling your own story is therapeutic too, consider joining the movement and <a href="/login/">tell your own story now</a>!</p>
+		</div>
+		<?php 
+		$top_callout = ob_get_clean();
+	}
+
+
+	// bottom
+	if ( get_field( 'after_post_callout', 'option' ) ) {
+		$bottom_callout = get_field( 'after_post_callout', 'option' );
+	} else {
+		ob_start();
+		?>
+		<div class="callout callout-bottom">
+			<h4>Thank you for reading!</h4>
+			<p>Don't forget to also check out the <a href="/profiles/">mormon faith transition stories</a>.</p>
+			<div class="wp-block-button"><a class="wp-block-button__link" href="/login/">Tell Your Own Story</a></div>
+		</div>
+		<?php 
+		$bottom_callout = ob_get_clean();
+	}
+	
+	$fullcontent = $top_callout . $content . $bottom_callout;
+
+
+    return $fullcontent;
+}
+add_filter('the_content', 'wasmo_before_after');
