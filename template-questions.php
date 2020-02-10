@@ -32,6 +32,7 @@ get_header();
 				'hide_empty' => false,
 				'count'      => true,
 				'orderby'    => 'count',
+				'order'      => 'DESC',
 			]);
 
 			?>
@@ -45,12 +46,14 @@ get_header();
 					$termid = $term->term_id;
 
 					// if has answers
-					if ( 0 < $termid->count ) {
+					if ( 0 < $term->count ) {
 					?>
-					<li><a class="question question-<?php echo $termid; ?>" 
-						href="<?php echo get_term_link( $termid ); ?>">
-						<?php echo $term->name; ?>
-					</a></li>
+					<li>
+						<a 
+							class="question question-<?php echo $termid; ?>" 
+							href="<?php echo get_term_link( $termid ); ?>"
+						><?php echo $term->name; ?></a>
+					</li>
 					<?php
 					} else {
 					?>
