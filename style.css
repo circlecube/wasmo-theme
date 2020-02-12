@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.6.9
+ Version:          1.7.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -152,31 +152,22 @@ body.logged-in .menu-item.logged-in {
 .the-directory .directory {
   width: 100%;
   max-width: 100%;
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1rem;
   justify-content: space-between;
-}
-.the-directory .directory::after {
-  content: "";
-  flex: auto;
 }
 .the-directory .directory .person {
   position: relative;
-  width: 30%;
-  padding-top: 30%;
-  margin: 0 0 1rem;
+  width: 100%;
+  padding-top: 100%;
+  margin: 0;
   text-decoration: none;
 }
 
 @media only screen and (min-width: 768px) {
-  /* desktop */
-  .the-directory .directory .person {
-    width: 21%;
-    padding-top: 21%;
-  }
-
-  .directory .person:hover .directory-name {
-    opacity: 1;
+  .the-directory .directory {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 .directory .person .directory-img {
@@ -202,14 +193,22 @@ body.logged-in .menu-item.logged-in {
   bottom: 0;
   width: 100%;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.5);
   padding: 0.25rem;
   text-align: center;
   text-decoration: none;
   color: var(--color-white);
   line-height: 1.1em;
-  opacity: 0;
+  opacity: 1;
   transition: all 0.2s ease;
+}
+@media only screen and (min-width: 768px) {
+  .directory .person .directory-name {
+    opacity: 0;
+  }
+  .directory .person:hover .directory-name {
+    opacity: 1;
+  }
 }
 /* directory widget */
 .widget .the-directory {
