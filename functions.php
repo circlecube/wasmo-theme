@@ -363,6 +363,8 @@ function wasmo_update_user( $post_id ) {
 	}
 	$save_count = intval($save_count) + 1;
 	update_user_meta( $user_id, 'save_count', $save_count );
+	// notify email
+	wasmo_send_admin_email__profile_update( $user_id, $save_count );
 
 	// if user is admin
 	/*
@@ -378,9 +380,6 @@ function wasmo_update_user( $post_id ) {
 		return;
 	}
 	*/
-
-	// notify email
-	wasmo_send_admin_email__profile_update( $user_id );
 
 	wp_redirect( get_author_posts_url( $user_id ), 301);
 
@@ -446,27 +445,22 @@ P.S. We have a few thoughts published on the site as well as a facebook page if 
 	}
 }
 
-function wasmo_send_admin_email__profile_update( $user_id ){
+function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 	$user_info = get_userdata( $user_id );
 	$user_nicename = $user_info->user_nicename;
 	$notify_mail_to = get_bloginfo( 'admin_email' );
 	$sitename = get_bloginfo( 'name' );
 	$headers = 'From: '. $notify_mail_to;
 	if ( $user_info ) {
-		$notify_mail_subject = $sitename . ' - User Profile - ' . $user_nicename;
-		$notify_mail_message = 'This is an automated notification message that the user profile for '.$user_nicename.' has been published or updated.
-' . get_author_posts_url( $user_id ) . '
-
-Best,
-'. $sitename . '
-___
-
-';
-		ob_start();
-		set_query_var( 'userid', $user_id );
-		get_template_part( 'template-parts/content/content', 'user' );
-		$notify_mail_message .= ob_get_clean();
-
+		$notify_mail_subject = $sitename . ' New Profile: ' . $user_nicename;
+		$notify_mail_message = '';
+		if ( $save_count <= 1 ) {
+			$notify_mail_message .= 'New profile created ';
+		}
+		if ( $save_count > 1 ) {
+			$notify_mail_message .= 'Profile updated ';
+		}
+		$notify_mail_message .= 'by ' . $user_nicename.': ' . get_author_posts_url( $user_id );
 		// send mail
 		wp_mail( $notify_mail_to, $notify_mail_subject, esc_html( $notify_mail_message ), $headers );
 	}
@@ -671,7 +665,7 @@ if( function_exists('acf_add_options_page') ) {
  * Only when user is not logged in
  */
 function wasmo_before_after($content) {
-	if ( is_user_logged_in() ) {
+	if ( is_user_logged_in() || ! is_single() ) {
 		return $content;
 	}
 
