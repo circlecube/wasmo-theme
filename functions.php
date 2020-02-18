@@ -694,13 +694,8 @@ function wasmo_before_after($content) {
 add_filter('the_content', 'wasmo_before_after');
 
 
-
-add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
-
-function change_yoast_seo_og_meta() {
-	add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
-	add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
-}
+add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
+add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
 
 // filter to update user profile page title for seo
 function wasmo_filter_profile_wpseo_title( $title ) {
@@ -708,8 +703,7 @@ function wasmo_filter_profile_wpseo_title( $title ) {
 		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
 		$userid = $curauth->ID;
 		$title = esc_html( get_field( 'hi', 'user_' . $userid ) ) . ' - ';
-		$title .= esc_html( $user->display_name );
-		$title .= ' at wasmormon.org';
+		$title .= 'Learn why I\'m no longer mormon at wasmormon.org';
     }
     return $title;
 }
@@ -718,11 +712,12 @@ function wasmo_filter_profile_wpseo_title( $title ) {
 function wasmo_user_profile_set_og_image( $image ) {
 	// if author page
 	if ( is_author() ) {
-		$author = get_user_by( 'slug', get_query_var( 'author_name' ) );
+		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
+		$userid = $curauth->ID;
 		// if has author image
 		$userimg = get_field( 'photo', 'user_' . $userid );
 		if ( $userimg ) {
-			$image = wp_get_attachment_image( $userimg, 'medium' );
+			$image = wp_get_attachment_image_url( $userimg, 'large' );
 		}
 	}
 	return $image;
