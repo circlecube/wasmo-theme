@@ -696,6 +696,7 @@ add_filter('the_content', 'wasmo_before_after');
 
 add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
 add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
+add_filter( 'wpseo_twitter_image', 'wasmo_user_profile_set_og_image' );
 
 // filter to update user profile page title for seo
 function wasmo_filter_profile_wpseo_title( $title ) {
