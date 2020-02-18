@@ -185,20 +185,6 @@ function my_acf_init() {
 
 // add_action('acf/init', 'my_acf_init');
 
-
-function wasmo_filter_product_wpseo_title($title) {
-    if( is_author() ) {
-		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
-		$userid = $curauth->ID;
-		$title = get_field( 'hi', 'user_' . $userid ) . ' at wasMormon.org';
-		// $username = esc_html( $curauth->user_login );
-		// $title = $username . ' at wasMormon.org';
-    }
-    return $title;
-}
-add_filter('wpseo_title', 'wasmo_filter_product_wpseo_title');
-
-
 /**
  * Plugin Name: Multisite: Password Reset on Local Blog
  * Plugin URI:  https://gist.github.com/eteubert/293e07a49f56f300ddbb
@@ -706,3 +692,38 @@ function wasmo_before_after($content) {
     return $fullcontent;
 }
 add_filter('the_content', 'wasmo_before_after');
+
+
+
+add_action( 'wpseo_opengraph', 'change_yoast_seo_og_meta' );
+
+function change_yoast_seo_og_meta() {
+	add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
+	add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
+}
+
+// filter to update user profile page title for seo
+function wasmo_filter_profile_wpseo_title( $title ) {
+    if( is_author() ) {
+		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
+		$userid = $curauth->ID;
+		$title = esc_html( get_field( 'hi', 'user_' . $userid ) ) . ' - ';
+		$title .= esc_html( $user->display_name );
+		$title .= ' at wasmormon.org';
+    }
+    return $title;
+}
+
+// Filter to update profile page open graph image to user profile image if there is one
+function wasmo_user_profile_set_og_image( $image ) {
+	// if author page
+	if ( is_author() ) {
+		$author = get_user_by( 'slug', get_query_var( 'author_name' ) );
+		// if has author image
+		$userimg = get_field( 'photo', 'user_' . $userid );
+		if ( $userimg ) {
+			$image = wp_get_attachment_image( $userimg, 'medium' );
+		}
+	}
+	return $image;
+}
