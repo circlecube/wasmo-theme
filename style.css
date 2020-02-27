@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.7.4
+ Version:          1.7.5
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -26,6 +26,38 @@
   --color-orange-light: rgba(240, 124, 39, 0.05);
 }
 
+body,
+.site-info {
+  font-family: "Crimson Text", serif;
+}
+.author-description .author-link,
+.comment-metadata,
+.comment-reply-link,
+.comments-title,
+.comment-author .fn,
+.discussion-meta-info,
+.entry-meta,
+.entry-footer,
+.main-navigation,
+.no-comments,
+.not-found .page-title,
+.error-404 .page-title,
+.post-navigation .post-title,
+.page-links,
+.page-description,
+.pagination .nav-links,
+.sticky-post,
+.site-title,
+#cancel-comment-reply-link,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Open Sans", sans-serif;
+}
+
 .site-header {
   background: var(--color-orange);
   color: var(--color-white);
@@ -34,7 +66,11 @@
 .main-navigation .main-menu > li > a {
   color: var(--color-white);
   text-transform: uppercase;
-  font-family: sans-serif;
+  font-family: "Open Sans", sans-serif;
+  font-weight: normal;
+}
+.main-navigation .main-menu > li > a {
+  font-size: 20px;
 }
 .site-title a:link,
 .site-title a:visited,
@@ -81,7 +117,7 @@
 @media only screen and (min-width: 768px) {
   /* desktop */
   .site-header {
-    padding: 1rem 0 1rem;
+    padding: 1rem 0 0.5rem;
   }
   .site-logo {
     position: relative;
@@ -97,6 +133,9 @@
 }
 .jetpack_widget_social_icons svg.icon {
   color: var(--color-gray2);
+}
+.discussion-avatar-list {
+  display: none;
 }
 
 /* menu visibility toggles */
@@ -128,14 +167,17 @@ body.logged-in .menu-item.logged-in {
 }
 .utility-navigation li {
   display: inline-block;
-  margin-left: 0.67em;
+  margin-left: 1em;
+}
+.utility-navigation a {
+  font-size: 13px;
 }
 .utility-navigation a:hover {
   color: var(--color-blue-3);
 }
 .utility-navigation svg {
   vertical-align: sub;
-  margin-right: 0.25rem;
+  margin-right: 1px;
 }
 
 /* Directory */
@@ -306,7 +348,7 @@ h2.tagline:before {
 
 h2.tagline {
   color: var(--color-gray2);
-  font-family: serif;
+  font-family: "Crimson Text", serif;
   font-style: italic;
   font-size: 1.5rem;
   font-weight: normal;
@@ -354,7 +396,7 @@ h2.tagline {
   margin: 0 10px 10px 0;
   text-decoration: none;
   transition: all 0.2s ease;
-  font-family: sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
 }
 

@@ -36,6 +36,15 @@ function wasmo_enqueue() {
 }
 add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
 
+function wasmo_add_google_fonts() {
+	wp_enqueue_style( 
+		'wasmo-google-fonts', 
+		'https://fonts.googleapis.com/css?family=Crimson+Text:400,700|Open+Sans:400,700&display=swap', 
+		false
+	); 
+}
+ 
+add_action( 'wp_enqueue_scripts', 'wasmo_add_google_fonts' );
 
 // theme mods
 // set_theme_mod( 'page_layout', 'one-column' );

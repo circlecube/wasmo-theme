@@ -14,6 +14,10 @@
 		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
 			<h2 class="tagline"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
 		<?php } ?>
+
+		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
+			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
+		<?php } ?>
 	</div>
 
 	<div class="content-left">
@@ -68,9 +72,6 @@
 				?>"><span class="screen-reader-text">other</span><?php echo $svg; ?></a></li>
 			<?php } ?>
 			</ul>
-		<?php } ?>
-		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
-			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
 		<?php } ?>
 	</div>
 
