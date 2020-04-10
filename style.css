@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.7.5
+ Version:          1.7.8
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -653,4 +653,57 @@ a:active {
 
 .hide {
   display: none;
+}
+
+/* Input and acf form override styles */
+.entry-content .acf-tab-group li a {
+  padding: 0.5rem 0.5rem 0.25rem;
+  font-size: 0.9rem;
+}
+#acf-form input[type="text"],
+#acf-form input[type="email"],
+#acf-form input[type="url"],
+#acf-form textarea,
+#acf-form select {
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  height: auto;
+}
+#acf-form input[type="url"] {
+  padding-left: 1.75rem;
+}
+#acf-form .acf-url i {
+  left: 10px;
+  font-size: 18px;
+  top: 17px;
+}
+
+#acf-form textarea {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.entry-content a.acf-icon {
+  text-decoration: none;
+}
+
+#acf-form .select2-container.-acf .select2-selection--single {
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  height: auto;
+  word-break: normal;
+}
+
+#acf-form
+  .select2-container.-acf
+  .select2-selection--single
+  .select2-selection__rendered {
+  line-height: 1.25;
+  white-space: normal;
+}
+
+#acf-form
+  .select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow {
+  height: 2.4rem;
 }
