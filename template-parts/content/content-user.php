@@ -83,13 +83,26 @@
 <?php } ?>
 
 <?php 
-$spectrum_terms = get_field( 'spectrum', 'user_' . $userid );
+$shelf_items = get_field( 'my_shelf', 'user_' . $userid );
+if ( $shelf_items ) { ?>
+	<h4>On my shelf</h4>
+	<ul class="tags">
+	<?php foreach( $shelf_items as $term ): ?>
+		<li><span class="tag"><?php echo $term->name; ?></span></li>
+		<!-- <li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li> -->
+	<?php endforeach; ?>
+	</ul>
+<?php } 
+?>
+
+<?php 
+$spectrum_terms = get_field( 'mormon_spectrum', 'user_' . $userid );
 if ( $spectrum_terms ) { ?>
 	<h4>On the Mormon Spectrum</h4>
 	<ul class="tags">
 	<?php foreach( $spectrum_terms as $term ): ?>
 		<li><span class="tag"><?php echo $term->name; ?></span></li>
-		<?php /* <a href="<?php echo get_term_link( $term ); ?>">View all '<?php echo $term->name; ?>' posts</a> */ ?>
+		<!-- <li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li> -->
 	<?php endforeach; ?>
 	</ul>
 <?php } 
@@ -116,6 +129,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
 		$questionterm = get_term( $termtaxid, 'question' );
 		echo wp_kses_post( $questionterm->name );
+		echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline">' . twentynineteen_get_icon_svg( 'link', 20 ) . '</a>';
 		echo '</h4>';
 		echo wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
 

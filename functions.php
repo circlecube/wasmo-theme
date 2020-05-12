@@ -59,7 +59,6 @@ function wasmo_hide_admin_bar() {
 	}
 }
 
-
 function cptui_register_my_taxes() {
 
 	/**
@@ -122,8 +121,36 @@ function cptui_register_my_taxes() {
 		"rest_base" => "spectrum",
 		"rest_controller_class" => "WP_REST_Terms_Controller",
 		"show_in_quick_edit" => false,
-	);
+		);
 	register_taxonomy( "spectrum", array( "post", "user" ), $args );
+
+	/**
+	 * Taxonomy: Shelf Items.
+	 */
+
+	$labels = array(
+		"name" => __( "Shelf Items", "wasmo" ),
+		"singular_name" => __( "Shelf Item", "wasmo" ),
+	);
+
+	$args = array(
+		"label" => __( "Shelf Items", "wasmo" ),
+		"labels" => $labels,
+		"public" => true,
+		"publicly_queryable" => true,
+		"hierarchical" => false,
+		"show_ui" => true,
+		"show_in_menu" => true,
+		"show_in_nav_menus" => true,
+		"query_var" => true,
+		"rewrite" => array( 'slug' => 'shelf', 'with_front' => true, ),
+		"show_admin_column" => false,
+		"show_in_rest" => true,
+		"rest_base" => "shelf",
+		"rest_controller_class" => "WP_REST_Terms_Controller",
+		"show_in_quick_edit" => false,
+		);
+	register_taxonomy( "shelf", array( "post", "user" ), $args );
 }
 add_action( 'init', 'cptui_register_my_taxes' );
 
@@ -452,7 +479,7 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 		if ( $save_count > 1 ) {
 			$notify_mail_message .= 'Profile updated ';
 		}
-		$notify_mail_message .= 'by ' . $user_nicename.': ' . get_author_posts_url( $user_id );
+		$notify_mail_message .= 'by ' . $user_nicename .': ' . get_author_posts_url( $user_id );
 		// send mail
 		wp_mail( $notify_mail_to, $notify_mail_subject, esc_html( $notify_mail_message ), $headers );
 	}

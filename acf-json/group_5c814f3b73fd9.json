@@ -41,7 +41,7 @@
             "key": "field_5c815af4df648",
             "label": "Tagline",
             "name": "tagline",
-            "type": "text",
+            "type": "textarea",
             "instructions": "This should be a short sentence about you. Followed by a phrase such as: `I was a mormon`.\r\n\r\nFor example: I enjoy camping and meditation, I am a traveller and truth-seeker. I was a mormon.",
             "required": 1,
             "conditional_logic": 0,
@@ -50,11 +50,11 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
+            "default_value": "I was a mormon.",
             "placeholder": "... I was a mormon.",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "maxlength": "",
+            "rows": 2,
+            "new_lines": ""
         },
         {
             "key": "field_5c815b7edf64a",
@@ -81,11 +81,11 @@
             "mime_types": ""
         },
         {
-            "key": "field_5c87a1f5c2b0c",
-            "label": "Location",
-            "name": "location",
-            "type": "text",
-            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
+            "key": "field_5e8f9a6211bed",
+            "label": "Story",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -93,18 +93,15 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "placement": "top",
+            "endpoint": 0
         },
         {
             "key": "field_5c87b7a994494",
             "label": "About Me",
             "name": "about_me",
             "type": "textarea",
-            "instructions": "Describe your background within a mormon context.",
+            "instructions": "Share your background (be sure to include a mormon context).",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -115,7 +112,7 @@
             "default_value": "",
             "placeholder": "",
             "maxlength": "",
-            "rows": 6,
+            "rows": 10,
             "new_lines": "wpautop"
         },
         {
@@ -134,7 +131,7 @@
             "default_value": "",
             "placeholder": "",
             "maxlength": "",
-            "rows": 6,
+            "rows": 10,
             "new_lines": "wpautop"
         },
         {
@@ -154,7 +151,7 @@
             "min": 0,
             "max": 0,
             "layout": "block",
-            "button_label": "Add Question",
+            "button_label": "Answer Another Question",
             "sub_fields": [
                 {
                     "key": "field_5c82b49f902da",
@@ -194,10 +191,171 @@
                     "default_value": "",
                     "placeholder": "",
                     "maxlength": "",
-                    "rows": 5,
+                    "rows": 10,
                     "new_lines": "wpautop"
                 }
             ]
+        },
+        {
+            "key": "field_5ebaf40db15f2",
+            "label": "Tags",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5ebaf36bcc0fe",
+            "label": "Mormon spectrum",
+            "name": "mormon_spectrum",
+            "type": "taxonomy",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "spectrum",
+            "field_type": "multi_select",
+            "allow_null": 1,
+            "add_term": 1,
+            "save_terms": 0,
+            "load_terms": 0,
+            "return_format": "object",
+            "multiple": 0
+        },
+        {
+            "key": "field_5ebaf423b15f3",
+            "label": "On My Shelf",
+            "name": "my_shelf",
+            "type": "taxonomy",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "taxonomy": "shelf",
+            "field_type": "multi_select",
+            "allow_null": 1,
+            "add_term": 1,
+            "save_terms": 0,
+            "load_terms": 0,
+            "return_format": "object",
+            "multiple": 0
+        },
+        {
+            "key": "field_5cb48fbcb16dc",
+            "label": "Settings",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5cb486045a336",
+            "label": "Display Name",
+            "name": "display_name",
+            "type": "text",
+            "instructions": "This is the name used along with your photo on various places in the site such as the directory. It's nice to match the with your name used in your introduction.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5cb486165a337",
+            "label": "Profile Id",
+            "name": "profile_id",
+            "type": "text",
+            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username. This must also be unique, so if there is another 'bob-smith' you cannot use the same, and it will automatically update to 'bob-smith-2'. Note that changing this will break any external links to your current profile.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5c815bccdf64c",
+            "label": "Include me in the directory?",
+            "name": "in_directory",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "false": "Not at all",
+                "private": "Yes, but only to users who are logged in",
+                "true": "Yes display my profile in the public directory"
+            },
+            "default_value": [
+                "true"
+            ],
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 1,
+            "ajax": 0,
+            "return_format": "value",
+            "placeholder": ""
+        },
+        {
+            "key": "field_5c87a1f5c2b0c",
+            "label": "Location",
+            "name": "location",
+            "type": "text",
+            "instructions": "If you are comfortable, share where you live. Nothing specific, just a city or region.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
         },
         {
             "key": "field_5c86dea246f81",
@@ -297,87 +455,11 @@
             ]
         },
         {
-            "key": "field_5cadf1eccb472",
-            "label": "Spectrum",
-            "name": "spectrum",
-            "type": "taxonomy",
-            "instructions": "Where are you on the spectrum? (add more as needed)",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "taxonomy": "spectrum",
-            "field_type": "multi_select",
-            "allow_null": 0,
-            "add_term": 1,
-            "save_terms": 1,
-            "load_terms": 1,
-            "return_format": "object",
-            "multiple": 0
-        },
-        {
-            "key": "field_5cb48fbcb16dc",
-            "label": "Settings",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_5cb486045a336",
-            "label": "Display Name",
-            "name": "display_name",
-            "type": "text",
-            "instructions": "This is the name used along with your photo on various places in the site such as the directory. It's nice to match the with your name used in your introduction.",
-            "required": 1,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
-            "key": "field_5cb486165a337",
-            "label": "Profile Id",
-            "name": "profile_id",
-            "type": "text",
-            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username. This must also be unique, so if there is another 'bob-smith' you cannot use the same, and it will automatically update to 'bob-smith-2'. Note that changing this will break any external links to your current profile.",
-            "required": 1,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
-            "key": "field_5c815bccdf64c",
-            "label": "Include me in the directory?",
-            "name": "in_directory",
+            "key": "field_5e428267bd07d",
+            "label": "I want to write posts",
+            "name": "i_want_to_write_posts",
             "type": "select",
-            "instructions": "",
+            "instructions": "Do you want to contribute blog posts to wasmormon.org?",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -386,13 +468,11 @@
                 "id": ""
             },
             "choices": {
-                "false": "Not at all",
-                "private": "Yes, but only to users who are logged in",
-                "true": "Yes display my profile in the public directory"
+                "No thanks": "No thanks",
+                "Maybe": "Maybe",
+                "Yes, please": "Yes, please"
             },
-            "default_value": [
-                "true"
-            ],
+            "default_value": [],
             "allow_null": 0,
             "multiple": 0,
             "ui": 1,
@@ -433,5 +513,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1555343173
+    "modified": 1589310533
 }
