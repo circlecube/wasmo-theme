@@ -39,6 +39,25 @@
             "toolbar": "full",
             "media_upload": 0,
             "delay": 0
+        },
+        {
+            "key": "field_5ebac91dada14",
+            "label": "Legal Disclaimer",
+            "name": "legal_disclaimer",
+            "type": "textarea",
+            "instructions": "Text that displays in the footer of the website as a legal disclaimer.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": "",
+            "new_lines": ""
         }
     ],
     "location": [
@@ -56,7 +75,7 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "hide_on_screen": "",
-    "active": 1,
+    "active": true,
     "description": "",
-    "modified": 1581329024
+    "modified": 1589306182
 }
