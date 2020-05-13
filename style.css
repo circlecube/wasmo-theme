@@ -562,6 +562,7 @@ cite span {
   margin-left: 0;
   min-width: 350px;
   padding: 10px 30px;
+  position: fixed;
   transform: translate(-50%, 0);
   width: 50%;
 }
