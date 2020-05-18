@@ -124,15 +124,15 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
  	// loop through the rows of data
 	while ( have_rows( 'questions', 'user_' . $userid ) ) : 
 		the_row();
-
-		echo '<h4 class="question">';
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
-		$questionterm = get_term( $termtaxid, 'question' );
-		echo wp_kses_post( $questionterm->name );
-		echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline">' . twentynineteen_get_icon_svg( 'link', 20 ) . '</a>';
-		echo '</h4>';
-		echo wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
-
+		if ( $termtaxid ) {
+			$questionterm = get_term( $termtaxid, 'question' );
+			echo '<h4 class="question">';
+			echo wp_kses_post( $questionterm->name );
+			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline">' . twentynineteen_get_icon_svg( 'link', 20 ) . '</a>';
+			echo '</h4>';
+			echo wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
+		}
     endwhile;
 
 else :
