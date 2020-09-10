@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.8.2
+ Version:          1.8.3
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -384,7 +384,7 @@ h2.tagline {
   float: left;
 }
 
-.tag {
+.tags .tag {
   background: #eee;
   border-radius: 3px 0 0 3px;
   color: var(--color-gray3);
@@ -400,7 +400,7 @@ h2.tagline {
   font-size: 14px;
 }
 
-.tag::before {
+.tags .tag::before {
   background: #fff;
   border-radius: 10px;
   box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
@@ -413,7 +413,7 @@ h2.tagline {
   transition: all 0.2s ease;
 }
 
-.tag::after {
+.tags .tag::after {
   background: #fff;
   border-bottom: 13px solid transparent;
   border-left: 10px solid #eee;
@@ -425,12 +425,12 @@ h2.tagline {
   transition: all 0.2s ease;
 }
 
-.tag:hover {
+.tags .tag:hover {
   background-color: var(--color-blue);
   color: white;
 }
 
-.tag:hover::after {
+.tags .tag:hover::after {
   border-left-color: var(--color-blue);
 }
 
