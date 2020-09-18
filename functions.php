@@ -728,6 +728,7 @@ add_filter('the_content', 'wasmo_before_after');
 
 
 add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
+add_filter( 'wpseo_metadesc', 'wasmo_user_profile_wpseo_metadesc' );
 add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
 add_filter( 'wpseo_twitter_image', 'wasmo_user_profile_set_og_image' );
 
@@ -740,6 +741,16 @@ function wasmo_filter_profile_wpseo_title( $title ) {
 		$title .= 'Learn why I\'m no longer mormon at wasmormon.org';
     }
     return $title;
+}
+
+// filter to update user profile page description for seo
+function wasmo_user_profile_wpseo_metadesc( $metadesc ) {
+    if( is_author() ) {
+		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
+		$userid = $curauth->ID;
+		$metadesc = esc_html( get_field( 'tagline', 'user_' . $userid ) );
+    }
+    return $metadesc;
 }
 
 // Filter to update profile page open graph image to user profile image if there is one
