@@ -109,7 +109,13 @@ if ( $spectrum_terms ) { ?>
 ?>
 
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
-	<h3>Why I left</h3>
+	<h3>
+		Why I left
+		<a href="/why-i-left/" class="question_link_inline" title="More answers about 'Why I left' the mormon church">
+			<?php echo twentynineteen_get_icon_svg( 'link', 20 ); ?>
+			<span class="screen-reader-text">More answers about 'Why I left' the mormon church</span>
+		</a>
+	</h3>
 	<div class="why_i_left"><?php echo wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ); ?></div>
 <?php } ?>
 
@@ -127,9 +133,12 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
 		if ( $termtaxid ) {
 			$questionterm = get_term( $termtaxid, 'question' );
+			$description = "More was mormon answers about '" . wp_kses_post( $questionterm->name ) . "'";
 			echo '<h4 class="question">';
 			echo wp_kses_post( $questionterm->name );
-			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline">' . twentynineteen_get_icon_svg( 'link', 20 ) . '</a>';
+			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">';
+			echo twentynineteen_get_icon_svg( 'link', 20 );
+			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
 			echo wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
 		}
