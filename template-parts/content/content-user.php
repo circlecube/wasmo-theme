@@ -79,7 +79,7 @@
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<h3>About me</h3>
-	<div class="about_me"><?php echo wp_kses_post( get_field( 'about_me', 'user_' . $userid ) ); ?></div>
+	<div class="about_me"><?php echo auto_link_text( wp_kses_post( get_field( 'about_me', 'user_' . $userid ) ) ); ?></div>
 <?php } ?>
 
 <?php 
@@ -116,7 +116,7 @@ if ( $spectrum_terms ) { ?>
 			<span class="screen-reader-text">More answers about 'Why I left' the mormon church</span>
 		</a>
 	</h3>
-	<div class="why_i_left"><?php echo wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ); ?></div>
+	<div class="why_i_left"><?php echo auto_link_text( wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ) ); ?></div>
 <?php } ?>
 
 <?php
@@ -140,7 +140,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo twentynineteen_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
-			echo wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) );
+			echo auto_link_text( wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) ) );
 		}
     endwhile;
 
