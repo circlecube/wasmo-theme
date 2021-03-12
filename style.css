@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.9.4
+ Version:          1.9.5
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -24,6 +24,10 @@
 	--color-gray2: #a5a6ab;
 	--color-gray3: #333333;
 	--color-orange-light: rgba(240, 124, 39, 0.05);
+}
+html {
+	font-size: 100% !important;
+	font-size: 22px !important;
 }
 
 html,
@@ -130,10 +134,12 @@ h6 {
 	}
 }
 
+
 .site-footer {
 	background: var(--color-gray3);
 }
-.jetpack_widget_social_icons svg.icon {
+.jetpack_widget_social_icons svg.icon,
+#colophon .site-info {
 	color: var(--color-gray2);
 }
 .discussion-avatar-list {
@@ -481,8 +487,11 @@ cite span {
 	}
 	.single-post-main aside {
 		width: 20%;
-		font-size: 50%;
 		margin: 10rem 0 3rem;
+	}
+	.single-post-main aside .widget-title,
+	.single-post-main aside .widget h3 {
+		font-size: 20px;
 	}
 }
 
@@ -547,8 +556,10 @@ cite span {
 	padding-right: 0;
 }
 .blog-main article.post .entry-header {
-	font-size: 50%;
 	margin-top: 2rem;
+}
+.blog-main article.post .entry-title {
+	font-size: 26px;
 }
 .entry .entry-title:before {
 	background: var(--color-blue-2);
@@ -682,17 +693,29 @@ cite span {
 	text-align: center;
 }
 .site-info a {
-	display: block;
+	display: inline-block;
 }
 .footer-navigation .footer-menu {
+	color: var(--color-gray1);
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
+}
+.footer-navigation .footer-menu li {
+	border-bottom: 1px solid var(--color-gray2);
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+}
+.legal_disclaimer {
+	line-height: 1.5em;
 }
 /* desktop */
 @media only screen and (min-width: 768px) {
 	.footer-navigation .footer-menu {
 		flex-direction: row;
+	}
+	.footer-navigation .footer-menu li {
+		border-bottom: 0;
 	}
 }
 

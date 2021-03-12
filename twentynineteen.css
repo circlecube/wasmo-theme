@@ -4002,7 +4002,7 @@ body.page .main-navigation {
 }
 
 .entry .entry-content .wp-block-quote p {
-  font-size: 1em;
+  /* font-size: 1em; */
   font-style: normal;
   line-height: 1.8;
 }
@@ -4012,7 +4012,7 @@ body.page .main-navigation {
 			 * This requires a rem-based font size calculation instead of our normal em-based one,
 			 * because the cite tag sometimes gets wrapped in a p tag. This is equivalent to $font-size_xs.
 			 */
-  font-size: calc(1rem / (1.25 * 1.125));
+  /* font-size: calc(1rem / (1.25 * 1.125)); */
 }
 
 .entry .entry-content .wp-block-quote.is-large, .entry .entry-content .wp-block-quote.is-style-large {
@@ -4222,7 +4222,7 @@ body.page .main-navigation {
 .entry .entry-content .wp-block-image figcaption,
 .entry .entry-content .wp-block-gallery .blocks-gallery-image figcaption,
 .entry .entry-content .wp-block-gallery .blocks-gallery-item figcaption {
-  font-size: 0.71111em;
+  /* font-size: 0.71111em; */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   line-height: 1.6;
   margin: 0;
