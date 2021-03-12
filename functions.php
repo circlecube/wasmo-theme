@@ -17,7 +17,7 @@ function wasmo_enqueue() {
 
     wp_enqueue_style( 
 		$parent_style, 
-		get_template_directory_uri() . '/style.css'
+		get_stylesheet_directory_uri() . '/twentynineteen.css',
 	);
     wp_enqueue_style( 
 		'wasmo-style',
