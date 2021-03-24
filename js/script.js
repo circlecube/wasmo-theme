@@ -9,21 +9,21 @@ jQuery(document).ready(function($) {
 		$('.lwa-links-modal').trigger('click');
 		$('.lwa-form').show();
 		$('.lwa-register').hide();
-		$('.lwa-links-register-inline-cancel').show();
+		$('.lwa-links-register-inline-cancel').hide();
+		$('.lwa-links-register-inline').hide();
 	}
 
 	$('.register').on('click', function(e){ 
 		e.preventDefault(); 
 		console.log('register link clicked');
-		// open register modal
+		// open login modal and register form
 		$('.lwa-links-modal').trigger('click');
 		$('.lwa-form').hide();
 		$('.lwa-register').show();
 		$('.lwa-links-register-inline-cancel').hide();
-		// $('.lwa-links-register').trigger('click'); 
 	} );
 
-	// html validation for register form - give better hints on error too.
+	// add html validation for register form - give better hints on error too.
 	$('.lwa-modal #user_login').attr({
 		pattern: '[a-z0-9.]{4,}',
 		title: 'Only lowercase letters and numbers. Minimum 4 characters.',

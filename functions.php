@@ -172,29 +172,30 @@ function wasmo_widgets_init() {
 }
 add_action( 'widgets_init', 'wasmo_widgets_init' );
 
-if ( ! function_exists( 'wasmo_setup' ) ) :
-	function wasmo_setup() {
-		register_nav_menus(
-			array(
-				'utility' => __( 'Utility Menu', 'twentynineteen' ),
-			)
-		);
-		set_theme_mod( 'image_filter', 0 );
-	}
-endif;
-
+function wasmo_setup() {
+	register_nav_menus(
+		array(
+			'utility' => __( 'Utility Menu', 'twentynineteen' ),
+		)
+	);
+	set_theme_mod( 'image_filter', 0 );
+}
 add_action( 'after_setup_theme', 'wasmo_setup' );
 
+// add hard coded utility menu items 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$edit_svg = twentynineteen_get_icon_svg( 'edit', 20 );
-		$user_svg = twentynineteen_get_icon_svg( 'person', 20 );
-		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $user_svg . __("Join or Log In") . '</a></li>';
-		$logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
+		$edit_svg = twentynineteen_get_icon_svg( 'edit', 24 );
+		$user_svg = twentynineteen_get_icon_svg( 'person', 24 );
+		$join_svg = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+		$login_svg = '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,7L9.6,8.4l2.6,2.6H2v2h10.2l-2.6,2.6L11,17l5-5L11,7z M20,19h-8v2h8c1.1,0,2-0.9,2-2V5c0-1.1-0.9-2-2-2h-8v2h8V19z"/></g></svg>';
+		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join") . '</a></li>';
+		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login") . '</a></li>';
+		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
 		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">' . $user_svg . 'View</a></li>';
 		$edit =    '<li class="edit"><a href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
 		if ( is_user_logged_in() ) {
-			$items = $profile . $edit . $logout;
+			$items = $profile . $edit;
 		} else {
 			$items = $login;
 		}
@@ -210,14 +211,14 @@ function wasmo_login_redirect_page() {
 add_filter('login_redirect', 'wasmo_login_redirect_page');
 
 function wasmo_logout_redirect_page() {
-  return home_url('/directory/');
+  return home_url('/profiles/');
 }
 add_filter('logout_redirect', 'wasmo_logout_redirect_page');
 
 
-function my_acf_init() {
+// function my_acf_init() {
 	
-}
+// }
 
 // add_action('acf/init', 'my_acf_init');
 
@@ -284,9 +285,9 @@ Login
 
 Profile Save/Update
 -update user nicename/displayname from acf fields
--resave values back ot user acf fields
+-resave values back to user acf fields
 -clear directory transients
-- send belated welcome email if is_admin and not yet received welcome
+-send belated welcome email if is_admin and not yet received welcome
 -update question counts if user includes any
 -update last_save timestamp for this user
 -increment save_count
@@ -819,6 +820,8 @@ function wasmo_user_profile_set_og_image( $image ) {
 		return (substr($string, 0, $len) === $startString); 
 	}
 
+
+// Some custom structure to apply to the signup form page `local-signup` via NSUR plugin
 function wasmo_before_signup() {
 	?>
 	<div class="site-content entry">
