@@ -18,8 +18,8 @@ get_header();
 			<article class="error-404 not-found entry">
 				<header class="entry-header">
 					<h1 class="entry-title">Oops!</h1>
-					<h3 class="entry-subtitle">That profile can't be displayed right now.</h3>
-					<h3 class="entry-subtitle">Looking for one of these?</h3>
+					<h3 class="entry-subtitle">That can't be displayed right now.</h3>
+					<h3 class="entry-subtitle">Looking for one of these profiles?</h3>
 				</header><!-- .page-header -->
 
 				<?php get_template_part( 'template-parts/content/content', 'directory' ); ?>

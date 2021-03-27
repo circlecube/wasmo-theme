@@ -12,8 +12,8 @@
 get_header();
 ?>
 
-	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+	<section id="primary" class="content-area">
+		<main id="main" class="site-main blog-main archive">
 
 		<?php if ( have_posts() ) : ?>
 
@@ -34,7 +34,7 @@ get_header();
 				 * called content-___.php (where ___ is the Post Format name) and that
 				 * will be used instead.
 				 */
-				get_template_part( 'template-parts/content/content', 'excerpt' );
+				get_template_part( 'template-parts/content/content', 'loop' );
 
 				// End the loop.
 			endwhile;
@@ -49,7 +49,7 @@ get_header();
 		endif;
 		?>
 		</main><!-- #main -->
-	</div><!-- #primary -->
+	</section><!-- #primary -->
 
 <?php
 get_footer();
