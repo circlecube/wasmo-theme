@@ -261,7 +261,10 @@ add_filter( 'network_site_url', function($url, $path, $scheme) {
 
 // fixes URLs in email that goes out.
 add_filter("retrieve_password_message", function ($message, $key) {
-  	return str_replace(get_site_url(1), get_site_url(), $message);
+	$message = str_replace(get_site_url(1), get_site_url(), $message);
+	$message = str_replace('circlecubes', 'wasmormon.org', $message);
+	 
+  	return $message;
 }, 10, 2);
 
 // fixes email title
