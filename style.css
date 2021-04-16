@@ -653,6 +653,9 @@ cite span {
 .lwa td {
 	word-break: break-word;
 }
+.lwa input[type="checkbox"] {
+	margin-right: .5rem;
+}
 .lwa-modal input[type="submit"],
 .lwa-default input[type="submit"] {
 	margin-bottom: 1.5rem;
