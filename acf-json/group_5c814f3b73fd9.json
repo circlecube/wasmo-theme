@@ -81,22 +81,6 @@
             "mime_types": ""
         },
         {
-            "key": "field_5e8f9a6211bed",
-            "label": "Story",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
             "key": "field_5c87b7a994494",
             "label": "About Me",
             "name": "about_me",
@@ -135,6 +119,39 @@
             "new_lines": "wpautop"
         },
         {
+            "key": "field_6052478cdce82",
+            "label": "Continue",
+            "name": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Continue writing your story on the next <a href=\"#content\">tab (top of the page)<\/a>. Answer some predefined questions for readers to continue telling your story and the story of mormonism. Feel free to submit new questions or come back to add or edit your story anytime you wish.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_5e8f9a6211bed",
+            "label": "Questions",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
             "key": "field_5c82b3ec902d9",
             "label": "Questions",
             "name": "questions",
@@ -168,7 +185,7 @@
                     },
                     "taxonomy": "question",
                     "field_type": "select",
-                    "allow_null": 1,
+                    "allow_null": 0,
                     "add_term": 1,
                     "save_terms": 0,
                     "load_terms": 0,
@@ -198,7 +215,7 @@
         },
         {
             "key": "field_5ebaf40db15f2",
-            "label": "Tags",
+            "label": "Labels",
             "name": "",
             "type": "tab",
             "instructions": "",
@@ -213,11 +230,28 @@
             "endpoint": 0
         },
         {
+            "key": "field_60524972dce84",
+            "label": "Labels",
+            "name": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "These labels are flair you can add to your profile. They are simple ways to indicate some general ideas you may feel aligned with. They are not meant to box you in but to tell a quick overview of your story. These are optional and just for fun, but also fluid so you may add more if you don't find any that makes sense for you.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
             "key": "field_5ebaf36bcc0fe",
             "label": "Mormon spectrum",
             "name": "mormon_spectrum",
             "type": "taxonomy",
-            "instructions": "",
+            "instructions": "Display some tags or labels on your profile to indicate where you see yourself on the mormon spectrum.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -239,7 +273,7 @@
             "label": "On My Shelf",
             "name": "my_shelf",
             "type": "taxonomy",
-            "instructions": "",
+            "instructions": "List your \"shelf items\" you had\/have with the church, or things that you found difficult or impossible to reconcile, you can have as few or as many as you want.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -326,11 +360,10 @@
             "choices": {
                 "false": "Not at all",
                 "private": "Yes, but only to users who are logged in",
-                "true": "Yes display my profile in the public directory"
+                "website": "Yes, display my profile publicly but only on the website (no social media spotlights)",
+                "true": "Yes display my profile in the public directory and in social media"
             },
-            "default_value": [
-                "true"
-            ],
+            "default_value": "true",
             "allow_null": 0,
             "multiple": 0,
             "ui": 1,
@@ -472,7 +505,7 @@
                 "Maybe": "Maybe",
                 "Yes, please": "Yes, please"
             },
-            "default_value": [],
+            "default_value": false,
             "allow_null": 0,
             "multiple": 0,
             "ui": 1,
@@ -511,7 +544,7 @@
         "tags",
         "send-trackbacks"
     ],
-    "active": 1,
+    "active": true,
     "description": "",
-    "modified": 1589310533
+    "modified": 1618611137
 }
