@@ -369,6 +369,7 @@ function wasmo_update_user( $post_id ) {
 	delete_transient( 'directory-public-full--1' );
 	delete_transient( 'directory-private-widget-9' );
 	delete_transient( 'directory-public-widget-9' );
+	delete_transient( 'directory-public-bumper-4' );
 	delete_transient( 'directory-private-shortcode-12' );
 	delete_transient( 'directory-public-shortcode-12' );
 	delete_transient( 'directory-private-shortcode--1' );
@@ -694,7 +695,15 @@ function wasmo_before_after($content) {
 
 	// top
 	if ( get_field( 'before_post_callout', 'option' ) ) {
-		$top_callout = '<div class="callout callout-top">' . get_field( 'before_post_callout', 'option' ) . '</div>';
+		$top_callout = '<div class="callout callout-top">';
+		$top_callout .= get_field( 'before_post_callout', 'option' );
+		$top_callout .= '<h5>Recent Profiles</h5>';
+		ob_start();
+		set_query_var( 'max_profiles', 4 );
+		set_query_var( 'context', 'bumper' );
+		get_template_part( 'template-parts/content/content', 'directory' );
+		$top_callout .= ob_get_clean(); 
+		$top_callout .= '</div>';
 	} else {
 		ob_start();
 		?>

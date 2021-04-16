@@ -215,6 +215,14 @@ body.logged-in .menu-item.logged-in {
 	text-decoration: none;
 }
 
+.callout .the-directory.directory-bumper {
+	margin: 0;
+	padding: 0;
+}
+.the-directory.directory-bumper .directory {
+	margin: 0;
+}
+
 @media only screen and (min-width: 768px) {
 	.the-directory .directory {
 		grid-template-columns: repeat(4, 1fr);
