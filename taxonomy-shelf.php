@@ -21,6 +21,11 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 				<header class="entry-header">
 					<h1 class="entry-title"><?php echo wp_kses_post( $term->name ); ?></h1>
                     <p class="entry-description"><?php echo wp_kses_post( $term->description ); ?></p>
+                    <?php
+                        // TODO:
+                        // Add blog posts relevant to this shelf item.
+                        // Add links relevant to the shelf item - these can be added to the term description.
+                    ?>
 					<hr />
 					<h3>Profiles with <em><?php echo wp_kses_post( $term->name ); ?></em> on their "shelf":</h3>
 				</header><!-- .page-header -->
