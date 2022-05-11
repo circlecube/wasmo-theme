@@ -2,6 +2,8 @@
 // Directory
 $context = get_query_var( 'context' );
 $max_profiles = get_query_var( 'max_profiles' );
+$tax = get_query_var('tax');
+$termid = get_query_var('termid');
 
 if ( empty( $context ) ) {
 	$context = 'full';
@@ -12,6 +14,9 @@ if ( 'widget' === $context ) {
 }
 if ( empty( $max_profiles ) ) {
 	$max_profiles = 50;
+}
+if ( $context === 'taxonomy' ) {
+	$context = 'taxonomy-' . $tax . '-' . $termid;
 }
 
 // define transient name - taxid + user state.
@@ -32,9 +37,9 @@ delete_transient( 'directory-private-shortcode' );
 // delete_transient( 'directory-public-widget-9' );
 // delete_transient( 'directory-private-shortcode-12' );
 // delete_transient( 'directory-public-shortcode-12' );
-// if ( current_user_can('administrator') && WP_DEBUG ) {
-// 	$transient_name = time();
-// }
+if ( current_user_can('administrator') && WP_DEBUG ) {
+	$transient_name = time();
+}
 //use transient to cache data
 if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$the_directory = '';
@@ -46,9 +51,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		'order'        => 'DESC',
 		'fields'       => 'all',
 	);
-	// if ( 'widget' === $context ) {
-		// $args['number'] = 10;
-	// }
+	
 	$users = get_users( $args );
 
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
@@ -64,6 +67,31 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			get_field( 'tagline', 'user_' . $userid ) &&
 			'true' === get_field( 'in_directory', 'user_' . $userid ) ||
 			'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
+
+			// $context contains taxonomy && user has the term selected
+			if ( strpos( $context, 'taxonomy' ) === 0 ) {
+				$match_flag = false;
+				$userterms = null;
+				if ( $tax === 'spectrum' ) {
+					$userterms = get_field( 'mormon_spectrum', 'user_' . $userid );
+				} else if ( $tax === 'shelf') {
+					$userterms = get_field( 'my_shelf', 'user_' . $userid );
+				}
+				if ( !$userterms ) {
+					continue;
+				} 
+				// var_dump($userterms);
+				// if this term not in user terms - set flag to true
+				foreach ( $userterms as $userterm ) {
+					if ( $userterm->term_id === $termid ) {
+						$match_flag = true;
+					}
+				}
+				// if not found skip this profile
+				if ( ! $match_flag ) {
+					continue;
+				}
+			}
 			
 			$counter++;
 			$userimg = get_field( 'photo', 'user_' . $userid );

@@ -88,8 +88,8 @@ if ( $shelf_items ) { ?>
 	<h4>On my shelf</h4>
 	<ul class="tags">
 	<?php foreach( $shelf_items as $term ): ?>
-		<li><span class="tag"><?php echo $term->name; ?></span></li>
-		<!-- <li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li> -->
+		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
+		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 <?php } 
@@ -101,8 +101,8 @@ if ( $spectrum_terms ) { ?>
 	<h4>On the Mormon Spectrum</h4>
 	<ul class="tags">
 	<?php foreach( $spectrum_terms as $term ): ?>
-		<li><span class="tag"><?php echo $term->name; ?></span></li>
-		<!-- <li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li> -->
+		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
+		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 <?php } 
