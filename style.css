@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.9.14
+ Version:          1.9.15
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -400,10 +400,10 @@ h2.tagline {
 	float: left;
 }
 
-.tags .tag {
-	background: #eee;
+.tags li .tag {
+	background-color: var(--color-blue);
 	border-radius: 3px 0 0 3px;
-	color: var(--color-gray3);
+	color: white;
 	display: inline-block;
 	height: 26px;
 	line-height: 26px;
@@ -416,7 +416,7 @@ h2.tagline {
 	font-size: 14px;
 }
 
-.tags .tag::before {
+.tags li .tag::before {
 	background: #fff;
 	border-radius: 10px;
 	box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
@@ -429,10 +429,10 @@ h2.tagline {
 	transition: all 0.2s ease;
 }
 
-.tags .tag::after {
+.tags li .tag::after {
 	background: #fff;
 	border-bottom: 13px solid transparent;
-	border-left: 10px solid #eee;
+	border-left: 10px solid var(--color-blue);
 	border-top: 13px solid transparent;
 	content: "";
 	position: absolute;
@@ -441,14 +441,44 @@ h2.tagline {
 	transition: all 0.2s ease;
 }
 
-.tags .tag:hover {
-	background-color: var(--color-blue);
-	color: white;
+.tags li:nth-of-type(5n+2) .tag {
+	background-color: var(--color-orange);
+}
+.tags li:nth-of-type(5n+2) .tag::after {
+	border-left-color: var(--color-orange);
 }
 
-.tags .tag:hover::after {
-	border-left-color: var(--color-blue);
+.tags li:nth-of-type(5n+3) .tag {
+	background-color: var(--color-blue-2);
 }
+.tags li:nth-of-type(5n+3) .tag::after {
+	border-left-color: var(--color-blue-2);
+}
+
+.tags li:nth-of-type(5n+4) .tag {
+	background-color: var(--color-pink);
+}
+.tags li:nth-of-type(5n+4) .tag::after {
+	border-left-color: var(--color-pink);
+}
+
+.tags li:nth-of-type(5n+5) .tag {
+	background-color: var(--color-blue-3);
+}
+.tags li:nth-of-type(5n+5) .tag::after {
+	border-left-color: var(--color-blue-3);
+}
+
+.tags li .tag:hover {
+	background-color: #eee;
+	color: var(--color-gray3);
+	text-decoration: underline;
+}
+
+.tags li .tag:hover::after {
+	border-left-color: #eee;
+}
+
 
 cite {
 	text-align: right;
