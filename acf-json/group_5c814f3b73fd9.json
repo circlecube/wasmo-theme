@@ -3,6 +3,23 @@
     "title": "Was Mormon Profile",
     "fields": [
         {
+            "key": "field_63375a2e8579f",
+            "label": "Your very own mormon story or ex-mormon dot org profile",
+            "name": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Welcome! We are genuinely excited to meet you and read your story. Please, don't hesitate to <a href=\"https:\/\/circlecube.test\/wasmormon\/contact\/\" target=\"_blank\">reach out<\/a> if you have any questions or suggestions to improve the site.\r\n\r\nEnter an introduction and summarize why you left below, then feel free to also answer some questions to expand your story.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
             "key": "field_5cb48fcbb16dd",
             "label": "Profile",
             "name": "",
@@ -131,7 +148,7 @@
                 "class": "",
                 "id": ""
             },
-            "message": "Continue writing your story on the next <a href=\"#content\">tab (top of the page)<\/a>. Answer some predefined questions for readers to continue telling your story and the story of mormonism. Feel free to submit new questions or come back to add or edit your story anytime you wish.",
+            "message": "Continue writing your story on the next <a href=\"#content\">tab (top of the page)<\/a>. Answer some predefined questions for readers to continue telling your story and the story of mormonism. Feel free to submit new questions or come back to add or edit your story anytime you wish.\r\n\r\nYou can also add shelf item labels and place yourself on the post-mormon spectrum in the Labels tab. In the settings tab you can add social media links if you'd like others to be able to find you online. You can also update your name that is displayed in the directory and the id that controls your profile URL. You can also add a location to your profile.",
             "new_lines": "wpautop",
             "esc_html": 0
         },
@@ -156,7 +173,7 @@
             "label": "Questions",
             "name": "questions",
             "type": "repeater",
-            "instructions": "Add as many questions as you wish to answer to tell your story. Some find it therapeutic to answer some of these. None are required. You may also write your own questions to answer if you don't find a suitable question for your story.",
+            "instructions": "Add some questions to help tell your story. Some find it helpful or even therapeutic to answer some. You may also write your own questions to answer if you don't find a suitable question for your story. To start, click the \"Answer a Question\" button and then choose a question from the list (or you can press the little plus button to add your own question you'd like to answer)",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -164,11 +181,13 @@
                 "class": "",
                 "id": ""
             },
-            "collapsed": "field_5c82c9d1902db",
+            "layout": "block",
+            "pagination": 0,
             "min": 0,
             "max": 0,
-            "layout": "block",
-            "button_label": "Answer Another Question",
+            "collapsed": "field_5c82c9d1902db",
+            "button_label": "Answer a Question",
+            "rows_per_page": 20,
             "sub_fields": [
                 {
                     "key": "field_5c82b49f902da",
@@ -190,7 +209,8 @@
                     "save_terms": 0,
                     "load_terms": 0,
                     "return_format": "id",
-                    "multiple": 0
+                    "multiple": 0,
+                    "parent_repeater": "field_5c82b3ec902d9"
                 },
                 {
                     "key": "field_5c82c9d1902db",
@@ -209,7 +229,8 @@
                     "placeholder": "",
                     "maxlength": "",
                     "rows": 10,
-                    "new_lines": "wpautop"
+                    "new_lines": "wpautop",
+                    "parent_repeater": "field_5c82b3ec902d9"
                 }
             ]
         },
@@ -546,5 +567,6 @@
     ],
     "active": true,
     "description": "",
-    "modified": 1618611137
+    "show_in_rest": 0,
+    "modified": 1665174798
 }

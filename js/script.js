@@ -6,31 +6,31 @@ jQuery(document).ready(function($) {
 	function navLoginClick(e) {
 		e.preventDefault();
 		// open login modal
-		$('.lwa-links-modal').trigger('click');
+		$('.lwa-modal-trigger-el').trigger('click');
 		$('.lwa-form').show();
 		$('.lwa-register').hide();
-		$('.lwa-links-register-inline-cancel').hide();
-		$('.lwa-links-register-inline').hide();
+		$('.lwa-links-register-inline').remove();
+		$('.lwa-links-register-inline-cancel').remove();
 	}
 
 	$('.register').on('click', function(e){ 
 		e.preventDefault(); 
 		console.log('register link clicked');
 		// open login modal and register form
-		$('.lwa-links-modal').trigger('click');
+		$('.lwa-modal-trigger-el').trigger('click');
 		$('.lwa-form').hide();
 		$('.lwa-register').show();
-		$('.lwa-links-register-inline-cancel').hide();
+		$('.lwa-links-register-inline-cancel').remove();
 	} );
 
 	// add html validation for register form - give better hints on error too.
-	$('.lwa-modal #user_login').attr({
+	$('.lwa-modal-overlay .lwa-register .lwa-username input').attr({
 		pattern: '[a-z0-9.]{4,}',
 		title: 'Only lowercase letters and numbers. Minimum 4 characters.',
 		required: true
 	});
 
-	$('.lwa-modal #user_email').attr({
+	$('.lwa-modal-overlay .lwa-register .lwa-email input').attr({
 		type: 'email',
 		required: true
 	})

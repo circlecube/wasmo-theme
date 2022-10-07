@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.9.15
+ Version:          1.9.16
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -675,40 +675,33 @@ cite span {
 }
 
 /* footer widget / lwa modal */
-.lwa-modal {
-    margin: 50px auto 0;
-	max-width: 94%;
-	transform: translate(-50%, 0);
-	width: 450px;
+div.lwa-modal-overlay div.lwa-modal-popup {
+	width: 450px !important;
 	font-size: 18px;
 }
-.lwa-modal tr,
-.lwa-default tr {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
+.lwa-modal-overlay input[type="checkbox"] {
+	margin-right: .5rem !important;
 }
-.lwa td {
-	word-break: break-word;
-}
-.lwa input[type="checkbox"] {
-	margin-right: .5rem;
-}
-.lwa-modal input[type="submit"],
+.lwa-modal-overlay input[type="submit"],
 .lwa-default input[type="submit"] {
 	margin-bottom: 1.5rem;
 	margin-top: 1rem;
 }
-.lwa-modal .lwa-modal-close {
-	font-size: 40px;
-	right: 16px;
-	top: 16px;
+
+.lwa-modal-overlay form.lwa-remember .lwa-submit-button {
+	display: flex;
+	justify-content: space-between;
 }
-.lwa-modal .lwa-status {
+
+.lwa-modal-overlay .lwa-modal-popup .lwa-close-modal {
+	top: 8px !important;
+	z-index: 10;
+}
+.lwa-modal-overlay .lwa-status {
 	line-height: 1.2em;
 }
-.lwa-modal .lwa-links-register-inline-cancel,
-.lwa-modal .lwa-links-remember-cancel {
+.lwa-modal-overlay .lwa-links-register-inline-cancel,
+.lwa-modal-overlay .lwa-links-remember-cancel {
 	display: block;
 }
 .lwa-register-tip {
@@ -724,25 +717,27 @@ cite span {
 	display: inline-block;
 }
 .widget a#wp-logout,
-.widget a.lwa-links-modal {
-	color: var(--color-gray1);
-	border: 2px solid var(--color-gray1);
-	padding: 0.15rem 0.5rem;
-	border-radius: 5px;
-	font-size: 0.75rem;
-	text-transform: capitalize;
-	transition: all 0.2s ease;
+.widget .lwa-modal-trigger button.lwa-modal-trigger-el {
+	border: 2px solid var(--color-gray1) !important;
+	border-radius: 5px !important;
+	color: var(--color-gray1) !important;
+	font-size: 0.75rem !important;
+	height: auto !important;
+	padding: 0 1rem !important;
+	text-transform: capitalize !important;
+	transition: all 0.2s ease !important;
 }
 .widget a#wp-logout:hover,
-.widget a.lwa-links-modal:hover {
-	background: rgba(255, 255, 255, 0.15);
-	color: var(--color-white);
+.widget .lwa-modal-trigger button.lwa-modal-trigger-el:hover {
+	background: rgba(255, 255, 255, 0.15) !important;
+	border: 2px solid var(--color-gray0) !important;
+	color: var(--color-white) !important;
 }
 
 .lwa-links,
 .lwa-submit-links {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
 .lwa-links input,
 .lwa-links label,
