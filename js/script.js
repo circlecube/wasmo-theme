@@ -2,7 +2,8 @@ jQuery(document).ready(function($) {
 	
 	// nav login link click event handler
 	$('.nav-login').on('click', navLoginClick);
-	// open modal on nav link click
+	$('.register').on('click', navRegisterClick);
+	
 	function navLoginClick(e) {
 		e.preventDefault();
 		// open login modal
@@ -13,7 +14,8 @@ jQuery(document).ready(function($) {
 		$('.lwa-links-register-inline-cancel').remove();
 	}
 
-	$('.register').on('click', function(e){ 
+	
+	function navRegisterClick(e){ 
 		e.preventDefault(); 
 		console.log('register link clicked');
 		// open login modal and register form
@@ -21,7 +23,7 @@ jQuery(document).ready(function($) {
 		$('.lwa-form').hide();
 		$('.lwa-register').show();
 		$('.lwa-links-register-inline-cancel').remove();
-	} );
+	}
 
 	// add html validation for register form - give better hints on error too.
 	$('.lwa-modal-overlay .lwa-register .lwa-username input').attr({

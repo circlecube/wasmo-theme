@@ -151,35 +151,87 @@ endif;
 
 <div class="content-footer">
 	<?php 
-		$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
-		$registered = $curauth->user_registered;
-		$registered_rel = human_time_diff( strtotime( $registered ) );
-		$last_login = intval( get_user_meta( $userid, 'last_login', true ) );
-		$last_login_rel = human_time_diff( $last_login );
-		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
-		$last_save_rel = human_time_diff( $last_save );
-		$save_count = intval( get_user_meta( $userid, 'save_count', true ) );
+	// display footer data in admin user
+	if ( current_user_can( 'manage_options' ) ) {
 	?>
-	<span class="user-meta" 
-		data-key="member-since" 
-		data-value="<?php echo esc_attr( strtotime( $registered ) ); ?>" 
-		data-relval="<?php echo esc_attr( $registered_rel ); ?>">
-	</span>
-	<span class="user-meta" 
-		data-key="last-login" 
-		data-value="<?php echo esc_attr( $last_login ); ?>"
-		data-relval="<?php echo esc_attr( $last_login_rel ); ?>">
-	</span>
-	<span class="user-meta" 
-		data-key="last-save" 
-		data-value="<?php echo esc_attr( $last_save ); ?>"
-		data-relval="<?php echo esc_attr( $last_save_rel ); ?>">
-	</span>
-	<span class="user-meta" 
-		data-key="save-count" 
-		data-value="<?php echo esc_attr( $save_count ); ?>">
-	</span>
-
+	<div class="profile-data">
+		<h4>Profile Data</h4>
+		<dl>
+		<?php 
+			$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+			$registered = $curauth->user_registered;
+			$registered_rel = human_time_diff( strtotime( $registered ) );
+			$last_login = get_user_meta( $userid, 'last_login', true );
+			$last_login_rel = human_time_diff( intval( $last_login ) );
+			$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
+			$last_save_rel = human_time_diff( $last_save );
+			$save_count = intval( get_user_meta( $userid, 'save_count', true ) );
+			$in_directory = get_user_meta( $userid, 'in_directory', true );
+			$i_want_to_write_posts = get_user_meta( $userid, 'i_want_to_write_posts', true );
+		?>
+		<span class="user-meta" 
+			data-key="member-since" 
+			data-value="<?php echo esc_attr( strtotime( $registered ) ); ?>" 
+			data-relval="<?php echo esc_attr( $registered_rel ); ?>"
+			title="<?php echo esc_attr( $registered ); ?>"
+		>
+			<dt>Member since</dt>
+			<dd><?php echo esc_attr( $registered_rel ); ?></dd>
+		</span>
+		<span class="user-meta" 
+			data-key="last-login" 
+			data-value="<?php echo esc_attr( $last_login ); ?>"
+			data-relval="<?php echo esc_attr( $last_login_rel ); ?>"
+			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_save ) ); ?>"
+		>
+			<dt>Last Login</dt>
+			<dd><?php echo esc_attr( $last_login_rel ); ?></dd>
+		</span>
+		<span class="user-meta" 
+			data-key="last-save" 
+			data-value="<?php echo esc_attr( $last_save ); ?>"
+			data-relval="<?php echo esc_attr( $last_save_rel ); ?>"
+			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_login ) ); ?>"
+		>
+			<dt>Last save</dt>
+			<dd><?php echo esc_attr( $last_save_rel ); ?></dd>
+		</span>
+		<span class="user-meta" 
+			data-key="save-count" 
+			data-value="<?php echo esc_attr( $save_count ); ?>"
+		>
+			<dt>Saves</dt>
+			<dd><?php echo esc_attr( $save_count ); ?></dd>
+		</span>
+		<span class="user-meta"
+			data-key="in_directory"
+			data-value="<?php echo esc_attr( $in_directory ); ?>"
+		>
+			<dt>In Directory?</dt>
+			<dd><?php echo $in_directory; ?></dd>
+		</span>
+		<span class="user-meta"
+			data-key="i_want_to_write_posts"
+			data-value="<?php echo esc_attr( $i_want_to_write_posts ); ?>"
+		>
+			<dt>I want to write posts?</dt>
+			<dd><?php echo $i_want_to_write_posts; ?></dd>
+		</span>
+		<span class="user-meta"
+			data-key="edit"
+			data-value="<?php echo $curauth->user_login; ?>"
+		>
+			<dt>Edit Profile</dt>
+			<dd>
+				<a 
+					href="<?php echo esc_url( get_edit_user_link( $userid ) ); ?>"
+					target="_blank"
+				><?php echo $curauth->user_login; ?></a>
+			</dd>
+		</span>
+		</dl>
+	</div>
+	<?php } // end admin check ?>
 
 	<div class="buttons">
 		<?php if ( 
