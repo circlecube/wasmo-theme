@@ -3,16 +3,22 @@
 * @var $userid
 */
 ?>
-
+<?php 
+$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+?>
 <div class="content-header">
 
 	<div class="content-right">
 		<?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
 			<h1 class="hi"><?php echo wp_kses_post( get_field( 'hi', 'user_' . $userid ) ); ?></h1>
+		<?php } else { ?>
+			<h1 class="hi">Hi, I'm <?php echo $curauth->user_login; ?></h1>
 		<?php } ?>
 
 		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
 			<h2 class="tagline"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
+		<?php } else { ?>
+			<h2 class="tagline">I was a mormon.</h2>
 		<?php } ?>
 
 		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
@@ -26,7 +32,9 @@
 		if ( $userimg ) {
 			echo wp_get_attachment_image( $userimg, 'medium' );
 		} else {
-			echo '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+			$hash = md5( strtolower( trim( $curauth->user_email ) ) );
+			$gravatar = $hash . '?s=300&d=mp';
+			echo '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
 		}
 		?></div>
 		<?php 
@@ -158,7 +166,6 @@ endif;
 		<h4>Profile Data</h4>
 		<dl>
 		<?php 
-			$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
 			$registered = $curauth->user_registered;
 			$registered_rel = human_time_diff( strtotime( $registered ) );
 			$last_login = get_user_meta( $userid, 'last_login', true );
@@ -178,24 +185,29 @@ endif;
 			<dt>Member since</dt>
 			<dd><?php echo esc_attr( $registered_rel ); ?></dd>
 		</span>
+		<?php if ( $last_login ) { ?>
 		<span class="user-meta" 
 			data-key="last-login" 
 			data-value="<?php echo esc_attr( $last_login ); ?>"
 			data-relval="<?php echo esc_attr( $last_login_rel ); ?>"
-			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_save ) ); ?>"
+			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_login ) ); ?>"
 		>
 			<dt>Last Login</dt>
 			<dd><?php echo esc_attr( $last_login_rel ); ?></dd>
 		</span>
+		<?php } ?>
+		<?php if ( $last_save ) { ?>
 		<span class="user-meta" 
 			data-key="last-save" 
 			data-value="<?php echo esc_attr( $last_save ); ?>"
 			data-relval="<?php echo esc_attr( $last_save_rel ); ?>"
-			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_login ) ); ?>"
+			title="<?php echo esc_attr( date('Y-m-d H:i:s', $last_save ) ); ?>"
 		>
 			<dt>Last save</dt>
 			<dd><?php echo esc_attr( $last_save_rel ); ?></dd>
 		</span>
+		<?php } ?>
+		<?php if ( $save_count ) { ?>
 		<span class="user-meta" 
 			data-key="save-count" 
 			data-value="<?php echo esc_attr( $save_count ); ?>"
@@ -203,6 +215,8 @@ endif;
 			<dt>Saves</dt>
 			<dd><?php echo esc_attr( $save_count ); ?></dd>
 		</span>
+		<?php } ?>
+		<?php if ( $in_directory ) { ?>
 		<span class="user-meta"
 			data-key="in_directory"
 			data-value="<?php echo esc_attr( $in_directory ); ?>"
@@ -210,6 +224,8 @@ endif;
 			<dt>In Directory?</dt>
 			<dd><?php echo $in_directory; ?></dd>
 		</span>
+		<?php } ?>
+		<?php if ( $i_want_to_write_posts ) { ?>
 		<span class="user-meta"
 			data-key="i_want_to_write_posts"
 			data-value="<?php echo esc_attr( $i_want_to_write_posts ); ?>"
@@ -217,6 +233,7 @@ endif;
 			<dt>I want to write posts?</dt>
 			<dd><?php echo $i_want_to_write_posts; ?></dd>
 		</span>
+		<?php } ?>
 		<span class="user-meta"
 			data-key="edit"
 			data-value="<?php echo $curauth->user_login; ?>"

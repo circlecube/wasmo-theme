@@ -29,7 +29,7 @@ if ( is_user_logged_in() ) {
 $transient_name = implode('-', array( 'directory', $state, $context, $max_profiles ) );
 $transient_exp = 7 * 24 * HOUR_IN_SECONDS; // one week
 
-delete_transient( 'directory-private-shortcode' );
+// delete_transient( 'directory-private-shortcode' );
 // debug
 // delete_transient( 'directory-private-full--1' );
 // delete_transient( 'directory-public-full--1' );
@@ -102,7 +102,9 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 					if ( $userimg ) {
 						$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
 					} else {
-						$the_directory .= '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+						$hash = md5( strtolower( trim( $user->user_email ) ) );
+						$gravatar = $hash . '?r=pg&size=300&default=mp';
+						$the_directory .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
 					}
 				$the_directory .= '</span>';
 				$the_directory .= '<span class="directory-name">' . $username . '</span>';
@@ -116,7 +118,9 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	}
 	$the_directory .= '</div>';
 	$the_directory .= '</section>';
-
-	set_transient( $transient_name, $the_directory, $transient_exp );
+	
+	if ( !current_user_can('administrator') ) { // only save transient if non admin user
+		set_transient( $transient_name, $the_directory, $transient_exp );
+	}
 }
 echo $the_directory;
