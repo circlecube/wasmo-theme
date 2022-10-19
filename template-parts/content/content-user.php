@@ -33,7 +33,8 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 			echo wp_get_attachment_image( $userimg, 'medium' );
 		} else {
 			$hash = md5( strtolower( trim( $curauth->user_email ) ) );
-			$gravatar = $hash . '?s=300&d=mp';
+			$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+			$gravatar = $hash . '?s=300&d='.$default_img;
 			echo '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
 		}
 		?></div>

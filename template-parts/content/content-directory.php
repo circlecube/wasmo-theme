@@ -103,7 +103,8 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 						$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
 					} else {
 						$hash = md5( strtolower( trim( $user->user_email ) ) );
-						$gravatar = $hash . '?r=pg&size=300&default=mp';
+						$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+						$gravatar = $hash . '?r=pg&size=300&default=' . $default_img;
 						$the_directory .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
 					}
 				$the_directory .= '</span>';
