@@ -314,6 +314,16 @@ function wasmo_login_logo() { ?>
 <?php }
 add_action( 'login_enqueue_scripts', 'wasmo_login_logo' );
 
+function wasmo_login_logo_url() {
+    return home_url();
+}
+add_filter( 'login_headerurl', 'wasmo_login_logo_url' );
+
+function wasmo_login_logo_url_title() {
+    return 'wasmormon.org';
+}
+add_filter( 'login_headertext', 'wasmo_login_logo_url_title' );
+
 // Capture user login and add it as timestamp in user meta data
 function wasmo_user_lastlogin( $user_login, $user ) {
     update_user_meta( $user->ID, 'last_login', time() );
@@ -439,8 +449,8 @@ function wasmo_send_user_email__welcome( $user_id ){
 
 Welcome to ' . $sitename . '! We\'re glad you\'ve joined. Visit the following links (also found in the site header when you\'re logged in).
 
-	Edit your proflie: '.home_url('/edit/').'
-	View/share your profile: '. get_author_posts_url( $user_id ) .'
+	Edit your proflie: ' . home_url('/edit/') . '
+	View/share your profile: ' . get_author_posts_url( $user_id ) . ' (you can change this on your profile)
 
 We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site.
 
@@ -466,8 +476,8 @@ function wasmo_send_user_email__belated_welcome( $user_id ){
 
 Thank you for joining ' . $sitename . '! We want to personally welcome you to the site (sorry we\'re a little late). We hope you have appreciated seeing all the faith transition stories. We hope you will contribute your own profile too.
 
-	Edit your proflie: '.home_url('/edit/').'
-	View/share your own profile: '. get_author_posts_url( $user_id ) .'
+	Edit your proflie: ' . home_url('/edit/') . '
+	View/share your own profile: ' . get_author_posts_url( $user_id ) . '
 
 We are genuinely excited to meet you and read your story. Remember, you can return to the site anytime to update your story, so there is no need to write the whole thing in one go. Start with a basic couple sentences if you wish. Also, take note that there is a setting to control the visibility of your profile - you can select if you want your profile to be displayed publicly, only to other site members or even to not display it anywhere. 
 
@@ -495,7 +505,7 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 			$notify_mail_message .= 'New profile created ';
 		}
 		if ( $save_count > 1 ) {
-			$notify_mail_subject = $sitename . ' Profile Update: ' . $user_nicename;
+			$notify_mail_subject = $sitename . ' Profile Update ( #' . $save_count . '): ' . $user_nicename;
 			$notify_mail_message .= 'Profile updated ';
 		}
 		$notify_mail_message .= 'by ' . $user_nicename .': ' . get_author_posts_url( $user_id );
@@ -535,7 +545,7 @@ function oa_social_login_do_after_user_insert ($user_data, $identity) {
 }
 add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
 
-//This function will be called before Social Login logs the the user in
+//This function will be called before Social Login logs the user in
 function oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
 	// record last login
 	wasmo_user_lastlogin($user_data->user_login, $user_data);
