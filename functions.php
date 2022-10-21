@@ -299,7 +299,20 @@ Profile Save/Update
 
 */
 
-
+// custom wp-login logo
+function wasmo_login_logo() { ?>
+    <style type="text/css">
+        #login h1 a, .login h1 a {
+        	background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/img/wasmormon-logo.png);
+			height: 190px;
+			width: 190px;
+			background-size: 190px 190px;
+			background-repeat: no-repeat;
+        	padding-bottom: 30px;
+        }
+    </style>
+<?php }
+add_action( 'login_enqueue_scripts', 'wasmo_login_logo' );
 
 // Capture user login and add it as timestamp in user meta data
 function wasmo_user_lastlogin( $user_login, $user ) {
@@ -476,12 +489,13 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 	$sitename = get_bloginfo( 'name' );
 	$headers = 'From: '. $notify_mail_to;
 	if ( $user_info ) {
-		$notify_mail_subject = $sitename . ' New Profile: ' . $user_nicename;
 		$notify_mail_message = '';
 		if ( $save_count <= 1 ) {
+			$notify_mail_subject = $sitename . ' New Profile Added: ' . $user_nicename;
 			$notify_mail_message .= 'New profile created ';
 		}
 		if ( $save_count > 1 ) {
+			$notify_mail_subject = $sitename . ' Profile Update: ' . $user_nicename;
 			$notify_mail_message .= 'Profile updated ';
 		}
 		$notify_mail_message .= 'by ' . $user_nicename .': ' . get_author_posts_url( $user_id );
