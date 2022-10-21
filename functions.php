@@ -812,7 +812,7 @@ function wasmo_user_profile_set_og_image( $image ) {
 
 			// update 
 			return sprintf(
-				'<a rel="nowfollow" target="_blank" href="%s">%s</a>', 
+				'<a rel="nofollow" target="_blank" href="%s">%s</a>', 
 				$url, 
 				$text
 			);
