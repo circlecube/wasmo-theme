@@ -5,25 +5,25 @@ require_once( get_stylesheet_directory() . '/includes/wasmo-posts-widget.php' );
 
 // register Foo_Widget widget
 function register_wasmo_widgets() {
-    register_widget( 'wasmo\Directory_Widget' );
-    register_widget( 'wasmo\Posts_Widget' );
+	register_widget( 'wasmo\Directory_Widget' );
+	register_widget( 'wasmo\Posts_Widget' );
 }
 add_action( 'widgets_init', 'register_wasmo_widgets' );
 
 // Enqueue styles - get parent theme styles first.
 function wasmo_enqueue() {
 
-    $parent_style = 'parent-style'; // This is 'twentynineteen-style' for the Twenty Nineteen theme.
+	$parent_style = 'parent-style'; // This is 'twentynineteen-style' for the Twenty Nineteen theme.
 
-    wp_enqueue_style( 
+	wp_enqueue_style( 
 		$parent_style, 
 		get_stylesheet_directory_uri() . '/twentynineteen.css',
 	);
-    wp_enqueue_style( 
+	wp_enqueue_style( 
 		'wasmo-style',
-        get_stylesheet_directory_uri() . '/style.css',
-        array( $parent_style ),
-        wp_get_theme()->get('Version')
+		get_stylesheet_directory_uri() . '/style.css',
+		array( $parent_style ),
+		wp_get_theme()->get('Version')
 	);
 	
 	wp_enqueue_script( 
@@ -301,40 +301,40 @@ Profile Save/Update
 
 // custom wp-login logo
 function wasmo_login_logo() { ?>
-    <style type="text/css">
-        #login h1 a, .login h1 a {
-        	background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/img/wasmormon-logo.png);
+	<style type="text/css">
+		#login h1 a, .login h1 a {
+			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/img/wasmormon-logo.png);
 			height: 190px;
 			width: 190px;
 			background-size: 190px 190px;
 			background-repeat: no-repeat;
-        	padding-bottom: 30px;
-        }
-    </style>
+			padding-bottom: 30px;
+		}
+	</style>
 <?php }
 add_action( 'login_enqueue_scripts', 'wasmo_login_logo' );
 
 function wasmo_login_logo_url() {
-    return home_url();
+	return home_url();
 }
 add_filter( 'login_headerurl', 'wasmo_login_logo_url' );
 
 function wasmo_login_logo_url_title() {
-    return 'wasmormon.org';
+	return 'wasmormon.org';
 }
 add_filter( 'login_headertext', 'wasmo_login_logo_url_title' );
 
 // Capture user login and add it as timestamp in user meta data
 function wasmo_user_lastlogin( $user_login, $user ) {
-    update_user_meta( $user->ID, 'last_login', time() );
+	update_user_meta( $user->ID, 'last_login', time() );
 }
 add_action( 'wp_login', 'wasmo_user_lastlogin', 10, 2 );
  
 // Display last login time
 function wasmo_get_lastlogin() { 
-    $last_login = get_the_author_meta('last_login');
-    $the_login_date = human_time_diff($last_login);
-    return $the_login_date; 
+	$last_login = get_the_author_meta('last_login');
+	$the_login_date = human_time_diff($last_login);
+	return $the_login_date; 
 }
 
 function get_default_display_name_value($value, $post_id, $field) {
@@ -671,7 +671,7 @@ function wasmo_entry_footer() {
 
 
 function wasmo_excerpt_link() {
-    return '<a class="more-link button button-small" href="' . get_permalink() . '">Read more</a>';
+	return '<a class="more-link button button-small" href="' . get_permalink() . '">Read more</a>';
 }
 add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
 
@@ -691,7 +691,7 @@ function wasmo_directory_shortcode( $atts ) {
 	set_query_var( 'context', 'shortcode' );
 	get_template_part( 'template-parts/content/content', 'directory' );
 	$directory .= ob_get_clean();
-    return $directory;
+	return $directory;
 }
 
 /**
@@ -759,7 +759,7 @@ function wasmo_before_after($content) {
 	$fullcontent = $top_callout . $content . $bottom_callout;
 
 
-    return $fullcontent;
+	return $fullcontent;
 }
 add_filter('the_content', 'wasmo_before_after');
 
@@ -771,23 +771,23 @@ add_filter( 'wpseo_twitter_image', 'wasmo_user_profile_set_og_image' );
 
 // filter to update user profile page title for seo
 function wasmo_filter_profile_wpseo_title( $title ) {
-    if( is_author() ) {
+	if( is_author() ) {
 		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
 		$userid = $curauth->ID;
 		$title = esc_html( get_field( 'hi', 'user_' . $userid ) ) . ' - ';
 		$title .= 'Learn why I\'m no longer mormon at wasmormon.org';
-    }
-    return $title;
+	}
+	return $title;
 }
 
 // filter to update user profile page description for seo
 function wasmo_user_profile_wpseo_metadesc( $metadesc ) {
-    if( is_author() ) {
+	if( is_author() ) {
 		$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
 		$userid = $curauth->ID;
 		$metadesc = esc_html( get_field( 'tagline', 'user_' . $userid ) );
-    }
-    return $metadesc;
+	}
+	return $metadesc;
 }
 
 // Filter to update profile page open graph image to user profile image if there is one
@@ -874,3 +874,27 @@ function wasmo_after_signup() {
 }
 
 add_action( 'after_signup_form', 'wasmo_after_signup', 10 );
+
+// Random profile
+add_action('init','wasmo_random_add_rewrite');
+function wasmo_random_add_rewrite() {
+	global $wp;
+	$wp->add_query_var('randomprofile');
+	add_rewrite_rule('random/?$', 'index.php?randomprofile=1', 'top');
+}
+
+add_action('template_redirect','wasmo_random_profile_template');
+function wasmo_random_profile_template() {
+   if (get_query_var('randomprofile')) {
+			$args = array(
+				'orderby'     => 'rand',
+				'numberposts' => 1
+			);
+			$users = get_users( $args );
+			foreach ( $users as $user ) {
+				$link = get_author_posts_url( $user->ID );
+			}
+			wp_redirect( $link,307 );
+			exit;
+   }
+}
