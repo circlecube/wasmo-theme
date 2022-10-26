@@ -884,7 +884,7 @@ add_action('init','wasmo_random_add_rewrite');
 function wasmo_random_add_rewrite() {
 	global $wp;
 	$wp->add_query_var('randomprofile');
-	add_rewrite_rule('random/?$', 'index.php?randomprofile=1', 'top');
+	add_rewrite_rule('random/?$', '?randomprofile=1', 'top');
 }
 
 add_action('template_redirect','wasmo_random_profile_template');
@@ -898,7 +898,15 @@ function wasmo_random_profile_template() {
 			foreach ( $users as $user ) {
 				$link = get_author_posts_url( $user->ID );
 			}
-			wp_redirect( $link,307 );
+			wp_redirect( $link, 307 );
 			exit;
    }
+}
+add_action( 'pre_user_query', 'wasmo_random_user_query' );
+
+function wasmo_random_user_query( $class ) {
+    if( 'rand' == $class->query_vars['orderby'] )
+        $class->query_orderby = str_replace( 'user_login', 'RAND()', $class->query_orderby );
+
+    return $class;
 }
