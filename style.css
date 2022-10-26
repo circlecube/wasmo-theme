@@ -270,6 +270,20 @@ body.logged-in .menu-item.logged-in {
 	}
 }
 
+.the-directory .directory-pagination {
+	max-width: 100%;
+	width: 300px;
+	margin: 1rem auto;
+}
+.directory-pagination .page-numbers {
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+}
+.directory-pagination .page-numbers a {
+	/* border: 1px solid var(--color-blue); */
+}
+
 .widget-area.sidebar {
 	padding: 0 1rem;
 }

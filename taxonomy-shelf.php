@@ -32,14 +32,31 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 
 				<?php 
 					// use directory template with taxonomy context and pass in term
-					set_query_var( 'context', 'taxonomy' );
+					set_query_var( 'context', 'tax' );
 					set_query_var( 'tax', 'shelf' );
 					set_query_var( 'termid', $termid );
-					set_query_var( 'max_profiles', '-1' );
 					get_template_part( 'template-parts/content/content', 'directory' );
 				?>
 
 				<footer class="entry-footer">
+					<h3>Other Shelf Items:</h3>
+					<ul class="tags">
+					<?php
+						$terms = get_terms([
+							'taxonomy'   => 'shelf',
+							'hide_empty' => false,
+							'orderby'    => 'name',
+							'order'      => 'ASC'
+						]);
+						foreach ( $terms as $term ) : 
+							if ( $termid !== $term->term_id ) :
+					?>
+						<li><a class="tag" data-id="<?php echo esc_attr( $term->term_id) ?>" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
+					<?php 
+							endif;
+						 endforeach; 
+					?>
+					</ul>
 				</footer>
 
 			</article>
