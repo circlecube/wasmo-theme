@@ -51,8 +51,12 @@ get_header();
 			$the_answers .= '</blockquote>';
 
 			// user attribution - photo and name and link (only if they want to be listed in directory)
-			if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ||
-				'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
+			$in_directory = get_field( 'in_directory', 'user_' . $userid );
+			if ( 
+				'true' === $in_directory ||
+				'website' === $in_directory ||
+				( 'private' === $in_directory && is_user_logged_in() )
+			) {
 				
 				$userimg = get_field( 'photo', 'user_' . $userid );
 				$username = esc_html( $user->nickname );

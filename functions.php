@@ -581,7 +581,11 @@ function wasmo_update_user_question_count(){
 		$userid = $user->ID;
 		$tempterms['users']++;
 		// only use public users - so we don't end up with blank question pages
-		if ( 'true' === get_field( 'in_directory', 'user_' . $userid ) ) {
+		$in_directory = get_field( 'in_directory', 'user_' . $userid );
+		if ( 
+			'true' === $in_directory ||
+			'website' === $in_directory
+		) {
 			// get questions for user
 			if( have_rows( 'questions', 'user_' . $userid ) ) {
 				

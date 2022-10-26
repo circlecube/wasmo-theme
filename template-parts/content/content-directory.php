@@ -63,10 +63,14 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		// only add to directory if user includes themself and has filled out the first two fields
 		// true = public
 		// private = only to a logged in user
-		if ( get_field( 'hi', 'user_' . $userid ) && 
+		$in_directory = get_field( 'in_directory', 'user_' . $userid );
+		if (
+			get_field( 'hi', 'user_' . $userid ) &&
 			get_field( 'tagline', 'user_' . $userid ) &&
-			'true' === get_field( 'in_directory', 'user_' . $userid ) ||
-			'private' === get_field( 'in_directory', 'user_' . $userid ) && is_user_logged_in() ) {
+			'true' === $in_directory ||
+			'website' === $in_directory ||
+			( 'private' === $in_directory && is_user_logged_in() )
+		) {
 
 			// $context contains taxonomy && user has the term selected
 			if ( strpos( $context, 'taxonomy' ) === 0 ) {
