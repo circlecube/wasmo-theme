@@ -42,7 +42,6 @@ function filter_directory($user) {
 	} else {
 		$state = 'public';
 	}
-
 	$userid = $user->ID;
 	
 	// require both hi and tagline content, bail early if not present
@@ -69,8 +68,8 @@ function filter_directory($user) {
 	}
 
 	// is privacy setting set to private and user is logged in?
-	if ( 'private' === $in_directory && 'private' === $state ) {
-		return true;
+	if ( 'private' === $in_directory && 'private' !== $state ) {
+		return false;
 	}
 	
 	// not bailed yet?
