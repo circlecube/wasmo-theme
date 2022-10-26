@@ -64,9 +64,15 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		// true = public
 		// private = only to a logged in user
 		$in_directory = get_field( 'in_directory', 'user_' . $userid );
+		$userimg      = get_field( 'photo', 'user_' . $userid );
+		$has_image = $userimg ? true : false;
+
 		if (
-			get_field( 'hi', 'user_' . $userid ) &&
-			get_field( 'tagline', 'user_' . $userid ) &&
+			// has both hi and tagline content
+			( get_field( 'hi', 'user_' . $userid ) && get_field( 'tagline', 'user_' . $userid ) ) &&
+			// require image if not full directory
+			( ('full' !== $context && $has_image ) || ( 'full' === $context ) ) &&
+			// should display according to privacy settings
 			'true' === $in_directory ||
 			'website' === $in_directory ||
 			( 'private' === $in_directory && is_user_logged_in() )
