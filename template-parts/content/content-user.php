@@ -251,20 +251,27 @@ endif;
 	</div>
 	<?php } // end admin check ?>
 
-	<div class="buttons">
-		<?php if ( 
-				is_user_logged_in() &&
-				$userid === get_current_user_id() 
-			) { ?>
+	<?php if ( 
+		is_user_logged_in() &&
+		$userid === get_current_user_id() 
+	) { ?>
+		<div class="buttons">
 			<span class="edit-link">
 				<a href="<?php echo home_url( '/edit/' ); ?>">Edit Your Profile</a>
 			</span>
-		<?php } ?>
+		</div>
+	<?php } ?>
+	<div class="buttons">
+		<span class="wp-block-button">
+			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
+		</span>
+	</div>
+	<div class="buttons">
 		<span class="wp-block-button is-style-outline">
 			<a class="wp-block-button__link" href="<?php echo home_url( '/directory/' ); ?>">Back to the Directory</a>
 		</span>
-		<span class="wp-block-button">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
+		<span class="wp-block-button is-style-outline">
+			<a class="wp-block-button__link" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
 		</span>
 	</div>
 </div>

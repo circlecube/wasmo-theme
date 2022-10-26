@@ -55,7 +55,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$users = get_users( $args );
 
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
-	$the_directory .= '<div class="directory">';
+	$the_directory .= '<div class="directory directory-' . $context . '">';
 	$counter = 0;
 	// Array of WP_User objects.
 	foreach ( $users as $user ) { 
@@ -104,12 +104,11 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			}
 			
 			$counter++;
-			$userimg = get_field( 'photo', 'user_' . $userid );
 			$username = esc_html( $user->display_name );
 
-			$the_directory .= '<a class="person person-' . $counter . ' person-id-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
+			$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
 				$the_directory .= '<span class="directory-img">';
-					if ( $userimg ) {
+					if ( $has_image ) {
 						$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
 					} else {
 						$hash = md5( strtolower( trim( $user->user_email ) ) );

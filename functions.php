@@ -738,7 +738,7 @@ function wasmo_before_after($content) {
 		<div class="callout callout-top">
 			<h4>Thank you for visiting wasmormon.org!</h4>
 			<p>This site is mainly a repository of mormon faith transition stories. Hearing others stories is therapeutic, check out the <a href="/profiles/">was mormon profiles</a>.</p>
-			<p>Telling your own story is therapeutic too, consider joining the movement and <a href="/login/">tell your own story now</a>!</p>
+			<p>Telling your own story is therapeutic too, consider joining the movement and <a class="register" href="/login/">tell your own story now</a>!</p>
 		</div>
 		<?php 
 		$top_callout = ob_get_clean();

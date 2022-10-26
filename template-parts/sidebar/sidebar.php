@@ -9,11 +9,11 @@
 
 if ( is_active_sidebar( 'sidebar' ) ) : ?>
 
-	<aside class="widget-area sidebar" role="complementary" aria-label="<?php esc_attr_e( 'Sidebar', 'twentynineteen' ); ?>">
+	<aside class="widget-area sidebar entry" role="complementary" aria-label="<?php esc_attr_e( 'Sidebar', 'twentynineteen' ); ?>">
 		<?php
 		if ( is_active_sidebar( 'sidebar' ) ) {
 			?>
-					<div class="widget-column sidebar-widgets">
+					<div class="widget-column sidebar-widgets entry-content">
 					<?php dynamic_sidebar( 'sidebar' ); ?>
 					</div>
 				<?php

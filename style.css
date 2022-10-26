@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.9.21
+ Version:          1.9.22
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -60,7 +60,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+.sidebar .wp-block-button__link {
 	font-family: "Open Sans", sans-serif;
 }
 
@@ -257,19 +258,37 @@ body.logged-in .menu-item.logged-in {
 	text-decoration: none;
 	color: var(--color-white);
 	line-height: 1.1em;
-	opacity: 1;
+	opacity: 0;
 	transition: all 0.2s ease;
 }
 @media only screen and (min-width: 768px) {
-	.directory .person .directory-name {
+	.directory-full .person .directory-name {
 		opacity: 0;
 	}
-	.directory .person:hover .directory-name {
+	.directory-full .person:hover .directory-name {
 		opacity: 1;
 	}
 }
+
 .widget-area.sidebar {
 	padding: 0 1rem;
+}
+
+.sidebar.entry .widget-column.entry-content {
+    margin: 3rem 0;
+    max-width: 100%;
+    padding: 0;
+}
+.sidebar.entry .widget-column.entry-content > *,
+.sidebar.entry .the-directory.entry-content > * {
+    margin: 0;
+	max-width: 100%;
+}
+.sidebar.entry .widget-column.entry-content .widget {
+    margin: 0 0 1rem;
+}
+.entry .entry-content .wp-block-image figure {
+	max-width: 100% !important;
 }
 /* directory widget */
 .widget .the-directory {
@@ -340,6 +359,10 @@ h2.tagline:before {
 
 .buttons {
 	margin: 6rem 0;
+}
+
+.buttons + .buttons {
+	margin-top: -5rem;
 }
 
 .buttons .wp-block-button a {
