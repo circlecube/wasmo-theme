@@ -268,7 +268,7 @@ endif;
 	</div>
 	<div class="buttons">
 		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/directory/' ); ?>">Back to the Directory</a>
+			<a class="wp-block-button__link" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
 		</span>
 		<span class="wp-block-button is-style-outline">
 			<a class="wp-block-button__link" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
