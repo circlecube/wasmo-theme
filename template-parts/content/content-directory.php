@@ -30,6 +30,7 @@ if ( is_user_logged_in() ) {
 }
 
 // only add to directory if user includes themself and has filled out the first two fields
+if(!function_exists("filter_directory")) {
 function filter_directory($user) {
 	// global $context, $state;
 	$context = get_query_var( 'context' );
@@ -74,7 +75,8 @@ function filter_directory($user) {
 	
 	// not bailed yet?
 	return true;
-}
+}}
+if(!function_exists("filter_directory_for_tax")) {
 function filter_directory_for_tax($user){
 	// global $tax, $termid;
 	$tax = get_query_var('tax');
@@ -111,7 +113,7 @@ function filter_directory_for_tax($user){
 
 	// false if no match found
 	return false;
-}
+}}
 
 
 $transient_name = implode('-', array( 'directory', $state, $context, $max_profiles, 'page_' . $paged ) );
@@ -189,7 +191,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		$the_directory .= '<p>No profiles found here</p>';
 	}
 	$the_directory .= '</div>';
-	if ( $total_users > $max_profiles ) {
+	if ( 'full' === $context && $total_users > $max_profiles ) {
 		$pl_args = array(
 			'base'     => add_query_arg('paged','%#%'),
 			'format'   => '',
