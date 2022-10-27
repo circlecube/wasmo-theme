@@ -510,8 +510,15 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 			$notify_mail_message .= 'Profile updated ';
 		}
 		$notify_mail_message .= 'by ' . $user_nicename .': ' . get_author_posts_url( $user_id );
+		// profile content
+		ob_start();
+		set_query_var( 'userid', $user_id );
+		get_template_part( 'template-parts/content/content', 'usertext' );
+		$notify_mail_message .= ob_get_clean();
+		$notify_mail_message .= get_author_posts_url( $user_id );
+
 		// send mail
-		wp_mail( $notify_mail_to, $notify_mail_subject, esc_html( $notify_mail_message ), $headers );
+		wp_mail( $notify_mail_to, $notify_mail_subject,  $notify_mail_message , $headers );
 	}
 }
 
