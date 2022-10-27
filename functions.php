@@ -383,20 +383,8 @@ function wasmo_update_user( $post_id ) {
 	update_field( 'display_name', $user_displayname, 'user_' . $user_id );
 	update_field( 'profile_id', $user_nicename, 'user_' . $user_id );
 
-	// clear directory transients
-	delete_transient( 'directory-private-full' );
-	delete_transient( 'directory-public-full' );
-	delete_transient( 'directory-private-widget' );
-	delete_transient( 'directory-public-widget' );
-	delete_transient( 'directory-private-full--1' );
-	delete_transient( 'directory-public-full--1' );
-	delete_transient( 'directory-private-widget-9' );
-	delete_transient( 'directory-public-widget-9' );
-	delete_transient( 'directory-public-bumper-4' );
-	delete_transient( 'directory-private-shortcode-12' );
-	delete_transient( 'directory-public-shortcode-12' );
-	delete_transient( 'directory-private-shortcode--1' );
-	delete_transient( 'directory-public-shortcode--1' );
+	// clear all directory transients
+	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
 
 	// update question counts if user includes any
 	if( have_rows( 'questions', 'user_' . $user_id ) ){
@@ -909,4 +897,41 @@ function wasmo_random_user_query( $class ) {
         $class->query_orderby = str_replace( 'user_login', 'RAND()', $class->query_orderby );
 
     return $class;
+}
+
+/**
+ * Delete all transients from the database whose keys have a specific prefix.
+ *
+ * @param string $prefix The prefix. Example: 'my_cool_transient_'.
+ */
+function wasmo_delete_transients_with_prefix( $prefix ) {
+	foreach ( wasmo_get_transient_keys_with_prefix( $prefix ) as $key ) {
+		delete_transient( $key );
+	}
+}
+
+/**
+ * Gets all transient keys in the database with a specific prefix.
+ *
+ * Note that this doesn't work for sites that use a persistent object
+ * cache, since in that case, transients are stored in memory.
+ *
+ * @param  string $prefix Prefix to search for.
+ * @return array          Transient keys with prefix, or empty array on error.
+ */
+function wasmo_get_transient_keys_with_prefix( $prefix ) {
+	global $wpdb;
+
+	$prefix = $wpdb->esc_like( '_transient_' . $prefix );
+	$sql    = "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE '%s'";
+	$keys   = $wpdb->get_results( $wpdb->prepare( $sql, $prefix . '%' ), ARRAY_A );
+
+	if ( is_wp_error( $keys ) ) {
+		return [];
+	}
+
+	return array_map( function( $key ) {
+		// Remove '_transient_' from the option name.
+		return substr( $key['option_name'], strlen( '_transient_' ) );
+	}, $keys );
 }
