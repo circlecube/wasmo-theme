@@ -453,7 +453,7 @@ Welcome to ' . $sitename . '! We\'re glad you\'ve joined. Visit the following li
 	Edit your proflie: ' . home_url('/edit/') . '
 	View/share your profile: ' . get_author_posts_url( $user_id ) . ' (you can change this on your profile)
 
-We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site.
+We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site (you can reply to this email).
 
 Best,
 '. $sitename;
@@ -506,7 +506,7 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 			$notify_mail_message .= 'New profile created ';
 		}
 		if ( $save_count > 1 ) {
-			$notify_mail_subject = $sitename . ' Profile Update ( #' . $save_count . '): ' . $user_nicename;
+			$notify_mail_subject = $sitename . ' Profile Update (#' . $save_count . '): ' . $user_nicename;
 			$notify_mail_message .= 'Profile updated ';
 		}
 		$notify_mail_message .= 'by ' . $user_nicename .': ' . get_author_posts_url( $user_id );
