@@ -116,17 +116,9 @@ function filter_directory_for_tax($user){
 }}
 
 
-$transient_name = implode('-', array( 'directory', $state, $context, $max_profiles, 'page_' . $paged ) );
-$transient_exp = 7 * 24 * HOUR_IN_SECONDS; // one week
-
-// delete_transient( 'directory-private-shortcode' );
-// debug
-// delete_transient( 'directory-private-full--1' );
-// delete_transient( 'directory-public-full--1' );
-// delete_transient( 'directory-private-widget-9' );
-// delete_transient( 'directory-public-widget-9' );
-// delete_transient( 'directory-private-shortcode-12' );
-// delete_transient( 'directory-public-shortcode-12' );
+$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $max_profiles, 'page_' . $paged ) );
+$transient_exp = WEEK_IN_SECONDS;
+// wasmo_delete_transients_with_prefix( 'wasmo_directory' );
 if ( current_user_can('administrator') && WP_DEBUG ) {
 	$transient_name = time();
 }
