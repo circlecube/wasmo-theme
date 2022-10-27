@@ -399,6 +399,19 @@ function wasmo_update_user( $post_id ) {
 	$save_count = intval($save_count) + 1;
 	update_user_meta( $user_id, 'save_count', $save_count );
 	
+	// Add event to simple history logs
+	apply_filters(
+		'simple_history_log',
+		'Updated profile for {displayname}({nicename}) (edit #{savecount}) {link}',
+		[
+			'nicename' => $user_nicename,
+			'displayname' => $user_displayname,
+			'savecount' => $save_count,
+			'link' => get_author_posts_url( $user_id ),
+		],
+		'info'
+	);
+
 	//only if not edited by an admin
 	if ( !current_user_can( 'administrator' ) ) {
 		// notify email
