@@ -159,7 +159,18 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		}
 		$username = esc_html( $user->display_name );
 
-		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . '" href="' . get_author_posts_url( $userid ) . '">';
+		$fresh_class = '';
+		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
+		$diff = (int) abs( time() - $last_save );
+		if ( $diff < WEEK_IN_SECONDS ) {
+			$fresh_class .= ' age-week';
+		} else if ( $diff < MONTH_IN_SECONDS ) {
+			$fresh_class .= ' age-month';
+		} else {
+			// $fresh_class .= ' age-old';
+		}
+		
+		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . ' ' . $fresh_class . '" href="' . get_author_posts_url( $userid ) . '">';
 			$the_directory .= '<span class="directory-img">';
 				if ( $has_image ) {
 					$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
