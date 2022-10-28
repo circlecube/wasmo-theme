@@ -156,9 +156,44 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 else :
     // no questions found
 endif;
-?>
 
+$is_this_user = false;
+if ( 
+	is_user_logged_in() &&
+	$userid === get_current_user_id() 
+) {
+	$is_this_user = true;
+}
+?>
 <div class="content-footer">
+	
+	<?php set_query_var( 'userid', $userid ); ?>
+	<?php set_query_var( 'is_this_user', $is_this_user ); ?>
+	<?php set_query_var( 'name', $curauth->user_login ); ?>
+	<?php set_query_var( 'link', get_author_posts_url( $userid ) ); ?>
+	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
+	<?php if ( $is_this_user ) { ?>
+		<div class="buttons">
+			<span class="edit-link">
+				<a href="<?php echo home_url( '/edit/' ); ?>">Edit Your Profile</a>
+			</span>
+		</div>
+	<?php } ?>
+	<div class="buttons">
+		<span class="wp-block-button">
+			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
+		</span>
+	</div>
+	<div class="buttons">
+		<span class="wp-block-button is-style-outline">
+			<a class="wp-block-button__link" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
+		</span>
+		<span class="wp-block-button is-style-outline">
+			<a class="wp-block-button__link" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
+		</span>
+	</div>
+
+
 	<?php 
 	// display footer data in admin user
 	if ( current_user_can( 'manage_options' ) ) {
@@ -251,27 +286,4 @@ endif;
 	</div>
 	<?php } // end admin check ?>
 
-	<?php if ( 
-		is_user_logged_in() &&
-		$userid === get_current_user_id() 
-	) { ?>
-		<div class="buttons">
-			<span class="edit-link">
-				<a href="<?php echo home_url( '/edit/' ); ?>">Edit Your Profile</a>
-			</span>
-		</div>
-	<?php } ?>
-	<div class="buttons">
-		<span class="wp-block-button">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
-		</span>
-	</div>
-	<div class="buttons">
-		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
-		</span>
-		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
-		</span>
-	</div>
 </div>
