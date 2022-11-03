@@ -955,3 +955,13 @@ function wasmo_get_transient_keys_with_prefix( $prefix ) {
 		return substr( $key['option_name'], strlen( '_transient_' ) );
 	}, $keys );
 }
+
+// set up the block pattern category
+// define theme specific block patterns in theme patterns folder
+function wasmo_register_pattern_categories() {
+	register_block_pattern_category(
+		'wasmormon',
+		array( 'label' => __( 'wasmormon', 'wasmo' ) )
+	);
+}
+add_action( 'init', 'wasmo_register_pattern_categories' );
