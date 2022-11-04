@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.2
+ Version:          1.10.3
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -596,13 +596,8 @@ cite span {
 }
 .blog-main article.post {
 	background-color: #fff;
-	-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-	-moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-	box-shadow:0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
 	border-radius: 3px;
 	margin: .5rem;
-	/* max-width: calc(50% - 2rem); */
-	/* min-width: 360px; */
 	padding: 0 1rem;
 	position: relative;
 }
@@ -613,29 +608,11 @@ cite span {
 		max-width: calc(50% - 2rem);
 	}
 }
-.blog-main article.post:before, .blog-main article.post:after {
-	content:"";
-	position:absolute;
-	z-index:-1;
-	-webkit-box-shadow:0 0 20px rgba(0,0,0,0.4);
-	-moz-box-shadow:0 0 20px rgba(0,0,0,0.4);
-	box-shadow:0 0 20px rgba(0,0,0,0.4);
-	top:0;
-	bottom:0;
-	left:10px;
-	right:10px;
-	-moz-border-radius:100px / 10px;
-	border-radius:100px / 10px;
+
+.blog-main article.post .entry-title:before {
+	width: 100%;
 }
-.blog-main article.post:after {
-	right: 10px;
-	left: auto;
-	-webkit-transform:skew(8deg) rotate(3deg);
-	   -moz-transform:skew(8deg) rotate(3deg);
-		-ms-transform:skew(8deg) rotate(3deg);
-		 -o-transform:skew(8deg) rotate(3deg);
-			transform:skew(8deg) rotate(3deg);
-}
+
 .blog-main article.post .entry-header,
 .blog-main article.post .entry-content,
 .blog-main article.post .post-thumbnail {

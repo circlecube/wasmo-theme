@@ -5,8 +5,7 @@
   * Categories: featured, wasmormon
   */
 
-?>
-<!-- wp:group {"layout":{"type":"constrained"}} -->
+?><!-- wp:group {"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"><!-- wp:paragraph -->
 <p>Intro sentence</p>
 <!-- /wp:paragraph -->
@@ -56,7 +55,8 @@
 <!-- /wp:group -->
 
 <!-- wp:block {"ref":1513} /-->
-<div class="wp-block-group"><!-- wp:paragraph -->
+
+<!-- wp:paragraph -->
 <p>mormon faith crisis, quote, why i left, exit testimony, exit story, closing testimony, exmormon, profile spotlight, wasmormon profile, postmormon,</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
