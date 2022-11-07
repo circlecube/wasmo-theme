@@ -199,17 +199,17 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		$pl_args = array(
 			'base'     => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
 			'format'   => '',
-			'total'    => ceil($total_users / $max_profiles),
-			'current'  => max(1, $paged),
+			'total'    => ceil( $total_users / $max_profiles ),
+			'current'  => max( 1, $paged ),
 			'show_all' => true,
 			'type'     => 'list',
 		);
 		
-		$the_directory .= '<div class="directory-pagination">' . paginate_links($pl_args) . '</div>';
+		$the_directory .= '<div class="directory-pagination">' . paginate_links( $pl_args ) . '</div>';
 	}
 	$the_directory .= '</section>';
 	
-	if ( !current_user_can('administrator') ) { // only save transient if non admin user
+	if ( !current_user_can( 'administrator' ) ) { // only save transient if non admin user
 		set_transient( $transient_name, $the_directory, $transient_exp );
 	}
 }

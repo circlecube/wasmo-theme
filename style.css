@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.4
+ Version:          1.10.5
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -272,16 +272,51 @@ body.logged-in .menu-item.logged-in {
 
 .the-directory .directory-pagination {
 	max-width: 100%;
-	width: 300px;
 	margin: 1rem auto;
 }
-.directory-pagination .page-numbers {
+
+.directory-pagination > .page-numbers {
 	list-style: none;
 	display: flex;
-	justify-content: space-between;
+	justify-content: center;
 }
-.directory-pagination .page-numbers a {
-	/* border: 1px solid var(--color-blue); */
+
+.directory-pagination .page-numbers .page-numbers {
+	background-color: var(--color-blue-2);
+	color: var(--color-gray0);
+	display: block;
+	height: 2rem;
+	margin: 0 0.5rem;
+	min-width: 2rem;
+	padding: 0 0.75rem;
+	text-align: center;
+	text-decoration: none;
+	transition: all .2s ease;
+}
+
+.directory-pagination .page-numbers .page-numbers:hover {
+	background-color: var(--color-blue-3);
+}
+
+.directory-pagination .page-numbers .page-numbers.current {
+	background-color: transparent;
+	color: var(--color-blue);
+}
+
+.directory-pagination .page-numbers .page-numbers.current:hover {
+	color: var(--color-blue-2);
+}
+
+.directory-pagination .page-numbers .page-numbers.prev,
+.directory-pagination .page-numbers .page-numbers.next {
+	background-color: var(--color-gray0);
+	color: var(--color-blue-2);
+}
+
+.directory-pagination .page-numbers .page-numbers.prev:hover,
+.directory-pagination .page-numbers .page-numbers.next:hover {
+	background-color: var(--color-gray1);
+	color: var(--color-blue-3);
 }
 
 .widget-area.sidebar {
