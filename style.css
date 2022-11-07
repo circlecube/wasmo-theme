@@ -902,3 +902,13 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 	margin-bottom: 0;
 	padding: 0 .25rem 1rem;
 }
+
+.wp-block-gallery.has-nested-images.columns-2 figure.wp-block-image:not(#individual-image) {
+	width: 100%;
+}
+
+@media only screen and (min-width: 960px) {
+	.wp-block-gallery.has-nested-images.columns-2 figure.wp-block-image:not(#individual-image) {
+		width: calc(50% - var(--wp--style--unstable-gallery-gap, 16px)/2);
+	}
+}
