@@ -196,7 +196,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$the_directory .= '</div>';
 	if ( 'full' === $context && $total_users > $max_profiles ) {
 		$pl_args = array(
-			'base'     => add_query_arg('paged','%#%'),
+			'base'     => add_query_arg('paged','%#%', get_page_link() ),
 			'format'   => '',
 			'total'    => ceil($total_users / $max_profiles),
 			'current'  => max(1, $paged),
