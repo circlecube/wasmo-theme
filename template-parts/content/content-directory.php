@@ -195,8 +195,9 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	}
 	$the_directory .= '</div>';
 	if ( 'full' === $context && $total_users > $max_profiles ) {
+		$big = 999999;
 		$pl_args = array(
-			'base'     => add_query_arg('paged','%#%', get_page_link() ),
+			'base'     => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
 			'format'   => '',
 			'total'    => ceil($total_users / $max_profiles),
 			'current'  => max(1, $paged),
@@ -204,10 +205,6 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			'type'     => 'list',
 		);
 		
-		// for ".../page/n"
-		if($GLOBALS['wp_rewrite']->using_permalinks()) {
-			$pl_args['base'] = user_trailingslashit(trailingslashit(get_pagenum_link(1)).'page/%#%/', 'paged');
-		}
 		$the_directory .= '<div class="directory-pagination">' . paginate_links($pl_args) . '</div>';
 	}
 	$the_directory .= '</section>';
