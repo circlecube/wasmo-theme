@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.5
+ Version:          1.10.6
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -270,23 +270,35 @@ body.logged-in .menu-item.logged-in {
 	}
 }
 
+.navigation.pagination,
+.directory-pagination {
+	width: 100%;
+	margin: 3rem 0 !important;
+	border-top: 1px solid var(--color-orange);
+}
+
+.navigation.pagination .nav-links,
 .the-directory .directory-pagination {
 	max-width: 100%;
-	margin: 1rem auto;
 }
 
+.navigation.pagination > .nav-links,
 .directory-pagination > .page-numbers {
-	list-style: none;
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
+	list-style: none;
+	margin: 1rem auto !important;
+	padding: 0;
 }
 
+.navigation.pagination .nav-links .page-numbers,
 .directory-pagination .page-numbers .page-numbers {
 	background-color: var(--color-blue-2);
 	color: var(--color-gray0);
 	display: block;
 	height: 2rem;
-	margin: 0 0.5rem;
+	margin: 0 0.5rem 0.5rem;
 	min-width: 2rem;
 	padding: 0 0.75rem;
 	text-align: center;
@@ -294,30 +306,50 @@ body.logged-in .menu-item.logged-in {
 	transition: all .2s ease;
 }
 
+.navigation.pagination .nav-links .page-numbers:hover,
 .directory-pagination .page-numbers .page-numbers:hover {
 	background-color: var(--color-blue-3);
 }
-
+.navigation.pagination .nav-links .page-numbers.current,
 .directory-pagination .page-numbers .page-numbers.current {
 	background-color: transparent;
 	color: var(--color-blue);
 }
-
+.navigation.pagination .nav-links .page-numbers.current:hover,
 .directory-pagination .page-numbers .page-numbers.current:hover {
 	color: var(--color-blue-2);
 }
 
+.navigation.pagination .nav-links .page-numbers.prev,
+.navigation.pagination .nav-links .page-numbers.next,
 .directory-pagination .page-numbers .page-numbers.prev,
 .directory-pagination .page-numbers .page-numbers.next {
 	background-color: var(--color-gray0);
 	color: var(--color-blue-2);
+	white-space: nowrap;
 }
 
+.navigation.pagination .nav-links .page-numbers.prev:hover,
+.navigation.pagination .nav-links .page-numbers.next:hover,
 .directory-pagination .page-numbers .page-numbers.prev:hover,
 .directory-pagination .page-numbers .page-numbers.next:hover {
 	background-color: var(--color-gray1);
 	color: var(--color-blue-3);
 }
+
+.navigation.pagination .nav-links .page-numbers {
+	padding: 0.5rem 0.75rem;
+    font-weight: 400;
+    font-size: .8rem;
+}
+
+.navigation.pagination .nav-links .page-numbers.prev,
+.navigation.pagination .nav-links .page-numbers.next {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}
+
 
 .widget-area.sidebar {
 	padding: 0 1rem;
@@ -578,11 +610,20 @@ cite span {
 
 .button-small,
 .entry .entry-content .more-link {
-	font-size: 0.6rem;
-	padding: 0.5rem 0.76rem;
 	color: #fff;
-	transition: all 0.2s ease;
+	font-size: 0.6rem;
 	margin: 1rem 50% 0 0;
+	padding: 0.5rem 0.76rem;
+	transition: all 0.2s ease;
+}
+.entry .entry-content .more-link {
+	background-color: var(--color-blue-2);
+	text-decoration: none;
+	margin-right: 0;
+}
+.entry .entry-content .more-link:hover {
+	color: #fff;
+	background-color: var(--color-blue-3);
 }
 
 /* single blog post */
