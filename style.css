@@ -988,3 +988,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 		width: calc(50% - var(--wp--style--unstable-gallery-gap, 16px)/2);
 	}
 }
+
+.comment .comment-body {
+	width: 100%;
+}
