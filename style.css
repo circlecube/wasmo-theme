@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.7
+ Version:          1.10.8
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -328,6 +328,9 @@ body.logged-in .menu-item.logged-in {
 	background-color: var(--color-gray0);
 	color: var(--color-blue-2);
 	white-space: nowrap;
+    display: flex;
+	align-items: center;
+	flex-direction: row;
 }
 
 .navigation.pagination .nav-links .page-numbers.prev:hover,
@@ -345,13 +348,17 @@ body.logged-in .menu-item.logged-in {
 	vertical-align: middle;
 }
 
-.navigation.pagination .nav-links .page-numbers.prev,
-.navigation.pagination .nav-links .page-numbers.next {
-	display: flex;
-	align-items: center;
-	flex-direction: row;
+.directory-pagination .page-numbers .nav-prev-text, 
+.directory-pagination .page-numbers .nav-next-text {
+    display: none;
 }
 
+@media only screen and (min-width: 768px) {
+    .directory-pagination .page-numbers .nav-prev-text, 
+    .directory-pagination .page-numbers .nav-next-text {
+        display: inline-block;
+    }
+}
 
 .widget-area.sidebar {
 	padding: 0 1rem;

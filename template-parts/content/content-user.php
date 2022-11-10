@@ -180,19 +180,18 @@ if (
 		</div>
 	<?php } ?>
 	<div class="is-layout-flex wp-block-buttons">
-		<div class="wp-block-button wp-element-button">
-			<a class="wp-block-button__link wp-element-button is-style-outline" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
+		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Back to the Directory</a>
 		</div>
-		<div class="wp-block-button has-custom-font-size" >
-			<a class="wp-block-button__link wp-element-button is-style-outline" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
+		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '?randomprofile=1' ); ?>" style="border-radius:100px">Random Profile</a>
 		</div>
 	</div>
 	<div class="is-layout-flex wp-block-buttons">
-		<div class="wp-block-button">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
+		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Contribute your own story</a>
 		</div>
 	</div>
-
 
 	<?php 
 	// display footer data in admin user
