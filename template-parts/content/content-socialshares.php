@@ -97,7 +97,8 @@ $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
         <mastodon-share-button
             instances='["https://mas.to", "https://mastodon.social"]'
             share_message="<?php esc_attr( $_toot ); ?>"
-            class="round small blue-color"
+            share_button_text=""
+            class="mastodon-share"
         >
         </mastodon-share-button>
     </li>

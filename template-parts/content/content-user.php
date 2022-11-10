@@ -187,6 +187,7 @@ if (
 			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '?randomprofile=1' ); ?>" style="border-radius:100px">Random Profile</a>
 		</div>
 	</div>
+	
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
 			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Contribute your own story</a>
