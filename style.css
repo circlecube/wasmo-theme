@@ -610,8 +610,11 @@ cite span {
 
 .button-small,
 .entry .entry-content .more-link {
+	border-radius: 100px;
 	color: #fff;
-	font-size: 0.6rem;
+    font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
+	font-size: 0.8rem;
+    font-weight: 700;
 	margin: 1rem 50% 0 0;
 	padding: 0.5rem 0.76rem;
 	transition: all 0.2s ease;
@@ -991,4 +994,23 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 
 .comment .comment-body {
 	width: 100%;
+}
+
+.home .entry-content h4 {
+	margin-top: 4rem;
+}
+
+.home .entry .entry-content .wp-block-latest-posts li>a {
+	display: block;
+    padding-bottom: 0.5rem;
+}
+.home .entry .entry-content .wp-block-latest-posts .wp-block-latest-posts__post-excerpt {
+	line-height: 1.2;
+	margin: .5rem 0 1rem;
+}
+.home .entry .entry-content .wp-block-latest-posts li {
+	padding-bottom: 1rem;
+}
+.home .wp-block-latest-posts__featured-image {
+	margin-bottom: 4rem;
 }
