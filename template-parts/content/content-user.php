@@ -179,18 +179,18 @@ if (
 			</span>
 		</div>
 	<?php } ?>
-	<div class="buttons">
-		<span class="wp-block-button">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
-		</span>
+	<div class="is-layout-flex wp-block-buttons">
+		<div class="wp-block-button wp-element-button">
+			<a class="wp-block-button__link wp-element-button is-style-outline" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
+		</div>
+		<div class="wp-block-button has-custom-font-size" >
+			<a class="wp-block-button__link wp-element-button is-style-outline" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
+		</div>
 	</div>
-	<div class="buttons">
-		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="<?php echo home_url( '/profiles/' ); ?>">Back to the Directory</a>
-		</span>
-		<span class="wp-block-button is-style-outline">
-			<a class="wp-block-button__link" href="<?php echo home_url( '?randomprofile=1' ); ?>">Random Profile</a>
-		</span>
+	<div class="is-layout-flex wp-block-buttons">
+		<div class="wp-block-button">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>">Contribute your own story</a>
+		</div>
 	</div>
 
 

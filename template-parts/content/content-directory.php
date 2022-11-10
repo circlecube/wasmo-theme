@@ -203,6 +203,16 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			'current'  => max( 1, $paged ),
 			'show_all' => true,
 			'type'     => 'list',
+			'prev_text'=> sprintf(
+				'%s <span class="nav-prev-text">%s</span>',
+				twentynineteen_get_icon_svg( 'chevron_left', 22 ),
+				__( 'Newer profiles', 'twentynineteen' )
+			),
+			'next_text'=> sprintf(
+				'<span class="nav-next-text">%s</span> %s',
+				__( 'Older profiles', 'twentynineteen' ),
+				twentynineteen_get_icon_svg( 'chevron_right', 22 )
+			),
 		);
 		
 		$the_directory .= '<div class="directory-pagination">' . paginate_links( $pl_args ) . '</div>';
