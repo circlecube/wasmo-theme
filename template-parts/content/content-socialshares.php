@@ -92,15 +92,16 @@ $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
         </a>
     </li>
     
-    <script src="https://unpkg.com/mastodon-share-button@latest/dist/mastodon-share-button.js"></script>
+    <!-- <script src="https://unpkg.com/mastodon-share-button@latest/dist/mastodon-share-button.js"></script>
     <li class="mastodon">
         <mastodon-share-button
             instances='["https://mas.to", "https://mastodon.social"]'
             share_message="<?php esc_attr( $_toot ); ?>"
             share_button_text=""
+            icon_url="https://upload.wikimedia.org/wikipedia/commons/4/48/Mastodon_Logotype_%28Simple%29.svg"
             class="mastodon-share"
         >
         </mastodon-share-button>
-    </li>
+    </li> -->
 
 </ul>

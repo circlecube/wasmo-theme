@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.9
+ Version:          1.10.10
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -1065,8 +1065,8 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 /*mastodon*/
 mastodon-share-button,
 .mastodon-share {
-	--img-width: 36px;
-	--img-height: 36px;
+	--img-width: 22px;
+	--img-height: 22px;
 	--share-button-background-color: #0073aa;
 	--share-button-background-color-hover: #005177;
 	--share-button-border-radius: 50%;
