@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.6
+ Version:          1.10.7
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -135,14 +135,11 @@ h6,
 	}
 }
 
-
-.site-footer {
-	background: var(--color-gray3);
-}
 .jetpack_widget_social_icons svg.icon,
 #colophon .site-info {
 	color: var(--color-gray2);
 }
+
 .discussion-avatar-list {
 	display: none;
 }
@@ -284,6 +281,7 @@ body.logged-in .menu-item.logged-in {
 
 .navigation.pagination > .nav-links,
 .directory-pagination > .page-numbers {
+	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -294,16 +292,19 @@ body.logged-in .menu-item.logged-in {
 
 .navigation.pagination .nav-links .page-numbers,
 .directory-pagination .page-numbers .page-numbers {
-	background-color: var(--color-blue-2);
-	color: var(--color-gray0);
-	display: block;
-	height: 2rem;
-	margin: 0 0.5rem 0.5rem;
-	min-width: 2rem;
-	padding: 0 0.75rem;
-	text-align: center;
-	text-decoration: none;
-	transition: all .2s ease;
+    border-radius: 100px;
+    background-color: var(--color-blue-2);
+    color: var(--color-gray0);
+    display: block;
+    height: 2rem;
+    margin: 0 0.5rem 0.5rem;
+    min-width: 2rem;
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all .2s ease;
+    vertical-align: middle;
+    line-height: 1;
 }
 
 .navigation.pagination .nav-links .page-numbers:hover,
@@ -339,8 +340,9 @@ body.logged-in .menu-item.logged-in {
 
 .navigation.pagination .nav-links .page-numbers {
 	padding: 0.5rem 0.75rem;
-    font-weight: 400;
-    font-size: .8rem;
+	font-weight: 400;
+	font-size: .8rem;
+	vertical-align: middle;
 }
 
 .navigation.pagination .nav-links .page-numbers.prev,
@@ -820,7 +822,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 .widget a#wp-logout,
 .widget .lwa-modal-trigger button.lwa-modal-trigger-el {
 	border: 2px solid var(--color-gray1) !important;
-	border-radius: 5px !important;
+	border-radius: 100px !important;
 	color: var(--color-gray1) !important;
 	font-size: 0.75rem !important;
 	height: auto !important;
@@ -1013,4 +1015,38 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 .home .wp-block-latest-posts__featured-image {
 	margin-bottom: 4rem;
+}
+
+.gform_wrapper .gform_button.button {
+    border-radius: 100px;
+}
+
+.hide {
+	display: none;
+}
+
+.site-footer {
+	background: var(--color-gray3);
+	color: #eee;
+}
+
+.site-footer #gform_2 .gfield .gfield_label {
+	display: none;
+}
+
+.entry .entry-content p.description {
+	font-size: 20px;
+}
+
+.site-footer .widget-column .widget:first-child {
+	width: 100% !important;
+	margin: 0 0 3rem !important;
+}
+
+.entry .entry-content .wp-block-gallery figcaption a {
+	color: inherit;
+}
+
+.wp-block-cover .has-light-gray-background-color + .wp-block-cover__inner-container a {
+	color: #fff;
 }
