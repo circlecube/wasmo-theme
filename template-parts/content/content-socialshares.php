@@ -12,7 +12,7 @@ $link = get_query_var( 'link' );
 
 $_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read this wasmormon profile from {name}';
 $_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Great wasmormon profile, {name}!&url={link}';
-$_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
+// $_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
 $_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read this wasmormon profile from {name}';
 $_email    = 'mailto:?subject=Read this wasmormon profile from {name}&body=Read this wasmormon profile from {name}: {link}';
 
@@ -21,7 +21,7 @@ if ( $is_this_user ) {
 
 $_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read my wasmormon profile';
 $_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Read my wasmormon profile!&url={link}';
-$_toot     = 'Check out my wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
+// $_toot     = 'Check out my wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
 $_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read my wasmormon profile';
 $_email    = 'mailto:?subject=Read my wasmormon profile&body=Read my wasmormon profile ({name}): {link}';
 
@@ -30,7 +30,7 @@ $_email    = 'mailto:?subject=Read my wasmormon profile&body=Read my wasmormon p
 // find and replace placeholders with content in each link
 $_facebook = str_replace(['{link}', '{name}'], [$link, $name], $_facebook );
 $_tweet    = str_replace(['{link}', '{name}'], [$link, $name], $_tweet );
-$_toot     = str_replace(['{link}', '{name}'], [$link, $name], $_toot );
+// $_toot     = str_replace(['{link}', '{name}'], [$link, $name], $_toot );
 $_reddit   = str_replace(['{link}', '{name}'], [$link, $name], $_reddit );
 $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
 
@@ -91,17 +91,5 @@ $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
             <?php echo twentynineteen_get_social_link_svg( 'mailto:', 36 ); ?>
         </a>
     </li>
-    
-    <!-- <script src="https://unpkg.com/mastodon-share-button@latest/dist/mastodon-share-button.js"></script>
-    <li class="mastodon">
-        <mastodon-share-button
-            instances='["https://mas.to", "https://mastodon.social"]'
-            share_message="<?php esc_attr( $_toot ); ?>"
-            share_button_text=""
-            icon_url="https://upload.wikimedia.org/wikipedia/commons/4/48/Mastodon_Logotype_%28Simple%29.svg"
-            class="mastodon-share"
-        >
-        </mastodon-share-button>
-    </li> -->
 
 </ul>

@@ -1061,15 +1061,3 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 .wp-block-cover .has-light-gray-background-color + .wp-block-cover__inner-container a {
 	color: #fff;
 }
-
-/*mastodon*/
-mastodon-share-button,
-.mastodon-share {
-	--img-width: 22px;
-	--img-height: 22px;
-	--share-button-background-color: #0073aa;
-	--share-button-background-color-hover: #005177;
-	--share-button-border-radius: 50%;
-	--share-button-font-size: 10px;
-	--share-button-padding: 5px;
-  }
