@@ -171,7 +171,9 @@ if (
 	<?php set_query_var( 'is_this_user', $is_this_user ); ?>
 	<?php set_query_var( 'name', $curauth->user_login ); ?>
 	<?php set_query_var( 'link', get_author_posts_url( $userid ) ); ?>
+	<?php get_template_part( 'template-parts/content/content', 'user-spotlight' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
+
 	<?php if ( $is_this_user ) { ?>
 		<div class="buttons">
 			<span class="edit-link">

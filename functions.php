@@ -439,16 +439,17 @@ add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
 
 function wasmo_update_spotlight( $post_id ) {
 	// only if category for spotlight posts
-	// only if spotlight user value changed
-	if( !isset( $_POST['acf']['spotlight_for'] ) ) {
+	if ( !has_category( 'spotlight', $post_id ) ) {
 		return;
 	}
 
 	// get spotlight focus user
 	$user_id = get_field( 'spotlight_for', $post_id ); // acf set to return user id only
 
-	// update user meta with spotlight post
-	update_user_meta( $user_id, 'spotlight_post', get_permalink( $post_id ) );
+	// update user meta with spotlight post, if found
+	if ( $user_id ) {
+		update_user_meta( $user_id, 'spotlight_post', $post_id );
+	}
 	
 }
 

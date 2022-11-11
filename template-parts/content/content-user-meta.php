@@ -7,7 +7,7 @@
 // display footer data in admin user
 if ( current_user_can( 'manage_options' ) ) {
 ?>
-<div class="profile-data">
+<div class="profile-data" style="margin-top: 2rem;">
     <h4>Profile Data</h4>
     <dl>
     <?php 
