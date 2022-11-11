@@ -178,7 +178,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 					$hash = md5( strtolower( trim( $user->user_email ) ) );
 					$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
 					$gravatar = $hash . '?r=pg&size=300&default=' . $default_img;
-					$the_directory .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
+					$the_directory .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '" alt="' . $username . ' profile image">';
 				}
 			$the_directory .= '</span>';
 			$the_directory .= '<span class="directory-name">' . $username . '</span>';
