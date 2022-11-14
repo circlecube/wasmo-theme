@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.10.11
+ Version:          1.10.12
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -1021,15 +1021,45 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 	line-height: 1.2;
 	margin: .5rem 0 1rem;
 }
+
 .home .entry .entry-content .wp-block-latest-posts li {
 	padding-bottom: 1rem;
 }
+
 .home .wp-block-latest-posts__featured-image {
 	margin-bottom: 4rem;
 }
 
-.gform_wrapper .gform_button.button {
+.gform_wrapper .gform_button.button,
+.button, button, input[type="button"], input[type="reset"], input[type="submit"] {
     border-radius: 100px;
+}
+
+.page-template-template-edit .entry-content > #acf-form {
+	max-width: 1024px;
+}
+
+.acf-form-submit {
+	margin-top: 2rem;
+}
+.acf-field.acf-accordion .acf-label.acf-accordion-title {
+	display: flex;
+	align-items: center;
+	flex-direction: row-reverse;
+	justify-content: space-between;
+}
+.acf-field.acf-accordion .acf-accordion-title label {
+	font-size: 22px;
+}
+
+.acf-fields .acf-field.acf-field-repeater .acf-input .acf-repeater {
+	margin: 0 -1.75rem;
+}
+
+@media only screen and (min-width: 768px) {
+	.acf-fields .acf-field.acf-field-repeater .acf-input .acf-repeater {
+		margin: 0; 
+	}
 }
 
 .hide {
@@ -1046,7 +1076,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 
 .entry .entry-content p.description {
-	font-size: 20px;
+	font-size: 18px;
 }
 
 .site-footer .widget-column .widget:first-child {
