@@ -6,7 +6,7 @@
 <?php
 $spotlight_id = get_user_meta( $userid, 'spotlight_post', true );
 
-if ( $spotlight_id ) { ?>
+if ( $spotlight_id && get_post_status( $spotlight_id ) === 'publish' ) { ?>
     <aside class="widget-area" style="margin: 1rem 0 -2.5rem; ">
         <section class="widget widget_posts_widget">
             <h4><a href="<?php echo get_permalink( $spotlight_id ); ?>">See the Spotlight on this profile</a></h4>
