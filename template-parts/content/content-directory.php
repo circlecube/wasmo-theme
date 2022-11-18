@@ -158,19 +158,28 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			continue;
 		}
 		$username = esc_html( $user->display_name );
+		$registered = $user->user_registered;
+		// echo $registered;
+		$user_class = '';
+		$diff = (int) abs( time() - strtotime($registered) );
+		if ( $diff < WEEK_IN_SECONDS ) {
+			$user_class .= ' user-week';
+		} else if ( $diff < MONTH_IN_SECONDS ) {
+			$user_class .= ' user-month';
+		}
 
 		$fresh_class = '';
 		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
 		$diff = (int) abs( time() - $last_save );
 		if ( $diff < WEEK_IN_SECONDS ) {
-			$fresh_class .= ' age-week';
+			$fresh_class .= ' updated-week';
 		} else if ( $diff < MONTH_IN_SECONDS ) {
-			$fresh_class .= ' age-month';
+			$fresh_class .= ' updated-month';
 		} else {
-			// $fresh_class .= ' age-old';
+			// $fresh_class .= ' updated-old';
 		}
 		
-		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . ' ' . $fresh_class . '" href="' . get_author_posts_url( $userid ) . '">';
+		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . '" href="' . get_author_posts_url( $userid ) . '">';
 			$the_directory .= '<span class="directory-img">';
 				if ( $has_image ) {
 					$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
