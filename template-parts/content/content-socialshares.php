@@ -5,7 +5,7 @@
  */
 
  // is it the current user? if so update the messaging about their own profile.
-$user_id = get_query_var( 'user_id' );
+$userid = get_query_var( 'userid' );
 $is_this_user = get_query_var( 'is_this_user' );
 $name = get_query_var( 'name' );
 $link = get_query_var( 'link' );
@@ -15,6 +15,7 @@ $_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Great wasmormo
 // $_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
 $_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read this wasmormon profile from {name}';
 $_email    = 'mailto:?subject=Read this wasmormon profile from {name}&body=Read this wasmormon profile from {name}: {link}';
+$_email2   = '';
 
 // links for when it is users own profile
 if ( $is_this_user ) {
@@ -50,44 +51,48 @@ $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
 
     <li class="facebook">
         <a
-            target="_blank"
-            rel="noopener noreferrer" 
             href="<?php echo esc_url( $_facebook ); ?>"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Share a link on facebook" 
         >
-            <span class="screen-reader-text">Share on Facebook</span>
+            <span class="screen-reader-text">Share link on Facebook</span>
             <?php echo twentynineteen_get_social_link_svg( 'facebook.com', 36 ); ?>
         </a>
     </li>
     
     <li class="twitter">
         <a
-            target="_blank"
-            rel="noopener noreferrer"
             href="<?php echo esc_url( $_tweet ); ?>"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Share a link on twitter"
         >
-            <span class="screen-reader-text">Share on twitter</span>
+            <span class="screen-reader-text">Share link on twitter</span>
             <?php echo twentynineteen_get_social_link_svg( 'twitter.com', 36 ); ?>
         </a>
     </li>
     
     <li class="reddit">
         <a
-            target="_blank"
-            rel="noopener noreferrer"
             href="<?php echo esc_url( $_reddit ); ?>"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Share link on reddit"
         >
-            <span class="screen-reader-text">Share on reddit</span>
+            <span class="screen-reader-text">Share link on reddit</span>
             <?php echo twentynineteen_get_social_link_svg( 'reddit.com', 36 ); ?>
         </a>
     </li>
     
     <li class="mail">
         <a
-            target="_blank"
-            rel="noopener noreferrer"
             href="<?php echo esc_url( $_email ); ?>"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Share link via email"
         >
-            <span class="screen-reader-text">Share via email</span>
+            <span class="screen-reader-text">Share link via email</span>
             <?php echo twentynineteen_get_social_link_svg( 'mailto:', 36 ); ?>
         </a>
     </li>
