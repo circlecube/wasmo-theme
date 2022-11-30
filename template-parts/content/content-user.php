@@ -175,14 +175,20 @@ if (
 	<?php get_template_part( 'template-parts/content/content', 'user-spotlight' ); ?>
 	<?php //get_template_part( 'template-parts/content/content', 'user-posts' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
-
-	<?php if ( $is_this_user ) { ?>
-		<div class="buttons">
-			<span class="edit-link">
-				<a href="<?php echo home_url( '/edit/' ); ?>">Edit Your Profile</a>
-			</span>
+	
+	<div class="is-layout-flex wp-block-buttons">
+		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
+			<?php if ( is_user_logged_in() ) { ?>
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/edit/' ); ?>">
+					Edit Your <?php echo $is_this_user ? '' : 'Own'; ?> Profile
+				</a>
+			<?php } else { ?>
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/login/' ); ?>">
+					Contribute your own story
+				</a>
+			<?php } ?>
 		</div>
-	<?php } ?>
+	</div>
 
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
@@ -190,12 +196,6 @@ if (
 		</div>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
 			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '?randomprofile=1' ); ?>" style="border-radius:100px">Random Profile</a>
-		</div>
-	</div>
-	
-	<div class="is-layout-flex wp-block-buttons">
-		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Contribute your own story</a>
 		</div>
 	</div>
 
