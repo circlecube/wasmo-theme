@@ -2,8 +2,9 @@
 /**
 * @var $userid
 */
-?>
 
+$userid = get_query_var( 'userid' );
+?>
 
 <?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
 <?php echo wp_kses_post( get_field( 'hi', 'user_' . $userid ) ); ?>

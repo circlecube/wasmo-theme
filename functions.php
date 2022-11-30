@@ -540,6 +540,15 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ){
 	}
 }
 
+function wasmo_get_profile_text( $userid ) {
+	$profile_text = '';
+	ob_start();
+	set_query_var( 'userid', $userid );
+	get_template_part( 'template-parts/content/content', 'usertext' );
+	$profile_text .= ob_get_clean();
+	return $profile_text;
+}
+
 function wasmo_register_add_meta($user_id) { 
 	add_user_meta( $user_id, 'has_received_welcome', false );
 }
