@@ -918,10 +918,18 @@ function wasmo_random_profile_template() {
    if (get_query_var('randomprofile')) {
 			$args = array(
 				'orderby'     => 'rand',
-				'numberposts' => 1
+				// 'numberposts' => 1
 			);
 			$users = get_users( $args );
 			foreach ( $users as $user ) {
+				// check that user has content and is public
+				if (
+					! get_field( 'hi', 'user_' . $user->ID ) ||
+					'false' === get_user_meta( $user->ID, 'in_directory', true )
+					// 'private' === get_user_meta( $userid, 'in_directory', true ) ||
+				) {
+					continue;
+				}
 				$link = get_author_posts_url( $user->ID );
 			}
 			wp_redirect( $link, 307 );
