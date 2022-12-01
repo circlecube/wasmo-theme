@@ -140,7 +140,8 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 	while ( have_rows( 'questions', 'user_' . $userid ) ) : 
 		the_row();
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
-		if ( $termtaxid ) {
+		$answer = get_sub_field( 'answer', 'users_' . $userid );
+		if ( $termtaxid && $answer ) {
 			$questionterm = get_term( $termtaxid, 'question' );
 			$description = "More was mormon answers about '" . wp_kses_post( $questionterm->name ) . "'";
 			echo '<h4 class="question">';
@@ -149,7 +150,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo twentynineteen_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
-			echo auto_link_text( wp_kses_post( get_sub_field( 'answer', 'users_' . $userid ) ) );
+			echo auto_link_text( wp_kses_post( $answer ) );
 		}
     endwhile;
 
