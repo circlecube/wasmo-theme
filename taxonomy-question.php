@@ -26,7 +26,7 @@ $term = get_term_by( 'id', $termid, 'question' );
 
 //define transient name - taxid + user state.
 $transient_name = 'answers-tax-question-' . $termid . '-' . is_user_logged_in();
-if ( current_user_can('administrator') && WP_DEBUG ) {
+if ( current_user_can('administrator') ) {
 	$transient_name = time();
 }
 //use transient to cache data
@@ -51,14 +51,15 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 				the_row();
 
 				$termtaxid = get_sub_field( 'question', 'users_' . $userid );
+				$answer = get_sub_field( 'answer', 'user_' . $userid );
 
 				//check if they answered this question
-				if ( $termtaxid === $termid && '' != get_sub_field( 'answer', 'user_' . $userid ) ) {
+				if ( $termtaxid === $termid && $answer ) {
 
 					// answer
 					$the_answers .= '<div class="answer answer-' . $userid . '">';
 					$the_answers .= '<blockquote>';
-					$the_answers .= wp_kses_post( get_sub_field( 'answer', 'user_' . $userid ) );
+					$the_answers .= auto_link_text( wp_kses_post( $answer ) );
 					$the_answers .= '</blockquote>';
 
 					// user attribution - photo and name and link (only if they want to be listed in directory)
@@ -75,10 +76,15 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 						$the_answers .= '<cite>';
 						$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
 						$the_answers .= '<span class="directory-img">';
+						
+						$userimg = get_field( 'photo', 'user_' . $userid );
 						if ( $userimg ) {
-							$the_answers .= wp_get_attachment_image( $userimg, 'medium' );
+							$the_answers .= wp_get_attachment_image( $userimg, 'thumbnail' );
 						} else {
-							$the_answers .= '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
+							$hash = md5( strtolower( trim( $user->user_email ) ) );
+							$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+							$gravatar = $hash . '?s=150&d='.$default_img;
+							$the_answers .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
 						}
 						$the_answers .= '</span>';
 						$the_answers .= '<span class="directory-name">' . $username . '</span>';
