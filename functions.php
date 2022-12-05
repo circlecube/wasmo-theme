@@ -682,6 +682,9 @@ function wasmo_entry_footer() {
 				$tags_list
 			); // WPCS: XSS OK.
 		}
+
+		wasmo_post_navi();
+
 	}
 
 	// Comment count.
@@ -708,6 +711,49 @@ function wasmo_entry_footer() {
 	);
 }
 
+function wasmo_post_navi() {
+	// if( !is_singular('post') ) {
+    // 	return;
+	// }
+	
+	$prev_post = get_previous_post();
+	$next_post = get_next_post();
+
+	?>
+	<h4 class="post-pagination">
+		<span class="post-pagination-link post-pagination-prev">
+			<?php
+				if ( $prev_post ) {
+					$prev_post_img = get_the_post_thumbnail( 
+						$prev_post->ID, 
+						'medium', 
+						array('class' => 'pagination-prev')
+					); 
+					previous_post_link(
+						'%link',
+						twentynineteen_get_icon_svg( 'chevron_left', 22 ) . 'Previous Post<br>%title' . $prev_post_img
+					);
+				}
+			?>
+		</span>
+		<span class="post-pagination-link post-pagination-next">
+			<?php
+				if ( $next_post ) {
+					$next_post_img = get_the_post_thumbnail( 
+						$next_post->ID, 
+						'medium', 
+						array('class' => 'pagination-next')
+					);
+					next_post_link(
+						'%link',
+						'Next Post '.twentynineteen_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
+					);
+				}
+			?>
+		</span>
+	</h4>
+	<?php
+}
 
 function wasmo_excerpt_link() {
 	return '<a class="more-link button button-small" href="' . get_permalink() . '">Read more</a>';
