@@ -731,7 +731,7 @@ function wasmo_post_navi() {
 					); 
 					previous_post_link(
 						'%link',
-						twentynineteen_get_icon_svg( 'chevron_left', 22 ) . '<em>Previous Post</em><br>%title' . $prev_post_img
+						twentynineteen_get_icon_svg( 'chevron_left', 22 ) . '<em>Older Post</em><br>%title' . $prev_post_img
 					);
 				}
 			?>
@@ -746,7 +746,7 @@ function wasmo_post_navi() {
 					);
 					next_post_link(
 						'%link',
-						'<em>Next Post</em> '.twentynineteen_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
+						'<em>Newer Post</em> '.twentynineteen_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
 					);
 				}
 			?>
