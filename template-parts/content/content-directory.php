@@ -81,7 +81,6 @@ function filter_directory_for_tax($user){
 	// global $tax, $termid;
 	$tax = get_query_var('tax');
 	$termid = get_query_var('termid');
-
 	$userid = $user->ID;
 	
 	// skip if $context doesn't start with `taxonomy`
@@ -89,6 +88,7 @@ function filter_directory_for_tax($user){
 	// 	return true;
 	// }
 	// echo $tax;
+
 	// determine if user has term selected
 	$userterms = null;
 	if ( $tax === 'spectrum' ) {
@@ -140,7 +140,8 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$filtered_users = array_filter( $users, "filter_directory" );
 	// maybe additional filter for taxonomy
 	if ( !empty( $tax ) ) {
-		$filtered_users = array_filter( $users , "filter_directory_for_tax" );
+		$tax_filtered_users = array_filter( $filtered_users, "filter_directory_for_tax" );
+		$filtered_users = $tax_filtered_users;
 	}
 	$total_users = count($filtered_users);
 	$counter = 0;
