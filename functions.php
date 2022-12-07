@@ -112,8 +112,8 @@ function cptui_register_my_taxes() {
 		"publicly_queryable" => true,
 		"hierarchical" => false,
 		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
+		"show_in_menu" => false,
+		"show_in_nav_menus" => false,
 		"query_var" => true,
 		"rewrite" => array( 'slug' => 'spectrum', 'with_front' => true, ),
 		"show_admin_column" => false,
@@ -140,8 +140,8 @@ function cptui_register_my_taxes() {
 		"publicly_queryable" => true,
 		"hierarchical" => false,
 		"show_ui" => true,
-		"show_in_menu" => true,
-		"show_in_nav_menus" => true,
+		"show_in_menu" => false,
+		"show_in_nav_menus" => false,
 		"query_var" => true,
 		"rewrite" => array( 'slug' => 'shelf', 'with_front' => true, ),
 		"show_admin_column" => false,
@@ -788,7 +788,7 @@ if( function_exists('acf_add_options_page') ) {
 		'page_title' 	=> 'wasmo Settings',
 		'menu_title'	=> 'wasmo Settings',
 		'menu_slug' 	=> 'wasmo-settings',
-		'capability'	=> 'edit_posts',
+		'capability'	=> 'manage_options',
 		'redirect'		=> false
 	));
 }
@@ -1046,3 +1046,96 @@ function wasmo_register_pattern_categories() {
 	);
 }
 add_action( 'init', 'wasmo_register_pattern_categories' );
+
+// hide admin menu items for non admin users
+function wasmo_remove_menu_items() {
+	if ( !current_user_can( 'administrator' ) ) : // IF NON ADMIN USER
+		remove_menu_page( 'index.php' ); // DASHBOARD
+		//remove_menu_page( 'edit.php?post_type=custom_post_type' );
+		//remove_submenu_page( 'edit.php?post_type=custom_post_type', 'post-new.php?post_type=custom_post_type' );
+ 		//remove_menu_page( 'edit.php' );
+		remove_menu_page( 'upload.php' );
+		remove_menu_page( 'edit-comments.php' );
+		remove_menu_page( 'edit.php?post_type=page' );
+		remove_menu_page( 'plugins.php' );
+		remove_menu_page( 'themes.php' );
+		remove_menu_page( 'users.php' );
+		remove_menu_page( 'profile.php' );
+		remove_menu_page( 'tools.php' );
+		remove_menu_page( 'options-general.php' );
+		remove_menu_page( 'jetpack' );
+		remove_submenu_page( 'edit.php', 'edit-tags.php?taxonomy=question' ); //questions taxonomy
+		remove_submenu_page( 'index.php', 'my-sites.php' );
+	endif;
+}
+add_action( 'admin_menu', 'wasmo_remove_menu_items', 1000 );
+
+// hide admin bar for non admin users
+// function remove_admin_bar() {
+// 	if ( !current_user_can('administrator') && !is_admin() ) {
+// 		show_admin_bar( false );
+// 	}
+// }
+// add_action('after_setup_theme', 'remove_admin_bar');
+
+// remove links/menus from the admin bar
+function wasmo_admin_bar_render() {
+	global $wp_admin_bar;
+	if ( !current_user_can('administrator') ) {
+		$wp_admin_bar->remove_menu('comments');
+		$wp_admin_bar->remove_menu('my-sites');
+		$wp_admin_bar->remove_menu('my-account-with-avatar');
+		$wp_admin_bar->remove_menu('my-account');
+		$wp_admin_bar->remove_menu('my-blogs');
+		$wp_admin_bar->remove_menu('get-shortlink');
+		$wp_admin_bar->remove_menu('appearance');
+		$wp_admin_bar->remove_menu('updates');
+		$wp_admin_bar->remove_menu('search');
+		$wp_admin_bar->remove_menu('wp-logo');
+		$wp_admin_bar->remove_menu('notes');
+		$wp_admin_bar->remove_menu('edit');
+		
+		//add menu items for user profile view and edit
+		$wp_admin_bar->add_menu( array(
+			'id'    => 'profile-edit',
+			'parent' => null,
+			'group'  => null,
+			'title' => twentynineteen_get_icon_svg( 'edit', 14 ) . ' Edit Profile',
+			'href'  => site_url('/edit/'),
+			'meta' => [
+				'title' => 'Edit Profile',
+			]
+		));
+		
+		$wp_admin_bar->add_menu( array(
+			'id'    => 'profile-view',
+			'parent' => null,
+			'group'  => null,
+			'title' => twentynineteen_get_icon_svg( 'person', 14 ) . ' View Profile',
+			'href'  => get_author_posts_url( get_current_user_id() ),
+			'meta' => [
+				'title' => 'View Profile',
+			]
+		));
+		
+		if ( !is_admin() ) {
+			$wp_admin_bar->remove_menu('site-name');
+		}
+	}
+}
+add_action( 'wp_before_admin_bar_render', 'wasmo_admin_bar_render' );
+
+// only show users own posts
+function posts_for_current_author($query) {
+    global $pagenow;
+ 
+    if( 'edit.php' != $pagenow || !$query->is_admin )
+        return $query;
+ 
+    if( !current_user_can( 'edit_others_posts' ) ) {
+        global $user_ID;
+        $query->set('author', $user_ID );
+    }
+    return $query;
+}
+add_filter('pre_get_posts', 'posts_for_current_author');
