@@ -804,7 +804,7 @@ function wasmo_before_after($content) {
 
 	// top
 	if ( get_field( 'before_post_callout', 'option' ) ) {
-		$top_callout = '<div class="callout callout-top">';
+		$top_callout = '<aside class="callout callout-top">';
 		$top_callout .= get_field( 'before_post_callout', 'option' );
 		$top_callout .= '<h5>Recent Profiles</h5>';
 		ob_start();
@@ -812,15 +812,15 @@ function wasmo_before_after($content) {
 		set_query_var( 'context', 'bumper' );
 		get_template_part( 'template-parts/content/content', 'directory' );
 		$top_callout .= ob_get_clean(); 
-		$top_callout .= '</div>';
+		$top_callout .= '</aside>';
 	} else {
 		ob_start();
 		?>
-		<div class="callout callout-top">
+		<aside class="callout callout-top">
 			<h4>Thank you for visiting wasmormon.org!</h4>
 			<p>This site is mainly a repository of mormon faith transition stories. Hearing others stories is therapeutic, check out the <a href="/profiles/">was mormon profiles</a>.</p>
 			<p>Telling your own story is therapeutic too, consider joining the movement and <a class="register" href="/login/">tell your own story now</a>!</p>
-		</div>
+		</aside>
 		<?php 
 		$top_callout = ob_get_clean();
 	}
@@ -828,15 +828,15 @@ function wasmo_before_after($content) {
 
 	// bottom
 	if ( get_field( 'after_post_callout', 'option' ) ) {
-		$bottom_callout = '<div class="callout callout-bottom">' . get_field( 'after_post_callout', 'option' ) . '</div>';
+		$bottom_callout = '<aside class="callout callout-bottom">' . get_field( 'after_post_callout', 'option' ) . '</aside>';
 	} else {
 		ob_start();
 		?>
-		<div class="callout callout-bottom">
+		<aside class="callout callout-bottom">
 			<h4>Thank you for reading!</h4>
 			<p>Don't forget to also check out the <a href="/profiles/">mormon faith transition stories</a>.</p>
 			<div class="wp-block-button"><a class="wp-block-button__link" href="/login/">Tell Your Own Story</a></div>
-		</div>
+		</aside>
 		<?php 
 		$bottom_callout = ob_get_clean();
 	}
