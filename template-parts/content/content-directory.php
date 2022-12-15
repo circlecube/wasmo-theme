@@ -182,14 +182,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		
 		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . '" href="' . get_author_posts_url( $userid ) . '">';
 			$the_directory .= '<span class="directory-img">';
-				if ( $has_image ) {
-					$the_directory .= wp_get_attachment_image( $userimg, 'medium' );
-				} else {
-					$hash = md5( strtolower( trim( $user->user_email ) ) );
-					$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
-					$gravatar = $hash . '?r=pg&size=300&default=' . $default_img;
-					$the_directory .= '<img src="https://www.gravatar.com/avatar/' . $gravatar . '" alt="' . $username . ' profile image">';
-				}
+			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
 			$the_directory .= '<span class="directory-name">' . $username . '</span>';
 		$the_directory .= '</a>';

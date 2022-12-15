@@ -27,17 +27,7 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 	</div>
 
 	<div class="content-left">
-		<div class="user_photo"><?php 
-		$userimg = get_field( 'photo', 'user_' . $userid );
-		if ( $userimg ) {
-			echo wp_get_attachment_image( $userimg, 'medium' );
-		} else {
-			$hash = md5( strtolower( trim( $curauth->user_email ) ) );
-			$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
-			$gravatar = $hash . '?s=300&d='.$default_img;
-			echo '<img src="https://www.gravatar.com/avatar/' . $gravatar . '">';
-		}
-		?></div>
+		<div class="user_photo"><?php echo wasmo_get_user_image( $userid ); ?></div>
 		<?php 
 		$links = get_field( 'links', 'user_' . $userid );
 		if ( $links ) { ?>

@@ -1323,6 +1323,46 @@ add_action( 'wp_head', function () {
 		<meta property="og:type" content="profile" />
 		<meta property="og:site_name" content="wasmormon.org" />
 		<meta property="og:url" content="<?php echo get_author_posts_url( $userid ); ?>" />
+		<meta property="og:image" content="<?php echo wasmo_get_user_image_url( $userid ); ?>" />
 		<?php
 	}
 });
+
+/**
+ * Get user image url
+ * 
+ * @param $userid - the user's id
+ * @return string url to image
+ */
+function wasmo_get_user_image_url( $userid ) {
+	$userimg = get_field( 'photo', 'user_' . $userid );
+	if ( $userimg ) {
+		return wp_get_attachment_image_url( $userimg, 'medium' );
+	} else {
+		$user = get_userdata( $userid );
+		$hash = md5( strtolower( trim( $user->user_email ) ) );
+		$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+		$gravatar = $hash . '?s=300&d='.$default_img;
+		return "https://www.gravatar.com/avatar/" . $gravatar;
+	}
+}
+
+/**
+ * Get user image
+ * 
+ * @param $userid - the user's id
+ * @return string html for image tag
+ */
+function wasmo_get_user_image( $userid ) {
+	$userimg = get_field( 'photo', 'user_' . $userid );
+
+	if ( $userimg ) {
+		return wp_get_attachment_image( $userimg, 'medium' );
+	} else {
+		$user = get_userdata( $userid );
+		$hash = md5( strtolower( trim( $user->user_email ) ) );
+		$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+		$gravatar = $hash . '?s=300&d='.$default_img;
+		return '<img src="https://www.gravatar.com/avatar/' . $gravatar . '" alt="' . $user->display_name . ' wasmormon.org profile image">';
+	}
+}
