@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.11.2
+ Version:          1.11.3
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -215,6 +215,10 @@ body.logged-in .menu-item.logged-in {
 	width: 100%;
 }
 
+aside.callout {
+	width: auto;
+}
+
 .callout .the-directory.directory-bumper {
 	margin: 0;
 	padding: 0;
@@ -279,19 +283,6 @@ body.logged-in .menu-item.logged-in {
 	width: 100%;
 	z-index: 1;
 }
-/* on mobile always show name */
-@media only screen and (min-width: 768px) {
-	.directory-full .person .directory-name,
-	.directory-shortcode .person .directory-name {
-		bottom: -36px;
-		opacity: 0;
-	}
-	.directory-full .person:hover .directory-name,
-	.directory-shortcode .person:hover .directory-name {
-		bottom: 0;
-		opacity: 1;
-	}
-}
 .directory-full > .user-week::after,
 .directory-full > .user-month::after,
 .directory-full > .updated-week::after,
@@ -339,17 +330,52 @@ body.logged-in .menu-item.logged-in {
 	background-color: var(--color-orange);
 	content: 'New this month';
 }
-.directory-full > .user-week:hover::after,
-.directory-full > .user-month:hover::after,
-.directory-full > .updated-week:hover::after,
-.directory-full > .updated-month:hover::after,
-.directory-shortcode > .user-week:hover::after,
-.directory-shortcode > .user-month:hover::after,
-.directory-shortcode > .updated-week:hover::after,
-.directory-shortcode > .updated-month:hover::after {
-	/* opacity: 0; */
-	bottom: 36px;
+
+/* on mobile show name and  */
+@media only screen and (max-width: 769px) {
+	.directory-full > .user-week::after,
+	.directory-full > .user-month::after,
+	.directory-full > .updated-week::after,
+	.directory-full > .updated-month::after,
+	.directory-shortcode > .user-week::after,
+	.directory-shortcode > .user-month::after,
+	.directory-shortcode > .updated-week::after,
+	.directory-shortcode > .updated-month::after {
+		bottom: 36px;
+	}
+	.directory-full .person .directory-name,
+	.directory-shortcode .person .directory-name {
+		bottom: 0;
+		opacity: 1;
+	}
 }
+
+/* on desktop show name on hover */
+@media only screen and (min-width: 768px) {
+	.directory-full > .user-week:hover::after,
+	.directory-full > .user-month:hover::after,
+	.directory-full > .updated-week:hover::after,
+	.directory-full > .updated-month:hover::after,
+	.directory-shortcode > .user-week:hover::after,
+	.directory-shortcode > .user-month:hover::after,
+	.directory-shortcode > .updated-week:hover::after,
+	.directory-shortcode > .updated-month:hover::after {
+		bottom: 36px;
+	}
+	.directory-full .person .directory-name,
+	.directory-shortcode .person .directory-name {
+		bottom: -36px;
+		opacity: 0;
+	}
+	.directory-full .person:hover .directory-name,
+	.directory-shortcode .person:hover .directory-name {
+		bottom: 0;
+		opacity: 1;
+	}
+}
+
+
+	
 
 
 .navigation.pagination,
