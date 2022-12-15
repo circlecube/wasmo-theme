@@ -922,7 +922,7 @@ function wasmo_user_profile_set_og_image( $image ) {
 
 			// update 
 			return sprintf(
-				'<a rel="nofollow" target="_blank" href="%s">%s</a>', 
+				'<a rel="nofollow ugc" target="_blank" href="%s">%s</a>', 
 				$url, 
 				$text
 			);
@@ -1319,7 +1319,7 @@ add_action( 'wp_head', function () {
 		$userid = $curauth->ID;
 		?>
 		<meta property="og:title" content="I'm <?php echo $curauth->display_name; ?> and I was a mormon. A wasmormon.org profile." />
-		<meta property="og:description" content="<?php echo get_field( 'hi', 'user_' . $userid ); ?>. <?php echo get_field( 'tagline', 'user_' . $userid ); ?> Read my story to learn why I left the mormon church." />
+		<meta property="og:description" content="<?php echo get_field( 'hi', 'user_' . $userid ); ?> <?php echo get_field( 'tagline', 'user_' . $userid ); ?> Read my story to learn why I left the mormon church." />
 		<meta property="og:type" content="profile" />
 		<meta property="og:site_name" content="wasmormon.org" />
 		<meta property="og:url" content="<?php echo get_author_posts_url( $userid ); ?>" />
