@@ -799,7 +799,13 @@ if( function_exists('acf_add_options_page') ) {
  * Only when user is not logged in
  */
 function wasmo_before_after($content) {
-	if ( is_user_logged_in() || ! is_single() ) {
+	// skip if
+	if (
+		is_user_logged_in() || // logged in or
+		!is_single() || // not a single post or
+		!is_main_query() || // not the main loop or
+		is_embed() // is a post embed
+	) {
 		return $content;
 	}
 
@@ -826,7 +832,6 @@ function wasmo_before_after($content) {
 		$top_callout = ob_get_clean();
 	}
 
-
 	// bottom
 	if ( get_field( 'after_post_callout', 'option' ) ) {
 		$bottom_callout = '<aside class="callout callout-bottom">' . get_field( 'after_post_callout', 'option' ) . '</aside>';
@@ -844,11 +849,9 @@ function wasmo_before_after($content) {
 	
 	$fullcontent = $top_callout . $content . $bottom_callout;
 
-
 	return $fullcontent;
 }
-add_filter('the_content', 'wasmo_before_after');
-
+add_filter( 'the_content', 'wasmo_before_after' );
 
 add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
 add_filter( 'wpseo_metadesc', 'wasmo_user_profile_wpseo_metadesc' );
