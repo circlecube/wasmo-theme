@@ -159,9 +159,9 @@ function wasmo_widgets_init() {
 
 	register_sidebar(
 		array(
-			'name'          => __( 'Sidebar', 'twentynineteen' ),
+			'name'          => __( 'Sidebar', 'wasmo' ),
 			'id'            => 'sidebar',
-			'description'   => __( 'Add widgets here to appear in your sidebar.', 'twentynineteen' ),
+			'description'   => __( 'Add widgets here to appear in your sidebar.', 'wasmo' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h2 class="widget-title">',
@@ -175,7 +175,7 @@ add_action( 'widgets_init', 'wasmo_widgets_init' );
 function wasmo_setup() {
 	register_nav_menus(
 		array(
-			'utility' => __( 'Utility Menu', 'twentynineteen' ),
+			'utility' => __( 'Utility Menu', 'wasmo' ),
 		)
 	);
 	set_theme_mod( 'image_filter', 0 );
@@ -189,9 +189,9 @@ function wasmo_loginout_menu_link( $items, $args ) {
 		$user_svg = twentynineteen_get_icon_svg( 'person', 24 );
 		$join_svg = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
 		$login_svg = '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,7L9.6,8.4l2.6,2.6H2v2h10.2l-2.6,2.6L11,17l5-5L11,7z M20,19h-8v2h8c1.1,0,2-0.9,2-2V5c0-1.1-0.9-2-2-2h-8v2h8V19z"/></g></svg>';
-		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join") . '</a></li>';
-		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login") . '</a></li>';
-		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out") . '</a></li>';
+		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join", 'wasmo') . '</a></li>';
+		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login", 'wasmo') . '</a></li>';
+		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out", 'wasmo') . '</a></li>';
 		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">' . $user_svg . 'View</a></li>';
 		$edit =    '<li class="edit"><a href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
 		if ( is_user_logged_in() ) {
@@ -661,25 +661,25 @@ function wasmo_entry_footer() {
 		twentynineteen_posted_on();
 
 		/* translators: used between list items, there is a space after the comma. */
-		$categories_list = get_the_category_list( __( ', ', 'twentynineteen' ) );
+		$categories_list = get_the_category_list( __( ', ', 'wasmo' ) );
 		if ( $categories_list ) {
 			printf(
 				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of categories. */
 				'<span class="cat-links">%1$s<span class="screen-reader-text">%2$s</span>%3$s</span>',
 				twentynineteen_get_icon_svg( 'archive', 16 ),
-				__( 'Posted in', 'twentynineteen' ),
+				__( 'Posted in', 'wasmo' ),
 				$categories_list
 			); // WPCS: XSS OK.
 		}
 
 		/* translators: used between list items, there is a space after the comma. */
-		$tags_list = get_the_tag_list( '', __( ', ', 'twentynineteen' ) );
+		$tags_list = get_the_tag_list( '', __( ', ', 'wasmo' ) );
 		if ( $tags_list ) {
 			printf(
 				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
 				'<span class="tags-links">%1$s<span class="screen-reader-text">%2$s </span>%3$s</span>',
 				twentynineteen_get_icon_svg( 'tag', 16 ),
-				__( 'Tags:', 'twentynineteen' ),
+				__( 'Tags:', 'wasmo' ),
 				$tags_list
 			); // WPCS: XSS OK.
 		}
@@ -698,7 +698,7 @@ function wasmo_entry_footer() {
 		sprintf(
 			wp_kses(
 				/* translators: %s: Name of current post. Only visible to screen readers. */
-				__( 'Edit <span class="screen-reader-text">%s</span>', 'twentynineteen' ),
+				__( 'Edit <span class="screen-reader-text">%s</span>', 'wasmo' ),
 				array(
 					'span' => array(
 						'class' => array(),
@@ -1171,7 +1171,7 @@ function wasmo_fix_post_counts($views) {
 		if( $type['status'] == NULL ):
 			$class = ($wp_query->query_vars['post_status'] == NULL) ? ' class="current"' : '';
 			$views['all'] = sprintf(
-				__('<a href="%s" '.$class.'>All <span class="count">(%d)</span></a>', 'all'),
+				__('<a href="%s" '.$class.'>All <span class="count">(%d)</span></a>', 'wasmo'),
 				admin_url('edit.php?post_type=post'),
 				$result->found_posts
 			);
@@ -1181,7 +1181,7 @@ function wasmo_fix_post_counts($views) {
 			} else {
 				$class = ($wp_query->query_vars['post_status'] == 'publish') ? ' class="current"' : '';
 				$views['publish'] = sprintf(
-					__('<a href="%s" '.$class.'>Published <span class="count">(%d)</span></a>', 'publish'),
+					__('<a href="%s" '.$class.'>Published <span class="count">(%d)</span></a>', 'wasmo'),
 					admin_url('edit.php?post_status=publish&post_type=post'),
 					$result->found_posts
 				);
@@ -1192,7 +1192,7 @@ function wasmo_fix_post_counts($views) {
 			} else {
 				$class = ($wp_query->query_vars['post_status'] == 'draft') ? ' class="current"' : '';
 				$views['draft'] = sprintf(
-					__('<a href="%s" '.$class.'>Draft'. ((sizeof($result->posts) > 1) ? "s" : "") .' <span class="count">(%d)</span></a>', 'draft'),
+					__('<a href="%s" '.$class.'>Draft'. ((sizeof($result->posts) > 1) ? "s" : "") .' <span class="count">(%d)</span></a>', 'wasmo'),
 					admin_url('edit.php?post_status=draft&post_type=post'),
 					$result->found_posts
 				);
@@ -1203,7 +1203,7 @@ function wasmo_fix_post_counts($views) {
 			} else {
 				$class = ($wp_query->query_vars['post_status'] == 'future') ? ' class="future"' : '';
 				$views['future'] = sprintf(
-					__('<a href="%s" '.$class.'>Scheduled <span class="count">(%d)</span></a>', 'future'),
+					__('<a href="%s" '.$class.'>Scheduled <span class="count">(%d)</span></a>', 'wasmo'),
 					admin_url('edit.php?post_status=future&post_type=post'),
 					$result->found_posts
 				);
@@ -1214,7 +1214,7 @@ function wasmo_fix_post_counts($views) {
 			} else {
 				$class = ($wp_query->query_vars['post_status'] == 'pending') ? ' class="current"' : '';
 				$views['pending'] = sprintf(
-					__('<a href="%s" '.$class.'>Pending <span class="count">(%d)</span></a>', 'pending'),
+					__('<a href="%s" '.$class.'>Pending <span class="count">(%d)</span></a>', 'wasmo'),
 					admin_url('edit.php?post_status=pending&post_type=post'),
 					$result->found_posts
 				);
@@ -1225,7 +1225,7 @@ function wasmo_fix_post_counts($views) {
 			} else {
 				$class = ($wp_query->query_vars['post_status'] == 'trash') ? ' class="current"' : '';
 				$views['trash'] = sprintf(
-					__('<a href="%s" '.$class.'>Trash <span class="count">(%d)</span></a>', 'trash'),
+					__('<a href="%s" '.$class.'>Trash <span class="count">(%d)</span></a>', 'wasmo'),
 					admin_url('edit.php?post_status=trash&post_type=post'),
 					$result->found_posts
 				);
@@ -1369,3 +1369,62 @@ function wasmo_get_user_image( $userid ) {
 		return '<img src="https://www.gravatar.com/avatar/' . $gravatar . '" alt="' . $user->display_name . ' wasmormon.org profile image">';
 	}
 }
+
+/**
+ * Send out email depending on who updates the status of the post.
+ *
+ * @param string  $new_status New post status.
+ * @param string  $old_status Old post status.
+ * @param WP_Post $post Post object.
+ */
+function wasmo_pending_submission_notifications_send_email( $new_status, $old_status, $post ) {
+	$admin_email = get_bloginfo( 'admin_email' );
+	$headers     = 'From: '. $admin_email;
+	$user        = get_userdata( $post->post_author );
+	// Notify Admin that Contributor has written a post.
+	if ( 
+		'pending' === $new_status &&
+		user_can( $post->post_author, 'edit_posts' ) &&
+		!user_can( $post->post_author, 'publish_posts' ) &&
+		!empty($_POST)
+	) {
+		$edit_link    = get_edit_post_link( $post->ID, '' );
+		$preview_link = get_permalink( $post->ID ) . '&preview=true';
+		$last_edit    = get_the_modified_author();
+		$subject      = __( 'New post submission pending review', 'wasmo' ) . ': "' . $post->post_title . '"';
+		$message      = __( 'A new submission is pending review.', 'wasmo' );
+		$message     .= "\r\n\r\n";
+		$message     .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . "\r\n";
+		$message     .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
+		$message     .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . "\r\n";
+		$message     .= __( 'Last edited by', 'wasmo' ) . ': ' . $last_edit . "\r\n";
+		$message     .= __( 'Last edit date', 'wasmo' ) . ': ' . $post->post_modified;
+		$message     .= "\r\n\r\n";
+		$message     .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
+		$message     .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
+		$result      = wp_mail( $admin_email, $subject, $message, $headers );
+	}
+	elseif (
+		( 'pending' === $old_status || 'future' === $old_status ) &&
+		'publish' === $new_status &&
+		user_can( $post->post_author, 'edit_posts' ) &&
+		!user_can( $post->post_author, 'publish_posts' ) &&
+		!empty($_POST)
+	) {
+		// Notify Contributor that Admin has published their post.	
+		$url      = get_permalink( $post->ID );
+		$subject  = __( 'Your submission is now live!', 'wasmo' );
+		$message  = '"' . $post->post_title . '" ' . __( 'was just published on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$message .= $url;
+		$result   = wp_mail( $user->user_email, $subject, $message, $headers );
+	}
+}
+add_action( 'transition_post_status', 'wasmo_pending_submission_notifications_send_email', 10, 3 );
+
+// Remove admin notices for non admin users
+function wasmo_hide_notices(){
+	if ( !current_user_can('administrator') ) {
+		remove_all_actions( 'admin_notices' );
+	}
+}	
+add_action( 'admin_head', 'wasmo_hide_notices', 1 );

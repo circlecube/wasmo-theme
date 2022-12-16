@@ -180,7 +180,10 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			// $fresh_class .= ' updated-old';
 		}
 		
-		$the_directory .= '<a title="' . $username . '" class="person person-' . $counter . ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . '" href="' . get_author_posts_url( $userid ) . '">';
+		$the_directory .= '<a title="' . $username . '" class="';
+		$the_directory .= ' person person-' . $counter;
+		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class;
+		$the_directory .= '" href="' . get_author_posts_url( $userid ) . '">';
 			$the_directory .= '<span class="directory-img">';
 			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
