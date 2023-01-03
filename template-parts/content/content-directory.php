@@ -202,8 +202,9 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	$the_directory .= '</div>';
 	if ( 'full' === $context && $total_users > $max_profiles ) {
 		$big = 999999;
+		$profiles_url = get_permalink( get_page_by_path( 'profiles' ) );
 		$pl_args = array(
-			'base'     => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+			'base'     => str_replace( $big, '%#%', esc_url( $profiles_url . 'page/' . $big . '/' ) ),
 			'format'   => '',
 			'total'    => ceil( $total_users / $max_profiles ),
 			'current'  => max( 1, $paged ),
