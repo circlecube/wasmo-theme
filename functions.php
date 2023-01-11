@@ -1288,7 +1288,6 @@ add_filter('aioseo_sitemap_author_archives', function( $entries ) {
 		// get the last save time
 		$last_save = intval( get_user_meta( $author->ID, 'last_save', true ) );
 
-
 		// $user = get_userdata( $author->ID );
 		// $registered = strtotime( $user->user_registered );
 		$entries[] = [

@@ -13,7 +13,7 @@
 <ul class="tags"><?php
         $terms = get_terms([
             'taxonomy'   => 'shelf',
-            // 'hide_empty' => false,
+            'hide_empty' => false,
             'orderby'    => 'name',
             'order'      => 'ASC'
         ]);
@@ -33,7 +33,7 @@
 <ul class="tags"><?php
         $terms = get_terms([
             'taxonomy'   => 'spectrum',
-            // 'hide_empty' => false,
+            'hide_empty' => false,
             'orderby'    => 'name',
             'order'      => 'ASC'
         ]);
