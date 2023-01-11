@@ -1293,7 +1293,7 @@ add_filter('aioseo_sitemap_author_archives', function( $entries ) {
 		// $registered = strtotime( $user->user_registered );
 		$entries[] = [
 			'loc'        => get_author_posts_url( $author->ID ),
-			'lastmod'    => $last_save ? date('Y-m-d H:i:s', $last_save ) : false,
+			'lastmod'    => $last_save ? date('Y-m-d', $last_save ) : false,
 			'changefreq' => aioseo()->sitemap->priority->frequency( 'author' ),
 			'priority'   => aioseo()->sitemap->priority->priority( 'author' ),
 		];

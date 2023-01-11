@@ -231,3 +231,6 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	}
 }
 echo $the_directory;
+if ( $context === 'full' ) {
+	get_template_part( 'template-parts/content/content', 'taxonomies' );
+}
