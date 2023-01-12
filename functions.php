@@ -185,10 +185,10 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 // add hard coded utility menu items 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$edit_svg = twentynineteen_get_icon_svg( 'edit', 24 );
-		$user_svg = twentynineteen_get_icon_svg( 'person', 24 );
-		$join_svg = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-		$login_svg = '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,7L9.6,8.4l2.6,2.6H2v2h10.2l-2.6,2.6L11,17l5-5L11,7z M20,19h-8v2h8c1.1,0,2-0.9,2-2V5c0-1.1-0.9-2-2-2h-8v2h8V19z"/></g></svg>';
+		$edit_svg = wasmo_get_icon_svg( 'edit', 24 );
+		$user_svg = wasmo_get_icon_svg( 'person', 24 );
+		$join_svg = wasmo_get_icon_svg( 'join', 24 );
+		$login_svg = wasmo_get_icon_svg( 'login', 24 );
 		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join", 'wasmo') . '</a></li>';
 		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login", 'wasmo') . '</a></li>';
 		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out", 'wasmo') . '</a></li>';
@@ -654,8 +654,21 @@ function wasmo_entry_footer() {
 	// Hide author, post date, category and tag text for pages.
 	if ( 'post' === get_post_type() ) {
 
+		// Profile link
+		if (has_category( 'spotlight', get_the_ID() ) && get_field( 'spotlight_for', get_the_ID() ) ) {
+			$user_id = get_field( 'spotlight_for', get_the_ID() );
+			$user = get_user_by( 'id', $user_id );
+			?>
+			<p>This post spotlights a real user's profile, please <a href="<?php echo get_author_posts_url($user_id); ?>">view the full profile for <?php echo $user->display_name;?> here</a>.</p>
+			<?php
+		}
+
 		// Posted by
-		//twentynineteen_posted_by(); // hide author
+		$author = get_post_field( 'post_author', get_the_ID() );
+		$user = get_user_by('id', $author);
+		if ( !$user->has_cap( 'manage_options' ) ) {
+			twentynineteen_posted_by(); // hide author
+		}
 
 		// Posted on
 		twentynineteen_posted_on();
@@ -666,7 +679,7 @@ function wasmo_entry_footer() {
 			printf(
 				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of categories. */
 				'<span class="cat-links">%1$s<span class="screen-reader-text">%2$s</span>%3$s</span>',
-				twentynineteen_get_icon_svg( 'archive', 16 ),
+				wasmo_get_icon_svg( 'archive', 16 ),
 				__( 'Posted in', 'wasmo' ),
 				$categories_list
 			); // WPCS: XSS OK.
@@ -678,9 +691,45 @@ function wasmo_entry_footer() {
 			printf(
 				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
 				'<span class="tags-links">%1$s<span class="screen-reader-text">%2$s </span>%3$s</span>',
-				twentynineteen_get_icon_svg( 'tag', 16 ),
+				wasmo_get_icon_svg( 'tag', 16 ),
 				__( 'Tags:', 'wasmo' ),
 				$tags_list
+			); // WPCS: XSS OK.
+		}
+
+		// Related Shelf items
+		$shelf_list = get_the_term_list( get_the_ID(), 'shelf', '', ', ', '' );
+		if ( $shelf_list ) {
+			printf(
+				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
+				'<span class="tags-links shelf-links"><span title="%2$s">%1$s<span class="screen-reader-text">%2$s </span></span>%3$s</span>',
+				wasmo_get_icon_svg( 'shelf', 18, 'style="margin-top:-3px;"' ),
+				__( 'Shelf items', 'wasmo' ),
+				$shelf_list
+			); // WPCS: XSS OK.
+		}
+		
+		// Related Spectrum 
+		$spectrum_list = get_the_term_list( get_the_ID(), 'spectrum', '', ', ', '' );
+		if ( $spectrum_list ) {
+			printf(
+				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
+				'<span class="tags-links spectrum-links"><span title="%2$s">%1$s<span class="screen-reader-text">%2$s </span></span>%3$s</span>',
+				wasmo_get_icon_svg( 'spectrum', 16 ),
+				__( 'Mormon Spectrum', 'wasmo' ),
+				$spectrum_list
+			); // WPCS: XSS OK.
+		}
+
+		// Related Questions
+		$question_list = get_the_term_list( get_the_ID(), 'question', '', '<br>' . wasmo_get_icon_svg( 'question', 18, 'style="margin-top:-3px;"'), '' );
+		if ( $question_list ) {
+			printf(
+				/* translators: 1: SVG icon. 2: posted in label, only visible to screen readers. 3: list of tags. */
+				'<span class="tags-links question-links"><span title="%2$s">%1$s<span class="screen-reader-text">%2$s </span></span>%3$s</span>',
+				wasmo_get_icon_svg( 'question', 18, 'style="margin-top:-3px;"'),
+				__( 'Questions', 'wasmo' ),
+				$question_list
 			); // WPCS: XSS OK.
 		}
 
@@ -707,7 +756,7 @@ function wasmo_entry_footer() {
 			),
 			get_the_title()
 		),
-		'<span class="edit-link">' . twentynineteen_get_icon_svg( 'edit', 16 ),
+		'<span class="edit-link">' . wasmo_get_icon_svg( 'edit', 16 ),
 		'</span>'
 	);
 }
@@ -732,7 +781,7 @@ function wasmo_post_navi() {
 					); 
 					previous_post_link(
 						'%link',
-						twentynineteen_get_icon_svg( 'chevron_left', 22 ) . '<em>Older Post</em><br>%title' . $prev_post_img
+						wasmo_get_icon_svg( 'chevron_left', 22 ) . '<em>Older Post</em><br>%title' . $prev_post_img
 					);
 				}
 			?>
@@ -747,7 +796,7 @@ function wasmo_post_navi() {
 					);
 					next_post_link(
 						'%link',
-						'<em>Newer Post</em> '.twentynineteen_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
+						'<em>Newer Post</em> '.wasmo_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
 					);
 				}
 			?>
@@ -1108,7 +1157,7 @@ function wasmo_admin_bar_render() {
 			'id'    => 'profile-edit',
 			'parent' => null,
 			'group'  => null,
-			'title' => twentynineteen_get_icon_svg( 'edit', 14 ) . ' Edit Profile',
+			'title' => wasmo_get_icon_svg( 'edit', 14 ) . ' Edit Profile',
 			'href'  => site_url('/edit/'),
 			'meta' => [
 				'title' => 'Edit Profile',
@@ -1119,7 +1168,7 @@ function wasmo_admin_bar_render() {
 			'id'    => 'profile-view',
 			'parent' => null,
 			'group'  => null,
-			'title' => twentynineteen_get_icon_svg( 'person', 14 ) . ' View Profile',
+			'title' => wasmo_get_icon_svg( 'person', 14 ) . ' View Profile',
 			'href'  => get_author_posts_url( get_current_user_id() ),
 			'meta' => [
 				'title' => 'View Profile',
@@ -1427,3 +1476,147 @@ function wasmo_hide_notices(){
 	}
 }	
 add_action( 'admin_head', 'wasmo_hide_notices', 1 );
+
+
+/**
+ * Icon svg method for wasmo theme.
+ * 
+ * @param icon string value
+ * @param size number pixel value
+ * @param styles a styles attribute for any custom styles, such as `style="margin-left:20px;"`
+ * @return svg element
+ */
+function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
+	// map taxonomies to an icon
+	switch ($icon) {
+		case 'shelf':
+			$icon = 'flag';
+			break;
+		case 'spectrum':
+			$icon = 'nametag';
+			break;
+		case 'question':
+			$icon = 'help';
+			break;
+	}
+
+	// collected from https://github.com/WordPress/dashicons/tree/master/sources/svg
+	$arr = array(
+
+		'warning' => /* warning - dashicon */ '
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 20">
+	<path d="M10 2c4.42 0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 3.58-8 8-8zM11.13 11.38l0.35-6.46h-2.96l0.35 6.46h2.26zM11.040 14.74c0.24-0.23 0.37-0.55 0.37-0.96 0-0.42-0.12-0.74-0.36-0.97s-0.59-0.35-1.060-0.35-0.82 0.12-1.070 0.35-0.37 0.55-0.37 0.97c0 0.41 0.13 0.73 0.38 0.96 0.26 0.23 0.61 0.34 1.060 0.34s0.8-0.11 1.050-0.34z"/>
+</svg>',
+
+		'help'    => /* help dashicon */'
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 20">
+	<path d="M17 10c0-3.87-3.14-7-7-7-3.87 0-7 3.13-7 7s3.13 7 7 7c3.86 0 7-3.13 7-7zM10.7 11.48h-1.56v-0.43c0-0.38 0.080-0.7 0.24-0.98s0.46-0.57 0.88-0.89c0.41-0.29 0.68-0.53 0.81-0.71 0.14-0.18 0.2-0.39 0.2-0.62 0-0.25-0.090-0.44-0.28-0.58-0.19-0.13-0.45-0.19-0.79-0.19-0.58 0-1.25 0.19-2 0.57l-0.64-1.28c0.87-0.49 1.8-0.74 2.77-0.74 0.81 0 1.45 0.2 1.92 0.58 0.48 0.39 0.71 0.91 0.71 1.55 0 0.43-0.090 0.8-0.29 1.11-0.19 0.32-0.57 0.67-1.11 1.060-0.38 0.28-0.61 0.49-0.71 0.63-0.1 0.15-0.15 0.34-0.15 0.57v0.35zM9.23 14.22c-0.18-0.17-0.27-0.42-0.27-0.73 0-0.33 0.080-0.58 0.26-0.75s0.43-0.25 0.77-0.25c0.32 0 0.57 0.090 0.75 0.26s0.27 0.42 0.27 0.74c0 0.3-0.090 0.55-0.27 0.72-0.18 0.18-0.43 0.27-0.75 0.27-0.33 0-0.58-0.090-0.76-0.26z"/>
+</svg>',
+
+		'flag'   => /* flag dashicon */ '
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 20">
+	<path d="M5 18v-15h-2v15h2zM6 12v-8c3-1 7 1 11 0v8c-3 1.27-8-1-11 0z"/>
+</svg>',
+
+		'nametag' => /* dashicon nametag */ '
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+	<path d="M12 5v-3c0-0.55-0.45-1-1-1h-2c-0.55 0-1 0.45-1 1v3c0 0.55 0.45 1 1 1h2c0.55 0 1-0.45 1-1zM10 2c0.55 0 1 0.45 1 1s-0.45 1-1 1-1-0.45-1-1 0.45-1 1-1zM18 15v-8c0-1.1-0.9-2-2-2h-3v0.33c0 0.92-0.75 1.67-1.67 1.67h-2.66c-0.92 0-1.67-0.75-1.67-1.67v-0.33h-3c-1.1 0-2 0.9-2 2v8c0 1.1 0.9 2 2 2h12c1.1 0 2-0.9 2-2zM17 9v6h-14v-6h14zM9 11c0-0.55-0.22-1-0.5-1s-0.5 0.45-0.5 1 0.22 1 0.5 1 0.5-0.45 0.5-1zM12 11c0-0.55-0.22-1-0.5-1s-0.5 0.45-0.5 1 0.22 1 0.5 1 0.5-0.45 0.5-1zM6.040 12.21c0.92 0.48 2.34 0.79 3.96 0.79s3.040-0.31 3.96-0.79c-0.21 1-1.89 1.79-3.96 1.79s-3.75-0.79-3.96-1.79z"></path>
+</svg>',
+
+		'join'   => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	<path d="M0 0h24v24H0z" fill="none"/><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+</svg>',
+
+		'login'  => '
+<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24">
+	<g>
+		<rect fill="none" height="24" width="24"/>
+	</g>
+	<g>
+		<path d="M11,7L9.6,8.4l2.6,2.6H2v2h10.2l-2.6,2.6L11,17l5-5L11,7z M20,19h-8v2h8c1.1,0,2-0.9,2-2V5c0-1.1-0.9-2-2-2h-8v2h8V19z"/>
+	</g>
+</svg>',
+
+		'link'   => /* material-design – link */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
+</svg>',
+
+		'watch'  => /* material-design – watch-later */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <defs>
+        <path id="a" d="M0 0h24v24H0V0z"></path>
+    </defs>
+    <clipPath id="b">
+        <use xlink:href="#a" overflow="visible"></use>
+    </clipPath>
+    <path clip-path="url(#b)" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"></path>
+</svg>',
+
+		'archive' => /* material-design – folder */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'tag' => /* material-design – local_offer */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	<path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"></path>
+	<path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'comment' => /* material-design – comment */ '
+<svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'person' => /* material-design – person */ '
+<svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'edit' => /* material-design – edit */ '
+<svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'chevron_left' => /* material-design – chevron_left */ '
+<svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'chevron_right' => /* material-design – chevron_right */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+    <path d="M0 0h24v24H0z" fill="none"></path>
+</svg>',
+
+		'check' => /* material-design – check */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+</svg>',
+
+	);
+
+	if ( array_key_exists( $icon, $arr ) ) {
+		$repl = sprintf( 
+			'<svg class="svg-icon" width="%d" height="%d" aria-hidden="true" role="img" focusable="false" %s ',
+			$size,
+			$size,
+			$styles
+		);
+		$svg  = preg_replace( '/^<svg /', $repl, trim( $arr[ $icon ] ) ); // Add extra attributes to SVG code.
+		$svg  = preg_replace( "/([\n\t]+)/", ' ', $svg ); // Remove newlines & tabs.
+		$svg  = preg_replace( '/>\s*</', '><', $svg );    // Remove whitespace between SVG tags.
+		return $svg;
+	}
+
+	return null;
+}

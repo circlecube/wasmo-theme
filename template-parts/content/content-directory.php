@@ -212,13 +212,13 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			'type'     => 'list',
 			'prev_text'=> sprintf(
 				'%s <span class="nav-prev-text">%s</span>',
-				twentynineteen_get_icon_svg( 'chevron_left', 22 ),
+				wasmo_get_icon_svg( 'chevron_left', 22 ),
 				__( 'Newer profiles', 'twentynineteen' )
 			),
 			'next_text'=> sprintf(
 				'<span class="nav-next-text">%s</span> %s',
 				__( 'Older profiles', 'twentynineteen' ),
-				twentynineteen_get_icon_svg( 'chevron_right', 22 )
+				wasmo_get_icon_svg( 'chevron_right', 22 )
 			),
 		);
 		

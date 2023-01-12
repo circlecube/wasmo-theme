@@ -44,7 +44,7 @@ $discussion = ! is_page() && twentynineteen_can_show_post_thumbnail() ? twentyni
 				),
 				get_the_title()
 			),
-			'<span class="edit-link">' . twentynineteen_get_icon_svg( 'edit', 16 ),
+			'<span class="edit-link">' . wasmo_get_icon_svg( 'edit', 16 ),
 			'</span>'
 		);
 	?>

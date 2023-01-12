@@ -19,7 +19,10 @@ $term = get_term_by( 'id', $termid, 'question' );
 		<main id="main" class="site-main">
 			<article class="entry">
 				<header class="entry-header">
-					<h1 class="entry-title"><?php echo wp_kses_post( $term->name ); ?></h1>
+					<h1 class="entry-title">
+						<?php echo wasmo_get_icon_svg( 'question', 36 ); ?>
+						<?php echo wp_kses_post( $term->name ); ?>
+					</h1>
 				</header><!-- .page-header -->
 
 <?php
@@ -108,9 +111,30 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 						<?php if ( '' === $the_answers ) { ?>
 							<h3>There are no currently available answers for this question, add your own and be the first!</h3>
 						<?php } ?>
-					</div>
 
+						<hr />
+
+						<div class="is-layout-flex wp-block-buttons">
+							<div class="wp-block-button has-custom-font-size" style="font-size:20px">
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+							</div>
+							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">See All Profiles</a>
+							</div>
+							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/questions/' ); ?>" style="border-radius:100px">See Questions</a>
+							</div>
+						</div>
+
+					</div>
+					
 					<footer class="entry-footer">
+					<?php
+						// load related posts for this question
+						set_query_var( 'tax', 'question' );
+						set_query_var( 'termid', $termid );						
+						get_template_part( 'template-parts/content/taxonomy', 'relatedposts' );
+					?>
 					</footer>
 
 			</article>

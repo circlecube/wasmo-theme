@@ -63,7 +63,7 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 			<?php if ( $links['other'] ) {
 				$svg = twentynineteen_get_social_link_svg( $links['other'], 26 );
 				if ( empty( $svg ) ) {
-					$svg = twentynineteen_get_icon_svg( 'link' );
+					$svg = wasmo_get_icon_svg( 'link' );
 				}
 			?>
 				<li class="other"><a target="_blank" rel="noopener noreferrer" href="<?php 
@@ -84,7 +84,10 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 <?php 
 $shelf_items = get_field( 'my_shelf', 'user_' . $userid );
 if ( $shelf_items ) { ?>
-	<h4>On my shelf</h4>
+	<h4>	
+		<?php echo wasmo_get_icon_svg( 'shelf', 20 ); ?>
+		On my shelf
+	</h4>
 	<ul class="tags">
 	<?php foreach( $shelf_items as $term ): ?>
 		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
@@ -97,7 +100,10 @@ if ( $shelf_items ) { ?>
 <?php 
 $spectrum_terms = get_field( 'mormon_spectrum', 'user_' . $userid );
 if ( $spectrum_terms ) { ?>
-	<h4>On the Mormon Spectrum</h4>
+	<h4>
+		<?php echo wasmo_get_icon_svg( 'spectrum', 20 ); ?>
+		On the Mormon Spectrum
+	</h4>
 	<ul class="tags">
 	<?php foreach( $spectrum_terms as $term ): ?>
 		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
@@ -111,7 +117,7 @@ if ( $spectrum_terms ) { ?>
 	<h3>
 		Why I left
 		<a href="/why-i-left/" class="question_link_inline" title="More answers about 'Why I left' the mormon church">
-			<?php echo twentynineteen_get_icon_svg( 'link', 20 ); ?>
+			<?php echo wasmo_get_icon_svg( 'link', 20 ); ?>
 			<span class="screen-reader-text">More answers about 'Why I left' the mormon church</span>
 		</a>
 	</h3>
@@ -123,7 +129,10 @@ if ( $spectrum_terms ) { ?>
 if( have_rows( 'questions', 'user_' . $userid ) ):
 	?>
 
-	<h3>Questions I've answered</h3>
+	<h3>
+		<?php echo wasmo_get_icon_svg( 'question', 26 ); ?>
+		Questions I've answered
+	</h3>
 	
 	<?php
  	// loop through the rows of data
@@ -137,7 +146,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo '<h4 class="question">';
 			echo wp_kses_post( $questionterm->name );
 			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">';
-			echo twentynineteen_get_icon_svg( 'link', 20 );
+			echo wasmo_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
 			echo auto_link_text( wp_kses_post( $answer ) );

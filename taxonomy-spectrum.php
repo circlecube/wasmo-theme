@@ -19,10 +19,13 @@ $term = get_term_by( 'id', $termid, 'spectrum' );
 		<main id="main" class="site-main">
 			<article class="entry">
 				<header class="entry-header">
-					<h1 class="entry-title"><?php echo wp_kses_post( $term->name ); ?></h1>
-                    <p class="entry-description"><?php echo wp_kses_post( $term->description ); ?></p>
+					<h1 class="entry-title">
+						<?php echo wasmo_get_icon_svg( 'spectrum', 36 ); ?>
+						<?php echo wp_kses_post( $term->name ); ?>
+					</h1>
+                    <h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
 					<hr />
-					<h3>Profiles self-identifying as <em><?php echo wp_kses_post( $term->name ); ?></em> on the mormon spectrum:</h3>
+					<h3 class="has-small-font-size">Profiles self-identifying as <em><?php echo wp_kses_post( $term->name ); ?></em> on the mormon spectrum:</h3>
 				</header><!-- .page-header -->
 
 				<?php 
@@ -34,7 +37,10 @@ $term = get_term_by( 'id', $termid, 'spectrum' );
 				?>
 
 				<footer class="entry-footer">
-					<h3>Other Spectrums:</h3>
+					<h3>
+						<?php echo wasmo_get_icon_svg( 'spectrum', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
+						Other Spectrums:
+					</h3>
 					<ul class="tags">
 					<?php
 						$terms = get_terms([
@@ -52,6 +58,11 @@ $term = get_term_by( 'id', $termid, 'spectrum' );
 						 endforeach; 
 					?>
 					</ul>
+
+					<?php
+						// load related posts for this term
+						get_template_part( 'template-parts/content/taxonomy', 'relatedposts' );
+					?>
 				</footer>
 
 			</article>

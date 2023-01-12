@@ -66,7 +66,7 @@
 					'theme_location' => 'social',
 					'menu_class'     => 'social-links-menu',
 					'link_before'    => '<span class="screen-reader-text">',
-					'link_after'     => '</span>' . twentynineteen_get_icon_svg( 'link' ),
+					'link_after'     => '</span>' . wasmo_get_icon_svg( 'link' ),
 					'depth'          => 1,
 				)
 			);

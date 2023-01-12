@@ -6,7 +6,10 @@
 <!-- wp:columns {"align":"wide"} -->
 <div class="wp-block-columns alignwide"><!-- wp:column {"width":"66.66%"} -->
 <div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:heading {"level":3} -->
-<h3>Issues on the mormon shelf:</h3>
+<h3>
+    <?php echo wasmo_get_icon_svg( 'shelf', 24 ); ?>
+    Mormon shelf issues:
+</h3>
 <!-- /wp:heading -->
 
 <!-- wp:list {"className":"tags"} -->
@@ -26,7 +29,10 @@
 
 <!-- wp:column {"width":"33.33%"} -->
 <div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading {"level":3} -->
-<h3>Mormon Spectrum:</h3>
+<h3>
+    <?php echo wasmo_get_icon_svg( 'spectrum', 24 ); ?>
+    Mormon Spectrum:
+</h3>
 <!-- /wp:heading -->
 
 <!-- wp:list {"className":"tags"} -->

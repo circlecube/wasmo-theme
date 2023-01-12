@@ -19,7 +19,10 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 		<main id="main" class="site-main">
 			<article class="entry">
 				<header class="entry-header">
-					<h1 class="entry-title"><?php echo wp_kses_post( $term->name ); ?></h1>
+					<h1 class="entry-title">
+						<?php echo wasmo_get_icon_svg( 'shelf', 36 ); ?>
+						<?php echo wp_kses_post( $term->name ); ?>
+					</h1>
                     <p class="entry-description"><?php echo wp_kses_post( $term->description ); ?></p>
                     <?php
                         // TODO:
@@ -39,7 +42,10 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 				?>
 
 				<footer class="entry-footer">
-					<h3>Other Shelf Items:</h3>
+					<h3>
+					<?php echo wasmo_get_icon_svg( 'shelf', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
+						Other Shelf Items:
+					</h3>
 					<ul class="tags">
 					<?php
 						$terms = get_terms([
@@ -57,6 +63,11 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 						 endforeach; 
 					?>
 					</ul>
+
+					<?php
+						// load related posts for this term
+						get_template_part( 'template-parts/content/taxonomy', 'relatedposts' );
+					?>
 				</footer>
 
 			</article>
