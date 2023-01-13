@@ -39,7 +39,7 @@ $term = get_term_by( 'id', $termid, 'spectrum' );
 				<footer class="entry-footer">
 					<h3>
 						<?php echo wasmo_get_icon_svg( 'spectrum', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
-						Other Spectrums:
+						Mormon Spectrum:
 					</h3>
 					<ul class="tags">
 					<?php
@@ -50,11 +50,11 @@ $term = get_term_by( 'id', $termid, 'spectrum' );
 							'order'      => 'ASC'
 						]);
 						foreach ( $terms as $term ) : 
-							if ( $termid !== $term->term_id ) :
+							// if ( $termid !== $term->term_id ) :
 					?>
 						<li><a class="tag" data-id="<?php echo esc_attr( $term->term_id) ?>" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
 					<?php 
-							endif;
+							// endif;
 						 endforeach; 
 					?>
 					</ul>

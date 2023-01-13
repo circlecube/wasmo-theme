@@ -23,14 +23,14 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 						<?php echo wasmo_get_icon_svg( 'shelf', 36 ); ?>
 						<?php echo wp_kses_post( $term->name ); ?>
 					</h1>
-                    <p class="entry-description"><?php echo wp_kses_post( $term->description ); ?></p>
+                    <h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
                     <?php
                         // TODO:
                         // Add blog posts relevant to this shelf item.
                         // Add links relevant to the shelf item - these can be added to the term description.
                     ?>
 					<hr />
-					<h3>Profiles with <em><?php echo wp_kses_post( $term->name ); ?></em> on their "shelf":</h3>
+					<h3 class="has-small-font-size">Profiles with <em><?php echo wp_kses_post( $term->name ); ?></em> on their "shelf":</h3>
 				</header><!-- .page-header -->
 
 				<?php 
@@ -44,7 +44,7 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 				<footer class="entry-footer">
 					<h3>
 					<?php echo wasmo_get_icon_svg( 'shelf', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
-						Other Shelf Items:
+						Mormon shelf items:
 					</h3>
 					<ul class="tags">
 					<?php
@@ -55,11 +55,11 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 							'order'      => 'ASC'
 						]);
 						foreach ( $terms as $term ) : 
-							if ( $termid !== $term->term_id ) :
+							// if ( $termid !== $term->term_id ) : // don't skip this term so the ordering doesn't shuffle
 					?>
 						<li><a class="tag" data-id="<?php echo esc_attr( $term->term_id) ?>" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
 					<?php 
-							endif;
+							// endif;
 						 endforeach; 
 					?>
 					</ul>

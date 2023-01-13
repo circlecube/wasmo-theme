@@ -412,13 +412,15 @@ function wasmo_update_user( $post_id ) {
 		'info'
 	);
 
-	// update last_save timestamp for this user
-	update_user_meta( $user_id, 'last_save', time() );
 
 	//only if not edited by an admin
 	if ( !current_user_can( 'administrator' ) ) {
 		// notify email
 		wasmo_send_admin_email__profile_update( $user_id, $save_count );
+			
+		// update last_save timestamp for this user
+		update_user_meta( $user_id, 'last_save', time() );
+		
 		/*
 		// if admin - check if welcome email has been sent.
 		$has_received_welcome = get_user_meta( $user_id, 'has_received_welcome', true );
