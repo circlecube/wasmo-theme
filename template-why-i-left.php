@@ -57,23 +57,15 @@ get_header();
 				'website' === $in_directory ||
 				( 'private' === $in_directory && is_user_logged_in() )
 			) {
-				
-				$userimg = get_field( 'photo', 'user_' . $userid );
 				$username = esc_html( $user->nickname );
-
 				$the_answers .= '<cite>';
 				$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
 				$the_answers .= '<span class="directory-img">';
-				if ( $userimg ) {
-					$the_answers .= wp_get_attachment_image( $userimg, 'medium' );
-				} else {
-					$the_answers .= '<img src="' . get_stylesheet_directory_uri() . '/img/default.svg">';
-				}
+				$the_answers .= wasmo_get_user_image( $userid );
 				$the_answers .= '</span>';
 				$the_answers .= '<span class="directory-name">' . $username . '</span>';
 				$the_answers .= '</a>';
 				$the_answers .= '</cite>';
-				
 			}
 
 			$the_answers .= '</div>';
