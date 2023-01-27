@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.12.3
+ Version:          1.12.4
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -273,13 +273,17 @@ aside.callout {
 	font-size: 24px;
 	height: 36px;
 	line-height: 1.1rem;
+    max-width: 100%;
 	opacity: 0;
+    overflow: hidden;
 	padding: 0.25rem 0;
 	position: absolute;
 	text-align: center;
 	text-decoration: none;
+    text-overflow: ellipsis;
 	text-shadow: 1px 1px rgba(0,0,0,.25);
 	transition: all 0.2s ease;
+    white-space: nowrap;
 	width: 100%;
 	z-index: 1;
 }
