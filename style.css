@@ -276,7 +276,7 @@ aside.callout {
     max-width: 100%;
 	opacity: 0;
     overflow: hidden;
-	padding: 0.25rem 0;
+	padding: 0.25rem;
 	position: absolute;
 	text-align: center;
 	text-decoration: none;
