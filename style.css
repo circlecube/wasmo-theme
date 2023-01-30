@@ -1259,3 +1259,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
     font-weight: normal;
     line-height: 1.5;
 }
+
+.entry .entry-content > .wp-block-group.alignwide > .wp-block-group__inner-container > * {
+    max-width: 100% !important;
+}
