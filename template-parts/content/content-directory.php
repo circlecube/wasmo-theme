@@ -231,6 +231,49 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	}
 }
 echo $the_directory;
-if ( $context === 'full' ) {
+
+// directory buttons etc depending on context
+if ( $context === 'full' ) { // main directory
+	?>
+		<section class="entry-content alignwide">
+			<p><a href="/login/">Create an account</a> to add your own profile.</p>
+			<div class="is-layout-flex wp-block-buttons">
+				<div class="wp-block-button has-custom-font-size" style="font-size:20px">
+					<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+				</div>
+				<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+					<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+				</div>
+			</div>
+		</section>
+	<?php
 	get_template_part( 'template-parts/content/content', 'taxonomies' );
-}
+} 
+if ( strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory page
+	?>
+	<section class="entry-content alignwide">
+		<p><a href="/login/">Create an account</a> to add your own profile.</p>
+		<div class="is-layout-flex wp-block-buttons">
+			<div class="wp-block-button has-custom-font-size" style="font-size:20px">
+				<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+			</div>
+			<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+				<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+			</div>
+		</div>
+	</section>
+	<?php
+} 
+if ( is_front_page() || $context === 'widget' ) { // for widgets (front-page and sidebar)
+	?>
+	<div class="is-layout-flex wp-block-buttons is-content-justification-center">
+		<?php if ( is_front_page() ) { ?>
+		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">View All Profiles</a>
+		</div>
+		<?php } ?>
+		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
+			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+		</div>
+	</div>
+<?php } ?>

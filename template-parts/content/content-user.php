@@ -195,7 +195,7 @@ if (
 			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Back to the Directory</a>
 		</div>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '?randomprofile=1' ); ?>" style="border-radius:100px">Random Profile</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
 		</div>
 	</div>
 

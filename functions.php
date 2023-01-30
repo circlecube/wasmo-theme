@@ -1026,27 +1026,30 @@ function wasmo_random_add_rewrite() {
 add_action('template_redirect','wasmo_random_profile_template');
 function wasmo_random_profile_template() {
    if (get_query_var('randomprofile')) {
-			$args = array(
-				'orderby'     => 'rand',
-				// 'numberposts' => 1
-			);
-			$users = get_users( $args );
-			foreach ( $users as $user ) {
-				// check that user has content and is public
-				if (
-					! get_field( 'hi', 'user_' . $user->ID ) ||
-					'false' === get_user_meta( $user->ID, 'in_directory', true )
-					// 'private' === get_user_meta( $userid, 'in_directory', true ) ||
-				) {
-					continue;
-				}
-				$link = get_author_posts_url( $user->ID );
-			}
-			wp_redirect( $link, 307 );
+			wp_redirect( wasmo_get_random_profile_url(), 307 );
 			exit;
    }
 }
 add_action( 'pre_user_query', 'wasmo_random_user_query' );
+
+function wasmo_get_random_profile_url() {
+	$args = array(
+		'orderby'     => 'rand',
+		// 'numberposts' => 1
+	);
+	$users = get_users( $args );
+	foreach ( $users as $user ) {
+		// check that user has content and is public
+		if (
+			! get_field( 'hi', 'user_' . $user->ID ) ||
+			'private' === get_user_meta( $userid, 'in_directory', true ) ||
+			'false' === get_user_meta( $user->ID, 'in_directory', true )
+		) {
+			continue;
+		}
+		return get_author_posts_url( $user->ID );
+	}
+}
 
 function wasmo_random_user_query( $class ) {
 	if( 'rand' == $class->query_vars['orderby'] ) {
