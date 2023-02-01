@@ -174,6 +174,7 @@ if (
 	<?php set_query_var( 'link', get_author_posts_url( $userid ) ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'user-spotlight' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'user-posts' ); ?>
+	<?php get_template_part( 'template-parts/content/content', 'user-attribution' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
 	<div class="is-layout-flex wp-block-buttons">

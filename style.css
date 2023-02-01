@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.12.5
+ Version:          1.12.6
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -1262,4 +1262,17 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 
 .entry .entry-content > .wp-block-group.alignwide > .wp-block-group__inner-container > * {
     max-width: 100% !important;
+}
+
+.entry .entry-content .user-attribution {
+	align-items: center;
+	border: 1px solid var(--color-orange);
+	display: flex;
+	font-size: small;
+	gap: 1rem;
+	padding: 0 1rem;
+}
+.entry .entry-content .user-attribution p {
+	font-size: 16px;
+	margin: 0 .5em;
 }
