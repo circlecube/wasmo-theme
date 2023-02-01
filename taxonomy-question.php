@@ -23,6 +23,7 @@ $term = get_term_by( 'id', $termid, 'question' );
 						<?php echo wasmo_get_icon_svg( 'question', 36 ); ?>
 						<?php echo wp_kses_post( $term->name ); ?>
 					</h1>
+					<h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
 				</header><!-- .page-header -->
 
 <?php
