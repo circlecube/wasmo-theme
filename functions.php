@@ -1633,3 +1633,5 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 
 	return null;
 }
+
+remove_filter('term_description','wpautop');
