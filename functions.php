@@ -1042,7 +1042,7 @@ function wasmo_get_random_profile_url() {
 		// check that user has content and is public
 		if (
 			! get_field( 'hi', 'user_' . $user->ID ) ||
-			'private' === get_user_meta( $userid, 'in_directory', true ) ||
+			'private' === get_user_meta( $user->ID, 'in_directory', true ) ||
 			'false' === get_user_meta( $user->ID, 'in_directory', true )
 		) {
 			continue;
