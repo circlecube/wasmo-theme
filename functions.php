@@ -599,10 +599,11 @@ function wasmo_update_user_question_count(){
 
 	//get terms
 	$tempterms = [];
-	$terms = get_terms( 'question' );
+	// $terms = get_terms( 'question' );
 	$terms = get_terms([
 		'taxonomy' => 'question',
 		'hide_empty' => false,
+		'number' => 0,
 	]);
 	// set count to 0 for each term - reset to count fresh
 	foreach ( $terms as $term ) { 
@@ -617,7 +618,7 @@ function wasmo_update_user_question_count(){
 	// user loop
 	foreach ( $users as $user ) { 
 		$userid = $user->ID;
-		$tempterms['users']++;
+		// $tempterms['users']++;
 		// only use public users - so we don't end up with blank question pages
 		$in_directory = get_field( 'in_directory', 'user_' . $userid );
 		if ( 
@@ -632,7 +633,11 @@ function wasmo_update_user_question_count(){
 					the_row();
 					$termtaxid = get_sub_field( 'question', 'users_' . $userid );
 					$term = get_term( $termtaxid, 'questions' );
-					$tempterms[$termtaxid]++; // increment term
+					if ( array_key_exists( $termtaxid, $tempterms ) ) {
+						$tempterms[$termtaxid]++; // increment term
+					} else {
+						$tempterms[$termtaxid] = 1;
+					}
 				}
 			}
 		}
