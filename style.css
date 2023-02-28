@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.12.8
+ Version:          1.13
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -13,17 +13,18 @@
 */
 
 :root {
+	--color-orange-0: rgba(240, 124, 39, 0.05);
 	--color-orange: #f07c27;
 	--color-pink: #d80c81;
 	--color-blue: #00aeeb;
 	--color-blue-2: #007099;
 	--color-blue-3: #004b66;
 	--color-white: #ffffff;
-	--color-gray0: #f2f2f2;
-	--color-gray1: #e8e8ea;
-	--color-gray2: #a5a6ab;
-	--color-gray3: #333333;
-	--color-orange-light: rgba(240, 124, 39, 0.05);
+	--color-gray-0: #f2f2f2;
+	--color-gray-1: #e8e8ea;
+	--color-gray-2: #a5a6ab;
+	--color-gray-3: #333333;
+	--color-gray-4: #111111;
 }
 html {
 	font-size: 100% !important;
@@ -137,7 +138,7 @@ h6,
 
 .jetpack_widget_social_icons svg.icon,
 #colophon .site-info {
-	color: var(--color-gray2);
+	color: var(--color-gray-2);
 }
 
 .discussion-avatar-list {
@@ -246,6 +247,9 @@ aside.callout {
 	.the-directory .directory {
 		grid-template-columns: repeat(6, 1fr);
 	}
+	.the-directory .directory.directory-bumper {
+		grid-template-columns: repeat(4, 1fr);
+	}
 }
 
 .directory .person .directory-img {
@@ -348,7 +352,8 @@ aside.callout {
 		bottom: 36px;
 	}
 	.directory-full .person .directory-name,
-	.directory-shortcode .person .directory-name {
+	.directory-shortcode .person .directory-name,
+	.directory-bumper .person .directory-name {
 		bottom: 0;
 		opacity: 1;
 	}
@@ -367,12 +372,14 @@ aside.callout {
 		bottom: 36px;
 	}
 	.directory-full .person .directory-name,
-	.directory-shortcode .person .directory-name {
+	.directory-shortcode .person .directory-name,
+	.directory-bumper .person .directory-name {
 		bottom: -36px;
 		opacity: 0;
 	}
 	.directory-full .person:hover .directory-name,
-	.directory-shortcode .person:hover .directory-name {
+	.directory-shortcode .person:hover .directory-name,
+	.directory-bumper .person:hover .directory-name {
 		bottom: 0;
 		opacity: 1;
 	}
@@ -409,7 +416,7 @@ aside.callout {
 .directory-pagination .page-numbers .page-numbers {
     border-radius: 100px;
     background-color: var(--color-blue-2);
-    color: var(--color-gray0);
+    color: var(--color-gray-0);
     display: block;
     height: 2rem;
     margin: 0 0.5rem 0.5rem;
@@ -440,7 +447,7 @@ aside.callout {
 .navigation.pagination .nav-links .page-numbers.next,
 .directory-pagination .page-numbers .page-numbers.prev,
 .directory-pagination .page-numbers .page-numbers.next {
-	background-color: var(--color-gray0);
+	background-color: var(--color-gray-0);
 	color: var(--color-blue-2);
 	white-space: nowrap;
     display: flex;
@@ -452,7 +459,7 @@ aside.callout {
 .navigation.pagination .nav-links .page-numbers.next:hover,
 .directory-pagination .page-numbers .page-numbers.prev:hover,
 .directory-pagination .page-numbers .page-numbers.next:hover {
-	background-color: var(--color-gray1);
+	background-color: var(--color-gray-1);
 	color: var(--color-blue-3);
 }
 
@@ -585,12 +592,12 @@ body.author .wp-block-buttons {
 	margin: 0 1rem 1rem 0;
 	display: inline-block;
 }
-
+/*
 .entry .entry-content > *,
 .entry .entry-summary > * {
-	/* max-width: 100%; */
+	max-width: 100%;
 }
-
+*/
 /* desktop */
 @media only screen and (min-width: 768px) {
 	.entry .entry-content .content-header {
@@ -602,7 +609,7 @@ body.author .wp-block-buttons {
 }
 
 h2.tagline {
-	color: var(--color-gray2);
+	color: var(--color-gray-2);
 	font-family: "Crimson Text", serif;
 	font-style: italic;
 	font-size: 1.5rem;
@@ -627,7 +634,7 @@ h2.tagline {
 }
 .location {
 	font-size: 0.8rem;
-	color: var(--color-gray2);
+	color: var(--color-gray-2);
 	font-style: italic;
 }
 .user-profile .edit-link {
@@ -717,7 +724,7 @@ h2.tagline {
 
 .tags li .tag:hover {
 	background-color: #eee;
-	color: var(--color-gray3);
+	color: var(--color-gray-3);
 	text-decoration: underline;
 }
 
@@ -902,13 +909,68 @@ cite span {
 	margin: 0 0 2rem;
 	padding: 0;
 }
+
+.widget .recent_posts li {
+	background-color: var(--color-orange-0);
+    display: flex;
+    flex-direction: column-reverse;
+	margin-bottom: 1rem;
+	border: 1px solid var(--color-blue-2);
+	border-width: 1px 0;
+	transition: all .2s ease;
+}
+
+.widget .recent_posts li:nth-of-type(4n+1) {
+	border-color: var(--color-blue-2);
+}
+.widget .recent_posts li:nth-of-type(4n+2) {
+	border-color: var(--color-pink);
+}
+.widget .recent_posts li:nth-of-type(4n+3) {
+	border-color: var(--color-blue);
+}
+.widget .recent_posts li:nth-of-type(4n+4) {
+	border-color: var(--color-orange);
+}
+
 .widget .recent_posts h3 {
-	margin-top: 0;
 	font-size: 1.5em;
+	margin: 0;
+}
+.widget .recent_posts h3 a {
+	color: var(--color-gray-4);
+    display: block;
+    padding: .5rem;
+	text-align: center;
+    text-decoration: none;
+	transition: all .2s ease;
 }
 .widget .recent_posts .post-thumbnail {
 	margin: 0;
 }
+.widget .recent_posts .post-thumbnail-inner {
+	padding: 0 .5rem .5rem;
+}
+
+.widget .recent_posts li:hover {
+	background-color: var(--color-blue-2)
+}
+.widget .recent_posts li:nth-of-type(4n+1):hover {
+	background-color: var(--color-blue-2);
+}
+.widget .recent_posts li:nth-of-type(4n+2):hover {
+	background-color: var(--color-pink);
+}
+.widget .recent_posts li:nth-of-type(4n+3):hover {
+	background-color: var(--color-blue);
+}
+.widget .recent_posts li:nth-of-type(4n+4):hover {
+	background-color: var(--color-orange);
+}
+.widget .recent_posts li:hover h3 a {
+	color: var(--color-gray-0);
+}
+
 
 /* footer widget / lwa modal */
 div.lwa-modal-overlay div.lwa-modal-popup {
@@ -956,9 +1018,9 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 .widget a#wp-logout,
 .widget .lwa-modal-trigger button.lwa-modal-trigger-el {
-	border: 2px solid var(--color-gray1) !important;
+	border: 2px solid var(--color-gray-1) !important;
 	border-radius: 100px !important;
-	color: var(--color-gray1) !important;
+	color: var(--color-gray-1) !important;
 	font-size: 0.75rem !important;
 	height: auto !important;
 	line-height: 38px;
@@ -970,7 +1032,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 .widget a#wp-logout:hover,
 .widget .lwa-modal-trigger button.lwa-modal-trigger-el:hover {
 	background: rgba(255, 255, 255, 0.15) !important;
-	border: 2px solid var(--color-gray0) !important;
+	border: 2px solid var(--color-gray-0) !important;
 	color: var(--color-white) !important;
 }
 
@@ -991,7 +1053,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 
 .callout {
-	background: var(--color-orange-light);
+	background: var(--color-orange-0);
 	border: 1px solid var(--color-blue);
 	padding: 2rem;
 }
@@ -1003,13 +1065,13 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 	display: inline-block;
 }
 .footer-navigation .footer-menu {
-	color: var(--color-gray1);
+	color: var(--color-gray-1);
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
 }
 .footer-navigation .footer-menu li {
-	border-bottom: 1px solid var(--color-gray2);
+	border-bottom: 1px solid var(--color-gray-2);
 	margin-bottom: 1rem;
 	padding-bottom: 1rem;
 }
@@ -1191,7 +1253,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 
 .site-footer {
-	background: var(--color-gray3);
+	background: var(--color-gray-3);
 	color: #eee;
 }
 
@@ -1235,6 +1297,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 .post-pagination-link {
 	flex: 1;
+	max-width: 370px;
 }
 
 .post-pagination-prev {
@@ -1244,9 +1307,38 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 	padding-left: 2rem;
 	text-align: right;
 }
+.post-pagination .post-pagination-link.post-pagination-prev .svg-icon {
+	margin-left: 1rem;
+	transition: margin .2s ease;
+}
+.post-pagination .post-pagination-link.post-pagination-prev:hover .svg-icon {
+	margin-left: 0;
+}
 .post-pagination .post-pagination-link.post-pagination-next .svg-icon {
+	margin-right: 1rem;
+	transition: margin .2s ease;
+}
+.post-pagination .post-pagination-link.post-pagination-next:hover .svg-icon {
 	margin-right: 0;
 }
+.post-pagination .post-pagination-link .adjacent-post {
+	margin: .5rem 0;
+	padding: .5rem;
+	border: 1px solid var(--color-blue);
+	border-width: 1px 0;
+	background-color: var(--color-orange-0);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	max-width: 340px;
+}
+.post-pagination .post-pagination-link .adjacent-post-title {
+	display: block;
+	text-align: center;
+	padding-bottom: .5rem;
+}
+
 
 .entry .entry-footer .shelf-links,
 .entry .entry-footer .spectrum-links,
@@ -1281,10 +1373,10 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 .faith-crisis-report-nav .wp-block-group__inner-container h5 {
 	margin-bottom: 0 !important;
 	text-decoration: none;
-	color: #111;
+	color: var(--color-gray-4);
 }
 .faith-crisis-report-nav .wp-block-group__inner-container h5 a {
-	color: #111;
+	color: var(--color-gray-4);
 	text-decoration: none;
 }
 nav.wp-block-navigation.personal-faith-crisis-report-menu {
@@ -1310,5 +1402,5 @@ nav.wp-block-navigation.personal-faith-crisis-report-menu li a.wp-block-navigati
 nav.wp-block-navigation.personal-faith-crisis-report-menu li a[aria-current="page"] {
 	text-decoration: none;
 	font-weight: 600;
-	color: #111;
+	color: var(--color-gray-4);
 }

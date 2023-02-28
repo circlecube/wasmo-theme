@@ -189,13 +189,19 @@ function wasmo_loginout_menu_link( $items, $args ) {
 		$user_svg = wasmo_get_icon_svg( 'person', 24 );
 		$join_svg = wasmo_get_icon_svg( 'join', 24 );
 		$login_svg = wasmo_get_icon_svg( 'login', 24 );
+		$userid = get_current_user_id();
 		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join", 'wasmo') . '</a></li>';
 		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login", 'wasmo') . '</a></li>';
 		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out", 'wasmo') . '</a></li>';
-		$profile = '<li class="view"><a href="' . get_author_posts_url( get_current_user_id() ) . '">' . $user_svg . 'View</a></li>';
-		$edit =    '<li class="edit"><a href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
+		$profile = '<li class="view"><a title="View Profile" href="' . get_author_posts_url( $userid ) . '">' . $user_svg . 'View</a></li>';
+		$edit =    '<li class="edit"><a title="Edit Profile" href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
+		$post = get_field('i_want_to_write_posts', 'user_'.$userid );
+		if ( get_field('i_want_to_write_posts', 'user_'.$userid) &&
+			'No thanks' !== get_field('i_want_to_write_posts', 'user_'.$userid) ) {
+			$post = '<li class="post"><a title="Submit Post" href="' . home_url('/wp-admin/post-new.php') . '">' . wasmo_get_icon_svg( 'edit-page', 24 ) . 'Submit Post</a></li>';
+		}
 		if ( is_user_logged_in() ) {
-			$items = $profile . $edit;
+			$items = $profile . $edit . $post;
 		} else {
 			$items = $login;
 		}
@@ -593,6 +599,12 @@ function oa_social_login_do_before_user_login ($user_data, $identity, $new_regis
 
 add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
 
+// changing default gutenberg image block alignment to "center"
+function wasmo_change_default_gutenberg_image_block_options (){
+	$block_type = WP_Block_Type_Registry::get_instance()->get_registered( "core/image" );
+	$block_type->attributes['align']['default'] = 'center';
+}
+add_action( 'init', 'wasmo_change_default_gutenberg_image_block_options');
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
@@ -788,7 +800,7 @@ function wasmo_post_navi() {
 					); 
 					previous_post_link(
 						'%link',
-						wasmo_get_icon_svg( 'chevron_left', 22 ) . '<em>Older Post</em><br>%title' . $prev_post_img
+						wasmo_get_icon_svg( 'chevron_left', 22 ) . '<em>Older Post</em><span class="adjacent-post"><span class="adjacent-post-title">%title</span>' . $prev_post_img . '</span>'
 					);
 				}
 			?>
@@ -803,7 +815,7 @@ function wasmo_post_navi() {
 					);
 					next_post_link(
 						'%link',
-						'<em>Newer Post</em> '.wasmo_get_icon_svg( 'chevron_right', 22 ).'<br>%title' . $next_post_img
+						'<em>Newer Post</em> '.wasmo_get_icon_svg( 'chevron_right', 22 ).'<span class="adjacent-post"><span class="adjacent-post-title">%title</span>' . $next_post_img . '</span>'
 					);
 				}
 			?>
@@ -1534,6 +1546,11 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 		'nametag' => /* dashicon nametag */ '
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
 	<path d="M12 5v-3c0-0.55-0.45-1-1-1h-2c-0.55 0-1 0.45-1 1v3c0 0.55 0.45 1 1 1h2c0.55 0 1-0.45 1-1zM10 2c0.55 0 1 0.45 1 1s-0.45 1-1 1-1-0.45-1-1 0.45-1 1-1zM18 15v-8c0-1.1-0.9-2-2-2h-3v0.33c0 0.92-0.75 1.67-1.67 1.67h-2.66c-0.92 0-1.67-0.75-1.67-1.67v-0.33h-3c-1.1 0-2 0.9-2 2v8c0 1.1 0.9 2 2 2h12c1.1 0 2-0.9 2-2zM17 9v6h-14v-6h14zM9 11c0-0.55-0.22-1-0.5-1s-0.5 0.45-0.5 1 0.22 1 0.5 1 0.5-0.45 0.5-1zM12 11c0-0.55-0.22-1-0.5-1s-0.5 0.45-0.5 1 0.22 1 0.5 1 0.5-0.45 0.5-1zM6.040 12.21c0.92 0.48 2.34 0.79 3.96 0.79s3.040-0.31 3.96-0.79c-0.21 1-1.89 1.79-3.96 1.79s-3.75-0.79-3.96-1.79z"></path>
+</svg>',
+
+		'edit-page' => /* dashicon edit-page */ '
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" style="enable-background:new 0 0 20 20;" xml:space="preserve">
+   <path d="M4,5H2v13h10v-2H4V5z M17.9,3.4l-1.3-1.3C16.2,1.7,15.5,1.6,15,2l0,0l-1,1H5v12h9V9l4-4l0,0C18.4,4.5,18.3,3.8,17.9,3.4z M12.2,9.4l-2.5,0.9l0.9-2.5L15,3.4L16.6,5L12.2,9.4z"/>
 </svg>',
 
 		'join'   => '
