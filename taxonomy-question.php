@@ -82,6 +82,18 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 						$the_answers .= '<span class="directory-name">' . $username . '</span>';
 						$the_answers .= '</a>';
 						$the_answers .= '</cite>';
+					} elseif (
+						'false' === $in_directory ||
+						( 'private' === $in_directory && !is_user_logged_in() )
+					) {
+						$the_answers .= '<cite>';
+						$the_answers .= '<span class="person person-' . esc_attr( $userid ) . '">';
+						$the_answers .= '<span class="directory-img">';
+						$the_answers .= wasmo_get_user_image( 0 );
+						$the_answers .= '</span>';
+						$the_answers .= '<span class="directory-name">Anonymous</span>';
+						$the_answers .= '</span>';
+						$the_answers .= '</cite>';
 					}
 
 					$the_answers .= '</div>';
@@ -94,11 +106,12 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 
 ?>
 					<div class="entry-content answers">
-						<?php echo $the_answers; ?>
 
-						<?php if ( '' === $the_answers ) { ?>
-							<h3>There are no currently available answers for this question, add your own and be the first!</h3>
-						<?php } ?>
+						<?php if ( empty( $the_answers ) ) { ?>
+							<p>There are no available answers for this question currently. Add your own story and be the first to contribute your own answer to the question!</p>
+						<?php } else {
+							echo $the_answers;
+						} ?>
 
 						<hr />
 

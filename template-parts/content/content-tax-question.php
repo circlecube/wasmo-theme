@@ -5,11 +5,11 @@
 
 ?>
 
-<!-- wp:heading {"level":3} -->
-<h3>
+<!-- wp:heading {"level":2} -->
+<h2 class="has-regular-font-size">
     <?php echo wasmo_get_icon_svg( 'question', 24 ); ?>
-    Mormon Questions:
-</h3>
+    Questions about the Mormon Church:
+</h2>
 <!-- /wp:heading -->
 
 <ul class="questions">

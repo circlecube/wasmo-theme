@@ -127,11 +127,17 @@ if ( $spectrum_terms ) { ?>
 <?php
 //questions repeater
 if( have_rows( 'questions', 'user_' . $userid ) ):
+	$description = "Questions about Mormons";
 	?>
 
 	<h3>
-		<?php echo wasmo_get_icon_svg( 'question', 26 ); ?>
-		Questions I've answered
+		<a 
+			href="/questions/"
+			class="question_link_inline"
+			title="<?php echo $description; ?>"
+		><?php echo wasmo_get_icon_svg( 'question', 26 );
+		?><span class="screen-reader-text"><?php echo $description; ?></span></a>
+		My Answers to Questions about Mormonism
 	</h3>
 	
 	<?php
@@ -142,7 +148,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 		$answer = get_sub_field( 'answer', 'users_' . $userid );
 		if ( $termtaxid && $answer ) {
 			$questionterm = get_term( $termtaxid, 'question' );
-			$description = "More was mormon answers about '" . wp_kses_post( $questionterm->name ) . "'";
+			$description = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
 			echo '<h4 class="question">';
 			echo wp_kses_post( $questionterm->name );
 			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">';

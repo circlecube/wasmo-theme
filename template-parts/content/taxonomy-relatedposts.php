@@ -23,7 +23,8 @@ $args = array(
 $query = new WP_Query( $args );
 
 if ( $query->have_posts() ) : ?>
-    <h3>Blog Posts Related to <em><?php echo get_term( $termid )->name; ?></em>:</h3>
+    <h3><em><?php echo get_term( $termid )->name; ?></em><br>
+    Related Blog Posts:</h3>
     <ul>
         <?php while ( $query->have_posts() ) : ?>
             <?php $query->the_post(); ?>
