@@ -185,19 +185,18 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
 // add hard coded utility menu items 
 function wasmo_loginout_menu_link( $items, $args ) {
 	if ($args->theme_location == 'utility') {
-		$edit_svg = wasmo_get_icon_svg( 'edit', 24 );
-		$user_svg = wasmo_get_icon_svg( 'person', 24 );
-		$join_svg = wasmo_get_icon_svg( 'join', 24 );
-		$login_svg = wasmo_get_icon_svg( 'login', 24 );
 		$userid = get_current_user_id();
-		$login =   '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . $join_svg . __(" Join", 'wasmo') . '</a></li>';
-		$login .=   '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' . $login_svg . __(" Login", 'wasmo') . '</a></li>';
+		$login = '<li class="login"><a href="' . home_url('/login/') . '" class="register">' . wasmo_get_icon_svg( 'join', 24 ) . __(" Join", 'wasmo') . '</a></li>';
+		$login .= '<li class="login"><a href="' . home_url('/login/') . '" class="nav-login">' .  wasmo_get_icon_svg( 'login', 24 ) . __(" Login", 'wasmo') . '</a></li>';
 		// $logout =  '<li class="logout"><a href="' . wp_logout_url() . '">' . __("Log Out", 'wasmo') . '</a></li>';
-		$profile = '<li class="view"><a title="View Profile" href="' . get_author_posts_url( $userid ) . '">' . $user_svg . 'View</a></li>';
-		$edit =    '<li class="edit"><a title="Edit Profile" href="' . home_url('/edit/') . '">' . $edit_svg . 'Edit</a></li>';
-		$post = get_field('i_want_to_write_posts', 'user_'.$userid );
-		if ( get_field('i_want_to_write_posts', 'user_'.$userid) &&
-			'No thanks' !== get_field('i_want_to_write_posts', 'user_'.$userid) ) {
+		$profile = '<li class="view"><a title="View Profile" href="' . get_author_posts_url( $userid ) . '">' . wasmo_get_icon_svg( 'person', 24 ) . 'View</a></li>';
+		$edit = '<li class="edit"><a title="Edit Profile" href="' . home_url('/edit/') . '">' . wasmo_get_icon_svg( 'edit', 24 ) . 'Edit</a></li>';
+		$post = '';
+		$writeposts = get_field( 'i_want_to_write_posts', 'user_'.$userid );
+		if ( 
+			!empty( $writeposts ) &&
+			'No thanks' !== $writeposts
+			) {
 			$post = '<li class="post"><a title="Submit Post" href="' . home_url('/wp-admin/post-new.php') . '">' . wasmo_get_icon_svg( 'edit-page', 24 ) . 'Submit Post</a></li>';
 		}
 		if ( is_user_logged_in() ) {
