@@ -1422,4 +1422,10 @@ button.gsc-search-button-v2 {
 	padding: 0;
 }
 
+/* center images that don't wrap in div properly */
+figure.wp-block-image.aligncenter {
+    width: 100%;
+}
+figure.wp-block-image.aligncenter img {
+    margin: 0 auto;
 }
