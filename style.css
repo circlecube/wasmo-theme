@@ -1404,3 +1404,22 @@ nav.wp-block-navigation.personal-faith-crisis-report-menu li a[aria-current="pag
 	font-weight: 600;
 	color: var(--color-gray-4);
 }
+
+/* clean up google search box in sidebar */
+table.gsc-search-box td {
+	border: 0;
+}
+.gsc-input {
+	margin: 0;
+}
+table.gsc-search-box td.gsc-input {
+	padding: 0 !important;
+}
+button.gsc-search-button-v2 {
+	padding: 12px 18px;
+}
+.gsib_b {
+	padding: 0;
+}
+
+}
