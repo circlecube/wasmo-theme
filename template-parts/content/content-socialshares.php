@@ -10,6 +10,17 @@ $is_this_user = get_query_var( 'is_this_user' );
 $name = get_query_var( 'name' );
 $link = get_query_var( 'link' );
 
+// true = public
+// private = only to a logged in user
+// website = show on web but not on social
+// false = don't show anywhere
+$in_directory = get_field( 'in_directory', 'user_' . $userid );
+
+// if user indicates they don't want to be on social or in the directory, bail now
+if ( $in_directory === 'website' || $in_directory === false ) {
+    return;
+}
+
 $_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read this wasmormon profile from {name}';
 $_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Great wasmormon profile, {name}!&url={link}';
 // $_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
