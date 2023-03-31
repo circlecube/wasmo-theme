@@ -1,11 +1,11 @@
 /*!
- Theme Name:       wasmormon.org Theme
+ Theme Name:       wasmormon.org
  Theme URI:        https://wasmormon.org
  Description:      Theme for the wasmormon.org profile site
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.13.3
+ Version:          1.13.4
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -1211,9 +1211,23 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 .home .entry .entry-content .wp-block-latest-posts li {
 	padding-bottom: 1rem;
 }
-
-.home .wp-block-latest-posts__featured-image {
-	margin-bottom: 4rem;
+.home .wp-block-latest-posts__featured-image.alignleft {
+	display: flex;
+	float: none;
+	margin: 0;
+}
+.home .wp-block-latest-posts__featured-image.alignleft > a {
+	margin: 2rem auto 0;
+}
+/* desktop */
+@media only screen and (min-width: 768px) {
+	.home .wp-block-latest-posts__featured-image.alignleft {
+		float: left;
+		margin: 0 1rem 1rem 0;
+	}
+	.home .wp-block-latest-posts__featured-image.alignleft > a {
+		margin: 0;
+	}
 }
 
 .gform_wrapper .gform_button.button,
