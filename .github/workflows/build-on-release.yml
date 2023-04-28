@@ -1,4 +1,4 @@
-name: Package Pluginon Release
+name: Package Plugin on Release
 
 on:
   release:

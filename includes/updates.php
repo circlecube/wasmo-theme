@@ -9,9 +9,9 @@ $url   = 'https://api.github.com/repos/circlecube/wasmo-theme/releases/latest';
 $wasmoThemeUpdater = new ThemeUpdater( $theme, $url );
 $wasmoThemeUpdater->setDataMap(
 	array(
-		'version'       => 'tag_name',
-		'download_link' => 'zipball_url',
+		'download_link' => 'assets.0.browser_download_url',
 		'last_updated'  => 'published_at',
+		'version'       => 'tag_name',
 	)
 );
 
