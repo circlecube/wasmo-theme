@@ -1,7 +1,9 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 
 require_once( get_stylesheet_directory() . '/includes/wasmo-directory-widget.php' );
 require_once( get_stylesheet_directory() . '/includes/wasmo-posts-widget.php' );
+require_once( get_stylesheet_directory() . '/includes/updates.php' );
 
 // register Foo_Widget widget
 function register_wasmo_widgets() {
@@ -1651,3 +1653,4 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 }
 
 remove_filter('term_description','wpautop');
+
