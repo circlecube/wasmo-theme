@@ -148,8 +148,11 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 		$answer = get_sub_field( 'answer', 'users_' . $userid );
 		if ( $termtaxid && $answer ) {
 			$questionterm = get_term( $termtaxid, 'question' );
+			$anchor = "Link to this answer of '" . wp_kses_post( $questionterm->name ) . "' by " . $curauth->display_name;
 			$description = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
-			echo '<h4 class="question">';
+			echo '<h4 class="question" id="' . esc_attr( $questionterm->slug ) . '">';
+			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . $anchor . '">';
+			echo '<sup>#</sup><span class="screen-reader-text">' . $anchor . '</span></a> ';
 			echo wp_kses_post( $questionterm->name );
 			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">';
 			echo wasmo_get_icon_svg( 'link', 20 );
@@ -176,7 +179,6 @@ if (
 	<?php set_query_var( 'userid', $userid ); ?>
 	<?php set_query_var( 'is_this_user', $is_this_user ); ?>
 	<?php set_query_var( 'name', $curauth->user_login ); ?>
-	<?php set_query_var( 'displayname', $curauth->user_login ); ?>
 	<?php set_query_var( 'link', get_author_posts_url( $userid ) ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'user-spotlight' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'user-posts' ); ?>
