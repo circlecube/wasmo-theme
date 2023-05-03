@@ -114,14 +114,26 @@ if ( $spectrum_terms ) { ?>
 ?>
 
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
-	<h3>
-		Why I left
-		<a href="/why-i-left/" class="question_link_inline" title="More answers about 'Why I left' the mormon church">
-			<?php echo wasmo_get_icon_svg( 'link', 20 ); ?>
-			<span class="screen-reader-text">More answers about 'Why I left' the mormon church</span>
-		</a>
-	</h3>
-	<div class="why_i_left"><?php echo auto_link_text( wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ) ); ?></div>
+	<?php 
+		$anchor_desc = "Link to 'Why I left the Mormon church' by " . wp_kses_post( $curauth->display_name );
+		$more_desc   = "More stories of 'Why I left' the Mormon church";
+	?>
+	<div id="why-i-left">
+		<h3>
+			<a href="#why-i-left" class="question_link_inline question_anchor" title="<?php echo esc_attr( $anchor_desc ); ?>">
+				<sup>#</sup>
+				<span class="screen-reader-text"><?php esc_html($anchor_desc); ?></span>
+			</a>
+			Why I left
+			<a href="/why-i-left/" class="question_link_inline" title="<?php echo esc_attr( $more_desc ); ?>">
+				<?php echo wasmo_get_icon_svg( 'link', 20 ); ?>
+				<span class="screen-reader-text"><?php echo esc_html( $more_desc ); ?></span>
+			</a>
+		</h3>
+		<div class="why_i_left">
+			<?php echo auto_link_text( wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ) ); ?>
+		</div>
+	</div>
 <?php } ?>
 
 <?php
