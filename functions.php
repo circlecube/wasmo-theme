@@ -376,19 +376,20 @@ function wasmo_update_user( $post_id ) {
 
 	$user_id = intval( substr( $post_id, 5 ) );
 
-	// update user nicename/displayname from acf fields
-	wp_update_user( array( 
-		'ID' => $user_id, 
-		'user_nicename' => sanitize_title( get_field( 'profile_id', 'user_'. $user_id ) ),
-		'display_name' => sanitize_text_field( get_field( 'display_name', 'user_'. $user_id ) )
-	) );
-	// resave values back ot user acf fields
-	$user_info = get_userdata( $user_id );
-	$user_loginname = $user_info->user_login;
-	$user_displayname = $user_info->display_name;
-	$user_nicename = $user_info->user_nicename;
-	update_field( 'display_name', $user_displayname, 'user_' . $user_id );
-	update_field( 'profile_id', $user_nicename, 'user_' . $user_id );
+	// update user_nicename and display_name from the equivalent acf fields
+
+    $userDisplayname = sanitize_text_field( $_POST['acf']['field_5cb486045a336'] );
+    $userSlug = sanitize_title( $_POST['acf']['field_5cb486165a337'] );
+	// $user_displayname = sanitize_text_field( get_field( 'display_name', 'user_'. $user_id ) );
+	// $user_slug = sanitize_title( get_field( 'profile_id', 'user_'. $user_id ) );
+	update_user_meta( $user_id, 'nickname', $userSlug );
+	$user_id = wp_update_user( 
+		array(
+			'ID'            => $user_id,
+			'display_name'  => $userDisplayname,
+			'user_nicename' => $userSlug,
+		)
+	);
 
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
@@ -411,8 +412,8 @@ function wasmo_update_user( $post_id ) {
 		'simple_history_log',
 		'Updated profile for {displayname}({nicename}) (edit #{savecount}) {link}',
 		[
-			'nicename' => $user_nicename,
-			'displayname' => $user_displayname,
+			'nicename' => $userSlug,
+			'displayname' => $userDisplayname,
 			'savecount' => $save_count,
 			'link' => get_author_posts_url( $user_id ),
 		],
@@ -422,11 +423,12 @@ function wasmo_update_user( $post_id ) {
 
 	//only if not edited by an admin
 	if ( !current_user_can( 'administrator' ) ) {
-		// notify email
-		wasmo_send_admin_email__profile_update( $user_id, $save_count );
-			
+
 		// update last_save timestamp for this user
 		update_user_meta( $user_id, 'last_save', time() );
+
+		// email notification to admin
+		wasmo_send_admin_email__profile_update( $user_id, $save_count );
 		
 		/*
 		// if admin - check if welcome email has been sent.
@@ -439,13 +441,10 @@ function wasmo_update_user( $post_id ) {
 		*/
 	}
 
-	wp_redirect( get_author_posts_url( $user_id ), 301);
-
-	exit;
+	// redirect to view the profile on save
+	wp_safe_redirect( get_author_posts_url( $user_id, $userSlug ), 301);
+	exit();
 }
-add_action( 'acf/save_post', 'wasmo_update_user', 10 );
-add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
-
 
 function wasmo_update_spotlight( $post_id ) {
 	// only if category for spotlight posts
@@ -463,14 +462,15 @@ function wasmo_update_spotlight( $post_id ) {
 	
 }
 
+add_action( 'acf/save_post', 'wasmo_update_user', 10 );
+add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
+
 function wasmo_send_user_email__welcome( $user_id ){
 	$sitename = get_bloginfo( 'name' );
 	$sitemail = get_bloginfo( 'admin_email' );
 	$user_info = get_userdata( $user_id );
-	// $user_loginname = $user_info->user_login;
 	if ( $user_info ) {
 		$user_displayname = $user_info->display_name;
-		// $user_nicename = $user_info->user_nicename;
 		$welcome_mail_to = $user_info->user_email;
 		$welcome_headers = 'From: '. $sitemail;
 		$welcome_mail_subject = 'Welcome to '.$sitename;
@@ -494,10 +494,8 @@ function wasmo_send_user_email__belated_welcome( $user_id ){
 	$sitename = get_bloginfo( 'name' );
 	$sitemail = get_bloginfo( 'admin_email' );
 	$user_info = get_userdata( $user_id );
-	// $user_loginname = $user_info->user_login;
 	if ( $user_info ) {
 		$user_displayname = $user_info->display_name;
-		// $user_nicename = $user_info->user_nicename;
 		$welcome_mail_to = $user_info->user_email;
 		$welcome_headers = 'From: '. $sitemail;
 		$welcome_mail_subject = 'A belated welcome to '.$sitename;

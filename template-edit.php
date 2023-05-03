@@ -42,7 +42,6 @@ get_header(); ?>
 				array(
 					'post_id' => 'user_' . get_current_user_id(),
 					'field_groups' => array( 4 ),
-					'return' => get_author_posts_url( get_current_user_id() )
 				)
 			);
 			?>
