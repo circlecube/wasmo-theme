@@ -2,7 +2,7 @@
 /**
  * Template Name: Questions
  * 
- * The template for displaying all profiles in a directory
+ * The template for displaying all questions in a list
  *
  * @subpackage wasmo
  * @since 1.0.0
