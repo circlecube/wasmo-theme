@@ -1,12 +1,12 @@
 <?php
 /**
- * Template part for displaying shelf taxonomy list
+ * Template part for displaying question taxonomy list
  */
 
 ?>
 
 <!-- wp:heading {"level":2} -->
-<h2 class="has-regular-font-size">
+<h2 id="all-questions" class="has-regular-font-size">
     <?php echo wasmo_get_icon_svg( 'question', 24 ); ?>
     Questions about the Mormon Church:
 </h2>

@@ -1468,3 +1468,7 @@ figure.wp-block-image.aligncenter img {
     max-width: 100%;
     display: inherit;
 }
+.entry-content ul.blog-posts-archive li > a,
+.entry-content ul.questions li > a {
+	white-space: initial;
+}
