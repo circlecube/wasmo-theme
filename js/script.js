@@ -17,7 +17,7 @@ jQuery(document).ready(function($) {
 	
 	function navRegisterClick(e){ 
 		e.preventDefault(); 
-		console.log('register link clicked');
+		// console.log('register link clicked');
 		// open login modal and register form
 		$('.lwa-modal-trigger-el').trigger('click');
 		$('.lwa-form').hide();
