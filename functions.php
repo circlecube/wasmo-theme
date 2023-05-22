@@ -51,16 +51,6 @@ add_action( 'wp_enqueue_scripts', 'wasmo_add_google_fonts' );
 // theme mods
 // set_theme_mod( 'page_layout', 'one-column' );
 
-
-
-// hide admin bar for non admin users
-add_action( 'set_current_user', 'wasmo_hide_admin_bar' );
-function wasmo_hide_admin_bar() {
-	if ( !current_user_can( 'publish_posts' ) ) {
-		show_admin_bar( false );
-	}
-}
-
 function cptui_register_my_taxes() {
 
 	/**
@@ -586,7 +576,7 @@ function oa_social_login_do_after_user_insert ($user_data, $identity) {
 	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
-add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
+// add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
 
 //This function will be called before Social Login logs the user in
 function oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
@@ -595,8 +585,7 @@ function oa_social_login_do_before_user_login ($user_data, $identity, $new_regis
 	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
-
-add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
+// add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
 
 // changing default gutenberg image block alignment to "center"
 function wasmo_change_default_gutenberg_image_block_options (){
@@ -1149,6 +1138,14 @@ function wasmo_remove_menu_items() {
 add_action( 'admin_menu', 'wasmo_remove_menu_items', 1000 );
 
 // hide admin bar for non admin users
+function wasmo_hide_admin_bar() {
+	if ( !current_user_can( 'publish_posts' ) ) {
+		show_admin_bar( false );
+	}
+}
+// add_action( 'set_current_user', 'wasmo_hide_admin_bar' );
+
+// hide admin bar for non admin users
 // function remove_admin_bar() {
 // 	if ( !current_user_can('administrator') && !is_admin() ) {
 // 		show_admin_bar( false );
@@ -1159,19 +1156,21 @@ add_action( 'admin_menu', 'wasmo_remove_menu_items', 1000 );
 // remove links/menus from the admin bar
 function wasmo_admin_bar_render() {
 	global $wp_admin_bar;
+	// hide stuff in admin bar for everyone
+	$wp_admin_bar->remove_menu('aioseo-main');
+	
+	// alter user admin bar
 	if ( !current_user_can('administrator') ) {
-		$wp_admin_bar->remove_menu('comments');
-		$wp_admin_bar->remove_menu('my-sites');
-		$wp_admin_bar->remove_menu('my-account-with-avatar');
-		$wp_admin_bar->remove_menu('my-account');
-		$wp_admin_bar->remove_menu('my-blogs');
-		$wp_admin_bar->remove_menu('get-shortlink');
-		$wp_admin_bar->remove_menu('appearance');
-		$wp_admin_bar->remove_menu('updates');
 		$wp_admin_bar->remove_menu('search');
 		$wp_admin_bar->remove_menu('wp-logo');
-		$wp_admin_bar->remove_menu('notes');
-		$wp_admin_bar->remove_menu('edit');
+		$wp_admin_bar->remove_menu('comments');
+		// $wp_admin_bar->remove_menu('my-account-with-avatar');
+		// $wp_admin_bar->remove_menu('my-account');
+		// $wp_admin_bar->remove_menu('get-shortlink');
+		// $wp_admin_bar->remove_menu('appearance');
+		// $wp_admin_bar->remove_menu('updates');
+		// $wp_admin_bar->remove_menu('notes');
+		// $wp_admin_bar->remove_menu('edit');
 		
 		//add menu items for user profile view and edit
 		$wp_admin_bar->add_menu( array(
@@ -1197,7 +1196,7 @@ function wasmo_admin_bar_render() {
 		));
 		
 		if ( !is_admin() ) {
-			$wp_admin_bar->remove_menu('site-name');
+			// $wp_admin_bar->remove_menu('site-name');
 		}
 	}
 }
