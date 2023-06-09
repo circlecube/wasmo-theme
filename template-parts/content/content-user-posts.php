@@ -21,7 +21,7 @@ if ( $userposts && !$user->has_cap( 'manage_options' ) ) { ?>
                 
             ?>
             <h4>Posts by <?php echo esc_html( $user->display_name ); ?></h4>
-            <ul class="recent_posts entry">
+            <ul class="user_recent_posts entry">
                 <?php foreach ( $userposts as $post ) : ?>
                     <?php setup_postdata( $post ); ?>
                     <li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>

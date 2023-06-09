@@ -12,22 +12,22 @@
 
 <!-- wp:gallery {"columns":2,"imageCrop":false,"linkTo":"none"} -->
 <figure class="wp-block-gallery has-nested-images columns-2"><!-- wp:image {"id":1510,"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="https://wasmormon.org/wp-content/uploads/sites/12/2022/11/wasmo-fbb-1-1024x1024.jpg" alt="" class="wp-image-1510"/></figure>
+<figure class="wp-block-image size-large"><img src="https://wasmormon.org/wp-content/uploads/2022/11/wasmo-fbb-1-1024x1024.jpg" alt="" class="wp-image-1510"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":1511,"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="https://wasmormon.org/wp-content/uploads/sites/12/2022/11/wasmo-fbb-2-1024x1024.jpg" alt="" class="wp-image-1511"/></figure>
-<!-- /wp:image --><figcaption class="blocks-gallery-caption wp-element-caption">Caption - <a href="#">Profile</a></figcaption></figure>
+<figure class="wp-block-image size-large"><img src="https://wasmormon.org/wp-content/uploads/2022/11/wasmo-fbb-2-1024x1024.jpg" alt="" class="wp-image-1511"/></figure>
+<!-- /wp:image --><figcaption class="blocks-gallery-caption wp-element-caption">Caption - <a href="https://wasmormon.org/profile/#/">Profile</a></figcaption></figure>
 <!-- /wp:gallery -->
 
 <!-- wp:quote -->
 <blockquote class="wp-block-quote"><!-- wp:paragraph -->
 <p>Quote</p>
-<!-- /wp:paragraph --><cite><a href="#">Profile</a></cite></blockquote>
+<!-- /wp:paragraph --><cite><a href="https://wasmormon.org/profile/#/">Profile</a></cite></blockquote>
 <!-- /wp:quote -->
 
 <!-- wp:paragraph -->
-<p>Continue reading the full wasmormon profile at <a href="#">https://wasmormon.org/profile/</a></p>
+<p>This is not an ad, it's a spotlight on a profile shared at wasmormon.org. These are just the highlights, so please find NAME's full story at <a href="https://wasmormon.org/profile/#/" title="">https://wasmormon.org/profile/beth/</a>. There are <a href="/profiles/" title="">over a hundred more stories of Mormon faith journeys contributed by users like you</a>. Come check them out and consider <a href="https://wasmormon.org/login/" title="Create Profile">sharing your own story</a> at wasmormon.org!</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:separator -->
@@ -36,7 +36,7 @@
 
 <!-- wp:group {"layout":{"type":"constrained"},"fontSize":"small"} -->
 <div class="wp-block-group has-small-font-size"><!-- wp:paragraph {"fontSize":"small"} -->
-<p class="has-small-font-size">Discuss this spotlight in the comments or on your favorite social media: <a href="#" rel="nofollow">instagram</a>, <a href="#" rel="nofollow">facebook</a>, <a href="#" rel="nofollow">reddit</a>, <a href="#" target="_blank" rel="noopener nofollow" title="">twitter</a>, <a href="#" target="_blank" rel="noopener nofollow" title="">mastodon</a>.</p>
+<p class="has-small-font-size">Discuss this spotlight in the comments or on your favorite social media: <a href="https://instagram.com/wasmormon/" rel="nofollow">instagram</a>, <a href="https://www.facebook.com/wasmormon/" rel="nofollow">facebook</a>, <a href="https://www.reddit.com/user/wasmormon" rel="nofollow">reddit</a>, <a href="https://twitter.com/wasmormon" target="_blank" rel="noopener nofollow" title="">twitter</a>, <a href="https://mas.to/@wasmormon" target="_blank" rel="noopener nofollow" title="">mastodon</a>.</p>
 <!-- /wp:paragraph -->
 <!-- /wp:group -->
 
