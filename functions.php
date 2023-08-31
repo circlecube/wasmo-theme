@@ -455,6 +455,13 @@ function wasmo_update_spotlight( $post_id ) {
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
 
+// when a user has been deleted
+function wasmo_delete_user( $user_id ) {
+	// clear all directory transients
+	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
+}
+add_action( 'delete_user', 'wasmo_delete_user' );
+
 function wasmo_send_user_email__welcome( $user_id ){
 	$sitename = get_bloginfo( 'name' );
 	$sitemail = get_bloginfo( 'admin_email' );
