@@ -78,7 +78,15 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<h3>About me</h3>
-	<div class="about_me"><?php echo auto_link_text( wp_kses_post( get_field( 'about_me', 'user_' . $userid ) ) ); ?></div>
+	<div class="about_me"><?php 
+		echo auto_htmlize_text(
+			auto_link_text( 
+				wp_kses_post( 
+					get_field( 'about_me', 'user_' . $userid )
+				)
+			)
+		); 
+	?></div>
 <?php } ?>
 
 <?php 
@@ -131,7 +139,15 @@ if ( $spectrum_terms ) { ?>
 			</a>
 		</h3>
 		<div class="why_i_left">
-			<?php echo auto_link_text( wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) ) ); ?>
+			<?php
+				echo auto_htmlize_text(
+					auto_link_text( 
+						wp_kses_post( 
+							get_field( 'why_i_left', 'user_' . $userid )
+						)
+					)
+				);
+			?>
 		</div>
 	</div>
 <?php } ?>
@@ -170,7 +186,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo wasmo_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
-			echo auto_link_text( wp_kses_post( $answer ) );
+			echo auto_htmlize_text( auto_link_text( wp_kses_post( $answer ) ) );
 		}
     endwhile;
 

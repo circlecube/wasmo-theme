@@ -1,10 +1,10 @@
 <?php
 // Get vars from query
-$context      = get_query_var( 'context' );
+$context     = get_query_var( 'context' );
 $max_profiles = get_query_var( 'max_profiles' );
-$tax          = get_query_var( 'tax' );
-$termid       = get_query_var( 'termid' );
-$paged        = get_query_var( 'paged' );
+$tax         = get_query_var( 'tax' );
+$termid      = get_query_var( 'termid' );
+$paged       = get_query_var( 'paged' );
 // Initialize the remaining vars
 $offset = 0;
 if ( empty( $context ) ) {

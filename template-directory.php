@@ -24,7 +24,15 @@ get_header();
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<?php if ( ! twentynineteen_can_show_post_thumbnail() ) : ?>
 	<header class="entry-header">
-		<?php get_template_part( 'template-parts/header/entry', 'header' ); ?>
+		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+		<?php
+			$paged = get_query_var( 'paged' );
+			if ( $paged ) {
+				?>
+					<h3>Page <?php echo esc_html($paged)?></h3>
+				<?php
+			}
+		?>
 	</header>
 	<?php endif; ?>
 
