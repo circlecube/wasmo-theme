@@ -595,11 +595,11 @@ function oa_social_login_do_before_user_login ($user_data, $identity, $new_regis
 // add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
 
 // changing default gutenberg image block alignment to "center"
-function wasmo_change_default_gutenberg_image_block_options (){
-	$block_type = WP_Block_Type_Registry::get_instance()->get_registered( "core/image" );
-	$block_type->attributes['align']['default'] = 'center';
-}
-add_action( 'init', 'wasmo_change_default_gutenberg_image_block_options');
+// function wasmo_change_default_gutenberg_image_block_options (){
+// 	$block_type = WP_Block_Type_Registry::get_instance()->get_registered( "core/image" );
+// 	$block_type->attributes['align']['default'] = 'center';
+// }
+// add_action( 'init', 'wasmo_change_default_gutenberg_image_block_options');
 
 function wasmo_update_user_question_count(){
 	global $wpdb;
