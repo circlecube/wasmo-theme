@@ -1018,10 +1018,12 @@ function auto_htmlize_text( $text ) {
 		'<p>__HR__</p>', // make hr
 		'BLOCKQUOTE__', // open blockquote
 		'__BLOCKQUOTE', // close blockquote
-		'CITE__', // open cite block
-		'__CITE', // open cite block
-		'STRONG__', // open strong block
-		'__STRONG', // open cite block
+		'CITE__', // open cite
+		'__CITE', // close cite
+		'STRONG__', // open strong
+		'__STRONG', // close strong
+		'EM__', // open italics
+		'__EM', // close italics
 	);
 	$replacements = array(
 		'<hr class="wp-block-separator profile-hr" />',
@@ -1031,6 +1033,8 @@ function auto_htmlize_text( $text ) {
 		'</cite>',
 		'<strong class="profile-strong">',
 		'</strong>',
+		'<em class="profile-em">',
+		'</em>',
 	);
 	return str_replace( $patterns, $replacements, $text );
 }
