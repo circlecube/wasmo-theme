@@ -43,7 +43,7 @@ $term = get_term_by( 'id', $termid, 'tags' );
 			endwhile;
 
 			// Previous/next page navigation.
-			twentynineteen_the_posts_navigation();
+			echo wasmo_pagination();
 
 			// If no content, include the "No posts found" template.
 		else :
@@ -51,6 +51,35 @@ $term = get_term_by( 'id', $termid, 'tags' );
 
 		endif;
 		?>
+			<footer class="entry-footer">
+				<h3>
+					<?php echo wasmo_get_icon_svg( 'tag', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
+					Tags:
+				</h3>
+				<ul class="tags">
+				<?php
+					$terms = get_terms([
+						'taxonomy'   => 'post_tag',
+						'hide_empty' => true,
+						'orderby'    => 'name',
+						'order'      => 'ASC',
+						'count'      => true,
+					]);
+					foreach ( $terms as $term ) : 
+				?>
+						<li>
+							<a 
+								class="tag" 
+								href="<?php echo get_term_link( $term ); ?>"
+								data-id="<?php echo esc_attr( $term->term_id ); ?>" 
+								data-count="<?php echo esc_attr( $term->count ); ?>"
+							>
+								<?php echo $term->name; ?>
+							</a>
+						</li>
+				<?php endforeach; ?>
+				</ul>
+			</footer>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 

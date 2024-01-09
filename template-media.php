@@ -20,7 +20,7 @@ get_header();
             
 
 			<header class="page-header">
-				<?php the_title(); ?>
+                <?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 			</header><!-- .page-header -->
 
             <?php
