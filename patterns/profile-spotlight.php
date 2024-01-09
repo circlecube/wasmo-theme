@@ -7,7 +7,7 @@
 
 ?><!-- wp:group {"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"><!-- wp:paragraph -->
-<p>NAME Was a Mormon, an Ex-Mormon Profile Spotlight</p>
+<p>___ Was a Mormon, an Ex-Mormon Profile Spotlight</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:gallery {"columns":2,"imageCrop":false,"linkTo":"none"} -->
@@ -27,7 +27,7 @@
 <!-- /wp:quote -->
 
 <!-- wp:paragraph -->
-<p>This is not an ad, it's a spotlight on a profile shared at wasmormon.org. These are just the highlights, so please find NAME's full story at <a href="https://wasmormon.org/profile/#/" title="">https://wasmormon.org/profile/beth/</a>. There are <a href="/profiles/" title="">over a hundred more stories of Mormon faith journeys contributed by users like you</a>. Come check them out and consider <a href="https://wasmormon.org/login/" title="Create Profile">sharing your own story</a> at wasmormon.org!</p>
+<p>This is a spotlight on a profile shared at wasmormon.org. These are just the highlights, so please find the full story at <a href="https://wasmormon.org/profile/#/" title="">https://wasmormon.org/profile/#/</a>. There are <a href="/profiles/" title="">over a hundred more stories of Mormon faith journeys contributed by users like you</a>. Come check them out and consider <a href="https://wasmormon.org/login/" title="Create Profile">sharing your own story</a> at wasmormon.org!</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:separator -->
@@ -37,7 +37,7 @@
 <!-- wp:group {"layout":{"type":"constrained"},"fontSize":"small"} -->
 <div class="wp-block-group has-small-font-size"><!-- wp:paragraph {"fontSize":"small"} -->
 <p class="has-small-font-size">Discuss this spotlight in the comments or on your favorite social media: <a href="https://instagram.com/wasmormon/" rel="nofollow">instagram</a>, <a href="https://www.facebook.com/wasmormon/" rel="nofollow">facebook</a>, <a href="https://www.reddit.com/user/wasmormon" rel="nofollow">reddit</a>, <a href="https://twitter.com/wasmormon" target="_blank" rel="noopener nofollow" title="">twitter</a>, <a href="https://mas.to/@wasmormon" target="_blank" rel="noopener nofollow" title="">mastodon</a>.</p>
-<!-- /wp:paragraph -->
+<!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:block {"ref":1513} /-->

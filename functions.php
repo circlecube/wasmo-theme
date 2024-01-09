@@ -775,6 +775,50 @@ function wasmo_entry_footer() {
 	);
 }
 
+function wasmo_pagination( $paged = '', $max_page = '' ) {
+	$big = 999999999; // need an unlikely integer
+
+	if( ! $paged ) {
+		$paged = get_query_var('paged');
+	}
+
+	if( ! $max_page ) {
+		global $wp_query;
+		$max_page = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
+	}
+
+	if ( $max_page > 7 ) {
+		$show_all = false;
+	} else {
+		$show_all = true;
+	}
+
+	$paginated_links = paginate_links( 
+		array(
+			'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+			'current'   => max( 1, $paged ),
+			'format'    => '?paged=%#%',
+			'total'     => $max_page,
+			'mid_size'  => 1,
+			'end_size'  => 1,
+			'prev_text' => sprintf(
+				'%s <span class="screen-reader-text">%s</span>',
+				wasmo_get_icon_svg( 'chevron_left', 22 ),
+				__( 'Newer', 'twentynineteen' )
+			),
+			'next_text' => sprintf(
+				'<span class="screen-reader-text">%s</span> %s',
+				__( 'Older', 'twentynineteen' ),
+				wasmo_get_icon_svg( 'chevron_right', 22 )
+			),
+			'type'      => 'list',
+			'show_all'  => $show_all,
+		)
+	);
+
+	return '<div class="wasmo-pagination">' . $paginated_links . '</div>';
+}
+
 function wasmo_post_navi() {
 	if( !is_singular('post') ) {
 		return;
@@ -1688,3 +1732,19 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 
 remove_filter('term_description','wpautop');
 
+// add tags for attachments
+function add_tags_for_attachments() {
+    register_taxonomy_for_object_type( 'post_tag', 'attachment' );
+}
+
+add_action( 'init' , 'add_tags_for_attachments' );
+
+// Modify the main query object
+function wasmo_media_in_main_query( $query ) {
+	if ( $query->is_archive() && $query->is_main_query() ) { // only run on archive queries
+		$query->set( 'post_type', array( 'post', 'attachment' ) ); // add attachment post types, media
+		$query->set( 'post_status', array( 'publish', 'inherit' ) ); // add inherit post status since that is the default status of media
+	}
+}
+// Hook my above function to the pre_get_posts action
+add_action( 'pre_get_posts', 'wasmo_media_in_main_query' );

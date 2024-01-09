@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.15.2
+ Version:          1.16.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -381,101 +381,77 @@ body.logged-in .menu-item.logged-in {
 }
 
 
-	
-
-
-.navigation.pagination,
-.directory-pagination {
+/* Pagination */
+.wasmo-pagination {
 	width: 100%;
 	margin: 3rem 0 !important;
 	border-top: 1px solid var(--color-orange);
 }
 
-.navigation.pagination .nav-links,
-.the-directory .directory-pagination {
+.the-directory .wasmo-pagination,
+.media-main .wasmo-pagination {
 	max-width: 100%;
 }
-
-.navigation.pagination > .nav-links,
-.directory-pagination > .page-numbers {
+.wasmo-pagination > .page-numbers {
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: center;
+    justify-content: space-between;
 	list-style: none;
 	margin: 1rem auto !important;
-	padding: 0;
+	padding: 0;;
+    width: 100%;
 }
-
-.navigation.pagination .nav-links .page-numbers,
-.directory-pagination .page-numbers .page-numbers {
+.wasmo-pagination .page-numbers .page-numbers {
     border-radius: 100px;
     background-color: var(--color-blue-2);
     color: var(--color-gray-0);
     display: block;
     height: 2rem;
-    margin: 0 0.5rem 0.5rem;
+    margin: 0;
     min-width: 2rem;
     padding: 0.5rem 0.75rem;
     text-align: center;
     text-decoration: none;
     transition: all .2s ease;
-    vertical-align: middle;
     line-height: 1;
 }
-
-.navigation.pagination .nav-links .page-numbers:hover,
-.directory-pagination .page-numbers .page-numbers:hover {
+.wasmo-pagination .page-numbers .page-numbers.dots {
+	background: transparent;
+	color: var(--color-blue-3);
+	padding: 0;
+	height:1em;
+}
+.wasmo-pagination .page-numbers .page-numbers:not(.dots):not(.current):hover {
 	background-color: var(--color-blue-3);
 }
-.navigation.pagination .nav-links .page-numbers.current,
-.directory-pagination .page-numbers .page-numbers.current {
-	background-color: transparent;
-	color: var(--color-blue);
+.wasmo-pagination .page-numbers .page-numbers.current {
+	background-color: var(--color-orange);
 }
-.navigation.pagination .nav-links .page-numbers.current:hover,
-.directory-pagination .page-numbers .page-numbers.current:hover {
-	color: var(--color-blue-2);
-}
-
-.navigation.pagination .nav-links .page-numbers.prev,
-.navigation.pagination .nav-links .page-numbers.next,
-.directory-pagination .page-numbers .page-numbers.prev,
-.directory-pagination .page-numbers .page-numbers.next {
+.wasmo-pagination .page-numbers .page-numbers.prev,
+.wasmo-pagination .page-numbers .page-numbers.next {
 	background-color: var(--color-gray-0);
 	color: var(--color-blue-2);
-	white-space: nowrap;
-    display: flex;
-	align-items: center;
-	flex-direction: row;
+}
+.wasmo-pagination .page-numbers .page-numbers.prev:hover,
+.wasmo-pagination .page-numbers .page-numbers.next:hover {
+	background-color: var(--color-gray-1) !important;
+	color: var(--color-blue-3) !important;
+}
+/* on mobile only show next/prev buttons */
+@media only screen and (max-width: 500px) {
+	.wasmo-pagination .page-numbers .page-numbers {
+		display: none;
+	}
+	.wasmo-pagination .page-numbers li .page-numbers.prev,
+	.wasmo-pagination .page-numbers li:nth-child(2) .page-numbers,
+	.wasmo-pagination .page-numbers li .page-numbers.current,
+	.wasmo-pagination .page-numbers li:nth-last-child(2) .page-numbers,
+	.wasmo-pagination .page-numbers li .page-numbers.next {
+		display: inline-block;
+	}
 }
 
-.navigation.pagination .nav-links .page-numbers.prev:hover,
-.navigation.pagination .nav-links .page-numbers.next:hover,
-.directory-pagination .page-numbers .page-numbers.prev:hover,
-.directory-pagination .page-numbers .page-numbers.next:hover {
-	background-color: var(--color-gray-1);
-	color: var(--color-blue-3);
-}
-
-.navigation.pagination .nav-links .page-numbers {
-	padding: 0.5rem 0.75rem;
-	font-weight: 400;
-	font-size: .8rem;
-	vertical-align: middle;
-}
-
-.directory-pagination .page-numbers .nav-prev-text, 
-.directory-pagination .page-numbers .nav-next-text {
-    display: none;
-}
-
-@media only screen and (min-width: 768px) {
-    .directory-pagination .page-numbers .nav-prev-text, 
-    .directory-pagination .page-numbers .nav-next-text {
-        display: inline-block;
-    }
-}
 
 .widget-area.sidebar {
 	padding: 0 1rem;
@@ -873,6 +849,59 @@ cite span {
 .blog-main article.post p {
 	overflow-wrap: anywhere;
 }
+
+.blog-main article.media {
+	margin: 0 0 1rem;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	padding: 1rem;
+	background: var(--color-gray-0);
+}
+.blog-main article.media .wp-block-image {
+	background: var(--color-white);
+	padding: 0 0 1rem;
+	margin: 0;
+}
+.blog-main article.media .wp-block-image .wp-element-caption {
+	padding: 0 1rem;
+}
+.blog-main article.media:before, 
+.blog-main article.media:after,
+.blog-main article.media .wp-element-caption:before {
+	content: '';
+	display: block;
+	width: 100%;
+	background: var(--color-blue-2);
+	height: 2px;
+}
+.blog-main article.media .wp-element-caption:before {
+	height: 1px;
+	max-width: 30%;
+	min-width: 3rem;
+	margin: 1.25rem auto;
+}
+.blog-main article.media:nth-child(4n+1):before,
+.blog-main article.media:nth-child(4n+1):after,
+.blog-main article.media:nth-child(4n+1) .wp-element-caption:before{
+	background: var(--color-blue-2);
+}
+.blog-main article.media:nth-child(4n+2):before,
+.blog-main article.media:nth-child(4n+2):after,
+.blog-main article.media:nth-child(4n+2) .wp-element-caption:before{
+	background: var(--color-pink);
+}
+.blog-main article.media:nth-child(4n+3):before,
+.blog-main article.media:nth-child(4n+3):after,
+.blog-main article.media:nth-child(4n+3) .wp-element-caption:before{
+	background: var(--color-blue);
+}
+.blog-main article.media:nth-child(4n+4):before,
+.blog-main article.media:nth-child(4n+4):after,
+.blog-main article.media:nth-child(4n+4) .wp-element-caption:before{
+	background: var(--color-orange);
+}
+
 .entry .post-thumbnail {
 	margin-bottom: 0;
 }
