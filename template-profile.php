@@ -14,7 +14,7 @@ get_header();
 	<section id="primary" class="content-area">
 		<main id="main" class="site-main">
 
-			<article class="entry">
+			<article class="entry" itemprop="mainEntity" itemtype="https://schema.org/Person" itemscope>
 				<div class="entry-content">
 				<?php
 					$user = wp_get_current_user();

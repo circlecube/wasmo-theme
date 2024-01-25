@@ -1497,8 +1497,8 @@ add_action( 'wp_head', function () {
 /**
  * Get user image url
  * 
- * @param $userid - the user's id
- * @return string url to image
+ * @param Number $userid the user's id
+ * @return String url to image
  */
 function wasmo_get_user_image_url( $userid ) {
 	$userimg = get_field( 'photo', 'user_' . $userid );
@@ -1516,31 +1516,32 @@ function wasmo_get_user_image_url( $userid ) {
 /**
  * Get user image
  * 
- * @param $userid - the user's id
- * @return string html for image tag
+ * @param Number $userid The user's id.
+ * @param Boolean $isItempropImage Flag to determine wether to include itemProp=image (for structured data) (default false).
+ * @return String html for image tag
  */
-function wasmo_get_user_image( $userid ) {
+function wasmo_get_user_image( $userid, $isItempropImage = false ) {
 	$userimg = get_field( 'photo', 'user_' . $userid );
 	$user = get_userdata( $userid );
 	$alt = $user->display_name . ' profile image for wasmormon.org';
 
 	if ( $userimg ) {
 		return wp_get_attachment_image( $userimg, 'medium', false, array(
-			'alt' => $alt
+			'alt' => $alt,
+			'itemProp' => $isItempropImage ? 'image' : '',
 		) );
-	} else {	
-		$hash = md5( strtolower( trim( $user->user_email ) ) );
-		$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
-		$gravatar = $hash . '?s=300&d='.$default_img;
-		return '<img src="https://www.gravatar.com/avatar/' . $gravatar . '" alt="' . $alt . '">';
+	} else {
+		$img_url = wasmo_get_user_image_url( $userid );
+		$atts = $isItempropImage ? 'itemProm="image"' : '';
+		return '<img src="' . $img_url . '" alt="' . $alt . '" ' . $atts . '>';
 	}
 }
 
 /**
  * Send out email depending on who updates the status of the post.
  *
- * @param string  $new_status New post status.
- * @param string  $old_status Old post status.
+ * @param String  $new_status New post status.
+ * @param String  $old_status Old post status.
  * @param WP_Post $post Post object.
  */
 function wasmo_pending_submission_notifications_send_email( $new_status, $old_status, $post ) {

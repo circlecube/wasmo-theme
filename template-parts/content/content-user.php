@@ -16,18 +16,21 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 		<?php } ?>
 
 		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
-			<h2 class="tagline"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
+			<h2 class="tagline" itemprop="description"><?php echo wp_kses_post( get_field( 'tagline', 'user_' . $userid ) ); ?></h2>
 		<?php } else { ?>
-			<h2 class="tagline">I was a mormon.</h2>
+			<h2 class="tagline" itemprop="description">I was a mormon.</h2>
 		<?php } ?>
 
 		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
 			<div class="location"><?php echo wp_kses_post( get_field( 'location', 'user_' . $userid ) ); ?></div>
 		<?php } ?>
+		<meta itemprop="identifier" content="<?php echo $userid; ?>" />
+		<meta itemprop="name" id="real-name" content="<?php echo $curauth->display_name; ?>" />
+		<meta itemprop="alternateName" id="handle" content="<?php echo get_query_var('author_name') ?>" />
 	</div>
 
 	<div class="content-left">
-		<div class="user_photo"><?php echo wasmo_get_user_image( $userid ); ?></div>
+		<div class="user_photo"><?php echo wasmo_get_user_image( $userid, true ); ?></div>
 		<?php 
 		$links = get_field( 'links', 'user_' . $userid );
 		if ( $links ) { ?>
@@ -35,28 +38,28 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 			<?php if ( $links['facebook'] ) { 
 				$svg = twentynineteen_get_social_link_svg( $links['facebook'], 26 );
 			?>
-				<li class="facebook"><a target="_blank" rel="nofollow ugc noopener noreferrer" href="<?php 
+				<li class="facebook"><a target="_blank" itemprop="sameAs" rel="nofollow ugc noopener noreferrer" href="<?php 
 					echo esc_url( $links['facebook'] ); 
 				?>"><span class="screen-reader-text">Facebook</span><?php echo $svg; ?></a></li>
 			<?php } ?>
 			<?php if ( $links['instagram'] ) {
 				$svg = twentynineteen_get_social_link_svg( $links['instagram'], 26 );
 			?>
-				<li class="instagram"><a target="_blank" rel="nofollow ugc noopener noreferrer" href="<?php 
+				<li class="instagram"><a target="_blank" itemprop="sameAs" rel="nofollow ugc noopener noreferrer" href="<?php 
 					echo esc_url( $links['instagram'] ); 
 				?>"><span class="screen-reader-text">instagram</span><?php echo $svg; ?></a></li>
 			<?php } ?>
 			<?php if ( $links['reddit'] ) {
 				$svg = twentynineteen_get_social_link_svg( $links['reddit'], 26 );
 			?>
-				<li class="reddit"><a target="_blank" rel="nofollow ugc noopener noreferrer" href="<?php 
+				<li class="reddit"><a target="_blank" itemprop="sameAs" rel="nofollow ugc noopener noreferrer" href="<?php 
 					echo esc_url( $links['reddit'] ); 
 				?>"><span class="screen-reader-text">reddit</span><?php echo $svg; ?></a></li>
 			<?php } ?>
 			<?php if ( $links['twitter'] ) {
 				$svg = twentynineteen_get_social_link_svg( $links['twitter'], 26 );
 			?>
-				<li class="twitter"><a target="_blank" rel="nofollow ugc noopener noreferrer" href="<?php 
+				<li class="twitter"><a target="_blank" itemprop="sameAs" rel="nofollow ugc noopener noreferrer" href="<?php 
 					echo esc_url( $links['twitter'] ); 
 				?>"><span class="screen-reader-text">twitter</span><?php echo $svg; ?></a></li>
 			<?php } ?>
@@ -66,7 +69,7 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 					$svg = wasmo_get_icon_svg( 'link' );
 				}
 			?>
-				<li class="other"><a target="_blank" rel="ugc noopener noreferrer" href="<?php 
+				<li class="other"><a target="_blank" itemprop="sameAs" rel="ugc noopener noreferrer" href="<?php 
 					echo esc_url( $links['other'] );
 				?>"><span class="screen-reader-text">other</span><?php echo $svg; ?></a></li>
 			<?php } ?>
