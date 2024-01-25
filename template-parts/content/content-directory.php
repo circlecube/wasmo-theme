@@ -201,7 +201,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	}
 	$the_directory .= '</div>';
 	if ( 'full' === $context && $total_users > $max_profiles ) {
-		$the_directory .= wasmo_pagination($paged, ceil( $total_users / $max_profiles ) );
+		$the_directory .= wasmo_pagination($paged, ceil( $total_users / $max_profiles ), true );
 	}
 	$the_directory .= '</section>';
 	

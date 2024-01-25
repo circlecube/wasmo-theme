@@ -775,7 +775,15 @@ function wasmo_entry_footer() {
 	);
 }
 
-function wasmo_pagination( $paged = '', $max_page = '' ) {
+/**
+ * Pagination Helper Method
+ * 
+ * @param Number $paged     Page Number
+ * @param Number $max_page  Max Page
+ * @param Boolean $profile   Flag for profile nav, this updates the baseurl and format so they work for the custom pagination
+ * @return String Pagination links
+ */
+function wasmo_pagination( $paged = '', $max_page = '', $profiles = false ) {
 	$big = 999999999; // need an unlikely integer
 
 	if( ! $paged ) {
@@ -792,12 +800,18 @@ function wasmo_pagination( $paged = '', $max_page = '' ) {
 	} else {
 		$show_all = true;
 	}
+	$base_url = str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) );
+	$format   = '?paged=%#%';
 
+	if ( $profiles ) {
+		$base_url = get_permalink( get_page_by_path( 'profiles' ) ) . 'page/%_%';
+		$format   = '%#%';
+	}
 	$paginated_links = paginate_links( 
 		array(
-			'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+			'base'      => $base_url,
+			'format'    => $format,
 			'current'   => max( 1, $paged ),
-			'format'    => '?paged=%#%',
 			'total'     => $max_page,
 			'mid_size'  => 1,
 			'end_size'  => 1,
@@ -1585,10 +1599,10 @@ add_action( 'admin_head', 'wasmo_hide_notices', 1 );
 /**
  * Icon svg method for wasmo theme.
  * 
- * @param icon string value
- * @param size number pixel value
- * @param styles a styles attribute for any custom styles, such as `style="margin-left:20px;"`
- * @return svg element
+ * @param String $icon string value.
+ * @param Number $size number pixel value.
+ * @param String $styles a styles attribute for any custom styles, such as `style="margin-left:20px;"`.
+ * @return String svg element.
  */
 function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 	// map taxonomies to an icon
