@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.16.1
+ Version:          1.16.2
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -641,7 +641,7 @@ h2.tagline {
 }
 
 .tags li .tag::before {
-	background: #fff;
+	background: var(--color-white);
 	border-radius: 10px;
 	box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
 	content: "";
@@ -654,7 +654,7 @@ h2.tagline {
 }
 
 .tags li .tag::after {
-	background: #fff;
+	background: var(--color-white);
 	border-bottom: 13px solid transparent;
 	border-left: 10px solid var(--color-blue);
 	border-top: 13px solid transparent;
@@ -694,13 +694,13 @@ h2.tagline {
 }
 
 .tags li .tag:hover {
-	background-color: #eee;
+	background-color: var(--color-gray-1);
 	color: var(--color-gray-3);
 	text-decoration: underline;
 }
 
 .tags li .tag:hover::after {
-	border-left-color: #eee;
+	border-left-color: var(--color-gray-1);
 }
 
 
@@ -724,7 +724,7 @@ cite span {
 .button-small,
 .entry .entry-content .more-link {
 	border-radius: 100px;
-	color: #fff;
+	color: var(--color-white);
     font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
 	font-size: 0.8rem;
     font-weight: 700;
@@ -738,7 +738,7 @@ cite span {
 	margin-right: 0;
 }
 .entry .entry-content .more-link:hover {
-	color: #fff;
+	color: var(--color-white);
 	background-color: var(--color-blue-3);
 }
 
@@ -788,7 +788,7 @@ cite span {
 	display: inline-block;
 }
 .blog-main article.post {
-	background-color: #fff;
+	background-color: var(--color-white);
 	border-radius: 3px;
 	margin: .5rem;
 	padding: 0 1rem;
@@ -1183,7 +1183,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 
 /* user profile data */
 .profile-data {
-	background-color: #eee;
+	background-color: var(--color-gray-1);
 	padding: 1px 1rem;
 }
 
@@ -1196,13 +1196,13 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 
 .profile-data .user-meta {
-	border: 1px solid #999;
-	background-color: #ddd;
+	border: 1px solid var(--color-gray-2);
+	background-color: var(--color-gray-3);
 	flex-grow: 1;
 	font-size: medium;
 }
 .profile-data .user-meta dt {
-	background-color: #ccc;
+	background-color: var(--color-gray-2);
 	padding: .25rem 1rem 0;
 	font-weight: normal;
 }
@@ -1299,7 +1299,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 
 .site-footer {
 	background: var(--color-gray-3);
-	color: #eee;
+	color: var(--color-gray-1);
 }
 
 .site-footer #gform_2 .gfield .gfield_label {
@@ -1320,7 +1320,7 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 }
 
 .wp-block-cover .has-light-gray-background-color + .wp-block-cover__inner-container a {
-	color: #fff;
+	color: var(--color-white);
 }
 
 .user-spotlight .spotlight-thumbs {
