@@ -1197,12 +1197,13 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 
 .profile-data .user-meta {
 	border: 1px solid var(--color-gray-2);
-	background-color: var(--color-gray-3);
+	background-color: var(--color-gray-0);
 	flex-grow: 1;
 	font-size: medium;
 }
 .profile-data .user-meta dt {
-	background-color: var(--color-gray-2);
+	background-color: var(--color-gray-1);
+	border-bottom: 1px solid var(--color-gray-2);
 	padding: .25rem 1rem 0;
 	font-weight: normal;
 }
