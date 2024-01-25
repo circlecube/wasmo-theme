@@ -21,6 +21,10 @@ $term = get_term_by( 'id', $termid, 'tags' );
 
 			<header class="page-header">
 				<?php the_archive_title( '<h1 class="page-title">', '</h1>' ); ?>
+				
+				<?php if ( get_query_var('paged') ) {
+					echo '<span class="paged-page-number">(Page '. get_query_var('paged') .')</span>';
+				} ?>
                 <?php if ( tag_description() ) { ?>
                     <h2 class="entry-description has-regular-font-size"><?php echo tag_description(); ?></h2>
                 <?php } ?>

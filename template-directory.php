@@ -29,7 +29,7 @@ get_header();
 			$paged = get_query_var( 'paged' );
 			if ( $paged ) {
 				?>
-					<h3>Page <?php echo esc_html($paged)?></h3>
+					<span class="paged-page-number">Page <?php echo esc_html($paged)?></span>
 				<?php
 			}
 		?>

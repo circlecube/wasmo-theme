@@ -21,6 +21,9 @@ get_header();
 				<?php
 					the_archive_title( '<h1 class="page-title">', '</h1>' );
 				?>
+				<?php if ( get_query_var('paged') ) {
+					echo '<span class="paged-page-number">(Page '. get_query_var('paged') .')</span>';
+				} ?>
 			</header><!-- .page-header -->
 
 			<?php

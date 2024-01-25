@@ -1383,7 +1383,10 @@ div.lwa-modal-overlay div.lwa-modal-popup {
 	text-align: center;
 	padding-bottom: .5rem;
 }
-
+.paged-page-number {
+	color: var(--color-gray-3);
+	font-style: italic;
+}
 
 .entry .entry-footer .shelf-links,
 .entry .entry-footer .spectrum-links,
