@@ -1478,19 +1478,17 @@ button.gsc-search-button-v2 {
 	padding: 0;
 }
 
-/* center images that don't wrap in div properly */
-figure.wp-block-image.aligncenter {
-    width: 100%;
+/* default to all images centered */
+.entry .entry-content figure.wp-block-image {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
 }
-figure.wp-block-image.aligncenter img {
-    margin: 0 auto;
-}
-.entry .entry-content > *.aligncenter {
+.entry .entry-content figure.wp-block-image img {
 	margin-left: auto !important;
 	margin-right: auto !important;
-}
-.entry .entry-content > *.aligncenter img {
-	margin: 0 auto;
+	max-width: 100%;
 }
 
 /* crop long links in more reading lists */
