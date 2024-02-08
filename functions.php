@@ -381,6 +381,9 @@ function wasmo_update_user( $post_id ) {
 		)
 	);
 
+	// Purge cloudflare super page cache 
+	do_action( 'swcfpc_purge_cache' );
+	
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
 
