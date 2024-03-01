@@ -3,7 +3,7 @@
     "description": "Theme for wasmormon.org",
     "type": "wordpress-theme",
     "require": {
-        "wp-forge/wp-update-handler": "^1.0"
+        "wp-forge/wp-update-handler": "^1.0.2"
     },
     "license": "GPL-2.0-or-later",
     "autoload": {

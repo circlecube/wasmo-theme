@@ -1766,3 +1766,24 @@ function wasmo_media_in_main_query( $query ) {
 }
 // Hook my above function to the pre_get_posts action
 add_action( 'pre_get_posts', 'wasmo_media_in_main_query' );
+
+/**
+ * Update amazon links with associate tag
+ */
+function add_zon_tag($content, $tag = 'circubstu-20' ) {
+	$all_links = wp_extract_urls( $content );
+	$zon_links = array_filter( 
+		$all_links,
+		function ($link) {
+		if ( str_contains( $link, 'amazon.' ) ||  str_contains( $link, 'amzn.to' ) ) {
+			return true;
+		}
+		return false;
+		}
+	);
+	foreach( $zon_links as $link ) {
+		$content = str_replace( $link, add_query_arg('tag', $tag, $link), $content );
+	}
+	return $content;
+}
+add_filter( 'the_content', 'add_zon_tag' );
