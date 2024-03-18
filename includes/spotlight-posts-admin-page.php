@@ -193,9 +193,9 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
                 'id'       => $user->ID,
                 'image'    => '<img width="100" height="100" src="' . wasmo_get_user_image_url( $user->ID ) . '" style="object-fit: cover;" />',
                 'username' => get_the_author_meta( 'user_nicename', $user->ID )  . '<br>
-<a href="' . get_author_posts_url( get_the_author_meta( 'ID' ) ) . '">View</a> | <a href="' . get_edit_user_link( get_the_author_meta( 'ID' ) ) . '">Edit</a>',
+<a href="' . get_author_posts_url( $user->ID ) . '">View</a> | <a href="' . get_edit_user_link( $user->ID ) . '">Edit</a>',
                 'display'  => get_the_author_meta( 'display_name', $user->ID )  . '<br>
-<a href="' . get_author_posts_url( get_the_author_meta( 'ID' ) ) . '">View</a> | <a href="' . get_edit_user_link( get_the_author_meta( 'ID' ) ) . '">Edit</a>',
+<a href="' . get_author_posts_url( $user->ID ) . '">View</a> | <a href="' . get_edit_user_link( $user->ID ) . '">Edit</a>',
                 'rdate'    => date( 'Y-m-d', strtotime( get_userdata($user->ID)->user_registered) ),
                 'ldate'    => date( 'Y-m-d', strtotime( get_userdata($user->ID)->user_login) ),
                 'sdate'    => date( 'Y-m-d', strtotime( get_userdata($user->ID)->last_save) ),
