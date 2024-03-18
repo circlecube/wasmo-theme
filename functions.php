@@ -905,17 +905,42 @@ function wasmo_directory_shortcode( $atts ) {
 }
 
 /**
+ * Register a custom menu page.
+ */
+function wasmo_register_admin_page(){
+	add_menu_page( 
+		'wasmo',
+		'wasmormon',
+		'manage_options',
+		'wasmormon',
+		'wasmo_menu_page',
+		'dashicons-beer',
+		1
+	);
+}
+add_action( 'admin_menu', 'wasmo_register_admin_page' );
+
+/**
+ * Display a custom menu page
+ */
+function wasmo_menu_page(){
+}
+
+/**
  * Add ACF options page
  */
 if( function_exists('acf_add_options_page') ) {
 	
-	acf_add_options_page(array(
-		'page_title' 	=> 'wasmo Settings',
-		'menu_title'	=> 'wasmo Settings',
-		'menu_slug' 	=> 'wasmo-settings',
-		'capability'	=> 'manage_options',
-		'redirect'		=> false
-	));
+	acf_add_options_page(
+		array(
+			'page_title'  => 'Settings',
+			'menu_title'  => 'Settings',
+			'menu_slug'   => 'wasmo-settings',
+			'capability'  => 'manage_options',
+			'parent_slug' => 'wasmormon',
+			'redirect'    => false
+		)
+	);
 }
 
 /**
@@ -1787,3 +1812,6 @@ function add_zon_tag($content, $tag = 'circubstu-20' ) {
 	return $content;
 }
 add_filter( 'the_content', 'add_zon_tag' );
+
+require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
