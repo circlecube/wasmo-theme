@@ -1814,4 +1814,5 @@ function add_zon_tag($content, $tag = 'circubstu-20' ) {
 add_filter( 'the_content', 'add_zon_tag' );
 
 require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );

@@ -2,33 +2,34 @@
 
 if( is_admin() )
 {
-    new wasmo_spotlight_posts_Wp_List_Table();
+    new wasmo_contributor_users_Wp_List_Table();
 }
 
 /**
- * wasmo_spotlight_posts_Wp_List_Table class will create the page to load the table
+ * wasmo_contributor_users_Wp_List_Table class will create the page to load the table
+ * https://gist.github.com/paulund/7659452#file-example-wp-list-table-php
  */
-class wasmo_spotlight_posts_Wp_List_Table
+class wasmo_contributor_users_Wp_List_Table
 {
     /**
      * Constructor will create the menu item
      */
     public function __construct()
     {
-        add_action( 'admin_menu', array($this, 'add_menu_spotlight_posts' ));
+        add_action( 'admin_menu', array($this, 'add_menu_contributor_user_page' ));
     }
 
     /**
      * Menu item will allow us to load the page to display the table
      */
-    public function add_menu_spotlight_posts()
+    public function add_menu_contributor_user_page()
     {
         add_submenu_page(
             'wasmormon',
             'Spotlights',
-            'Spotlight List',
+            'Contributors',
             'manage_options',
-            'wasmormon',
+            'wasmo-contributors',
             array($this, 'list_table_page')
         );
     }
@@ -40,12 +41,12 @@ class wasmo_spotlight_posts_Wp_List_Table
      */
     public function list_table_page()
     {
-        $wasmo_spotlight_posts_table = new Wasmo_Spotlight_Post_List_Table();
-        $wasmo_spotlight_posts_table->prepare_items();
+        $wasmo_contributor_user_table = new Wasmo_Contributor_User_List_Table();
+        $wasmo_contributor_user_table->prepare_items();
         ?>
             <div class="wrap">
-                <h2>Users Ready for a Spotlight Post</h2>
-                <?php $wasmo_spotlight_posts_table->display(); ?>
+                <h2>Users interested in Contributing</h2>
+                <?php $wasmo_contributor_user_table->display(); ?>
             </div>
         <?php
     }
@@ -59,7 +60,7 @@ if( ! class_exists( 'WP_List_Table' ) ) {
 /**
  * Create a new table class that will extend the WP_List_Table
  */
-class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
+class Wasmo_Contributor_User_List_Table extends WP_List_Table
 {
     /**
      * Prepare the items for the table to process
@@ -99,14 +100,15 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
     {
         $columns = array(
             // 'id'         => 'ID',
-            // 'public'     => 'Visibility',
-            // 'contribute' => 'Wants to Contribute',
+            // 'display'    => 'Display Name',
             'image'      => 'Photo',
             'username'   => 'Username',
-            'display'    => 'Display Name',
+            'email'      => 'Email',
+            'contribute' => 'Wants to Contribute',
             'rdate'      => 'Registered',
             'ldate'      => 'Last Login',
             'sdate'      => 'Last Save',
+            'public'     => 'Visibility',
             'saves'      => 'Saves',
         );
 
@@ -133,14 +135,16 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
         return array(
             'id'         => array('id', false),
             'username'   => array('username', false),
-            'display'    => array('display', false),
             'rdate'      => array('rdate', false),
             'ldate'      => array('ldate', false),
             'sdate'      => array('sdate', false),
             'pubilc'     => array('pubilc', false),
             'contribute' => array('contribute', false),
             'saves'      => array('saves', false),
+            'public'     => array('public', false),
+            'display'    => array('display', false),
             'image'      => array('image', false),
+            
         );
     }
 
@@ -158,32 +162,9 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
             'meta_key' => 'last_save',
             'order'    => 'ASC',
             'meta_query' => array(
-                'relation' => 'AND',
                 array(
-                    'key' => 'spotlight_post',
-                    'compare' => 'NOT EXISTS'
-                ),
-                array(
-                    'key' => 'in_directory',
-                    'value' => 'true',
-                    'compare' => '='
-                ),
-                array(
-                    'key' => 'hi',
-                    'compare' => 'EXISTS',
-                ),
-                array(
-                    'key' => 'tagline',
-                    'compare' => 'EXISTS',
-                ),
-                array(
-                    'key' => 'about_me',
-                    'value' => '',
-                    'compare' => '!=',
-                ),
-                array(
-                    'key' => 'photo',
-                    'value' => '',
+                    'key' => 'i_want_to_write_posts',
+                    'value' => 'No thanks',
                     'compare' => '!=',
                 ),
             ),
@@ -207,6 +188,8 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
             $i_want_to_write_posts = get_user_meta( $userid, 'i_want_to_write_posts', true );
             $rdate = date( 'Y-m-d H:i:s', strtotime( get_userdata( $userid )->user_registered ) );
             $view_edit = '<br><a href="' . get_author_posts_url( $userid ) . '">View</a> | <a href="' . get_edit_user_link( $userid ) . '">Edit</a>';
+            $user_info = get_userdata( $userid );
+            $user_email = $user_info->user_email;
             
             $data[] = array(
                 'id'         => $userid,
@@ -219,6 +202,7 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
                 'public'     => $in_directory,
                 'contribute' => $i_want_to_write_posts,
                 'saves'      => $save_count,
+                'email'      => '<a href="mailto:' . $user_email . '" target="_blank">' . $user_email . '</a>',
             );
         }
 
@@ -236,13 +220,17 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
     public function column_default( $item, $column_name )
     {
         switch( $column_name ) {
+            case 'id':
             case 'image':
             case 'username':
             case 'display':
             case 'rdate':
             case 'ldate':
             case 'sdate':
+            case 'public':
+            case 'contribute':
             case 'saves':
+            case 'email':
                 return $item[ $column_name ];
 
             default:
@@ -258,7 +246,7 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
     private function sort_data( $a, $b )
     {
         // Set defaults
-        $orderby = 'sdate';
+        $orderby = 'contribute';
         $order = 'desc';
 
         // If orderby is set, use this as the sort column
@@ -273,8 +261,15 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
             $order = $_GET['order'];
         }
 
-
-        $result = strcmp( $a[$orderby], $b[$orderby] );
+        // string vs number sorting
+        if( $orderby === 'saves' ) {
+            $ao = $a[$orderby];
+            $bo = $b[$orderby];
+            $result = ($ao < $bo) ? -1 : (($ao > $bo) ? 1 : 0); 
+        }
+        else {
+            $result = strcmp( $a[$orderby], $b[$orderby] );
+        }
 
         if($order === 'asc')
         {

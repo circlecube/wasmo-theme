@@ -15,13 +15,13 @@ class wasmo_contributor_posts_Wp_List_Table
      */
     public function __construct()
     {
-        add_action( 'admin_menu', array($this, 'add_menu_example_list_table_page' ));
+        add_action( 'admin_menu', array($this, 'add_menu_contributor_posts' ));
     }
 
     /**
      * Menu item will allow us to load the page to display the table
      */
-    public function add_menu_example_list_table_page()
+    public function add_menu_contributor_posts()
     {
         add_submenu_page(
             'wasmormon',
@@ -40,12 +40,12 @@ class wasmo_contributor_posts_Wp_List_Table
      */
     public function list_table_page()
     {
-        $wasmoContributorPostListTable = new Wasmo_Contributor_Post_List_Table();
-        $wasmoContributorPostListTable->prepare_items();
+        $wasmo_contributor_post_table = new Wasmo_Contributor_Post_List_Table();
+        $wasmo_contributor_post_table->prepare_items();
         ?>
             <div class="wrap">
                 <h2>Contributor Posts</h2>
-                <?php $wasmoContributorPostListTable->display(); ?>
+                <?php $wasmo_contributor_post_table->display(); ?>
             </div>
         <?php
     }
