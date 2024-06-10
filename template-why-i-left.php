@@ -47,7 +47,7 @@ get_header();
 			// answer
 			$the_answers .= '<div class="answer answer-' . $userid . '">';
 			$the_answers .= '<blockquote>';
-			$the_answers .= wp_kses_post( get_field( 'why_i_left', 'user_' . $userid ) );
+			$the_answers .= wp_trim_words( get_field( 'why_i_left', 'user_' . $userid ), 120, '&mldr;' );
 			$the_answers .= '</blockquote>';
 
 			// user attribution - photo and name and link (only if they want to be listed in directory)
