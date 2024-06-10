@@ -59,7 +59,7 @@ get_header();
 			) {
 				$username = esc_html( $user->nickname );
 				$the_answers .= '<cite>';
-				$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '">';
+				$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="' . get_author_posts_url( $userid ) . '#why-i-left">';
 				$the_answers .= '<span class="directory-img">';
 				$the_answers .= wasmo_get_user_image( $userid );
 				$the_answers .= '</span>';
