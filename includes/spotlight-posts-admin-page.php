@@ -186,6 +186,11 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
                     'value' => '',
                     'compare' => '!=',
                 ),
+                array(
+                    'key' => 'imported',
+                    'value' => '',
+                    'compare' => '==',
+                ),
             ),
             'fields'   => 'all'
         );
