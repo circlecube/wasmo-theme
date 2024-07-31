@@ -159,6 +159,13 @@ body.logged-in .menu-item.logged-in {
 	display: initial;
 }
 
+@media only screen and (min-width: 768px) {
+    .site-branding {
+        margin: 0 auto;
+        width: calc(70% + min(250px, 20%) - 120px);
+    }
+}
+
 .site-branding-container {
 	position: relative;
 }
@@ -1530,4 +1537,38 @@ button.gsc-search-button-v2 {
 .archive .entry-footer .tags .tag[data-count="3"],
 .archive .entry-footer .tags .tag[data-count="4"] {
 	display: none;
+}
+
+.author-box-section {
+	border: 1px solid var(--color-orange);
+	background-color: var(--color-orange-0);
+	padding: 1rem;
+	margin-bottom: 2rem;
+	font-size: .76rem;
+}
+.author-box {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+@media only screen and (min-width: 1024px) {
+	.author-box {
+		flex-direction: row-reverse;
+	}
+}
+.author-box .content-left {
+	flex: 1 2 50%;
+}
+.author-box .content-right {
+	flex: 2 1 50%;
+}
+
+.author-box-section hr {
+	/* width: 3rem; */
+	height: 1px !important;
+	margin: 1rem auto !important;
+	background-color: var(--color-orange) !important;
+}
+.author-box-section .wp-block-buttons .wp-block-button .wp-block-button__link.has-background.wp-element-button {
+	border-radius: 100px;
 }

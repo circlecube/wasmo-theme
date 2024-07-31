@@ -665,12 +665,26 @@ function wasmo_update_user_question_count(){
 
 }
 
+function wasmo_posted_by() {
+	printf(
+		/* translators: 1: SVG icon. 2: Post author, only visible to screen readers. 3: Author link. */
+		'<span class="byline">%1$s<span class="screen-reader-text">%2$s</span><span class="author vcard"><a class="url fn n" href="%3$s">%4$s</a></span></span>',
+		twentynineteen_get_icon_svg( 'person', 16 ),
+		/* translators: Hidden accessibility text. */
+		__( 'Posted by', 'twentynineteen' ),
+		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
+		esc_html( get_the_author() )
+	);
+}
+
 //override twentynineteen_entry_footer
 function wasmo_entry_footer() {
 
 	// Hide author, post date, category and tag text for pages.
 	if ( 'post' === get_post_type() ) {
-
+		$author = get_post_field( 'post_author', get_the_ID() );
+		$user = get_user_by('id', $author);
+		
 		// Profile link
 		if (has_category( 'spotlight', get_the_ID() ) && get_field( 'spotlight_for', get_the_ID() ) ) {
 			$user_id = get_field( 'spotlight_for', get_the_ID() );
@@ -681,10 +695,8 @@ function wasmo_entry_footer() {
 		}
 
 		// Posted by
-		$author = get_post_field( 'post_author', get_the_ID() );
-		$user = get_user_by('id', $author);
 		if ( !$user->has_cap( 'manage_options' ) ) {
-			twentynineteen_posted_by(); // hide author
+			twentynineteen_posted_by(); // hide author if admin
 		}
 
 		// Posted on
@@ -1675,6 +1687,11 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
    <path d="M4,5H2v13h10v-2H4V5z M17.9,3.4l-1.3-1.3C16.2,1.7,15.5,1.6,15,2l0,0l-1,1H5v12h9V9l4-4l0,0C18.4,4.5,18.3,3.8,17.9,3.4z M12.2,9.4l-2.5,0.9l0.9-2.5L15,3.4L16.6,5L12.2,9.4z"/>
 </svg>',
 
+		'location' => /* dashicon location */ '
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+<path d="M10 2c-3.31 0-6 2.69-6 6 0 2.020 1.17 3.71 2.53 4.89 0.43 0.37 1.18 0.96 1.85 1.83 0.74 0.97 1.41 2.010 1.62 2.71 0.21-0.7 0.88-1.74 1.62-2.71 0.67-0.87 1.42-1.46 1.85-1.83 1.36-1.18 2.53-2.87 2.53-4.89 0-3.31-2.69-6-6-6zM10 4.56c1.9 0 3.44 1.54 3.44 3.44s-1.54 3.44-3.44 3.44-3.44-1.54-3.44-3.44 1.54-3.44 3.44-3.44z"></path>
+</svg>',
+
 		'join'   => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	<path d="M0 0h24v24H0z" fill="none"/><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -1816,3 +1833,11 @@ add_filter( 'the_content', 'add_zon_tag' );
 require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
+
+function update_contributor_capabilities() {
+	// gets the contributor role
+	$contributors = get_role( 'contributor' );
+	$contributors->add_cap( 'read_private_pages' );
+	$contributors->add_cap( 'read_private_posts' );
+}
+add_action( 'admin_init', 'update_contributor_capabilities');

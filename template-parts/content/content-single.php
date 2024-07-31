@@ -41,6 +41,14 @@
 				'after'  => '</div>',
 			)
 		);
+
+		// Author box
+		$author = get_post_field( 'post_author', get_the_ID() );
+		$user = get_user_by('id', $author);
+		if ( !$user->has_cap( 'manage_options' ) ) {
+			set_query_var( 'user', $user );
+			get_template_part( 'template-parts/content/content', 'author-box' );
+		}
 		?>
 	</div><!-- .entry-content -->
 
