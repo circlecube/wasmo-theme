@@ -4,7 +4,7 @@
 */
 ?>
 <section class="author-box-section">
-    <p><?php twentynineteen_get_icon_svg( 'person', 16 ); ?> This post is by <?php echo $user->display_name; ?>.</p>
+    <p><?php twentynineteen_get_icon_svg( 'person', 16 ); ?> This post is by <a href="<?php echo get_author_posts_url( $user->ID ); ?>"><?php echo $user->display_name; ?></a>.</p>
     <hr />
     <div class="author-box">
         <div class="content-right">
@@ -30,7 +30,11 @@
             <?php } ?>
         </div>
         <div class="content-left">
-            <div class="user_photo"><?php echo wasmo_get_user_image( $user->ID, true ); ?></div>
+            <div class="user_photo">
+                <a href="<?php echo get_author_posts_url( $user->ID ); ?>">
+                    <?php echo wasmo_get_user_image( $user->ID, true ); ?>
+                </a>
+            </div>
             <?php 
             $links = get_field( 'links', 'user_' . $user->ID );
             if ( $links ) { ?>
