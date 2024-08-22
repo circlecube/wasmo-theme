@@ -1,4 +1,4 @@
-name: Package Plugin on Release
+name: Package Theme on Release
 
 on:
   release:
