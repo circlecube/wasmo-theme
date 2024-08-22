@@ -481,7 +481,7 @@ Welcome to ' . $sitename . '! We\'re glad you\'ve joined. Visit the following li
 	Edit your proflie: ' . home_url('/edit/') . '
 	View/share your profile: ' . get_author_posts_url( $user_id ) . ' (you can change this url in your profile settings)
 
-	Contribute articles: ' get_admin_url( 'new-post.php' ) . '
+	Contribute articles: ' . admin_url( 'new-post.php' ) . '
 
 We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site (you can reply to this email).
 
