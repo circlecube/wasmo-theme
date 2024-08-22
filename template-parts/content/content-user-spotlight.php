@@ -16,7 +16,7 @@ if ( $spotlight_id && get_post_status( $spotlight_id ) === 'publish' ) :
         'orderby' => 'title',
     ));
     if ( !empty($images) ) : ?>
-        <aside class="widget-area" style="margin: 1rem 0 -2.5rem; ">
+        <aside class="widget-area">
             <section class="widget widget_spotlight_widget user-spotlight">
                 <h4><a href="<?php echo get_permalink( $spotlight_id ); ?>">Spotlight on <?php echo esc_html( $user->display_name ); ?></a></h4>
                 <!-- <img width="300" height="300" src="<?php echo get_the_post_thumbnail_url( $spotlight_id ); ?>" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="<?php echo get_the_title( $spotlight_id ); ?> image" decoding="async" loading="lazy"> -->

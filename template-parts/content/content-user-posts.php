@@ -15,7 +15,7 @@ $user = get_user_by('id', $userid);
 
 // if has posts and is not admin
 if ( $userposts && !$user->has_cap( 'manage_options' ) ) { ?>
-    <aside class="widget-area" style="margin: 1rem 0 -2.5rem; ">
+    <aside class="widget-area">
         <section class="widget widget_posts_widget">
             <?php 
                 
