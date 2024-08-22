@@ -479,7 +479,9 @@ function wasmo_send_user_email__welcome( $user_id ){
 Welcome to ' . $sitename . '! We\'re glad you\'ve joined. Visit the following links (also found in the site header when you\'re logged in).
 
 	Edit your proflie: ' . home_url('/edit/') . '
-	View/share your profile: ' . get_author_posts_url( $user_id ) . ' (you can change this on your profile)
+	View/share your profile: ' . get_author_posts_url( $user_id ) . ' (you can change this url in your profile settings)
+
+	Contribute articles: ' get_admin_url( 'new-post.php' ) . '
 
 We are genuinely excited to meet you and read your story. Please, don\'t hesitate to reach out if you have any questions or suggestions to improve the site (you can reply to this email).
 
@@ -1579,51 +1581,113 @@ function wasmo_get_user_image( $userid, $isItempropImage = false ) {
 
 /**
  * Send out email depending on who updates the status of the post.
+ * 
+ * New post created by user, contributor receives a confirmation email
+ * Post submitted by user, contributor receives a confirmation email
+ * Submitted post is scheduled to be published, contributor receives a confiramtion email
+ * Submitted post is published, contributor receives a confiramtion email
+ * 
+ * Post submitted by user, admin receives notice of submitted post
  *
  * @param String  $new_status New post status.
  * @param String  $old_status Old post status.
  * @param WP_Post $post Post object.
  */
 function wasmo_pending_submission_notifications_send_email( $new_status, $old_status, $post ) {
-	$admin_email = get_bloginfo( 'admin_email' );
-	$headers     = 'From: '. $admin_email;
-	$user        = get_userdata( $post->post_author );
-	// Notify Admin that Contributor has written a post.
-	if ( 
-		'pending' === $new_status &&
-		user_can( $post->post_author, 'edit_posts' ) &&
-		!user_can( $post->post_author, 'publish_posts' ) &&
-		!empty($_POST)
-	) {
-		$edit_link    = get_edit_post_link( $post->ID, '' );
-		$preview_link = get_permalink( $post->ID ) . '&preview=true';
-		$last_edit    = get_the_modified_author();
-		$subject      = __( 'New post submission pending review', 'wasmo' ) . ': "' . $post->post_title . '"';
-		$message      = __( 'A new submission is pending review.', 'wasmo' );
-		$message     .= "\r\n\r\n";
-		$message     .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . "\r\n";
-		$message     .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
-		$message     .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . "\r\n";
-		$message     .= __( 'Last edited by', 'wasmo' ) . ': ' . $last_edit . "\r\n";
-		$message     .= __( 'Last edit date', 'wasmo' ) . ': ' . $post->post_modified;
-		$message     .= "\r\n\r\n";
-		$message     .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
-		$message     .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
-		$result      = wp_mail( $admin_email, $subject, $message, $headers );
+	if ( $new_status === $old_status ) { // bail if status has not changed
+		return;
 	}
-	elseif (
-		( 'pending' === $old_status || 'future' === $old_status ) &&
-		'publish' === $new_status &&
-		user_can( $post->post_author, 'edit_posts' ) &&
-		!user_can( $post->post_author, 'publish_posts' ) &&
-		!empty($_POST)
+
+	$admin_email  = get_bloginfo( 'admin_email' );
+	$headers      = 'From: '. $admin_email;
+	$user         = get_userdata( $post->post_author );
+	$url          = get_permalink( $post->ID );
+	$edit_link    = get_edit_post_link( $post->ID, '' );
+	$preview_link = get_permalink( $post->ID ) . '&preview=true';
+	$last_edit    = get_the_modified_author();
+	$status       = get_post_status( $post->ID );
+	$datetime     = get_post_datetime( $post->ID );
+
+	if ( // Notify Admin that Non-Admin has written a post.
+		( 'new' === $new_status || 'draft' === $new_status || 'pending' === $new_status ) &&
+		! user_can( $user, 'manage_options' )
 	) {
-		// Notify Contributor that Admin has published their post.	
-		$url      = get_permalink( $post->ID );
-		$subject  = __( 'Your submission is now live!', 'wasmo' );
-		$message  = '"' . $post->post_title . '" ' . __( 'was just published on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$subject  = __( 'New post submission pending review', 'wasmo' ) . ': "' . $post->post_title . '"';
+		$message  = __( 'A new submission is pending review.', 'wasmo' );
+		$message .= "\r\n\r\n";
+		$message .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . " : " . $user->display_name . "\r\n";
+		$message .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
+		$message .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . "\r\n";
+		$message .= __( 'Status', 'wasmo' ) . ': ' . $status . "\r\n";
+		$message .= __( 'Last edited by', 'wasmo' ) . ': ' . $last_edit . "\r\n";
+		$message .= __( 'Last edit date', 'wasmo' ) . ': ' . $post->post_modified;
+		$message .= "\r\n\r\n";
+		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
+		$message .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
+		$result  = wp_mail( $admin_email, $subject, $message, $headers );
+	}
+	
+	if ( // Notify Non-admin that Admin has published their post.
+		( 'pending' === $old_status || 'future' === $old_status || 'draft' === $old_status ) &&
+		'publish' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'The post you submitted is now live!', 'wasmo' );
+		$message  = '"' . $post->post_title . '" ' . __( 'is now published on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
 		$message .= $url;
-		$result   = wp_mail( $user->user_email, $subject, $message, $headers );
+		$message .= "\r\n\r\n";
+		$message .= __( 'It is displayed as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
+		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+	}
+	elseif ( // Notify Non-admin that Admin has scheduled their post.
+		( 'pending' === $old_status || 'draft' === $old_status ) &&
+		'future' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'The post you submitted is now scheduled!', 'wasmo' );
+		$message  = '"' . $post->post_title . '" ' . __( 'is now scheduled to be published on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$message .= $url;
+		$message .= "\r\n\r\n";
+		$message .= __( 'Take a look and let us know if anything needs updating. Preview the post', 'wasmo' ) . ': ' . $preview_link;
+		$message .= __( 'It will display as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
+		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+	}
+	elseif ( // Notify non-admin that they have a post
+		'new' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'You created a post!', 'wasmo' );
+		$message  = __( 'Thank you for creating a post!', 'wasmo' );
+		$message  = '"' . $post->post_title . '" ' . __( 'is now saved as a draft on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$message .= "\r\n\r\n";
+		$message .= __( 'Once it is ready, submit the post for review. We\'ll help create graphics and get it worked into the publishing schedule.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
+		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+	}
+	elseif ( // Notify non-admin that they submitted a post for review
+		'pending' === $new_status && 'draft' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'You submitted a post!', 'wasmo' );
+		$message  = __( 'Thank you for submitting a post!', 'wasmo' );
+		$message .= "\r\n\r\n";
+		$message .= '"' . $post->post_title . '" ' . __( 'is now submitted to wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$message .= "\r\n\r\n";
+		$message .= __( 'We\'ll create graphics, get it worked into the publishing schedule, and let you know when it is published. ', 'wasmo' );
+		$message .= __( 'Once it is published, it will display on your profile! ', 'wasmo' ) . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
+		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
 	}
 }
 add_action( 'transition_post_status', 'wasmo_pending_submission_notifications_send_email', 10, 3 );
