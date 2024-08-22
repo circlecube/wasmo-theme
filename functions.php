@@ -1601,6 +1601,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 	$admin_email  = get_bloginfo( 'admin_email' );
 	$headers      = 'From: '. $admin_email;
 	$user         = get_userdata( $post->post_author );
+	$user_email   = $user->user_email;
 	$url          = get_permalink( $post->ID );
 	$edit_link    = get_edit_post_link( $post->ID, '' );
 	$preview_link = get_permalink( $post->ID ) . '&preview=true';
@@ -1624,7 +1625,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
 		$message .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
-		$result  = wp_mail( $admin_email, $subject, $message, $headers );
+		$result   = wp_mail( $admin_email, $subject, $message, $headers );
 	}
 	
 	if ( // Notify Non-admin that Admin has published their post.
@@ -1640,7 +1641,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
-		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify Non-admin that Admin has scheduled their post.
 		( 'pending' === $old_status || 'draft' === $old_status ) &&
@@ -1656,10 +1657,10 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
-		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify non-admin that they have a post
-		'new' === $new_status &&
+		( 'new' === $new_status || 'draft' === $new_status ) &&
 		! user_can( $user, 'manage_options' )
 	) {
 		$subject  = __( 'You created a post!', 'wasmo' );
@@ -1671,7 +1672,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
-		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify non-admin that they submitted a post for review
 		'pending' === $new_status && 'draft' === $new_status &&
@@ -1687,7 +1688,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
-		$result  .= wp_mail( $user->user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 }
 add_action( 'transition_post_status', 'wasmo_pending_submission_notifications_send_email', 10, 3 );
