@@ -1611,12 +1611,13 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 	$nl           = "\r\n";
 	$nlnl         = $nl . $nl;
 
-	if ( // Notify Admin that Non-Admin has written a post.
-		( 'new' === $new_status || 'draft' === $new_status || 'pending' === $new_status ) &&
+	// Admin emails
+	if ( // Notify Admin that Non-Admin has created a new post.
+		'new' === $new_status &&
 		! user_can( $user, 'manage_options' )
 	) {
-		$subject  = __( 'New post submission pending review', 'wasmo' ) . ': "' . $post->post_title . '"';
-		$message  = __( 'A new submission is pending review.', 'wasmo' ) . $nlnl;
+		$subject  = __( 'New post created by contributor', 'wasmo' ) . ': "' . $post->post_title . '"';
+		$message  = __( 'A new post was started.', 'wasmo' ) . $nlnl;
 		$message .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . " : " . $user->display_name . $nl;
 		$message .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . $nl;
 		$message .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . $nl;
@@ -1626,10 +1627,40 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . $nl;
 		$message .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
 		$result   = wp_mail( $admin_email, $subject, $message, $headers );
+	} elseif ( // Notify Admin that Non-Admin has saved a draft post.
+		'draft' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'Post saved as draft', 'wasmo' ) . ': "' . $post->post_title . '"';
+		$message  = __( 'A post was saved again.', 'wasmo' ) . $nlnl;
+		$message .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . " : " . $user->display_name . $nl;
+		$message .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . $nl;
+		$message .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . $nl;
+		$message .= __( 'Status', 'wasmo' ) . ': ' . $status . $nl;
+		$message .= __( 'Last edited by', 'wasmo' ) . ': ' . $last_edit . $nl;
+		$message .= __( 'Last edit date', 'wasmo' ) . ': ' . $post->post_modified . $nlnl;
+		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . $nl;
+		$message .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
+		$result   = wp_mail( $admin_email, $subject, $message, $headers );
+	} elseif ( // Notify Admin that Non-Admin has saved a draft post.
+		'pending' === $new_status &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'Post submitted for review', 'wasmo' ) . ': "' . $post->post_title . '"';
+		$message  = __( 'A post was submittd for review. It probably needs images and tags.', 'wasmo' ) . $nlnl;
+		$message .= __( 'Author', 'wasmo' ) . ': ' . $user->user_login . " : " . $user->display_name . $nl;
+		$message .= __( 'Profile', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . $nl;
+		$message .= __( 'Title', 'wasmo' ) . ': ' . $post->post_title . $nl;
+		$message .= __( 'Status', 'wasmo' ) . ': ' . $status . $nl;
+		$message .= __( 'Last edited by', 'wasmo' ) . ': ' . $last_edit . $nl;
+		$message .= __( 'Last edit date', 'wasmo' ) . ': ' . $post->post_modified . $nlnl;
+		$message .= __( 'Edit/approve the submission', 'wasmo' ) . ': ' . $edit_link . $nl;
+		$message .= __( 'Preview the submission', 'wasmo' ) . ': ' . $preview_link;
+		$result   = wp_mail( $admin_email, $subject, $message, $headers );
 	}
 	
+	// User emails
 	if ( // Notify Non-admin that Admin has published their post.
-		( 'pending' === $old_status || 'future' === $old_status || 'draft' === $old_status ) &&
 		'publish' === $new_status &&
 		! user_can( $user, 'manage_options' )
 	) {
@@ -1643,7 +1674,6 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify Non-admin that Admin has scheduled their post.
-		( 'pending' === $old_status || 'draft' === $old_status ) &&
 		'future' === $new_status &&
 		! user_can( $user, 'manage_options' )
 	) {
@@ -1658,7 +1688,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify non-admin that they submitted a post for review
-		'pending' === $new_status && 'draft' === $new_status &&
+		'pending' === $new_status &&
 		! user_can( $user, 'manage_options' )
 	) {
 		$subject  = __( 'You submitted a post!', 'wasmo' );
