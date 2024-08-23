@@ -1654,23 +1654,8 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'Take a look and let us know if anything needs updating. Preview the post', 'wasmo' ) . ': ' . $preview_link;
 		$message .= __( 'It will display as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n";
-		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
-		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
-		$result   = wp_mail( $user_email, $subject, $message, $headers );
-	}
-	elseif ( // Notify non-admin that they have a post
-		( 'new' === $new_status || 'draft' === $new_status ) &&
-		! user_can( $user, 'manage_options' )
-	) {
-		$subject  = __( 'You created a post!', 'wasmo' );
-		$message  = __( 'Thank you for creating a post!', 'wasmo' );
-		$message  = '"' . $post->post_title . '" ' . __( 'is now saved as a draft on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
-		$message .= "\r\n\r\n";
-		$message .= __( 'Once it is ready, submit the post for review. We\'ll help create graphics and get it worked into the publishing schedule.', 'wasmo' ) . "\r\n";
-		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
-		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
@@ -1685,8 +1670,24 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'We\'ll create graphics, get it worked into the publishing schedule, and let you know when it is published. ', 'wasmo' );
 		$message .= __( 'Once it is published, it will display on your profile! ', 'wasmo' ) . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
-		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
+		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n\r\n";
+		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
+		$result   = wp_mail( $user_email, $subject, $message, $headers );
+	}
+	elseif ( // Notify non-admin that they created a post
+		( 'new' === $new_status || 'draft' === $new_status ) &&
+		! user_can( $user, 'manage_options' )
+	) {
+		$subject  = __( 'You created a post!', 'wasmo' );
+		$message  = __( 'Thank you for creating a post!', 'wasmo' );
+		$message .= '"' . $post->post_title . '" ' . __( 'is now saved as a draft on wasmormon.org', 'wasmo' ) . "! \r\n\r\n";
+		$message .= "\r\n\r\n";
+		$message .= __( 'Once it is ready, submit the post for review. We\'ll help create graphics and get it worked into the publishing schedule. ', 'wasmo' );
+		$message .= __( 'Once it is published, it will display on your profile! ', 'wasmo' ) . "\r\n\r\n";
+		$message .= __( 'Edit the post', 'wasmo' ) . ': ' . $edit_link . "\r\n";
+		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
 	}
