@@ -1610,6 +1610,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 	$datetime     = get_post_datetime( $post->ID );
 	$nl           = "\r\n";
 	$nlnl         = $nl . $nl;
+	$sitename     = get_bloginfo( 'name' );
 
 	// Admin emails
 	if ( // Notify Admin that Non-Admin has created a new post.
@@ -1680,7 +1681,8 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$subject  = __( 'The post you submitted is now scheduled!', 'wasmo' );
 		$message  = '"' . $post->post_title . '" ' . __( 'is now scheduled to be published on wasmormon.org', 'wasmo' ) . "!" . $nlnl;
 		$message .= $url . $nlnl;
-		$message .= __( 'Take a look and let us know if anything needs updating. Preview the post', 'wasmo' ) . ': ' . $preview_link;
+		$message .= __( 'Take a look and let us know if anything needs updating. Preview the post', 'wasmo' ) . ': ' . $preview_link . $nl;
+		$message .= __( 'Date and time to be published', 'wasmo' ) . ': ' . $post->post_date . $nlnl;
 		$message .= __( 'It will display as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . $nl;
 		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . $nl;
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . $nlnl;
