@@ -1638,7 +1638,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= $url;
 		$message .= "\r\n\r\n";
 		$message .= __( 'It is displayed as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
@@ -1654,7 +1654,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'Take a look and let us know if anything needs updating. Preview the post', 'wasmo' ) . ': ' . $preview_link;
 		$message .= __( 'It will display as a link on your profile page', 'wasmo' ) . ': ' . get_author_posts_url( $user->ID ) . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
@@ -1669,7 +1669,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'Once it is ready, submit the post for review. We\'ll help create graphics and get it worked into the publishing schedule.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Edit the submission', 'wasmo' ) . ': ' . $edit_link . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
@@ -1685,7 +1685,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= "\r\n\r\n";
 		$message .= __( 'We\'ll create graphics, get it worked into the publishing schedule, and let you know when it is published. ', 'wasmo' );
 		$message .= __( 'Once it is published, it will display on your profile! ', 'wasmo' ) . "\r\n";
-		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . get_admin_url( 'post-new.php' ) . "\r\n\r\n";
+		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . "\r\n\r\n";
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . "\r\n";
 		$message .= __( 'Best,', 'wasmo' ) . "\r\n" . $sitename . "\r\n\r\n";
 		$result   = wp_mail( $user_email, $subject, $message, $headers );
