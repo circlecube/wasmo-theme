@@ -1,0 +1,143 @@
+{
+    "key": "group_66311523a96bd",
+    "title": "Profile Details",
+    "fields": [
+        {
+            "key": "field_66311ed93224b",
+            "label": "",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Thanks for signing up!\r\n\r\nAre you ready to start your profile now? You can always add\/update your profile later, and in order to display on the website you'll still need to complete your account setup and sign in.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        },
+        {
+            "key": "field_66311d94efe37",
+            "label": "Hi",
+            "name": "hi",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "Hi, I'm ___!",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_66311d4fefe36",
+            "label": "Tagline",
+            "name": "tagline",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "I was a Mormon.",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_66311524efe35",
+            "label": "About Me",
+            "name": "about_me",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": "",
+            "placeholder": "Tell us about yourself - be sure to include a Mormon context.",
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_66311dd6efe38",
+            "label": "Why I left",
+            "name": "why_i_left",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": "",
+            "placeholder": "Describe your struggles with the church, what you did about them and the conclusions you made about the church.",
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_6631213275315",
+            "label": "Subscribe",
+            "name": "subscribe",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Receive the monthly wasmormon newsletter email.",
+            "default_value": 1,
+            "ui": 0,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "user_form",
+                "operator": "==",
+                "value": "register"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1735838845
+}

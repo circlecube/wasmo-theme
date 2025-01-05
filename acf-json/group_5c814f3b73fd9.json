@@ -70,11 +70,11 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
+            "default_value": "Hi!",
+            "maxlength": "",
             "placeholder": "Hi,",
             "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "append": ""
         },
         {
             "key": "field_5c815af4df648",
@@ -111,7 +111,6 @@
                 "id": ""
             },
             "return_format": "id",
-            "preview_size": "thumbnail",
             "library": "uploadedTo",
             "min_width": "",
             "min_height": "",
@@ -119,7 +118,26 @@
             "max_width": "",
             "max_height": "",
             "max_size": "",
-            "mime_types": ""
+            "mime_types": "",
+            "preview_size": "thumbnail"
+        },
+        {
+            "key": "field_6776cbe94a21f",
+            "label": "Video",
+            "name": "video",
+            "aria-label": "",
+            "type": "oembed",
+            "instructions": "If you wish to provide a video link of your story, enter it here. You may record your own and post it to youtube or other online video platforms.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "width": "",
+            "height": "",
+            "allow_in_bindings": 0
         },
         {
             "key": "field_5c87b7a994494",
@@ -223,7 +241,8 @@
                     "load_terms": 0,
                     "return_format": "id",
                     "multiple": 0,
-                    "parent_repeater": "field_5c82b3ec902d9"
+                    "parent_repeater": "field_5c82b3ec902d9",
+                    "bidirectional_target": []
                 },
                 {
                     "key": "field_5c82c9d1902db",
@@ -299,13 +318,14 @@
                 "id": ""
             },
             "taxonomy": "spectrum",
-            "field_type": "multi_select",
-            "allow_null": 1,
             "add_term": 1,
             "save_terms": 0,
             "load_terms": 0,
             "return_format": "object",
-            "multiple": 0
+            "field_type": "checkbox",
+            "multiple": 0,
+            "allow_null": 0,
+            "bidirectional_target": []
         },
         {
             "key": "field_5ebaf423b15f3",
@@ -322,13 +342,14 @@
                 "id": ""
             },
             "taxonomy": "shelf",
-            "field_type": "multi_select",
-            "allow_null": 1,
             "add_term": 1,
             "save_terms": 0,
             "load_terms": 0,
             "return_format": "object",
-            "multiple": 0
+            "field_type": "checkbox",
+            "multiple": 0,
+            "allow_null": 0,
+            "bidirectional_target": []
         },
         {
             "key": "field_5cb48fbcb16dc",
@@ -403,17 +424,43 @@
                 "id": ""
             },
             "choices": {
-                "false": "Not at all",
-                "private": "Yes, but only to users who are logged in",
+                "true": "Yes display my profile in the public directory and in social media",
                 "website": "Yes, display my profile publicly but only on the website (no social media spotlights)",
-                "true": "Yes display my profile in the public directory and in social media"
+                "private": "Yes, but only to users who are logged in",
+                "false": "Not at all"
             },
             "default_value": "true",
-            "allow_null": 0,
+            "return_format": "value",
             "multiple": 0,
+            "allow_null": 0,
             "ui": 1,
             "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_66832f19f60d4",
+            "label": "Allow other site users to contact me?",
+            "name": "allow_user_contact",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "This feature is not yet fully developed, but adding the option to gauge interest. The site will soon have the option to allow users to react to other profiles and potentially send messages. The goal is to foster community and connection among fellow site users.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "yes": "Yes",
+                "no": "No"
+            },
+            "default_value": false,
             "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
             "placeholder": ""
         },
         {
@@ -545,7 +592,7 @@
             "name": "i_want_to_write_posts",
             "aria-label": "",
             "type": "select",
-            "instructions": "Do you want to contribute blog posts to wasmormon.org?",
+            "instructions": "Do you want to contribute blog posts to wasmormon.org? Find out more about <a href=\"https:\/\/wasmormon.org\/contributing-content\/\" target=\"_blank\">contributing content<\/a>.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -559,11 +606,11 @@
                 "Yes, please": "Yes, please"
             },
             "default_value": false,
-            "allow_null": 0,
+            "return_format": "value",
             "multiple": 0,
+            "allow_null": 0,
             "ui": 1,
             "ajax": 0,
-            "return_format": "value",
             "placeholder": ""
         },
         {
@@ -618,5 +665,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1668449353
+    "modified": 1735838820
 }
