@@ -27,7 +27,7 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 <?php if ( get_field( 'video', 'user_' . $userid ) ) { ?>
 	<div class="profile-video"><?php 
 		// Load value.
-		$iframe = get_field('video');
+		$iframe = get_field('video', 'user_' . $userid );
 
 		// Use preg_match to find iframe src.
 		preg_match('/src="(.+?)"/', $iframe, $matches);
