@@ -1597,6 +1597,10 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 	if ( $new_status === $old_status ) { // bail if status has not changed
 		return;
 	}
+	
+	if ( $post->post_type !== 'post' ) { // bail if not a blog post
+		return;
+	}
 
 	$admin_email  = get_bloginfo( 'admin_email' );
 	$headers      = 'From: '. $admin_email;
@@ -1672,7 +1676,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start another post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . $nl;
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . $nl;
 		$message .= __( 'Best,', 'wasmo' ) . $nl . $sitename . $nlnl;
-		$result   = wp_mail( $user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email ? $user_email : $admin_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify Non-admin that Admin has scheduled their post.
 		'future' === $new_status &&
@@ -1687,7 +1691,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . $nl;
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . $nlnl;
 		$message .= __( 'Best,', 'wasmo' ) . $nl . $sitename . $nlnl;
-		$result   = wp_mail( $user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email ? $user_email : $admin_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify non-admin that they submitted a post for review
 		'pending' === $new_status &&
@@ -1701,7 +1705,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . $nlnl;
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . $nlnl;
 		$message .= __( 'Best,', 'wasmo' ) . $nl . $sitename . $nlnl;
-		$result   = wp_mail( $user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email ? $user_email : $admin_email, $subject, $message, $headers );
 	}
 	elseif ( // Notify non-admin that they created a post
 		( 'new' === $new_status || 'draft' === $new_status ) &&
@@ -1716,7 +1720,7 @@ function wasmo_pending_submission_notifications_send_email( $new_status, $old_st
 		$message .= __( 'Have more to say? Start a new post', 'wasmo' ) . ': ' . admin_url( 'post-new.php' ) . $nlnl;
 		$message .= __( 'Reply to this email if you have any questions or suggestions.', 'wasmo' ) . $nlnl;
 		$message .= __( 'Best,', 'wasmo' ) . $nl . $sitename . $nlnl;
-		$result   = wp_mail( $user_email, $subject, $message, $headers );
+		$result   = wp_mail( $user_email ? $user_email : $admin_email, $subject, $message, $headers );
 	}
 }
 add_action( 'transition_post_status', 'wasmo_pending_submission_notifications_send_email', 10, 3 );
