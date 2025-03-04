@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.19.1
+ Version:          1.20.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -210,17 +210,37 @@ body.logged-in .menu-item.logged-in {
 	max-width: 100%;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	grid-gap: 1rem;
+	grid-gap: 0 1rem;
 	justify-content: space-between;
 }
 
 .the-directory .directory .person {
-	margin: 0;
+	margin: 0 0 1rem;
 	overflow: hidden;
 	position: relative;
 	padding-top: 100%;
 	text-decoration: none;
+	transition: all 0.2s ease;
 	width: 100%;
+}
+
+.directory.is-lazy .lazy-load-profile {
+	display: none;
+	margin-bottom: 0;
+	padding-top: 0%;
+}
+
+.the-directory .directory-load-more {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	max-width: 100%;
+	position: relative;
+	width: 100%;
+}
+
+.the-directory .directory-load-more .load-more-button {
+	background-color: transparent;
 }
 
 .entry .entry-content aside.callout {
@@ -1590,3 +1610,69 @@ button.gsc-search-button-v2 {
 	width: 100%;
 	height: 100%;
 }
+
+button[disabled], .button.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background-color: var(--color-gray-3);
+}
+
+/**
+ * Spinner
+<svg class="spinner" viewBox="0 0 50 50"><circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>
+ */
+.spinner {
+	animation: rotate 2s linear infinite;
+	z-index: 2;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -25px 0 0 -25px;
+	width: 50px;
+	height: 50px;
+  }
+  .spinner .path {
+	stroke: #f07c27;
+	stroke-linecap: round;
+	animation: dash 1.5s ease-in-out infinite;
+  }
+  
+  @-webkit-keyframes rotate {
+	100% {
+	  transform: rotate(360deg);
+	}
+  }
+  
+  @keyframes rotate {
+	100% {
+	  transform: rotate(360deg);
+	}
+  }
+  @-webkit-keyframes dash {
+	0% {
+	  stroke-dasharray: 1, 150;
+	  stroke-dashoffset: 0;
+	}
+	50% {
+	  stroke-dasharray: 90, 150;
+	  stroke-dashoffset: -35;
+	}
+	100% {
+	  stroke-dasharray: 90, 150;
+	  stroke-dashoffset: -124;
+	}
+  }
+  @keyframes dash {
+	0% {
+	  stroke-dasharray: 1, 150;
+	  stroke-dashoffset: 0;
+	}
+	50% {
+	  stroke-dasharray: 90, 150;
+	  stroke-dashoffset: -35;
+	}
+	100% {
+	  stroke-dasharray: 90, 150;
+	  stroke-dashoffset: -124;
+	}
+  }

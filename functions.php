@@ -1571,11 +1571,12 @@ function wasmo_get_user_image( $userid, $isItempropImage = false ) {
 		return wp_get_attachment_image( $userimg, 'medium', false, array(
 			'alt' => $alt,
 			'itemProp' => $isItempropImage ? 'image' : '',
+			'loading' => 'lazy',
 		) );
 	} else {
 		$img_url = wasmo_get_user_image_url( $userid );
 		$atts = $isItempropImage ? 'itemProm="image"' : '';
-		return '<img src="' . $img_url . '" alt="' . $alt . '" ' . $atts . '>';
+		return '<img src="' . $img_url . '" alt="' . $alt . '" ' . $atts . ' loading="lazy" />';
 	}
 }
 
@@ -1938,3 +1939,13 @@ function update_contributor_capabilities() {
 	$contributors->add_cap( 'read_private_posts' );
 }
 add_action( 'admin_init', 'update_contributor_capabilities');
+
+add_action('init','add_showall_query_var');
+
+function add_showall_query_var() { 
+    global $wp; 
+    $wp->add_query_var('context');
+    $wp->add_query_var('max_profiles');
+    $wp->add_query_var('lazy');
+    $wp->add_query_var('showall');
+}
