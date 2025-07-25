@@ -63,7 +63,7 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 					// answer
 					$the_answers .= '<div class="answer answer-' . $userid . '">';
 					$the_answers .= '<blockquote>';
-					$the_answers .= auto_link_text( wp_kses_post( $answer ) );
+					$the_answers .= wasmo_auto_link_text( wp_kses_post( $answer ) );
 					$the_answers .= '</blockquote>';
 
 					// user attribution - photo and name and link (only if they want to be listed in directory)

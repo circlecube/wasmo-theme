@@ -29,6 +29,10 @@
 		<meta itemprop="identifier" content="<?php echo $userid; ?>" />
 		<meta itemprop="name" id="real-name" content="<?php echo $curauth->display_name; ?>" />
 		<meta itemprop="alternateName" id="handle" content="<?php echo get_query_var('author_name') ?>" />
+		<meta itemprop="url" content="<?php echo get_author_posts_url( $userid ); ?>" />
+		<meta itemprop="image" content="<?php echo wasmo_get_user_image_url( $userid ); ?>" />
+		<meta itemprop="datePublished" content="<?php echo $curauth->user_registered; ?>" />
+		<meta itemprop="dateModified" content="<?php echo esc_attr( date('Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) ) ); ?>" />
 	</div>
 
 	<div class="content-left">

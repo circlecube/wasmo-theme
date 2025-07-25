@@ -5,6 +5,35 @@ require_once( get_stylesheet_directory() . '/includes/wasmo-directory-widget.php
 require_once( get_stylesheet_directory() . '/includes/wasmo-posts-widget.php' );
 require_once( get_stylesheet_directory() . '/includes/updates.php' );
 
+/**
+ * Register a custom menu page.
+ */
+function wasmo_register_admin_page(){
+	add_menu_page( 
+		'wasmo',
+		'wasmormon',
+		'manage_options',
+		'wasmormon',
+		'wasmo_menu_page',
+		'dashicons-beer',
+		1
+	);
+}
+add_action( 'admin_menu', 'wasmo_register_admin_page' );
+
+/**
+ * Display a custom menu page
+ */
+function wasmo_menu_page(){
+	// nothing here
+	echo '<h1>wasmormon</h1>';
+}
+
+require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/draft-posts-admin-page.php' );
+
 // register Foo_Widget widget
 function register_wasmo_widgets() {
 	register_widget( 'wasmo\Directory_Widget' );
@@ -45,13 +74,9 @@ function wasmo_add_google_fonts() {
 		false
 	); 
 }
- 
 add_action( 'wp_enqueue_scripts', 'wasmo_add_google_fonts' );
 
-// theme mods
-// set_theme_mod( 'page_layout', 'one-column' );
-
-function cptui_register_my_taxes() {
+function wasmo_cptui_register_my_taxes() {
 
 	/**
 	 * Taxonomy: Questions.
@@ -144,7 +169,7 @@ function cptui_register_my_taxes() {
 	);
 	register_taxonomy( "shelf", array( "post", "user" ), $args );
 }
-add_action( 'init', 'cptui_register_my_taxes' );
+add_action( 'init', 'wasmo_cptui_register_my_taxes' );
 
 
 function wasmo_widgets_init() {
@@ -269,7 +294,6 @@ add_filter("retrieve_password_title", function($title) {
 	return "[" . wp_specialchars_decode(get_option('blogname'), ENT_QUOTES) . "] Password Reset";
 });
 
-
 /*
 
 Custom user hook summary
@@ -334,7 +358,7 @@ function wasmo_get_lastlogin() {
 	return $the_login_date; 
 }
 
-function get_default_display_name_value($value, $post_id, $field) {
+function wasmo_get_default_display_name_value($value, $post_id, $field) {
 	if ( $value === NULL || $value === '' ) {
 		$user_id = intval( substr( $post_id, 5 ) );
 		$user_info = get_userdata( $user_id );
@@ -344,9 +368,9 @@ function get_default_display_name_value($value, $post_id, $field) {
 	}
 	return $value;
 }
-add_filter('acf/load_value/name=display_name', 'get_default_display_name_value', 20, 3);
+add_filter('acf/load_value/name=display_name', 'wasmo_get_default_display_name_value', 20, 3);
 
-function get_default_profile_id_value($value, $post_id, $field) {
+function wasmo_get_default_profile_id_value($value, $post_id, $field) {
 	if ( $value === NULL || $value === '' ) {
 		$user_id = intval( substr( $post_id, 5 ) );
 		$user_info = get_userdata( $user_id );
@@ -356,7 +380,7 @@ function get_default_profile_id_value($value, $post_id, $field) {
 	}
 	return $value;
 }
-add_filter('acf/load_value/name=profile_id', 'get_default_profile_id_value', 20, 3);
+add_filter('acf/load_value/name=profile_id', 'wasmo_get_default_profile_id_value', 20, 3);
 
 function wasmo_update_user( $post_id ) {
 	// only for users - skip for posts etc
@@ -577,7 +601,7 @@ add_action('wp_login', 'wasmo_first_user_login', 10, 2);
 
 // https://github.com/wp-plugins/oa-social-login/blob/master/filters.txt
 //This function will be called after Social Login has added a new user
-function oa_social_login_do_after_user_insert ($user_data, $identity) {
+function wasmo_oa_social_login_do_after_user_insert ($user_data, $identity) {
 	// These are the fields from the WordPress database
 	// print_r($user_data);
 	// This is the full social network profile of this user
@@ -588,16 +612,16 @@ function oa_social_login_do_after_user_insert ($user_data, $identity) {
 	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
-// add_action ('oa_social_login_action_after_user_insert', 'oa_social_login_do_after_user_insert', 10, 2);
+// add_action ('oa_social_login_action_after_user_insert', 'wasmo_oa_social_login_do_after_user_insert', 10, 2);
 
 //This function will be called before Social Login logs the user in
-function oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
+function wasmo_oa_social_login_do_before_user_login ($user_data, $identity, $new_registration) {
 	// record last login
 	wasmo_user_lastlogin($user_data->user_login, $user_data);
 	// send welcome?
 	wasmo_first_user_login($user_data->user_login, $user_data);
 }
-// add_action ('oa_social_login_action_before_user_login', 'oa_social_login_do_before_user_login', 10, 3);
+// add_action ('oa_social_login_action_before_user_login', 'wasmo_oa_social_login_do_before_user_login', 10, 3);
 
 // changing default gutenberg image block alignment to "center"
 // function wasmo_change_default_gutenberg_image_block_options (){
@@ -899,8 +923,6 @@ function wasmo_excerpt_link() {
 }
 add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
 
-
-add_shortcode( 'wasmo_directory', 'wasmo_directory_shortcode' );
 function wasmo_directory_shortcode( $atts ) {
 	$atts = shortcode_atts( array(
 		'max' => 12,
@@ -917,28 +939,7 @@ function wasmo_directory_shortcode( $atts ) {
 	$directory .= ob_get_clean();
 	return $directory;
 }
-
-/**
- * Register a custom menu page.
- */
-function wasmo_register_admin_page(){
-	add_menu_page( 
-		'wasmo',
-		'wasmormon',
-		'manage_options',
-		'wasmormon',
-		'wasmo_menu_page',
-		'dashicons-beer',
-		1
-	);
-}
-add_action( 'admin_menu', 'wasmo_register_admin_page' );
-
-/**
- * Display a custom menu page
- */
-function wasmo_menu_page(){
-}
+add_shortcode( 'wasmo_directory', 'wasmo_directory_shortcode' );
 
 /**
  * Add ACF options page
@@ -1016,10 +1017,6 @@ function wasmo_before_after($content) {
 }
 add_filter( 'the_content', 'wasmo_before_after' );
 
-add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
-add_filter( 'wpseo_metadesc', 'wasmo_user_profile_wpseo_metadesc' );
-add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
-add_filter( 'wpseo_twitter_image', 'wasmo_user_profile_set_og_image' );
 
 // filter to update user profile page title for seo
 function wasmo_filter_profile_wpseo_title( $title ) {
@@ -1031,6 +1028,7 @@ function wasmo_filter_profile_wpseo_title( $title ) {
 	}
 	return $title;
 }
+add_filter( 'wpseo_title', 'wasmo_filter_profile_wpseo_title' );
 
 // filter to update user profile page description for seo
 function wasmo_user_profile_wpseo_metadesc( $metadesc ) {
@@ -1041,6 +1039,7 @@ function wasmo_user_profile_wpseo_metadesc( $metadesc ) {
 	}
 	return $metadesc;
 }
+add_filter( 'wpseo_metadesc', 'wasmo_user_profile_wpseo_metadesc' );
 
 // Filter to update profile page open graph image to user profile image if there is one
 function wasmo_user_profile_set_og_image( $image ) {
@@ -1056,6 +1055,8 @@ function wasmo_user_profile_set_og_image( $image ) {
 	}
 	return $image;
 }
+add_filter( 'wpseo_opengraph_image', 'wasmo_user_profile_set_og_image' );
+add_filter( 'wpseo_twitter_image', 'wasmo_user_profile_set_og_image' );
 
 /**
  * Replace links in text with html links
@@ -1063,13 +1064,13 @@ function wasmo_user_profile_set_og_image( $image ) {
  * @param  string $text Text to add links to
  * @return string Text with links added
  */
-function auto_link_text( $text ) {
+function wasmo_auto_link_text( $text ) {
 	$pattern = "#\b((?:https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\-]+[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)/)(?:[^\s()<>{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))+(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:'.,<>?«»“”‘’])|(?:(?<!@)[a-z0-9]+(?:[.\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)\b/?(?!@)))#";
 	return preg_replace_callback( $pattern, function( $matches ) {
 		$url = array_shift( $matches );
 
 		// force http if no protocol included
-		if ( !startsWith( $url, 'http' ) ) {
+		if ( !wasmo_starts_with( $url, 'http' ) ) {
 			$url = 'http://' . $url;
 		}
 
@@ -1101,7 +1102,7 @@ function auto_link_text( $text ) {
  * @param  string $startString Startin string to match.
  * @return boolean Wether string begins with startString. 
  */
-function startsWith( $string, $startString ) {
+function wasmo_starts_with( $string, $startString ) {
 	$len = strlen($startString); 
 	return (substr($string, 0, $len) === $startString); 
 }
@@ -1112,7 +1113,7 @@ function startsWith( $string, $startString ) {
  * @param  string $text Text to add hrs to
  * @return string Text with hrs added
  */
-function auto_htmlize_text( $text ) {
+function wasmo_auto_htmlize_text( $text ) {
 	
 	$patterns = array(
 		'<p>__HR__</p>', // make hr
@@ -1148,13 +1149,11 @@ function wasmo_before_signup() {
 			<p>Choose a username (lowercase letters and numbers only) and enter your email address.</p>
 	<?php
 }
-
 add_action( 'before_signup_form', 'wasmo_before_signup', 10 );
 
 function wasmo_after_signup() {
 	echo '</div></div>';
 }
-
 add_action( 'after_signup_form', 'wasmo_after_signup', 10 );
 
 // Random profile
@@ -1165,14 +1164,13 @@ function wasmo_random_add_rewrite() {
 	add_rewrite_rule('random/?$', '?randomprofile=1', 'top');
 }
 
-add_action('template_redirect','wasmo_random_profile_template');
 function wasmo_random_profile_template() {
    if (get_query_var('randomprofile')) {
 			wp_redirect( wasmo_get_random_profile_url(), 307 );
 			exit;
    }
 }
-add_action( 'pre_user_query', 'wasmo_random_user_query' );
+add_action('template_redirect','wasmo_random_profile_template');
 
 function wasmo_get_random_profile_url() {
 	$args = array(
@@ -1203,6 +1201,7 @@ function wasmo_random_user_query( $class ) {
 	}
 	return $class;
 }
+add_action( 'pre_user_query', 'wasmo_random_user_query' );
 
 /**
  * Delete all transients from the database whose keys have a specific prefix.
@@ -1340,7 +1339,7 @@ function wasmo_admin_bar_render() {
 add_action( 'wp_before_admin_bar_render', 'wasmo_admin_bar_render' );
 
 // only show users own posts
-function posts_for_current_author($query) {
+function wasmo_posts_for_current_author($query) {
 	global $pagenow;
  
 	if( 'edit.php' != $pagenow || !$query->is_admin )
@@ -1353,7 +1352,7 @@ function posts_for_current_author($query) {
 	}
 	return $query;
 }
-add_filter('pre_get_posts', 'posts_for_current_author');
+add_filter('pre_get_posts', 'wasmo_posts_for_current_author');
 
 // Fix post counts
 function wasmo_fix_post_counts($views) {
@@ -1891,11 +1890,10 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 remove_filter('term_description','wpautop');
 
 // add tags for attachments
-function add_tags_for_attachments() {
+function wasmo_add_tags_for_attachments() {
     register_taxonomy_for_object_type( 'post_tag', 'attachment' );
 }
-
-add_action( 'init' , 'add_tags_for_attachments' );
+add_action( 'init' , 'wasmo_add_tags_for_attachments' );
 
 // Modify the main query object
 function wasmo_media_in_main_query( $query ) {
@@ -1904,13 +1902,11 @@ function wasmo_media_in_main_query( $query ) {
 		$query->set( 'post_status', array( 'publish', 'inherit' ) ); // add inherit post status since that is the default status of media
 	}
 }
-// Hook my above function to the pre_get_posts action
+// Hook above function to the pre_get_posts action
 add_action( 'pre_get_posts', 'wasmo_media_in_main_query' );
 
-/**
- * Update amazon links with associate tag
- */
-function add_zon_tag($content, $tag = 'circubstu-20' ) {
+// Update amazon links with associate tag
+function wasmo_add_zon_tag($content, $tag = 'circubstu-20' ) {
 	$all_links = wp_extract_urls( $content );
 	$zon_links = array_filter( 
 		$all_links,
@@ -1926,26 +1922,31 @@ function add_zon_tag($content, $tag = 'circubstu-20' ) {
 	}
 	return $content;
 }
-add_filter( 'the_content', 'add_zon_tag' );
+add_filter( 'the_content', 'wasmo_add_zon_tag' );
 
-require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
-require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );
-require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
-
-function update_contributor_capabilities() {
+function wasmo_update_contributor_capabilities() {
 	// gets the contributor role
 	$contributors = get_role( 'contributor' );
 	$contributors->add_cap( 'read_private_pages' );
 	$contributors->add_cap( 'read_private_posts' );
 }
-add_action( 'admin_init', 'update_contributor_capabilities');
+add_action( 'admin_init', 'wasmo_update_contributor_capabilities');
 
-add_action('init','add_showall_query_var');
-
-function add_showall_query_var() { 
+function wasmo_add_showall_query_var() { 
     global $wp; 
     $wp->add_query_var('context');
     $wp->add_query_var('max_profiles');
     $wp->add_query_var('lazy');
     $wp->add_query_var('showall');
 }
+add_action('init','wasmo_add_showall_query_var');
+
+function wasmo_skip_self_pings ( &$links ) {
+    $home = get_option( 'home' );
+    foreach ( $links as $l => $link ) {
+        if ( 0 === strpos( $link, $home ) ) {
+            unset( $links[ $l ] );
+        }
+    }
+}
+add_action( 'pre_ping', 'wasmo_skip_self_pings' );

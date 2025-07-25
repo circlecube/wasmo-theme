@@ -14,8 +14,8 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<h3>About me</h3>
 	<div class="about_me"><?php 
-		echo auto_htmlize_text(
-			auto_link_text( 
+		echo wasmo_auto_htmlize_text(
+			wasmo_auto_link_text( 
 				wp_kses_post( 
 					get_field( 'about_me', 'user_' . $userid )
 				)
@@ -105,8 +105,8 @@ if ( $spectrum_terms ) { ?>
 		</h3>
 		<div class="why_i_left">
 			<?php
-				echo auto_htmlize_text(
-					auto_link_text( 
+				echo wasmo_auto_htmlize_text(
+					wasmo_auto_link_text( 
 						wp_kses_post( 
 							get_field( 'why_i_left', 'user_' . $userid )
 						)
@@ -151,7 +151,7 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo wasmo_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
-			echo auto_htmlize_text( auto_link_text( wp_kses_post( $answer ) ) );
+			echo wasmo_auto_htmlize_text( wasmo_auto_link_text( wp_kses_post( $answer ) ) );
 		}
     endwhile;
 
@@ -178,6 +178,11 @@ if (
 	<?php get_template_part( 'template-parts/content/content', 'user-attribution' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
+	<p>
+		User since: <?php echo human_time_diff( $curauth->user_registered ); ?><br />
+		Last save: <?php echo date('Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) ); ?>
+	</p>
+
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
 			<?php if ( is_user_logged_in() ) { ?>
