@@ -1536,13 +1536,27 @@ add_action( 'wp_head', function () {
 });
 
 /**
+ * Check if user has an image
+ * 
+ * @param Number $userid The user's id.
+ * @return String id of image or false if no image
+ */
+function wasmo_user_has_image( $userid ) {
+	$userimg = get_field( 'photo', 'user_' . $userid );
+	if ( $userimg ) {
+		return $userimg;
+	}
+	return false;
+}
+
+/**
  * Get user image url
  * 
  * @param Number $userid the user's id
  * @return String url to image
  */
 function wasmo_get_user_image_url( $userid ) {
-	$userimg = get_field( 'photo', 'user_' . $userid );
+	$userimg = wasmo_user_has_image( $userid );
 	if ( $userimg ) {
 		return wp_get_attachment_image_url( $userimg, 'medium' );
 	} else {
@@ -1562,7 +1576,7 @@ function wasmo_get_user_image_url( $userid ) {
  * @return String html for image tag
  */
 function wasmo_get_user_image( $userid, $isItempropImage = false ) {
-	$userimg = get_field( 'photo', 'user_' . $userid );
+	$userimg = wasmo_user_has_image( $userid );
 	$user = get_userdata( $userid );
 	$alt = $user->display_name . ' profile image for wasmormon.org';
 

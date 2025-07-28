@@ -196,11 +196,15 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 				$lazy_class = 'lazy-load-profile';
 			}
 		}
+		$image_class = 'no-image';
+		if ( wasmo_user_has_image( $userid ) ) {
+			$image_class = 'has-image';
+		}
 		
 		$the_directory .= '<a title="' . $username . '" class="';
 		$the_directory .= ' person person-' . $counter;
-		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class;
-		$the_directory .= '" href="' . get_author_posts_url( $userid ) . '">';
+		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class . ' ' . $image_class;
+		$the_directory .= '" href="' . get_author_posts_url( $userid ) . '" id="profile-' . $userid . '">';
 			$the_directory .= '<span class="directory-img">';
 			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
