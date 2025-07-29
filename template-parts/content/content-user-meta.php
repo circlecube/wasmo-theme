@@ -12,7 +12,7 @@ if ( current_user_can( 'manage_options' ) ) {
     <dl>
     <?php 
         $registered = $curauth->user_registered;
-        $registered_rel = human_time_diff( $curauth->user_registered );
+        $registered_rel = human_time_diff( strtotime( $curauth->user_registered ) );
         $last_login = get_user_meta( $userid, 'last_login', true );
         $last_login_rel = human_time_diff( intval( $last_login ) );
         $last_save = intval( get_user_meta( $userid, 'last_save', true ) );

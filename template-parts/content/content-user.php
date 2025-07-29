@@ -179,8 +179,8 @@ if (
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
 	<p>
-		User since: <?php echo human_time_diff( $curauth->user_registered ); ?><br />
-		Last save: <?php echo date('Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) ); ?>
+		User since: <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); ?><br />
+		Last save: <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); ?>
 	</p>
 
 	<div class="is-layout-flex wp-block-buttons">
