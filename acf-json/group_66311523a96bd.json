@@ -16,17 +16,17 @@
                 "class": "",
                 "id": ""
             },
-            "message": "Thanks for signing up!\r\n\r\nAre you ready to start your profile now? You can always add\/update your profile later, and in order to display on the website you'll still need to complete your account setup and sign in.",
+            "message": "<strong>Ready to start your profile now? (everything below is optional)<\/strong>\r\n\r\n<em>In order to complete your profile and add it to the site you'll need to click the link you receive in your email. Then you can add a photo and more to your story.<\/em>",
             "new_lines": "wpautop",
             "esc_html": 0
         },
         {
             "key": "field_66311d94efe37",
-            "label": "Hi",
+            "label": "",
             "name": "hi",
             "aria-label": "",
             "type": "text",
-            "instructions": "",
+            "instructions": "This greeting will display at the top of your profile. It's how you greet readers.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -34,19 +34,20 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
+            "default_value": "Hello",
             "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "Hi, I'm ___!",
             "prepend": "",
             "append": ""
         },
         {
             "key": "field_66311d4fefe36",
-            "label": "Tagline",
+            "label": "",
             "name": "tagline",
             "aria-label": "",
             "type": "text",
-            "instructions": "",
+            "instructions": "This is for a very short tagline. It will display just below the greeting.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -54,19 +55,20 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
+            "default_value": "I was a Mormon.",
             "maxlength": "",
-            "placeholder": "I was a Mormon.",
+            "allow_in_bindings": 1,
+            "placeholder": "... and I was a Mormon.",
             "prepend": "",
             "append": ""
         },
         {
             "key": "field_66311524efe35",
-            "label": "About Me",
+            "label": "",
             "name": "about_me",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "",
+            "instructions": "Tell us a bit about yourself, be sure to include a Mormon context. This sets up the story you share so readers know where you're coming from.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -76,8 +78,9 @@
             },
             "default_value": "",
             "maxlength": "",
-            "rows": "",
-            "placeholder": "Tell us about yourself - be sure to include a Mormon context.",
+            "allow_in_bindings": 1,
+            "rows": 8,
+            "placeholder": "I was born into the church. I served a mission. I was married in the temple. My testimony was strong, but sometimes a doubt would pop-up, and I was usually able to put it on the shelf and move on...",
             "new_lines": "wpautop"
         },
         {
@@ -86,7 +89,7 @@
             "name": "why_i_left",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "",
+            "instructions": "Describe your shelf items, your struggles with the church, what you did about it all. Be sure to include and conclusions you made about the church.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -96,16 +99,17 @@
             },
             "default_value": "",
             "maxlength": "",
-            "rows": "",
-            "placeholder": "Describe your struggles with the church, what you did about them and the conclusions you made about the church.",
+            "allow_in_bindings": 1,
+            "rows": 12,
+            "placeholder": "My shelf broke when ...",
             "new_lines": "wpautop"
         },
         {
-            "key": "field_6631213275315",
-            "label": "Subscribe",
-            "name": "subscribe",
+            "key": "field_67a5826735313",
+            "label": "",
+            "name": "",
             "aria-label": "",
-            "type": "true_false",
+            "type": "message",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -114,11 +118,9 @@
                 "class": "",
                 "id": ""
             },
-            "message": "Receive the monthly wasmormon newsletter email.",
-            "default_value": 1,
-            "ui": 0,
-            "ui_on_text": "",
-            "ui_off_text": ""
+            "message": "<em>We're honored you've chosen to share your story with us!<\/em>",
+            "new_lines": "wpautop",
+            "esc_html": 0
         }
     ],
     "location": [
@@ -132,12 +134,12 @@
     ],
     "menu_order": 0,
     "position": "normal",
-    "style": "default",
+    "style": "seamless",
     "label_placement": "top",
-    "instruction_placement": "label",
+    "instruction_placement": "field",
     "hide_on_screen": "",
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1735838845
+    "modified": 1753793327
 }
