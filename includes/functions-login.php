@@ -3,7 +3,18 @@
 /**
  * Custom wp-login logo
  */
-function wasmo_login_logo() { ?>
+function wasmo_login_logo() {
+	// add theme script to login page for username tweaks
+	wp_enqueue_script( 
+		'wasmo-script', 
+		get_stylesheet_directory_uri() . '/js/script.js', 
+		null, 
+		wp_get_theme()->get('Version'),
+		true
+	);
+
+	// login page styles (inline since they only go here)
+?>
 	<style type="text/css">
 		body.login #login {
 			width: 90%;
@@ -42,54 +53,8 @@ function wasmo_login_logo() { ?>
 			margin-left: 0.5rem;
 		}
 	</style>
-		<script>	
-		document.addEventListener('DOMContentLoaded', function() {
-			var usernameInput = document.querySelector('input[name="user_login"]');
-			
-			if (usernameInput) {
-				// Create preview element
-				var previewElement = document.createElement('span');
-				previewElement.className = 'user-login-note';
-				
-				// Insert preview element after the username input
-				usernameInput.parentNode.insertBefore(previewElement, usernameInput.nextSibling);
-				
-				function formatUsername( username ) {
-					return username
-						.replace(/[\s\.]+/g, '-')
-						.replace(/[^a-zA-Z0-9\-_]/g, '');
-				}
-				// Function to update preview
-				function updatePreview() {
-					var username = formatUsername( usernameInput.value.toLowerCase() );
-					if (username) {
- 						previewElement.innerHTML = '✅ Your story will be published at <u>wasmormon.org/@' + username + '</u>';
-						previewElement.style.display = 'block';
-					} else {
-						previewElement.style.display = 'none';
-					}
-					updateGreeting();
-				}
-				// Function to update greeting with username
-				function updateGreeting() {
-					var username = formatUsername( usernameInput.value );
-					var greeting = document.querySelector('input[id="acf-field_66311d94efe37"]');
-					if (username) {
-						greeting.value = 'Hello, I\'m ' + username + '!';
-					} 
-				}
-				
-				// Add event listeners for real-time updates
-				usernameInput.addEventListener('input', updatePreview);
-				usernameInput.addEventListener('keyup', updatePreview);
-				usernameInput.addEventListener('change', updatePreview);
-				
-				// Initial update
-				updatePreview();
-			}
-		});
-	</script>
-<?php }
+<?php 
+}
 add_action( 'login_enqueue_scripts', 'wasmo_login_logo' );
 
 /**
