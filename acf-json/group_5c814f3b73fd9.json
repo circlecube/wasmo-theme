@@ -322,9 +322,11 @@
             "save_terms": 0,
             "load_terms": 0,
             "return_format": "object",
-            "field_type": "checkbox",
+            "field_type": "multi_select",
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
             "multiple": 0,
-            "allow_null": 0,
             "bidirectional_target": []
         },
         {
@@ -346,9 +348,11 @@
             "save_terms": 0,
             "load_terms": 0,
             "return_format": "object",
-            "field_type": "checkbox",
-            "multiple": 0,
+            "field_type": "multi_select",
             "allow_null": 0,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "multiple": 0,
             "bidirectional_target": []
         },
         {
@@ -395,7 +399,7 @@
             "name": "profile_id",
             "aria-label": "",
             "type": "text",
-            "instructions": "This will be your unique url. It must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username. This must also be unique, so if there is another 'bob-smith' you cannot use the same, and it will automatically update to 'bob-smith-2'. Note that changing this will break any external links to your current profile.",
+            "instructions": "This will be your unique url. Redirects are set up so you can use a subdomain (joe-smith.wasmormon.org) or a handle (wasmormon.org\/@joe-smith) style link and will be redirected to (wasmormon.org\/profile\/joe-smith). An id must only contain url safe characters (uppercase and lowercase letters, numbers as well as a dash - and underscore _ are allowed). Example: firstname-lastname or reddit_username, and it must be unique, so if there is another 'joe-smith' you cannot use the same, and it will automatically update to 'joe-smith-2'. \r\nNote: changing this will break any external links to your current profile.",
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
@@ -404,10 +408,11 @@
                 "id": ""
             },
             "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
-            "append": "",
-            "maxlength": ""
+            "append": ""
         },
         {
             "key": "field_5c815bccdf64c",
@@ -435,7 +440,9 @@
             "allow_null": 0,
             "ui": 1,
             "ajax": 0,
-            "placeholder": ""
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
         },
         {
             "key": "field_66832f19f60d4",
@@ -461,7 +468,9 @@
             "allow_null": 0,
             "ui": 0,
             "ajax": 0,
-            "placeholder": ""
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
         },
         {
             "key": "field_5c87a1f5c2b0c",
@@ -592,7 +601,7 @@
             "name": "i_want_to_write_posts",
             "aria-label": "",
             "type": "select",
-            "instructions": "Do you want to contribute blog posts to wasmormon.org? Find out more about <a href=\"https:\/\/wasmormon.org\/contributing-content\/\" target=\"_blank\">contributing content<\/a>.",
+            "instructions": "Do you want to contribute blog posts to wasmormon.org? Find out more about <a href=\"https:\/\/wasmo.test\/contributing-content\/\" target=\"_blank\">contributing content<\/a>.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -611,7 +620,9 @@
             "allow_null": 0,
             "ui": 1,
             "ajax": 0,
-            "placeholder": ""
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
         },
         {
             "key": "field_6372637741710",
@@ -665,5 +676,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1735838820
+    "modified": 1753917490
 }

@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.22.0
+ Version:          1.22.1
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -1312,7 +1312,31 @@ div.lwa-modal-overlay div.lwa-modal-popup a.lwa-close-modal {
 .page-template-template-edit .entry-content > #acf-form {
 	max-width: 1024px;
 }
-
+.user-login-note {
+	margin-bottom: .5rem;
+}
+.user-login-note u {
+	display: inline-block;
+	white-space: nowrap;
+}
+.acf-taxonomy-field .categorychecklist-holder {
+	min-height: 300px
+}
+.acf-taxonomy-field .categorychecklist-holder [type="checkbox"] {
+	width: 1rem;
+	height: 1rem;
+}
+.acf-taxonomy-field .categorychecklist-holder ul.acf-checkbox-list li {
+	margin-bottom: 0.5rem;
+	font-size: 1rem;
+}
+.select2-container--default .select2-results > .select2-results__options {
+	min-height: 300px;
+}
+.select2-dropdown .select2-results__option {
+	display: inline-block;
+	padding: 0 1rem;
+}
 .acf-form-submit {
 	margin-top: 2rem;
 }
@@ -1676,3 +1700,61 @@ button[disabled], .button.disabled {
 	  stroke-dashoffset: -124;
 	}
   }
+
+
+
+
+/* Register page overrides */
+body[data-page-slug="register"] .entry-content .lwa-form,
+body[data-page-slug="register"] .entry-content .lwa-links-register-inline-cancel {
+	display: none !important;
+}
+body[data-page-slug="register"] .entry-content .lwa-register {
+	display: block !important;
+}
+/* greeting field */
+.acf-field-66311ed93224b {
+    padding: 2rem 0;
+}
+
+body[data-page-slug="register"] .lwa-bones .pixelbones .acf-field input,
+body[data-page-slug="register"] .lwa-bones .pixelbones .acf-field textarea {
+    margin-bottom: 0.25rem !important;
+}
+body[data-page-slug="register"] .lwa-bones .acf-field p.description {
+    font-size: 14px;
+    padding-bottom: 1rem;
+}
+
+body[data-page-slug="register"] .lwa-bones .pixelbones .acf-field textarea {
+    height: auto !important;
+}
+
+body[data-page-slug="register"] .lwa-bones .pixelbones input[type=checkbox][name="newsletter"] {
+    margin-top: 1rem;
+}
+body[data-page-slug="register"] .utility-links-menu .register {
+	display: none;
+}
+
+#g124-subject {
+	padding-left: 2em;
+}
+.contact-form .contact-form__select-wrapper:after {
+	top: 1.25em;
+	left: 1em;
+}
+
+.site-footer .tnp-widget input.tnp-submit {
+	background-color: #f07c27;
+	border-width: 0;
+}
+
+table.gsc-above-wrapper-area-container td {
+	border-width: 0;
+	border-color: #fff;
+}
+
+.gsc-inline-block .gsc-selected-option-container {
+	max-width: 100%;	
+}
