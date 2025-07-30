@@ -5,38 +5,38 @@
  */
 function wasmo_login_logo() { ?>
 	<style type="text/css">
-		.login.login-action-register #login {
+		body.login #login {
 			width: 90%;
 			max-width: 520px;
 		}
-		.login.login-action-register #login .wp-login-logo a {
+		body.login #login .wp-login-logo a {
 			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/img/wasmormon-logo.png);
 			height: 190px;
 			width: 190px;
 			background-size: 190px 190px;
 			background-repeat: no-repeat;
-			padding-bottom: 30px;
+			margin-bottom: 50px;
 		}
-		.login.login-action-register .acf-user-register-fields {
+		body.login .acf-user-register-fields {
 			padding: 2rem 0 1rem;
 		}
-		.login.login-action-register #reg_passmail {
+		body.login #reg_passmail {
 			margin-top: 2rem;
 		}
 
-		.login.login-action-register label[for="user_login"]::after {
+		body.login label[for="user_login"]::after {
 			content: "(letters, numbers, dash, period, or underscore)";
 			font-size: 0.8rem;
 			margin-left: 0.5rem;
 		}
-		.login.login-action-register .user-login-note {
+		body.login .user-login-note {
 			display: block;
 			font-size: 0.8rem;
 			margin-top: -0.5rem;
 			margin-bottom: 0.5rem;
 			color: #666;
 		}
-		.login.login-action-register label[for="user_email"]::after {
+		body.login label[for="user_email"]::after {
 			content: "(You'll receive a confirmation email with a link to set your password.)";
 			font-size: 0.8rem;
 			margin-left: 0.5rem;
