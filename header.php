@@ -21,7 +21,27 @@
 
 <body <?php body_class(); ?> <?php if ( is_author() ) {
 	echo 'itemtype="https://schema.org/ProfilePage" itemscope';
-} ?>>
+} ?> data-page-slug="<?php 
+if ( is_singular() ) {
+	echo esc_attr( get_post_field( 'post_name', get_post() ) );
+} elseif ( is_author() ) {
+	echo esc_attr( get_the_author_meta( 'user_nicename', get_the_author_meta( 'ID' ) ) );
+} elseif ( is_category() || is_tag() || is_tax() ) {
+	echo esc_attr( get_queried_object()->slug );
+} elseif ( is_date() ) {
+	echo esc_attr( get_queried_object()->slug );
+} elseif ( is_search() ) {
+	echo esc_attr( get_queried_object()->slug );
+} elseif ( is_404() ) {
+	echo esc_attr( get_queried_object()->slug );
+} elseif ( is_home() ) {
+	echo esc_attr( 'blog' );
+} elseif ( is_index() ) {
+	echo esc_attr( 'front-page' );
+} elseif ( is_archive() ) {
+	echo esc_attr( 'archive' );
+}
+?>">
 <div id="page" class="site">
 	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'twentynineteen' ); ?></a>
 
