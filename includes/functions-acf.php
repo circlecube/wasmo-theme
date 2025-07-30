@@ -229,7 +229,6 @@ function wasmo_update_user( $post_id ) {
 
 	// redirect to view the profile on save
 	wp_safe_redirect( get_author_posts_url( $user_id, $userSlug ), 301);
-	exit();
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
