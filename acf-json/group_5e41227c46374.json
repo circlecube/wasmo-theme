@@ -6,6 +6,7 @@
             "key": "field_5e41228b7b7ec",
             "label": "Before Post Callout",
             "name": "before_post_callout",
+            "aria-label": "",
             "type": "wysiwyg",
             "instructions": "",
             "required": 0,
@@ -25,6 +26,7 @@
             "key": "field_5e4122ba7b7ed",
             "label": "After Post Callout",
             "name": "after_post_callout",
+            "aria-label": "",
             "type": "wysiwyg",
             "instructions": "",
             "required": 0,
@@ -44,6 +46,7 @@
             "key": "field_5ebac91dada14",
             "label": "Legal Disclaimer",
             "name": "legal_disclaimer",
+            "aria-label": "",
             "type": "textarea",
             "instructions": "Text that displays in the footer of the website as a legal disclaimer.",
             "required": 0,
@@ -77,5 +80,6 @@
     "hide_on_screen": "",
     "active": true,
     "description": "",
-    "modified": 1618611126
+    "show_in_rest": 0,
+    "modified": 1753917506
 }

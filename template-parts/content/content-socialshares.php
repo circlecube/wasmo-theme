@@ -26,7 +26,6 @@ $_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Great wasmormo
 // $_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
 $_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read this wasmormon profile from {name}';
 $_email    = 'mailto:?subject=Read this wasmormon profile from {name}&body=Read this wasmormon profile from {name}: {link}';
-$_email2   = '';
 
 // links for when it is users own profile
 if ( $is_this_user ) {
