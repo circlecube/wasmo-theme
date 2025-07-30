@@ -216,7 +216,6 @@ function wasmo_update_user( $post_id ) {
 		'info'
 	);
 
-
 	// only if not edited by an admin
 	if ( !current_user_can( 'administrator' ) ) {
 
@@ -228,7 +227,9 @@ function wasmo_update_user( $post_id ) {
 	}
 
 	// redirect to view the profile on save
-	wp_safe_redirect( get_author_posts_url( $user_id, $userSlug ), 301);
+	if ( is_user_logged_in() ) {
+		wp_safe_redirect( get_author_posts_url( $user_id, $userSlug ), 301);
+	}
 }
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
