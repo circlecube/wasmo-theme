@@ -30,6 +30,10 @@ add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
 
 /**
  * Add google fonts
+ * 
+ * https://fonts.google.com/specimen/Crimson+Text
+ * https://fonts.google.com/specimen/Open+Sans
+ * https://fonts.google.com/specimen/Josefin+Sans
  */
 function wasmo_add_google_fonts() {
 	wp_enqueue_style( 

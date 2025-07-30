@@ -178,10 +178,10 @@ if (
 	<?php get_template_part( 'template-parts/content/content', 'user-attribution' ); ?>
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
-	<p>
-		User since: <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); ?><br />
-		Last save: <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); ?>
-	</p>
+	<!-- <p>
+		Joined <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); ?> ago.<br />
+		Last updated <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); ?> ago.
+	</p> -->
 
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
