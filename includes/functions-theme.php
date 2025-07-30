@@ -21,7 +21,7 @@ function wasmo_enqueue() {
 	wp_enqueue_script( 
 		'wasmo-script', 
 		get_stylesheet_directory_uri() . '/js/script.js', 
-		array ( 'jquery' ), 
+		null, 
 		wp_get_theme()->get('Version'),
 		true
 	);
