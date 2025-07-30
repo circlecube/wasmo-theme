@@ -22,18 +22,6 @@ function wasmo_logout_redirect_page() {
 add_filter('logout_redirect', 'wasmo_logout_redirect_page');
 
 /**
- * User registration email
- */
-function wasmo_user_registration_email( $user_id ) {
-	$user = get_userdata( $user_id );
-	$user_email = $user->user_email;
-	$user_login = $user->user_login;
-	$user_displayname = $user->display_name;
-	
-}
-add_filter( 'wp_new_user_notification_email', 'wasmo_user_registration_email', 10, 2 );
-
-/**
  * Send welcome email to new user
  */
 function wasmo_send_user_email__welcome( $user_id ){
