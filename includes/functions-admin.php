@@ -120,8 +120,19 @@ add_action( 'init' , 'wasmo_add_tags_for_attachments' );
  * @return WP_Query The modified query object.
  */
 function wasmo_media_in_main_query( $query ) {
+	// Only run on frontend archive queries, not admin
+	if ( is_admin() ) {
+		return;
+	}
+	
 	// only run on archive queries
 	if ( $query->is_archive() && $query->is_main_query() ) {
+		// Don't modify queries for custom post types - they should use their own post_type
+		$queried_post_type = $query->get( 'post_type' );
+		if ( ! empty( $queried_post_type ) && $queried_post_type !== 'post' ) {
+			return;
+		}
+		
 		// add attachment post types, media
 		$query->set( 'post_type', array( 'post', 'attachment' ) );
 		// add inherit post status since that is the default status of media
@@ -275,6 +286,12 @@ function wasmo_posts_for_current_author($query) {
  
 	if( 'edit.php' != $pagenow || !$query->is_admin )
 		return $query;
+	
+	// Only apply to standard 'post' type, not custom post types like church-leader
+	$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( $_GET['post_type'] ) : 'post';
+	if ( $post_type !== 'post' ) {
+		return $query;
+	}
  
 	if( !current_user_can( 'edit_others_posts' ) ) {
 		global $user_ID;

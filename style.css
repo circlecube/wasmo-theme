@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          1.23.0
+ Version:          2.0.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -62,8 +62,13 @@ h3,
 h4,
 h5,
 h6,
-.sidebar .wp-block-button__link {
-	font-family: "Open Sans", sans-serif;
+.sidebar .wp-block-button__link,
+.entry .entry-content .wp-block-archives li > a,
+.entry .entry-content .wp-block-categories li > a,
+.entry .entry-content .wp-block-latest-posts li > a,
+.entry .entry-content .wp-block-button .wp-block-button__link,
+.button-small, .entry .entry-content .more-link {
+	font-family: "Josefin Sans", sans-serif;
 }
 
 .site-header {
@@ -74,7 +79,7 @@ h6,
 .main-navigation .main-menu > li > a {
 	color: var(--color-white);
 	text-transform: uppercase;
-	font-family: "Open Sans", sans-serif;
+	font-family: "Josefin Sans", sans-serif;
 	font-weight: normal;
 }
 .main-navigation .main-menu > li > a {
@@ -608,7 +613,7 @@ body.author .wp-block-buttons {
 
 h2.tagline {
 	color: var(--color-gray-2);
-	font-family: "Crimson Text", serif;
+	/* font-family: "Crimson Text", serif; */
 	font-style: italic;
 	font-size: 1.5rem;
 	font-weight: normal;
@@ -663,7 +668,7 @@ h2.tagline {
 	margin: 0 10px 10px 0;
 	text-decoration: none;
 	transition: all 0.2s ease;
-	font-family: "Open Sans", sans-serif;
+	font-family: "Josefin Sans", sans-serif;
 	font-size: 14px;
 }
 
@@ -752,7 +757,7 @@ cite span {
 .entry .entry-content .more-link {
 	border-radius: 100px;
 	color: var(--color-white);
-    font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;
+    /* font-family: -apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif; */
 	font-size: 0.8rem;
     font-weight: 700;
 	margin: 1rem 50% 0 0;
@@ -814,6 +819,54 @@ cite span {
 .blog-main .page-header .page-description {
 	display: inline-block;
 }
+
+/* Tag page - Associated Church Leader link */
+.tag-leader-link {
+	margin: 1rem 0;
+}
+.tag-leader-card {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 1rem 0.5rem 0.5rem;
+	background: var(--color-gray-0);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 6px;
+	text-decoration: none;
+	color: var(--color-gray-4);
+	transition: all 0.2s ease;
+}
+.tag-leader-card:hover {
+	background: var(--color-white);
+	border-color: var(--color-blue-2);
+	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.tag-leader-image {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+.tag-leader-text {
+	font-size: 0.95rem;
+}
+.tag-leader-text strong {
+	color: var(--color-blue-2);
+}
+
+/* Entry footer - Related Leaders */
+.leader-links {
+	display: block;
+	margin-top: 0.5rem;
+}
+.leader-links a {
+	color: var(--color-blue-2);
+	text-decoration: none;
+}
+.leader-links a:hover {
+	text-decoration: underline;
+}
+
 .blog-main article.post {
 	background-color: var(--color-white);
 	border-radius: 3px;
@@ -847,6 +900,9 @@ cite span {
 }
 .blog-main article.post .entry-title {
 	font-size: 26px;
+}
+.entry .entry-title.no-line:before {
+	display: none !important;
 }
 .entry .entry-title:before {
 	background: var(--color-blue-2);
@@ -1757,4 +1813,1293 @@ table.gsc-above-wrapper-area-container td {
 
 .gsc-inline-block .gsc-selected-option-container {
 	max-width: 100%;	
+}
+
+/* ============================================
+   CHURCH LEADERS STYLES
+   ============================================ */
+
+/* Shared Components */
+.btn {
+	border-radius: 100px;
+	display: inline-block;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	padding: 0.5rem 1.25rem;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+.btn-primary {
+	background-color: var(--color-blue-2);
+	color: var(--color-white);
+}
+.btn-primary:hover {
+	background-color: var(--color-blue-3);
+	color: var(--color-white);
+}
+.btn-secondary {
+	background-color: var(--color-gray-1);
+	color: var(--color-gray-3);
+}
+.btn-secondary:hover {
+	background-color: var(--color-gray-2);
+	color: var(--color-gray-4);
+}
+
+/* Leader Card Component */
+.leader-card {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+.leader-card:hover {
+	border-color: var(--color-blue);
+	/* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+	/* transform: translateY(-2px); */
+}
+.leader-card-image-wrapper {
+	aspect-ratio: 1;
+	overflow: hidden;
+	position: relative;
+}
+.leader-card-image {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+.leader-card-placeholder {
+	align-items: center;
+	background: linear-gradient(135deg, var(--color-blue-2), var(--color-blue-3));
+	color: var(--color-white);
+	display: flex;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 2rem;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+.leader-card-info {
+	padding: 0.75rem;
+}
+.leader-card-name {
+	color: var(--color-gray-4);
+	display: block;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.2;
+}
+.leader-card-dates,
+.leader-card-role {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.8rem;
+	margin-top: 0.25rem;
+}
+.leader-card-small .leader-card-info {
+	padding: 0.5rem;
+}
+.leader-card-small .leader-card-name {
+	font-size: 0.85rem;
+}
+.leader-card-large .leader-card-image-wrapper {
+	aspect-ratio: 3/4;
+}
+.leader-card-large .leader-card-name {
+	font-size: 1.25rem;
+}
+
+/* Leader Grids */
+.leaders-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(2, 1fr);
+}
+.leaders-grid-4 {
+	grid-template-columns: repeat(2, 1fr);
+}
+.leaders-grid-5 {
+	grid-template-columns: repeat(2, 1fr);
+}
+.leaders-grid-small {
+	grid-template-columns: repeat(3, 1fr);
+}
+@media (min-width: 640px) {
+	.leaders-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.leaders-grid-4 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.leaders-grid-5 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.leaders-grid-small {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+@media (min-width: 1024px) {
+	.leaders-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.leaders-grid-4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.leaders-grid-5 {
+		grid-template-columns: repeat(5, 1fr);
+	}
+	.leaders-grid-small {
+		grid-template-columns: repeat(6, 1fr);
+	}
+}
+
+/* ============================================
+   SINGLE CHURCH LEADER TEMPLATE
+   ============================================ */
+.church-leader-single {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+.leader-header {
+	background: linear-gradient(135deg, var(--color-gray-0) 0%, var(--color-white) 100%);
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	padding: 2rem;
+}
+.leader-header-content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+@media (min-width: 768px) {
+	.leader-header-content {
+		flex-direction: row;
+	}
+}
+.leader-portrait {
+	flex-shrink: 0;
+	max-width: 250px;
+}
+.leader-portrait img {
+	border-radius: 8px;
+	width: 100%;
+}
+.leader-header-info {
+	flex: 1;
+}
+.leader-roles {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+.leader-role-badge {
+	background: var(--color-blue-2);
+	border-radius: 100px;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	padding: 0.25rem 0.75rem;
+	text-decoration: none;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+a.leader-role-badge:hover {
+	opacity: 0.85;
+	transform: scale(1.05);
+	color: var(--color-white);
+	text-decoration: none;
+}
+a.leader-role-badge:visited {
+	color: var(--color-white);
+}
+.leader-role-prophet {
+	background: var(--color-orange);
+}
+.leader-role-apostle {
+	background: var(--color-blue-2);
+}
+.leader-role-first-presidency {
+	background: var(--color-pink);
+}
+.leader-status-badge {
+	background: #4caf50;
+	border-radius: 100px;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	padding: 0.25rem 0.75rem;
+}
+
+/* Leader Role Taxonomy Archive */
+.leader-role-archive {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+.leader-role-header {
+	text-align: center;
+	margin-bottom: 2rem;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid var(--color-gray-1);
+}
+.leader-role-header .entry-title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+.leader-role-header .role-description {
+	max-width: 700px;
+	margin: 1rem auto;
+	color: var(--color-gray-3);
+	font-size: 1.1rem;
+	line-height: 1.6;
+}
+.leader-role-header .leader-count {
+	color: var(--color-gray-2);
+	font-size: 0.95rem;
+}
+.leader-role-content {
+	margin-bottom: 3rem;
+}
+.leader-role-content .leaders-section {
+	margin-bottom: 3rem;
+}
+.leader-role-content .leaders-section h2 {
+	font-size: 1.5rem;
+	margin-bottom: 1.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid var(--color-gray-1);
+}
+.leader-role-content .leaders-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.leader-role-content .leaders-grid-small {
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 1rem;
+}
+.leader-role-footer {
+	background: var(--color-gray-0);
+	padding: 2rem;
+	border-radius: 8px;
+	margin-top: 2rem;
+}
+.leader-role-footer h3 {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+.role-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	list-style: none;
+	padding: 0;
+	margin: 0 0 1.5rem;
+}
+.role-tags li {
+	margin: 0;
+}
+.leader-role-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.4rem 0.75rem;
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	color: var(--color-gray-4);
+	text-decoration: none;
+	font-size: 0.9rem;
+	transition: all 0.2s ease;
+}
+.leader-role-tag:hover {
+	background: var(--color-blue-2);
+	border-color: var(--color-blue-2);
+	color: var(--color-white);
+}
+.leader-role-tag.current-role {
+	background: var(--color-blue-2);
+	border-color: var(--color-blue-2);
+	color: var(--color-white);
+	font-weight: 600;
+}
+.leader-role-tag .role-count {
+	font-size: 0.8em;
+	opacity: 0.7;
+}
+.leader-role-footer .archive-link {
+	margin-top: 1.5rem;
+}
+
+.leader-name {
+	font-size: 2rem;
+	margin: 0 0 0.5rem;
+}
+.leader-name:before {
+	display: none;
+}
+.leader-lifespan {
+	color: var(--color-gray-2);
+	font-size: 1.25rem;
+	margin: 0 0 0.5rem;
+}
+.leader-hometown .label {
+	color: var(--color-gray-2);
+}
+
+.leader-content-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+@media (min-width: 1024px) {
+	.leader-content-wrapper {
+		flex-direction: row;
+	}
+}
+.leader-main-content {
+	flex: 1;
+}
+.leader-sidebar {
+	flex-shrink: 0;
+	width: 100%;
+}
+@media (min-width: 1024px) {
+	.leader-sidebar {
+		width: 300px;
+	}
+}
+
+.leader-bio,
+.leader-served-under,
+.leader-apostles-under,
+.leader-related-posts,
+.leader-related-media {
+	margin-bottom: 3rem;
+}
+.leader-bio h2,
+.leader-served-under h2,
+.leader-apostles-under h2,
+.leader-related-posts h2,
+.leader-related-media h2 {
+	border-bottom: 2px solid var(--color-blue);
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+	padding-bottom: 0.5rem;
+}
+.section-description {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+/* Related Posts Grid */
+.related-posts-grid {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+	.related-posts-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media (min-width: 1024px) {
+	.related-posts-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+.related-post-card {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	overflow: hidden;
+}
+.related-post-thumbnail img {
+	aspect-ratio: 1;
+	object-fit: cover;
+	width: 100%;
+}
+.related-post-title {
+	font-size: 1rem;
+	margin: 0;
+	padding: 0.75rem;
+}
+.related-post-title a {
+	color: var(--color-gray-4);
+	text-decoration: none;
+}
+.related-post-title a:hover {
+	color: var(--color-blue-2);
+}
+.related-post-date {
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	margin: 0;
+	padding: 0 0.75rem 0.75rem;
+}
+
+/* Related Posts List (after featured cards) */
+.related-posts-list {
+	margin: 1.5rem 0 0;
+	padding: 0 0 0 1.25rem;
+}
+.related-posts-list li {
+	margin-bottom: 0.4rem;
+}
+.related-posts-list a {
+	color: var(--color-gray-4);
+	text-decoration: none;
+}
+.related-posts-list a:hover {
+	color: var(--color-blue-2);
+	text-decoration: underline;
+}
+.related-post-list-date {
+	color: var(--color-gray-2);
+	font-size: 0.85em;
+	margin-left: 0.25rem;
+}
+
+/* Media Gallery */
+.media-gallery {
+	display: grid;
+	gap: 0.5rem;
+	grid-template-columns: repeat(3, 1fr);
+}
+@media (min-width: 640px) {
+	.media-gallery {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+.media-gallery-item {
+	aspect-ratio: 1;
+	overflow: hidden;
+	border-radius: 4px;
+}
+.media-gallery-item img {
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.2s ease;
+	width: 100%;
+}
+.media-gallery-item:hover img {
+	transform: scale(1.05);
+}
+
+/* Leader Sidebar */
+.leader-metadata {
+	background: var(--color-gray-0);
+	border-radius: 8px;
+	margin-bottom: 1.5rem;
+	padding: 1.5rem;
+}
+.leader-metadata h3 {
+	font-size: 1.1rem;
+	margin: 0 0 1rem;
+}
+.leader-meta-list {
+	margin: 0;
+}
+.leader-meta-list dt {
+    background: var(--color-white);
+	color: var(--color-gray-2);
+	font-family: 'Josefin Sans';
+	font-size: 0.8rem;
+	font-weight: normal;
+    letter-spacing: -1px;
+	margin-top: 0.75rem;
+    padding: .25em;
+    text-align: center;
+	text-transform: uppercase;
+}
+.leader-meta-list dd {
+	color: var(--color-gray-4);
+	font-size: 0.95rem;
+	margin: 0.25rem 0 0;
+}
+.leader-navigation {
+	text-align: center;
+}
+
+/* ============================================
+   ARCHIVE CHURCH LEADER TEMPLATE
+   ============================================ */
+.church-leaders-archive {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+.archive-header {
+	margin-bottom: 3rem;
+	text-align: center;
+}
+.archive-title {
+	font-size: 2.5rem;
+	margin: 0 0 1rem;
+}
+h1.archive-title:before {
+	display: none;
+}
+.archive-description {
+	color: var(--color-gray-2);
+	font-size: 1.1rem;
+	margin: 0 auto 1.5rem;
+	max-width: 600px;
+}
+.archive-actions {
+	margin-top: 1rem;
+}
+
+.leaders-section {
+	margin-bottom: 4rem;
+}
+.section-title {
+	border-bottom: 3px solid var(--color-orange);
+	font-size: 1.75rem;
+	margin-bottom: 2rem;
+	padding-bottom: 0.5rem;
+}
+.section-title:before {
+	display: none;
+}
+
+.leadership-group {
+	margin-bottom: 3rem;
+}
+.group-title {
+	color: var(--color-gray-3);
+	font-size: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+.group-title:before {
+	display: none;
+}
+.group-description {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+/* First Presidency Layout */
+.first-presidency-group {
+	text-align: center;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: center;
+	gap: 1.5rem;
+}
+.prophet-feature {
+	max-width: 300px;
+}
+.prophet-feature .leader-card {
+	border-color: var(--color-orange);
+	border-width: 2px;
+}
+.position-label {
+	color: var(--color-gray-2);
+	display: block;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.85rem;
+	margin-top: 0.5rem;
+	text-transform: uppercase;
+}
+.counselor-card {
+	max-width: 200px;
+	text-align: center;
+}
+
+/* Twelve Apostles Layout */
+.twelve-apostles-group .apostle-card-wrapper {
+	position: relative;
+}
+.seniority-number {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	font-weight: bold;
+	height: 24px;
+	left: -8px;
+	line-height: 24px;
+	position: absolute;
+	text-align: center;
+	top: -8px;
+	width: 24px;
+	z-index: 1;
+}
+
+/* Timeline Layout */
+.leaders-timeline {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px) {
+	.leaders-timeline {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (min-width: 1024px) {
+	.leaders-timeline {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+.timeline-item {
+	position: relative;
+	text-align: center;
+}
+.timeline-number {
+	background: var(--color-orange);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	font-weight: bold;
+	height: 24px;
+	left: 50%;
+	line-height: 24px;
+	position: absolute;
+	text-align: center;
+	top: -12px;
+	transform: translateX(-50%);
+	width: 24px;
+	z-index: 1;
+}
+.presidency-years {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.8rem;
+	margin-top: 0.25rem;
+}
+
+/* Collapsible Sections */
+.collapsible .group-title {
+	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.collapsible .collapse-icon {
+	font-size: 0.8rem;
+	transition: transform 0.2s ease;
+}
+.collapsible[data-collapsed="false"] .collapse-icon {
+	transform: rotate(180deg);
+}
+
+.archive-footer {
+	border-top: 1px solid var(--color-gray-1);
+	margin-top: 3rem;
+	padding-top: 2rem;
+	text-align: center;
+}
+.leader-count {
+	color: var(--color-gray-2);
+}
+
+/* ============================================
+   APOSTLE CHARTS TEMPLATE
+   ============================================ */
+.apostle-charts-page {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+.apostle-charts-page .page-header {
+	margin-bottom: 2rem;
+	text-align: center;
+}
+.apostle-charts-page .page-title {
+	font-size: 2.5rem;
+	margin: 0 0 1rem;
+}
+.apostle-charts-page .page-title:before {
+	display: none;
+}
+.apostle-charts-page .page-description {
+	color: var(--color-gray-2);
+	font-size: 1.1rem;
+	margin: 0 auto;
+	max-width: 700px;
+}
+
+/* View Toggle */
+.chart-controls {
+	margin-bottom: 2rem;
+	text-align: center;
+}
+.view-toggle {
+	display: inline-flex;
+	background: var(--color-gray-0);
+	border-radius: 100px;
+	padding: 4px;
+}
+.view-btn {
+	background: transparent;
+	border: none;
+	border-radius: 100px;
+	color: var(--color-gray-3);
+	cursor: pointer;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	padding: 0.5rem 1.25rem;
+	transition: all 0.2s ease;
+}
+.view-btn.active {
+	background: var(--color-blue-2);
+	color: var(--color-white);
+}
+.view-btn:hover:not(.active) {
+	background: var(--color-gray-1);
+}
+
+/* Chart Views */
+.chart-view {
+	display: none;
+}
+.chart-view.active {
+	display: block;
+}
+.chart-view h2 {
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
+}
+.chart-view h2:before {
+	display: none;
+}
+.view-description {
+	color: var(--color-gray-2);
+	margin-bottom: 2rem;
+}
+
+/* Current Apostles Grid */
+.current-apostles-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+	margin-bottom: 2rem;
+}
+.legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+.legend-dot {
+	border-radius: 50%;
+	display: inline-block;
+	height: 12px;
+	width: 12px;
+}
+.legend-prophet .legend-dot {
+	background: var(--color-orange);
+}
+.legend-first-presidency .legend-dot {
+	background: var(--color-pink);
+}
+.legend-twelve .legend-dot {
+	background: var(--color-blue-2);
+}
+
+.current-apostles-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(2, 1fr);
+	margin-bottom: 3rem;
+}
+@media (min-width: 640px) {
+	.current-apostles-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (min-width: 1024px) {
+	.current-apostles-grid {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+.current-apostle-card {
+	background: var(--color-white);
+	border: 2px solid var(--color-blue-2);
+	border-radius: 8px;
+	display: block;
+	overflow: hidden;
+	padding: 1rem;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+.current-apostle-card:hover {
+	/* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); */
+	/* transform: translateY(-3px); */
+}
+.current-apostle-card.apostle-prophet {
+	border-color: var(--color-orange);
+}
+.current-apostle-card.apostle-first-presidency {
+	border-color: var(--color-pink);
+}
+.seniority-badge {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.7rem;
+	font-weight: bold;
+	height: 22px;
+	left: 8px;
+	line-height: 22px;
+	position: absolute;
+	text-align: center;
+	top: 8px;
+	width: 22px;
+}
+.apostle-prophet .seniority-badge {
+	background: var(--color-orange);
+}
+.apostle-first-presidency .seniority-badge {
+	background: var(--color-pink);
+}
+.apostle-photo {
+	border-radius: 50%;
+	height: 80px;
+	margin-bottom: 0.75rem;
+	object-fit: cover;
+	width: 80px;
+}
+.apostle-photo-placeholder {
+	align-items: center;
+	background: var(--color-gray-1);
+	border-radius: 50%;
+	color: var(--color-gray-3);
+	display: flex;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 1.5rem;
+	height: 80px;
+	justify-content: center;
+	margin: 0 auto 0.75rem;
+	width: 80px;
+}
+.apostle-card-details {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+.apostle-name {
+	color: var(--color-gray-4);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+.apostle-stat {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Current Timeline */
+.current-timeline {
+	background: var(--color-gray-0);
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+}
+.current-timeline h3 {
+	font-size: 1.1rem;
+	margin-bottom: 1rem;
+}
+.current-timeline h3:before {
+	display: none;
+}
+.timeline-chart {
+	position: relative;
+}
+.timeline-bar-container {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.5rem;
+}
+.timeline-name {
+	color: var(--color-gray-3);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	text-align: right;
+	width: 120px;
+}
+.timeline-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+.timeline-bar {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	cursor: pointer;
+	height: 16px;
+	position: absolute;
+	top: 2px;
+	transform: translateX(-50%);
+	width: 16px;
+}
+.timeline-bar.bar-prophet {
+	background: var(--color-orange);
+}
+.timeline-bar.bar-first-presidency {
+	background: var(--color-pink);
+}
+.timeline-year {
+	color: var(--color-gray-3);
+	font-size: 0.65rem;
+	left: 50%;
+	position: absolute;
+	top: 20px;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+.timeline-axis {
+	border-top: 1px solid var(--color-gray-2);
+	display: flex;
+	justify-content: space-between;
+	margin-left: 130px;
+	margin-top: 2rem;
+	padding-top: 0.5rem;
+}
+.timeline-axis span {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Bar Chart Options */
+.chart-options {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+.option-group {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+}
+.option-group label {
+	color: var(--color-gray-3);
+	font-size: 0.9rem;
+}
+.option-group select {
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	padding: 0.5rem 1rem;
+}
+
+/* Horizontal Bar Chart */
+.bar-chart-container {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 8px;
+	max-height: 600px;
+	overflow-y: auto;
+	padding: 1rem;
+}
+.apostle-bar-chart {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+.bar-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.25rem 0;
+	text-decoration: none;
+	transition: background 0.15s ease;
+}
+.bar-row:hover {
+	background: var(--color-gray-0);
+}
+.bar-name {
+	color: var(--color-gray-4);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	overflow: hidden;
+	text-align: right;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 140px;
+}
+.bar-track {
+	background: var(--color-gray-0);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	overflow: hidden;
+}
+.bar {
+	align-items: center;
+	background: var(--color-gray-2);
+	border-radius: 4px;
+	display: flex;
+	height: 100%;
+	min-width: 30px;
+	padding-right: 0.5rem;
+	transition: width 0.3s ease;
+}
+.bar-active {
+	background: var(--color-blue-2);
+}
+.bar-historical {
+	background: var(--color-gray-2);
+}
+.bar-removed {
+	background: var(--color-red, #c44);
+	opacity: 0.8;
+}
+.bar-prophet {
+	background: var(--color-orange) !important;
+}
+.bar-value {
+	color: var(--color-white);
+	font-size: 0.7rem;
+	font-weight: bold;
+	margin-left: auto;
+}
+.bar-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.7rem;
+	width: 90px;
+}
+.removed-indicator {
+	color: var(--color-red, #c44);
+	cursor: help;
+	font-weight: bold;
+}
+.service-ended-early .bar-name {
+	font-style: italic;
+}
+
+/* Chart Legend */
+.chart-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+	margin-top: 1.5rem;
+}
+.chart-legend .legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+.legend-bar {
+	border-radius: 2px;
+	display: inline-block;
+	height: 12px;
+	width: 24px;
+}
+.legend-note {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+	font-style: italic;
+	margin-top: 0.5rem;
+	text-align: center;
+}
+
+/* Presidents Chart */
+.presidents-timeline {
+	margin-bottom: 3rem;
+}
+.presidents-chart {
+	position: relative;
+	padding-bottom: 2rem;
+}
+.president-row {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+/* mobile */
+@media (max-width: 640px) {
+	.president-row {
+		flex-direction: column;
+	}
+	.president-bar-track {
+		min-height: 20px;
+		min-width: 100%;
+	}
+}
+.president-number {
+	background: var(--color-gray-1);
+	border-radius: 50%;
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.7rem;
+	font-weight: bold;
+	height: 24px;
+	line-height: 24px;
+	text-align: center;
+	width: 24px;
+}
+.president-name {
+	color: var(--color-text);
+	flex-shrink: 0;
+	font-size: 0.85rem;
+	text-decoration: none;
+	width: 150px;
+}
+.president-name:hover {
+	color: var(--color-blue-2);
+}
+.president-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 3px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+.president-bar {
+	background: var(--color-orange);
+	border-radius: 3px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	transition: all 0.3s ease;
+}
+.president-current {
+	background: var(--color-blue-2);
+}
+.president-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	text-align: right;
+	width: 110px;
+	white-space: nowrap;
+}
+.president-tenure {
+	color: var(--color-gray-3);
+	font-size: 0.7rem;
+}
+.presidents-axis {
+	border-top: 1px solid var(--color-gray-1);
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1rem;
+	padding-top: 0.5rem;
+	position: relative;
+}
+.axis-label {
+	color: var(--color-gray-2);
+	font-size: 0.7rem;
+	position: absolute;
+	transform: translateX(-50%);
+}
+
+/* Presidents Tenure Bar Chart */
+.presidents-tenure-chart {
+	margin-bottom: 3rem;
+}
+.chart-subtitle {
+	color: var(--color-gray-2);
+	font-size: 0.85rem;
+	margin-bottom: 1rem;
+}
+.president-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+.president-tenure-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.25rem 0;
+	text-decoration: none;
+}
+.president-tenure-row:hover {
+	background: rgba(var(--color-blue-2-rgb, 59, 130, 246), 0.05);
+}
+
+/* Presidents Stats */
+.presidents-stats {
+	margin-bottom: 2rem;
+}
+.stats-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.stat-card {
+	background: var(--color-gray-1);
+	border-radius: 8px;
+	padding: 1rem;
+	text-align: center;
+}
+.stat-card.stat-wide {
+	grid-column: span 2;
+}
+.stat-value {
+	color: var(--color-orange);
+	display: block;
+	font-size: 1.5rem;
+	font-weight: bold;
+	line-height: 1.2;
+}
+.stat-wide .stat-value {
+	font-size: 1.1rem;
+}
+.stat-label {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
+}
+
+/* Charts Footer */
+.charts-footer {
+	border-top: 1px solid var(--color-gray-1);
+	margin-top: 3rem;
+	padding-top: 2rem;
+	text-align: center;
+}
+.charts-footer p {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+}
+.charts-footer a {
+	color: var(--color-blue-2);
+}
+
+/* View All Link */
+.view-all-link {
+	margin-top: 1rem;
+	text-align: center;
+}
+.view-all-link a {
+	color: var(--color-blue-2);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
 }

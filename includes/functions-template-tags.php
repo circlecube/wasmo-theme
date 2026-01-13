@@ -102,6 +102,26 @@ function wasmo_entry_footer() {
 			); // WPCS: XSS OK.
 		}
 
+		// Related Church Leaders
+		$related_leaders = get_field( 'related_leaders', get_the_ID() );
+		if ( ! empty( $related_leaders ) ) {
+			$leader_links = array();
+			foreach ( $related_leaders as $leader_id ) {
+				$leader = get_post( $leader_id );
+				if ( $leader ) {
+					$leader_links[] = '<a href="' . get_permalink( $leader_id ) . '">' . esc_html( $leader->post_title ) . '</a>';
+				}
+			}
+			if ( ! empty( $leader_links ) ) {
+				printf(
+					'<span class="tags-links leader-links"><span title="%2$s">%1$s<span class="screen-reader-text">%2$s </span></span>%3$s</span>',
+					wasmo_get_icon_svg( 'church-leader', 16 ),
+					__( 'Church Leaders:', 'wasmo' ),
+					implode( ', ', $leader_links )
+				);
+			}
+		}
+
 		wasmo_post_navi();
 
 	}
@@ -512,6 +532,9 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 		case 'question':
 			$icon = 'help';
 			break;
+		case 'church-leader':
+			$icon = 'leader';
+			break;
 	}
 
 	// collected from https://github.com/WordPress/dashicons/tree/master/sources/svg
@@ -600,6 +623,10 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	<path d="M0 0h24v24H0z" fill="none"></path>
 	<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+</svg>',
+		'leader' => /* dashicon businessperson */ '
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
+  <path d="M13.2 10 11 13l-1-1.4L9 13l-2.2-3C3 11 3 13 3 16.9c0 0 3 1.1 6.4 1.1h1.2c3.4-.1 6.4-1.1 6.4-1.1 0-3.9 0-5.9-3.8-6.9zm-3.2.7L8.4 10l1.6 1.6 1.6-1.6-1.6.7zm0-8.6c-1.9 0-3 1.8-2.7 3.8.3 2 1.3 3.4 2.7 3.4s2.4-1.4 2.7-3.4c.3-2.1-.8-3.8-2.7-3.8z"/>
 </svg>',
 	);
 

@@ -33,10 +33,10 @@ if ( is_singular() ) {
 } elseif ( is_search() ) {
 	echo esc_attr( get_queried_object()->slug );
 } elseif ( is_404() ) {
-	echo esc_attr( get_queried_object()->slug );
+	echo esc_attr( 'error error-404' );
 } elseif ( is_home() ) {
 	echo esc_attr( 'blog' );
-} elseif ( is_index() ) {
+} elseif ( is_front_page() ) {
 	echo esc_attr( 'front-page' );
 } elseif ( is_archive() ) {
 	echo esc_attr( 'archive' );

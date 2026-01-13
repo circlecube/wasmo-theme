@@ -12,11 +12,16 @@ require_once( get_stylesheet_directory() . '/includes/functions-login.php' );
 require_once( get_stylesheet_directory() . '/includes/functions-template-tags.php' );
 require_once( get_stylesheet_directory() . '/includes/functions-theme.php' );
 require_once( get_stylesheet_directory() . '/includes/functions-seo.php' );
+require_once( get_stylesheet_directory() . '/includes/functions-church-leaders.php' );
 
 require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/draft-posts-admin-page.php' );
+require_once( get_stylesheet_directory() . '/includes/church-leaders-import.php' );
+require_once( get_stylesheet_directory() . '/includes/church-leaders-associations.php' );
+require_once( get_stylesheet_directory() . '/includes/church-leaders-images.php' );
+require_once( get_stylesheet_directory() . '/includes/church-leaders-settings.php' );
 
 /*
 

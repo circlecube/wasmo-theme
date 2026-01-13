@@ -25,6 +25,29 @@ $term = get_term_by( 'id', $termid, 'tags' );
 				<?php if ( get_query_var('paged') ) {
 					echo '<span class="paged-page-number">(Page '. get_query_var('paged') .')</span>';
 				} ?>
+				
+				<?php 
+				// Check if there's an associated church leader for this tag
+				$current_tag = get_queried_object();
+				if ( $current_tag && function_exists( 'wasmo_get_leader_by_tag' ) ) {
+					$associated_leader = wasmo_get_leader_by_tag( $current_tag->term_id );
+					if ( $associated_leader ) :
+						$leader_thumbnail = get_the_post_thumbnail_url( $associated_leader->ID, 'thumbnail' );
+					?>
+					<div class="tag-leader-link">
+						<a href="<?php echo get_permalink( $associated_leader->ID ); ?>" class="tag-leader-card">
+							<?php if ( $leader_thumbnail ) : ?>
+								<img src="<?php echo esc_url( $leader_thumbnail ); ?>" alt="<?php echo esc_attr( $associated_leader->post_title ); ?>" class="tag-leader-image">
+							<?php endif; ?>
+							<span class="tag-leader-text">
+								View the <strong><?php echo esc_html( $associated_leader->post_title ); ?></strong> Church Leader profile →
+							</span>
+						</a>
+					</div>
+					<?php endif;
+				}
+				?>
+				
                 <?php if ( tag_description() ) { ?>
                     <h2 class="entry-description has-regular-font-size"><?php echo tag_description(); ?></h2>
                 <?php } ?>
