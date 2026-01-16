@@ -1,6 +1,6 @@
 <?php
 /**
- * The template for displaying archive of church leaders for the leader-role taxonomy
+ * The template for displaying archive of church leaders for the saint-role taxonomy
  *
  * @package wasmo
  */
@@ -10,55 +10,8 @@ get_header();
 $term = get_queried_object();
 $term_id = $term->term_id;
 
-// Get all leaders with this role
-$leaders = get_posts( array(
-	'post_type'      => 'church-leader',
-	'posts_per_page' => -1,
-	'post_status'    => 'publish',
-	'tax_query'      => array(
-		array(
-			'taxonomy' => 'leader-role',
-			'field'    => 'term_id',
-			'terms'    => $term_id,
-		),
-	),
-) );
-
-// Sort by ordained_date first, then birthdate as fallback
-usort( $leaders, function( $a, $b ) {
-	$a_ordained = get_field( 'ordained_date', $a->ID );
-	$b_ordained = get_field( 'ordained_date', $b->ID );
-	$a_birth = get_field( 'birthdate', $a->ID );
-	$b_birth = get_field( 'birthdate', $b->ID );
-	
-	// If both have ordained dates, sort by that
-	if ( $a_ordained && $b_ordained ) {
-		return strtotime( $a_ordained ) - strtotime( $b_ordained );
-	}
-	
-	// If only one has ordained date, that one comes first
-	if ( $a_ordained && ! $b_ordained ) {
-		return -1;
-	}
-	if ( ! $a_ordained && $b_ordained ) {
-		return 1;
-	}
-	
-	// Neither has ordained date, fall back to birthdate
-	if ( $a_birth && $b_birth ) {
-		return strtotime( $a_birth ) - strtotime( $b_birth );
-	}
-	
-	// Handle cases where birthdate might be missing
-	if ( $a_birth && ! $b_birth ) {
-		return -1;
-	}
-	if ( ! $a_birth && $b_birth ) {
-		return 1;
-	}
-	
-	return 0;
-} );
+// Get all leaders with this role - cached and pre-sorted
+$leaders = wasmo_get_cached_saints_by_role( $term_id );
 
 // Get current First Presidency settings for counselor roles
 $first_presidency = wasmo_get_current_first_presidency();
@@ -70,7 +23,7 @@ $current_leaders = array();
 $past_leaders = array();
 
 foreach ( $leaders as $leader ) {
-	$is_living = wasmo_is_leader_living( $leader->ID );
+	$is_living = wasmo_is_saint_living( $leader->ID );
 	
 	// Check if this is a counselor role that should use settings
 	if ( $term->slug === 'first-counselor' ) {
@@ -122,11 +75,11 @@ $role_description = ! empty( $term->description )
 ?>
 
 <section id="primary" class="content-area">
-	<main id="main" class="site-main leader-role-archive">
-		<article class="entry">
-			<header class="entry-header leader-role-header">
+	<main id="main" class="site-main saint-role-archive entry">
+		<article class="entry-content">
+			<header class="entry-header saint-role-header">
 				<h1 class="entry-title no-line">
-					<?php echo wasmo_get_icon_svg( 'church-leader', 36 ); ?>
+					<?php echo wasmo_get_icon_svg( 'saint', 36 ); ?>
 					<?php echo esc_html( $term->name ); ?>
 				</h1>
 				
@@ -142,14 +95,14 @@ $role_description = ! empty( $term->description )
 				</p>
 			</header>
 
-			<div class="leader-role-content">
+			<div class="saint-role-content">
 				
 				<?php if ( ! empty( $current_leaders ) ) : ?>
 					<section class="leaders-section current-leaders">
 						<h2>Current <?php echo esc_html( $term->name ); ?><?php echo count( $current_leaders ) !== 1 ? 's' : ''; ?></h2>
-						<div class="leaders-grid">
+						<div class="leaders-grid leaders-grid-3">
 							<?php foreach ( $current_leaders as $leader ) : ?>
-								<?php wasmo_render_leader_card( $leader->ID, 'medium', true, true, false ); ?>
+								<?php wasmo_render_saint_card( $leader->ID, 'medium', true, true, false ); ?>
 							<?php endforeach; ?>
 						</div>
 					</section>
@@ -158,9 +111,9 @@ $role_description = ! empty( $term->description )
 				<?php if ( ! empty( $past_leaders ) ) : ?>
 					<section class="leaders-section historical-leaders">
 						<h2>Past <?php echo esc_html( $term->name ); ?>s</h2>
-						<div class="leaders-grid leaders-grid-small">
+						<div class="leaders-grid leaders-grid-4">
 							<?php foreach ( $past_leaders as $leader ) : ?>
-								<?php wasmo_render_leader_card( $leader->ID, 'small', true, true, false ); ?>
+								<?php wasmo_render_saint_card( $leader->ID, 'medium', true, true, false ); ?>
 							<?php endforeach; ?>
 						</div>
 					</section>
@@ -168,25 +121,21 @@ $role_description = ! empty( $term->description )
 
 			</div>
 
-			<footer class="entry-footer leader-role-footer">
+			<footer class="entry-footer saint-role-footer">
 				<h3>
-					<?php echo wasmo_get_icon_svg( 'church-leader', 24 ); ?>
-					All Leadership Roles:
+					<?php echo wasmo_get_icon_svg( 'saint', 24 ); ?>
+					All Saint Roles:
 				</h3>
 				<ul class="tags role-tags">
 					<?php
-					$all_roles = get_terms( array(
-						'taxonomy'   => 'leader-role',
-						'hide_empty' => true,
-						'orderby'    => 'name',
-						'order'      => 'ASC',
-					) );
+					// Use cached saint roles
+					$all_roles = wasmo_get_cached_saint_roles();
 					
 					foreach ( $all_roles as $role ) : 
 						$is_current = ( $role->term_id === $term_id );
 					?>
 						<li>
-							<a class="tag leader-role-tag <?php echo $is_current ? 'current-role' : ''; ?>" 
+							<a class="tag saint-role-tag <?php echo $is_current ? 'current-role' : ''; ?>" 
 							   href="<?php echo esc_url( get_term_link( $role ) ); ?>">
 								<?php echo esc_html( $role->name ); ?>
 								<span class="role-count">(<?php echo esc_html( $role->count ); ?>)</span>
@@ -196,8 +145,8 @@ $role_description = ! empty( $term->description )
 				</ul>
 				
 				<p class="archive-link">
-					<a href="<?php echo esc_url( get_post_type_archive_link( 'church-leader' ) ); ?>" class="btn btn-secondary">
-						← View All Church Leaders
+					<a href="<?php echo esc_url( get_post_type_archive_link( 'saint' ) ); ?>" class="btn btn-secondary">
+						← View All Saints
 					</a>
 				</p>
 			</footer>

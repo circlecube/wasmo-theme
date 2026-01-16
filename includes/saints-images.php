@@ -1,6 +1,6 @@
 <?php
 /**
- * Church Leaders Wikipedia Image Importer
+ * Saints Wikipedia Image Importer
  * 
  * Admin page for fetching and importing leader images from Wikipedia/Wikimedia Commons.
  *
@@ -12,7 +12,7 @@
  */
 function wasmo_add_leader_images_page() {
 	add_submenu_page(
-		'edit.php?post_type=church-leader',
+		'edit.php?post_type=saint',
 		'Import Wikipedia Images',
 		'Import Images',
 		'manage_options',
@@ -72,9 +72,9 @@ function wasmo_render_leader_images_page() {
 		}
 	}
 	
-	// Get leaders without featured images
+	// Get leaders without featured images (excluding wives)
 	$leaders_without_images = get_posts( array(
-		'post_type' => 'church-leader',
+		'post_type' => 'saint',
 		'posts_per_page' => -1,
 		'post_status' => 'publish',
 		'meta_query' => array(
@@ -83,19 +83,35 @@ function wasmo_render_leader_images_page() {
 				'compare' => 'NOT EXISTS',
 			),
 		),
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'saint-role',
+				'field'    => 'slug',
+				'terms'    => 'wife',
+				'operator' => 'NOT IN',
+			),
+		),
 		'orderby' => 'title',
 		'order' => 'ASC',
 	) );
 	
-	// Get leaders with featured images
+	// Get leaders with featured images (excluding wives)
 	$leaders_with_images = get_posts( array(
-		'post_type' => 'church-leader',
+		'post_type' => 'saint',
 		'posts_per_page' => -1,
 		'post_status' => 'publish',
 		'meta_query' => array(
 			array(
 				'key' => '_thumbnail_id',
 				'compare' => 'EXISTS',
+			),
+		),
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'saint-role',
+				'field'    => 'slug',
+				'terms'    => 'wife',
+				'operator' => 'NOT IN',
 			),
 		),
 		'orderby' => 'title',
@@ -105,7 +121,7 @@ function wasmo_render_leader_images_page() {
 	$total_leaders = count( $leaders_without_images ) + count( $leaders_with_images );
 	?>
 	<div class="wrap">
-		<h1>Import Wikipedia Images for Church Leaders</h1>
+		<h1>Import Wikipedia Images for Saints</h1>
 		
 		<?php echo $message; ?>
 
@@ -284,7 +300,7 @@ function wasmo_search_wikipedia_image( $search_term ) {
 	
 	$response = wp_remote_get( $search_url, array(
 		'timeout' => 30,
-		'user-agent' => 'WasMormon.org Church Leaders Image Importer/1.0 (https://wasmormon.org)',
+		'user-agent' => 'WasMormon.org Saints Image Importer/1.0 (https://wasmormon.org)',
 	) );
 	
 	if ( is_wp_error( $response ) ) {
@@ -343,7 +359,7 @@ function wasmo_search_wikipedia_image_with_disambiguation( $search_term ) {
 		
 		$response = wp_remote_get( $search_url, array(
 			'timeout' => 30,
-			'user-agent' => 'WasMormon.org Church Leaders Image Importer/1.0 (https://wasmormon.org)',
+			'user-agent' => 'WasMormon.org Saints Image Importer/1.0 (https://wasmormon.org)',
 		) );
 		
 		if ( is_wp_error( $response ) ) {
@@ -386,7 +402,7 @@ function wasmo_get_wikipedia_page_image( $page_id ) {
 	
 	$response = wp_remote_get( $images_url, array(
 		'timeout' => 30,
-		'user-agent' => 'WasMormon.org Church Leaders Image Importer/1.0 (https://wasmormon.org)',
+		'user-agent' => 'WasMormon.org Saints Image Importer/1.0 (https://wasmormon.org)',
 	) );
 	
 	if ( is_wp_error( $response ) ) {
@@ -458,7 +474,7 @@ function wasmo_get_wikimedia_image_url( $file_title ) {
 	
 	$response = wp_remote_get( $url, array(
 		'timeout' => 30,
-		'user-agent' => 'WasMormon.org Church Leaders Image Importer/1.0 (https://wasmormon.org)',
+		'user-agent' => 'WasMormon.org Saints Image Importer/1.0 (https://wasmormon.org)',
 	) );
 	
 	if ( is_wp_error( $response ) ) {
@@ -641,13 +657,21 @@ function wasmo_bulk_import_wikipedia_images() {
 	
 	$overwrite = isset( $_POST['overwrite_existing'] ) && $_POST['overwrite_existing'];
 	
-	// Build query based on overwrite setting
+	// Build query based on overwrite setting (excluding wives)
 	$args = array(
-		'post_type' => 'church-leader',
+		'post_type' => 'saint',
 		'posts_per_page' => -1,
 		'post_status' => 'publish',
 		'orderby' => 'title',
 		'order' => 'ASC',
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'saint-role',
+				'field'    => 'slug',
+				'terms'    => 'wife',
+				'operator' => 'NOT IN',
+			),
+		),
 	);
 	
 	if ( ! $overwrite ) {

@@ -1920,6 +1920,9 @@ table.gsc-above-wrapper-area-container td {
 	gap: 1rem;
 	grid-template-columns: repeat(2, 1fr);
 }
+.leaders-grid-3 {
+	grid-template-columns: repeat(1, 1fr);
+}
 .leaders-grid-4 {
 	grid-template-columns: repeat(2, 1fr);
 }
@@ -1931,6 +1934,9 @@ table.gsc-above-wrapper-area-container td {
 }
 @media (min-width: 640px) {
 	.leaders-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.leaders-grid-3 {
 		grid-template-columns: repeat(3, 1fr);
 	}
 	.leaders-grid-4 {
@@ -1946,6 +1952,9 @@ table.gsc-above-wrapper-area-container td {
 @media (min-width: 1024px) {
 	.leaders-grid {
 		grid-template-columns: repeat(4, 1fr);
+	}
+	.leaders-grid-3 {
+		grid-template-columns: repeat(3, 1fr);
 	}
 	.leaders-grid-4 {
 		grid-template-columns: repeat(4, 1fr);
@@ -2162,6 +2171,8 @@ a.leader-role-badge:visited {
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
+	max-width: 100%;
+	overflow: hidden;
 }
 @media (min-width: 1024px) {
 	.leader-content-wrapper {
@@ -2170,6 +2181,8 @@ a.leader-role-badge:visited {
 }
 .leader-main-content {
 	flex: 1;
+	min-width: 0; /* Prevents flex item from overflowing */
+	overflow: hidden;
 }
 .leader-sidebar {
 	flex-shrink: 0;
@@ -2399,16 +2412,10 @@ h1.archive-title:before {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	gap: 1.5rem;
-}
-.prophet-feature {
-	max-width: 300px;
-}
-.prophet-feature .leader-card {
-	border-color: var(--color-orange);
-	border-width: 2px;
+	padding-top: 1rem;
 }
 .position-label {
 	color: var(--color-gray-2);
@@ -2418,10 +2425,7 @@ h1.archive-title:before {
 	margin-top: 0.5rem;
 	text-transform: uppercase;
 }
-.counselor-card {
-	max-width: 200px;
-	text-align: center;
-}
+
 
 /* Twelve Apostles Layout */
 .twelve-apostles-group .apostle-card-wrapper {
@@ -2442,6 +2446,37 @@ h1.archive-title:before {
 	top: -8px;
 	width: 24px;
 	z-index: 1;
+}
+
+/* First Presidency Badges */
+.fp-card-wrapper {
+	position: relative;
+}
+
+.fp-badge {
+	background: var(--color-blue-2);
+	border-radius: 4px;
+	color: var(--color-white);
+	font-family: var(--font-heading);
+	font-size: 0.7rem;
+	font-weight: 600;
+	left: 50%;
+	letter-spacing: 0.025em;
+	padding: 0.25rem 0.5rem;
+	position: absolute;
+	text-transform: uppercase;
+	top: -12px;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	z-index: 2;
+}
+
+.fp-badge-president {
+	background: var(--color-orange);
+}
+
+.fp-badge-counselor {
+	background: var(--color-blue-2);
 }
 
 /* Timeline Layout */
@@ -2504,11 +2539,18 @@ h1.archive-title:before {
 }
 
 .archive-footer {
-	border-top: 1px solid var(--color-gray-1);
+	border-top: 1px solid var(--color-gray-4);
 	margin-top: 3rem;
 	padding-top: 2rem;
-	text-align: center;
 }
+
+.archive-footer h3 {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
 .leader-count {
 	color: var(--color-gray-2);
 }
@@ -2567,6 +2609,9 @@ h1.archive-title:before {
 }
 .view-btn:hover:not(.active) {
 	background: var(--color-gray-1);
+}
+.entry .entry-content a.btn {
+	text-decoration: none;
 }
 
 /* Chart Views */
@@ -3102,4 +3147,637 @@ h1.archive-title:before {
 	color: var(--color-blue-2);
 	font-family: "Josefin Sans", sans-serif;
 	font-size: 0.9rem;
+}
+
+/* ============================================
+   SAINT MARRIAGES & FAMILY STYLES
+   ============================================ */
+
+/* Marriages Grid */
+.saint-marriages,
+.saint-married-to,
+.saint-children {
+	margin-top: 2rem;
+}
+
+.marriages-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Marriage Card */
+.marriage-card {
+	background: var(--color-gray-1);
+	border-radius: 8px;
+	padding: 1rem;
+	position: relative;
+}
+
+.marriage-card.teenage-bride {
+	border-left: 3px solid var(--color-orange);
+}
+
+.marriage-card.reverse-marriage {
+	background: linear-gradient(135deg, var(--color-gray-1) 0%, rgba(var(--color-blue-2-rgb, 59, 130, 246), 0.05) 100%);
+}
+
+.marriage-order {
+	background: var(--color-orange);
+	border-radius: 50%;
+	color: white;
+	font-size: 0.7rem;
+	font-weight: bold;
+	height: 24px;
+	line-height: 24px;
+	position: absolute;
+	right: 0.75rem;
+	text-align: center;
+	top: 0.75rem;
+	width: 24px;
+}
+
+.marriage-spouse {
+	align-items: center;
+	color: inherit;
+	display: flex;
+	gap: 0.75rem;
+	text-decoration: none;
+}
+
+.marriage-spouse:hover .marriage-spouse-name {
+	color: var(--color-blue-2);
+}
+
+.marriage-spouse-image {
+	border-radius: 50%;
+	height: 50px;
+	object-fit: cover;
+	width: 50px;
+}
+
+.marriage-spouse-placeholder {
+	align-items: center;
+	background: var(--color-gray-2);
+	border-radius: 50%;
+	color: white;
+	display: flex;
+	font-weight: bold;
+	height: 50px;
+	justify-content: center;
+	width: 50px;
+}
+
+.marriage-spouse-name {
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	transition: color 0.2s ease;
+}
+
+.marriage-details {
+	display: flex;
+	flex-direction: column;
+	font-size: 0.8rem;
+	gap: 0.25rem;
+	margin-left: 3.5rem;
+	margin-top: 0.5rem;
+}
+
+.marriage-details span {
+	color: var(--color-gray-2);
+}
+
+.marriage-date {
+	color: var(--color-text) !important;
+}
+
+.teenage-badge {
+	background: var(--color-orange);
+	border-radius: 3px;
+	color: white;
+	font-size: 0.65rem;
+	font-weight: bold;
+	margin-left: 0.25rem;
+	padding: 1px 4px;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.marriage-divorced {
+	color: var(--color-orange) !important;
+}
+
+.partner-polygamist {
+	font-style: italic;
+}
+
+.marriage-notes {
+	border-top: 1px solid var(--color-gray-2);
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	font-style: italic;
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+}
+
+/* Children Sections */
+.children-by-marriage {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.marriage-children-group h4 {
+	border-bottom: 1px solid var(--color-gray-1);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.95rem;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.marriage-children-group h4 a {
+	color: var(--color-blue-2);
+}
+
+.children-list {
+	column-gap: 2rem;
+	list-style-position: inside;
+	margin: 0;
+	padding: 0;
+}
+
+@media (max-width: 600px) {
+	.children-list {
+		columns: 1;
+	}
+}
+
+.child-item {
+	break-inside: avoid;
+	padding: 0.25rem 0;
+}
+
+.child-name {
+	color: var(--color-text);
+}
+
+a.child-name:hover {
+	color: var(--color-blue-2);
+}
+
+.child-birthdate {
+	color: var(--color-gray-2);
+	font-size: 0.85rem;
+}
+
+/* ============================================
+   SAINT CARD COMPONENT
+   ============================================ */
+
+.saint-card,
+a.saint-card,
+a.saint-card:link,
+a.saint-card:visited,
+a.saint-card:hover,
+a.saint-card:active {
+	background: var(--color-white);
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+	display: block;
+	overflow: hidden;
+	text-decoration: none !important;
+	transition: box-shadow 0.2s ease;
+}
+
+a.saint-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Image wrapper - always square with dark background */
+.saint-card-image-wrapper {
+	aspect-ratio: 1 / 1;
+	background: var(--color-gray-4, #1e293b);
+	overflow: hidden;
+	position: relative;
+}
+
+.saint-card-image {
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+	width: 100%;
+}
+
+/* Placeholder when no image */
+.saint-card-placeholder {
+	align-items: center;
+	background: linear-gradient(135deg, var(--color-gray-3, #475569), var(--color-gray-4, #1e293b));
+	color: var(--color-white);
+	display: flex;
+	font-size: 2rem;
+	font-weight: 600;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+/* Info section - centered text */
+.saint-card-info {
+	padding: 0.75rem;
+	text-align: center;
+	text-decoration: none;
+}
+
+.saint-card-name {
+	color: var(--color-gray-4);
+	display: block;
+	font-family: var(--font-heading);
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.25;
+	text-decoration: none;
+}
+
+.saint-card-dates,
+.saint-card-role {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.8rem;
+	line-height: 1.3;
+	margin-top: 0.2rem;
+	text-decoration: none;
+}
+
+.saint-card-role {
+	color: var(--color-blue-2);
+	font-weight: 500;
+}
+
+/* Size variations */
+.saint-card-small .saint-card-info {
+	padding: 0.5rem;
+}
+
+.saint-card-small .saint-card-name {
+	font-size: 0.8rem;
+}
+
+.saint-card-small .saint-card-dates,
+.saint-card-small .saint-card-role {
+	font-size: 0.7rem;
+}
+
+.saint-card-small .saint-card-placeholder {
+	font-size: 1.5rem;
+}
+
+.saint-card-large .saint-card-info {
+	padding: 1rem;
+}
+
+.saint-card-large .saint-card-name {
+	font-size: 1.1rem;
+}
+
+.saint-card-large .saint-card-dates,
+.saint-card-large .saint-card-role {
+	font-size: 0.85rem;
+}
+
+/* Living saint indicator - green bottom border (default) */
+.saint-card.saint-living {
+	border-bottom: 3px solid var(--color-green, #10b981);
+}
+
+/* President - orange bottom border (overrides living) */
+.saint-card.saint-president {
+	border-bottom: 3px solid var(--color-orange);
+}
+
+/* Counselors - blue bottom border (overrides living) */
+.saint-card.saint-first-counselor,
+.saint-card.saint-second-counselor {
+	border-bottom: 3px solid var(--color-blue-2);
+}
+
+/* Role-specific accents */
+.saint-card.saint-wife {
+	border-left: 3px solid var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-wife {
+	background: var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-child {
+	background: var(--color-green, #10b981);
+}
+
+.saint-role-badge.saint-role-historical-figure {
+	background: var(--color-purple, #8b5cf6);
+}
+
+.saint-role-badge.saint-role-relief-society-president {
+	background: var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-church-historian {
+	background: var(--color-teal, #14b8a6);
+}
+
+/* ============================================
+   POLYGAMY CHARTS STYLES
+   ============================================ */
+
+/* Polygamy Stats */
+.polygamy-stats {
+	margin-bottom: 2rem;
+}
+
+.polygamy-chart {
+	margin-bottom: 3rem;
+}
+
+/* Bar thumbnail */
+.bar-thumb {
+	border-radius: 50%;
+	height: 24px;
+	margin-right: 0.5rem;
+	object-fit: cover;
+	vertical-align: middle;
+	width: 24px;
+}
+
+/* President badge in polygamy chart */
+.president-badge {
+	color: var(--color-orange);
+	font-size: 0.8rem;
+	margin-left: 0.25rem;
+}
+
+/* Teenage count and age diff badges */
+.teenage-count,
+.age-diff {
+	background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.15);
+	border-radius: 3px;
+	color: var(--color-orange);
+	font-size: 0.7rem;
+	margin-left: 0.5rem;
+	padding: 2px 6px;
+}
+
+.age-diff {
+	background: rgba(var(--color-blue-2-rgb, 59, 130, 246), 0.1);
+	color: var(--color-blue-2);
+}
+
+/* Bar with teenage brides */
+.bar-row.has-teenage .bar {
+	background: linear-gradient(90deg, var(--color-orange) 0%, var(--color-orange) 100%);
+}
+
+/* Teenage Brides Section */
+.teenage-brides-section {
+	background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.05);
+	border-radius: 8px;
+	margin-top: 2rem;
+	padding: 1.5rem;
+}
+
+.teenage-brides-section h3 {
+	color: var(--color-orange);
+	margin-bottom: 0.5rem;
+}
+
+.teenage-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	margin-top: 1rem;
+}
+
+.teenage-card {
+	align-items: center;
+	background: white;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	color: inherit;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.75rem;
+	text-decoration: none;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.teenage-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
+.teenage-card-thumb {
+	border-radius: 50%;
+	height: 48px;
+	object-fit: cover;
+	width: 48px;
+}
+
+.teenage-card-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.teenage-card-name {
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.teenage-card-stat {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+.teenage-card-stat strong {
+	color: var(--color-orange);
+}
+
+/* Teenage marker in legend */
+.teenage-marker {
+	color: var(--color-orange);
+	font-size: 0.8rem;
+	margin-right: 0.25rem;
+}
+
+/* ============================================
+   MARRIAGE CHART STYLES (Single Saint)
+   ============================================ */
+
+.marriage-chart-section {
+	background: var(--color-gray-5);
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.marriage-chart-section h3 {
+	font-size: 1.25rem;
+	margin-bottom: 0.25rem;
+}
+
+.chart-subtitle {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.chart-wrapper {
+	background: white;
+	border-radius: 6px;
+	margin-bottom: 1rem;
+	padding: 1rem;
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.chart-wrapper canvas {
+	cursor: pointer;
+	display: block;
+	max-width: 100%;
+}
+
+.chart-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+}
+
+.legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+
+.legend-color {
+	border-radius: 3px;
+	display: inline-block;
+	height: 14px;
+	width: 14px;
+}
+
+.legend-her {
+	background: rgba(14, 165, 233, 0.85);
+	border: 2px solid #0ea5e9;
+}
+
+.legend-his {
+	background: rgba(100, 116, 139, 0.4);
+	border: 1px solid #64748b;
+}
+
+.legend-teen {
+	background: rgba(194, 65, 12, 0.85);
+	border: 2px solid #c2410c;
+}
+
+/* Marriages Table */
+.marriages-table-wrapper {
+	margin-top: 1.5rem;
+	overflow-x: auto;
+	max-width: 100%;
+}
+
+.marriages-table {
+	border-collapse: collapse;
+	font-size: 0.9rem;
+	width: 100%;
+	min-width: 600px; /* Ensures table scrolls horizontally on small screens rather than breaking layout */
+}
+
+.marriages-table th,
+.marriages-table td {
+	border-bottom: 1px solid var(--color-gray-4);
+	padding: 0.75rem 0.5rem;
+	text-align: left;
+	word-break: keep-all;
+}
+
+.marriages-table th {
+	background: var(--color-gray-5);
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.marriages-table td.num,
+.marriages-table th.num {
+	text-align: center;
+}
+
+.marriages-table tbody tr:hover {
+	background: var(--color-gray-5);
+}
+
+.marriages-table .teenage-row {
+	background: rgba(194, 65, 12, 0.05);
+}
+
+.marriages-table .teenage-row:hover {
+	background: rgba(194, 65, 12, 0.1);
+}
+
+.marriages-table .teenage-age {
+	color: #c2410c;
+	font-weight: 600;
+}
+
+.marriage-order-cell {
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+.teen-marker {
+	color: #c2410c;
+	cursor: help;
+	font-size: 0.9rem;
+	margin-left: 0.25rem;
+}
+
+.non-saint-marker {
+	color: #6b7280;
+	cursor: help;
+	font-size: 0.75rem;
+	font-style: italic;
+	margin-left: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.marriage-chart-section {
+		margin-left: -1rem;
+		margin-right: -1rem;
+		padding: 1rem;
+	}
+	
+	.chart-legend {
+		gap: 1rem;
+	}
+	
+	.marriages-table th,
+	.marriages-table td {
+		padding: 0.5rem 0.25rem;
+	}
+	
+	.marriages-table {
+		font-size: 0.8rem;
+	}
 }

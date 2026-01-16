@@ -1,0 +1,50 @@
+{
+    "key": "group_saint_president_fields",
+    "title": "President Information",
+    "fields": [
+        {
+            "key": "field_saint_became_president_date",
+            "label": "Became Church President",
+            "name": "became_president_date",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "Date this saint became President of the Church.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 0,
+            "default_to_current_date": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "saint"
+            },
+            {
+                "param": "post_taxonomy",
+                "operator": "==",
+                "value": "saint-role:president"
+            }
+        ]
+    ],
+    "menu_order": 11,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "President-specific fields for saints with the president role.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1736899200
+}

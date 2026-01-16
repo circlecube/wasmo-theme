@@ -115,7 +115,7 @@ function wasmo_entry_footer() {
 			if ( ! empty( $leader_links ) ) {
 				printf(
 					'<span class="tags-links leader-links"><span title="%2$s">%1$s<span class="screen-reader-text">%2$s </span></span>%3$s</span>',
-					wasmo_get_icon_svg( 'church-leader', 16 ),
+					wasmo_get_icon_svg( 'saint', 16 ),
 					__( 'Church Leaders:', 'wasmo' ),
 					implode( ', ', $leader_links )
 				);
@@ -532,7 +532,7 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 		case 'question':
 			$icon = 'help';
 			break;
-		case 'church-leader':
+		case 'saint':
 			$icon = 'leader';
 			break;
 	}
@@ -628,7 +628,18 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
   <path d="M13.2 10 11 13l-1-1.4L9 13l-2.2-3C3 11 3 13 3 16.9c0 0 3 1.1 6.4 1.1h1.2c3.4-.1 6.4-1.1 6.4-1.1 0-3.9 0-5.9-3.8-6.9zm-3.2.7L8.4 10l1.6 1.6 1.6-1.6-1.6.7zm0-8.6c-1.9 0-3 1.8-2.7 3.8.3 2 1.3 3.4 2.7 3.4s2.4-1.4 2.7-3.4c.3-2.1-.8-3.8-2.7-3.8z"/>
 </svg>',
-	);
+		'familysearch' => /* familysearch icon */ '
+<svg class="fs-icon" viewBox="0 0 48 48" fill="currentColor" width="800" height="800">
+	<defs>
+		<style>
+		.c{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round}
+		</style>
+	</defs>
+	<path d="M13.6 18.7h5.5v5.5h-5.5zm14.5-3.3h5.1v5.1h-5.1zm-6.7 1h4.3v4.3h-4.3zm3 6.7h5.4v5.4h-5.4zm7.7-.1h2.3v2.3h-2.3zm-15.7-9.5h2.9v2.9h-2.9zm5-3.6h4.3v4.3h-4.3z" class="c"/>
+	<path d="M23 20.8c-3.8 12 3.7 17.3 3.7 17.3h-3.3s-6.7-6.6-.4-17.3" class="c"/>
+	<path d="M25.6 28.5s-.8 2.3-3 3.3m-5.2-7.6s.4 1.9 2.7 3.5" class="c"/>
+</svg>',
+		);
 
 	if ( array_key_exists( $icon, $arr ) ) {
 		$repl = sprintf( 

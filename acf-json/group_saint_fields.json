@@ -1,14 +1,14 @@
 {
-    "key": "group_church_leader_fields",
-    "title": "Church Leader Details",
+    "key": "group_saint_fields",
+    "title": "Saint Details",
     "fields": [
         {
-            "key": "field_leader_roles",
-            "label": "Leader Roles",
-            "name": "leader_roles",
+            "key": "field_saint_roles",
+            "label": "Saint Roles",
+            "name": "saint_roles",
             "aria-label": "",
             "type": "taxonomy",
-            "instructions": "Select all applicable roles for this church leader.",
+            "instructions": "Select all applicable roles for this saint. Save the post after changing roles to see role-specific field groups.",
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
@@ -16,17 +16,18 @@
                 "class": "",
                 "id": ""
             },
-            "taxonomy": "leader-role",
+            "taxonomy": "saint-role",
             "field_type": "checkbox",
             "add_term": 0,
             "save_terms": 1,
             "load_terms": 1,
             "return_format": "id",
             "multiple": 1,
-            "allow_null": 0
+            "allow_null": 0,
+            "bidirectional_target": []
         },
         {
-            "key": "field_leader_general_accordion",
+            "key": "field_saint_general_accordion",
             "label": "General Information",
             "name": "",
             "aria-label": "",
@@ -44,7 +45,7 @@
             "endpoint": 0
         },
         {
-            "key": "field_leader_first_name",
+            "key": "field_saint_first_name",
             "label": "First Name",
             "name": "first_name",
             "aria-label": "",
@@ -53,7 +54,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "33",
+                "width": "25",
                 "class": "",
                 "id": ""
             },
@@ -64,7 +65,7 @@
             "append": ""
         },
         {
-            "key": "field_leader_middle_name",
+            "key": "field_saint_middle_name",
             "label": "Middle Name",
             "name": "middle_name",
             "aria-label": "",
@@ -73,7 +74,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "33",
+                "width": "25",
                 "class": "",
                 "id": ""
             },
@@ -84,7 +85,7 @@
             "append": ""
         },
         {
-            "key": "field_leader_last_name",
+            "key": "field_saint_last_name",
             "label": "Last Name",
             "name": "last_name",
             "aria-label": "",
@@ -93,7 +94,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "34",
+                "width": "25",
                 "class": "",
                 "id": ""
             },
@@ -104,7 +105,35 @@
             "append": ""
         },
         {
-            "key": "field_leader_birthdate",
+            "key": "field_saint_gender",
+            "label": "Gender",
+            "name": "gender",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "25",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "male": "Male",
+                "female": "Female"
+            },
+            "default_value": "male",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_saint_birthdate",
             "label": "Birth Date",
             "name": "birthdate",
             "aria-label": "",
@@ -117,17 +146,18 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "F j, Y",
+            "display_format": "Y-m-d",
             "return_format": "Y-m-d",
-            "first_day": 0
+            "first_day": 0,
+            "default_to_current_date": 0
         },
         {
-            "key": "field_leader_deathdate",
-            "label": "Death Date",
-            "name": "deathdate",
+            "key": "field_saint_birthdate_approximate",
+            "label": "Birth Date Approximate",
+            "name": "birthdate_approximate",
             "aria-label": "",
-            "type": "date_picker",
-            "instructions": "Leave empty for living leaders.",
+            "type": "true_false",
+            "instructions": "Check if the birth date is approximate (only year or year-month known).",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -135,12 +165,53 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "F j, Y",
-            "return_format": "Y-m-d",
-            "first_day": 0
+            "message": "Date is approximate",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Approx",
+            "ui_off_text": "Exact"
         },
         {
-            "key": "field_leader_hometown",
+            "key": "field_saint_deathdate",
+            "label": "Death Date",
+            "name": "deathdate",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "Leave empty for living saints.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 0,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_saint_deathdate_approximate",
+            "label": "Death Date Approximate",
+            "name": "deathdate_approximate",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Check if the death date is approximate.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "message": "Date is approximate",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Approx",
+            "ui_off_text": "Exact"
+        },
+        {
+            "key": "field_saint_hometown",
             "label": "Hometown",
             "name": "hometown",
             "aria-label": "",
@@ -149,7 +220,7 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
                 "class": "",
                 "id": ""
             },
@@ -160,7 +231,27 @@
             "append": ""
         },
         {
-            "key": "field_leader_background_accordion",
+            "key": "field_saint_familysearch_id",
+            "label": "FamilySearch ID",
+            "name": "familysearch_id",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "FamilySearch.org person identifier (e.g., KWJY-BPD).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "e.g., KWJY-BPD",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_saint_background_accordion",
             "label": "Background",
             "name": "",
             "aria-label": "",
@@ -178,7 +269,7 @@
             "endpoint": 0
         },
         {
-            "key": "field_leader_education",
+            "key": "field_saint_education",
             "label": "Education",
             "name": "education",
             "aria-label": "",
@@ -198,7 +289,7 @@
             "new_lines": ""
         },
         {
-            "key": "field_leader_mission",
+            "key": "field_saint_mission",
             "label": "Mission",
             "name": "mission",
             "aria-label": "",
@@ -218,7 +309,7 @@
             "append": ""
         },
         {
-            "key": "field_leader_profession",
+            "key": "field_saint_profession",
             "label": "Profession",
             "name": "profession",
             "aria-label": "",
@@ -238,7 +329,7 @@
             "append": ""
         },
         {
-            "key": "field_leader_military",
+            "key": "field_saint_military",
             "label": "Military Service",
             "name": "military",
             "aria-label": "",
@@ -258,185 +349,7 @@
             "append": ""
         },
         {
-            "key": "field_leader_polygamy_accordion",
-            "label": "Polygamy",
-            "name": "",
-            "aria-label": "",
-            "type": "accordion",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "open": 0,
-            "multi_expand": 1,
-            "endpoint": 0
-        },
-        {
-            "key": "field_leader_polygamist",
-            "label": "Polygamist",
-            "name": "polygamist",
-            "aria-label": "",
-            "type": "true_false",
-            "instructions": "Was this leader a polygamist?",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "message": "",
-            "default_value": 0,
-            "ui": 1,
-            "ui_on_text": "",
-            "ui_off_text": ""
-        },
-        {
-            "key": "field_leader_number_of_wives",
-            "label": "Number of Wives",
-            "name": "number_of_wives",
-            "aria-label": "",
-            "type": "number",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_leader_polygamist",
-                        "operator": "==",
-                        "value": "1"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "min": 1,
-            "max": "",
-            "placeholder": "",
-            "step": "",
-            "prepend": "",
-            "append": ""
-        },
-        {
-            "key": "field_leader_apostle_accordion",
-            "label": "Apostle Information",
-            "name": "",
-            "aria-label": "",
-            "type": "accordion",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "open": 1,
-            "multi_expand": 1,
-            "endpoint": 0
-        },
-        {
-            "key": "field_leader_ordained_date",
-            "label": "Ordained as Apostle",
-            "name": "ordained_date",
-            "aria-label": "",
-            "type": "date_time_picker",
-            "instructions": "Date and time ordained as an apostle. Time is optional - only needed when multiple apostles were ordained the same day to establish seniority order.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "display_format": "F j, Y g:i a",
-            "return_format": "Y-m-d H:i:s",
-            "first_day": 0
-        },
-        {
-            "key": "field_leader_ordain_end",
-            "label": "Service Ended",
-            "name": "ordain_end",
-            "aria-label": "",
-            "type": "date_picker",
-            "instructions": "Date apostolic service ended if not by death (e.g., excommunication, resignation, removal from quorum).",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "display_format": "F j, Y",
-            "return_format": "Y-m-d",
-            "first_day": 0
-        },
-        {
-            "key": "field_leader_ordain_note",
-            "label": "Service End Note",
-            "name": "ordain_note",
-            "aria-label": "",
-            "type": "textarea",
-            "instructions": "Explanation for how apostolic service ended (excommunication, resignation, etc.) including dates of rebaptism if applicable.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "maxlength": "",
-            "rows": 3,
-            "placeholder": "",
-            "new_lines": "br"
-        },
-        {
-            "key": "field_leader_prophet_accordion",
-            "label": "Prophet/President Information",
-            "name": "",
-            "aria-label": "",
-            "type": "accordion",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "open": 1,
-            "multi_expand": 1,
-            "endpoint": 0
-        },
-        {
-            "key": "field_leader_became_president_date",
-            "label": "Became Church President",
-            "name": "became_president_date",
-            "aria-label": "",
-            "type": "date_picker",
-            "instructions": "Date this leader became President of the Church.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "display_format": "F j, Y",
-            "return_format": "Y-m-d",
-            "first_day": 0
-        },
-        {
-            "key": "field_leader_integration_accordion",
+            "key": "field_saint_integration_accordion",
             "label": "Site Integration",
             "name": "",
             "aria-label": "",
@@ -454,12 +367,12 @@
             "endpoint": 0
         },
         {
-            "key": "field_leader_tag",
+            "key": "field_saint_tag",
             "label": "Associated Tag",
             "name": "leader_tag",
             "aria-label": "",
             "type": "taxonomy",
-            "instructions": "Link to existing WordPress tag for this leader (for migration from tag-based system).",
+            "instructions": "Link to existing WordPress tag for this saint (for migration from tag-based system).",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -474,10 +387,11 @@
             "save_terms": 0,
             "load_terms": 0,
             "return_format": "id",
-            "multiple": 0
+            "multiple": 0,
+            "bidirectional_target": []
         },
         {
-            "key": "field_leader_end_accordion",
+            "key": "field_saint_end_accordion",
             "label": "End",
             "name": "",
             "aria-label": "",
@@ -500,7 +414,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "church-leader"
+                "value": "saint"
             }
         ]
     ],
@@ -511,7 +425,8 @@
     "instruction_placement": "label",
     "hide_on_screen": "",
     "active": true,
-    "description": "Fields for the Church Leader custom post type.",
+    "description": "Core fields for the Saint custom post type. Role-specific fields appear in separate field groups based on assigned roles.",
     "show_in_rest": 0,
-    "modified": 1736812800
+    "display_title": "",
+    "modified": 1736899200
 }

@@ -1,0 +1,381 @@
+{
+    "key": "group_saint_marriages_fields",
+    "title": "Marriages & Family",
+    "fields": [
+        {
+            "key": "field_saint_marital_status",
+            "label": "Marital Status at First Marriage",
+            "name": "marital_status_at_marriage",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "For wives: their marital status when they first married.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "never_married": "Never Married",
+                "married": "Married",
+                "widow": "Widow",
+                "divorced": "Divorced",
+                "separated": "Separated"
+            },
+            "default_value": "never_married",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "Select status...",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_saint_marriages",
+            "label": "Marriages",
+            "name": "marriages",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "For wives/women: Add your marriage(s) here with spouse set to the husband. Children should be added to each marriage entry. For men: Leave empty - wives will be found via reverse lookup.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "field_saint_marriage_spouse",
+            "button_label": "Add Marriage",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_saint_marriage_spouse_is_saint",
+                    "label": "Spouse is a Saint",
+                    "name": "spouse_is_saint",
+                    "aria-label": "",
+                    "type": "true_false",
+                    "instructions": "Toggle off if spouse is not in the saints database (e.g., non-member husband).",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "100",
+                        "class": "",
+                        "id": ""
+                    },
+                    "message": "Spouse has a saint record",
+                    "default_value": 1,
+                    "ui": 1,
+                    "ui_on_text": "Saint",
+                    "ui_off_text": "Other",
+                    "parent_repeater": "field_saint_marriages"
+                },
+                {
+                    "key": "field_saint_marriage_spouse",
+                    "label": "Spouse (Husband)",
+                    "name": "spouse",
+                    "aria-label": "",
+                    "type": "relationship",
+                    "instructions": "Link to the husband's saint record. Marriage data is stored on the wife's page.",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_saint_marriage_spouse_is_saint",
+                                "operator": "==",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "post_type": [
+                        "saint"
+                    ],
+                    "post_status": "",
+                    "taxonomy": "",
+                    "filters": [
+                        "search"
+                    ],
+                    "elements": [
+                        "featured_image"
+                    ],
+                    "min": 0,
+                    "max": 1,
+                    "return_format": "id",
+                    "bidirectional_target": [],
+                    "parent_repeater": "field_saint_marriages"
+                },
+                {
+                    "key": "field_saint_marriage_spouse_name",
+                    "label": "Spouse Name",
+                    "name": "spouse_name",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "Enter the name of the spouse who is not in the saints database.",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_saint_marriage_spouse_is_saint",
+                                "operator": "!=",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "Enter spouse's full name",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_saint_marriages"
+                },
+                {
+                    "key": "field_saint_marriage_spouse_birthdate",
+                    "label": "Spouse Birthdate",
+                    "name": "spouse_birthdate",
+                    "aria-label": "",
+                    "type": "date_picker",
+                    "instructions": "Birthdate of the non-saint spouse (for age calculations).",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_saint_marriage_spouse_is_saint",
+                                "operator": "!=",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "display_format": "Y-m-d",
+                    "return_format": "Y-m-d",
+                    "first_day": 0,
+                    "parent_repeater": "field_saint_marriages",
+                    "default_to_current_date": 0
+                },
+                {
+                    "key": "field_saint_marriage_date",
+                    "label": "Marriage Date",
+                    "name": "marriage_date",
+                    "aria-label": "",
+                    "type": "date_picker",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "30",
+                        "class": "",
+                        "id": ""
+                    },
+                    "display_format": "Y-m-d",
+                    "return_format": "Y-m-d",
+                    "first_day": 0,
+                    "parent_repeater": "field_saint_marriages",
+                    "default_to_current_date": 0
+                },
+                {
+                    "key": "field_saint_marriage_date_approximate",
+                    "label": "Approx?",
+                    "name": "marriage_date_approximate",
+                    "aria-label": "",
+                    "type": "true_false",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "20",
+                        "class": "",
+                        "id": ""
+                    },
+                    "message": "Approx",
+                    "default_value": 0,
+                    "ui": 1,
+                    "ui_on_text": "Yes",
+                    "ui_off_text": "No",
+                    "parent_repeater": "field_saint_marriages"
+                },
+                {
+                    "key": "field_saint_marriage_divorce_date",
+                    "label": "Divorce Date",
+                    "name": "divorce_date",
+                    "aria-label": "",
+                    "type": "date_picker",
+                    "instructions": "Leave empty if not divorced.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "display_format": "Y-m-d",
+                    "return_format": "Y-m-d",
+                    "first_day": 0,
+                    "parent_repeater": "field_saint_marriages",
+                    "default_to_current_date": 0
+                },
+                {
+                    "key": "field_saint_marriage_notes",
+                    "label": "Marriage Notes",
+                    "name": "marriage_notes",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "Additional details about this marriage.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "rows": 2,
+                    "placeholder": "",
+                    "new_lines": "",
+                    "parent_repeater": "field_saint_marriages"
+                },
+                {
+                    "key": "field_saint_marriage_children",
+                    "label": "Children from this Marriage",
+                    "name": "children",
+                    "aria-label": "",
+                    "type": "repeater",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "layout": "table",
+                    "pagination": 0,
+                    "min": 0,
+                    "max": 0,
+                    "collapsed": "",
+                    "button_label": "Add Child",
+                    "rows_per_page": 20,
+                    "parent_repeater": "field_saint_marriages",
+                    "sub_fields": [
+                        {
+                            "key": "field_saint_child_name",
+                            "label": "Child Name",
+                            "name": "child_name",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "Use [Child 1], [Child 2], etc. as placeholders for unknown names. Placeholders won't display on frontend but count toward totals.",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": "40",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": "",
+                            "parent_repeater": "field_saint_marriage_children"
+                        },
+                        {
+                            "key": "field_saint_child_birthdate",
+                            "label": "Birthdate",
+                            "name": "child_birthdate",
+                            "aria-label": "",
+                            "type": "date_picker",
+                            "instructions": "",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": "30",
+                                "class": "",
+                                "id": ""
+                            },
+                            "display_format": "Y-m-d",
+                            "return_format": "Y-m-d",
+                            "first_day": 0,
+                            "default_to_current_date": 0,
+                            "allow_in_bindings": 1,
+                            "parent_repeater": "field_saint_marriage_children"
+                        },
+                        {
+                            "key": "field_saint_child_link",
+                            "label": "Link to Saint",
+                            "name": "child_link",
+                            "aria-label": "",
+                            "type": "relationship",
+                            "instructions": "If child has their own saint record.",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": "30",
+                                "class": "",
+                                "id": ""
+                            },
+                            "post_type": [
+                                "saint"
+                            ],
+                            "post_status": "",
+                            "taxonomy": "",
+                            "filters": [
+                                "search"
+                            ],
+                            "elements": [],
+                            "min": 0,
+                            "max": 1,
+                            "return_format": "id",
+                            "bidirectional_target": [],
+                            "parent_repeater": "field_saint_marriage_children"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "saint"
+            },
+            {
+                "param": "post_taxonomy",
+                "operator": "==",
+                "value": "saint-role:wife"
+            }
+        ]
+    ],
+    "menu_order": 12,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Marriage and family fields for saints with the wife role.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1736899200
+}

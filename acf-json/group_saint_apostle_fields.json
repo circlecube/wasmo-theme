@@ -1,0 +1,89 @@
+{
+    "key": "group_saint_apostle_fields",
+    "title": "Apostle Information",
+    "fields": [
+        {
+            "key": "field_saint_ordained_date",
+            "label": "Ordained as Apostle",
+            "name": "ordained_date",
+            "aria-label": "",
+            "type": "date_time_picker",
+            "instructions": "Date and time ordained as an apostle. Time is optional - only needed when multiple apostles were ordained the same day to establish seniority order.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "F j, Y g:i a",
+            "return_format": "Y-m-d H:i:s",
+            "first_day": 0,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_saint_ordain_end",
+            "label": "Service Ended",
+            "name": "ordain_end",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "Date apostolic service ended if not by death (e.g., excommunication, resignation, removal from quorum).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 0,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_saint_ordain_note",
+            "label": "Service End Note",
+            "name": "ordain_note",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Explanation for how apostolic service ended (excommunication, resignation, etc.) including dates of rebaptism if applicable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": 3,
+            "placeholder": "",
+            "new_lines": "br"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "saint"
+            },
+            {
+                "param": "post_taxonomy",
+                "operator": "==",
+                "value": "saint-role:apostle"
+            }
+        ]
+    ],
+    "menu_order": 10,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Apostle-specific fields for saints with the apostle role.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1736899200
+}

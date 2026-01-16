@@ -1,6 +1,6 @@
 <?php
 /**
- * Church Leaders Association Tool
+ * Saints Association Tool
  * 
  * Admin page for bulk associating existing posts and media with church leaders
  * based on existing tag relationships.
@@ -13,7 +13,7 @@
  */
 function wasmo_add_leader_associations_page() {
 	add_submenu_page(
-		'edit.php?post_type=church-leader',
+		'edit.php?post_type=saint',
 		'Associate Content',
 		'Associate Content',
 		'manage_options',
@@ -54,7 +54,7 @@ function wasmo_render_leader_associations_page() {
 	$leaders_with_tags = wasmo_get_leaders_with_tags();
 	?>
 	<div class="wrap">
-		<h1>Associate Content with Church Leaders</h1>
+		<h1>Associate Content with Saints</h1>
 		
 		<?php echo $message; ?>
 
@@ -279,7 +279,7 @@ function wasmo_render_leader_associations_page() {
  */
 function wasmo_get_leaders_with_tags() {
 	$leaders = get_posts( array(
-		'post_type'      => 'church-leader',
+		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
 		'meta_query'     => array(
@@ -363,7 +363,7 @@ function wasmo_get_leaders_with_tags() {
  */
 function wasmo_get_all_leaders_for_search() {
 	$leaders = get_posts( array(
-		'post_type'      => 'church-leader',
+		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
 	) );

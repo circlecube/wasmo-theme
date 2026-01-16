@@ -1,6 +1,6 @@
 {
     "key": "group_post_leader_relationship",
-    "title": "Related Church Leaders",
+    "title": "Related Saints",
     "fields": [
         {
             "key": "field_related_leaders",
@@ -8,7 +8,7 @@
             "name": "related_leaders",
             "aria-label": "",
             "type": "relationship",
-            "instructions": "Select church leaders mentioned or discussed in this content.",
+            "instructions": "Select saints mentioned or discussed in this content.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -17,7 +17,7 @@
                 "id": ""
             },
             "post_type": [
-                "church-leader"
+                "saint"
             ],
             "post_status": "",
             "taxonomy": "",
@@ -57,7 +57,7 @@
     "instruction_placement": "label",
     "hide_on_screen": "",
     "active": true,
-    "description": "Associate posts and media with church leaders.",
+    "description": "Associate posts and media with saints.",
     "show_in_rest": 0,
     "modified": 1736812800
 }

@@ -29,8 +29,8 @@ $term = get_term_by( 'id', $termid, 'tags' );
 				<?php 
 				// Check if there's an associated church leader for this tag
 				$current_tag = get_queried_object();
-				if ( $current_tag && function_exists( 'wasmo_get_leader_by_tag' ) ) {
-					$associated_leader = wasmo_get_leader_by_tag( $current_tag->term_id );
+				if ( $current_tag && function_exists( 'wasmo_get_saint_by_tag' ) ) {
+					$associated_leader = wasmo_get_saint_by_tag( $current_tag->term_id );
 					if ( $associated_leader ) :
 						$leader_thumbnail = get_the_post_thumbnail_url( $associated_leader->ID, 'thumbnail' );
 					?>

@@ -97,29 +97,29 @@ function wasmo_cptui_register_my_taxes() {
 	register_taxonomy( 'shelf', array( 'post', 'user' ), $args );
 
 	/**
-	 * Taxonomy: Leader Roles.
-	 * Non-hierarchical taxonomy for church leader positions.
+	 * Taxonomy: Saint Roles.
+	 * Non-hierarchical taxonomy for saint positions/types.
 	 */
 	$labels = array(
-		'name'                       => __( 'Leader Roles', 'wasmo' ),
-		'singular_name'              => __( 'Leader Role', 'wasmo' ),
-		'menu_name'                  => __( 'Leader Roles', 'wasmo' ),
-		'all_items'                  => __( 'All Leader Roles', 'wasmo' ),
-		'edit_item'                  => __( 'Edit Leader Role', 'wasmo' ),
-		'view_item'                  => __( 'View Leader Role', 'wasmo' ),
-		'update_item'                => __( 'Update Leader Role', 'wasmo' ),
-		'add_new_item'               => __( 'Add New Leader Role', 'wasmo' ),
-		'new_item_name'              => __( 'New Leader Role Name', 'wasmo' ),
-		'search_items'               => __( 'Search Leader Roles', 'wasmo' ),
-		'popular_items'              => __( 'Popular Leader Roles', 'wasmo' ),
-		'separate_items_with_commas' => __( 'Separate leader roles with commas', 'wasmo' ),
-		'add_or_remove_items'        => __( 'Add or remove leader roles', 'wasmo' ),
-		'choose_from_most_used'      => __( 'Choose from the most used leader roles', 'wasmo' ),
-		'not_found'                  => __( 'No leader roles found', 'wasmo' ),
+		'name'                       => __( 'Saint Roles', 'wasmo' ),
+		'singular_name'              => __( 'Saint Role', 'wasmo' ),
+		'menu_name'                  => __( 'Saint Roles', 'wasmo' ),
+		'all_items'                  => __( 'All Saint Roles', 'wasmo' ),
+		'edit_item'                  => __( 'Edit Saint Role', 'wasmo' ),
+		'view_item'                  => __( 'View Saint Role', 'wasmo' ),
+		'update_item'                => __( 'Update Saint Role', 'wasmo' ),
+		'add_new_item'               => __( 'Add New Saint Role', 'wasmo' ),
+		'new_item_name'              => __( 'New Saint Role Name', 'wasmo' ),
+		'search_items'               => __( 'Search Saint Roles', 'wasmo' ),
+		'popular_items'              => __( 'Popular Saint Roles', 'wasmo' ),
+		'separate_items_with_commas' => __( 'Separate saint roles with commas', 'wasmo' ),
+		'add_or_remove_items'        => __( 'Add or remove saint roles', 'wasmo' ),
+		'choose_from_most_used'      => __( 'Choose from the most used saint roles', 'wasmo' ),
+		'not_found'                  => __( 'No saint roles found', 'wasmo' ),
 	);
 
 	$args = array(
-		'label'                 => __( 'Leader Roles', 'wasmo' ),
+		'label'                 => __( 'Saint Roles', 'wasmo' ),
 		'labels'                => $labels,
 		'public'                => true,
 		'publicly_queryable'    => true,
@@ -128,46 +128,46 @@ function wasmo_cptui_register_my_taxes() {
 		'show_in_menu'          => true,
 		'show_in_nav_menus'     => true,
 		'query_var'             => true,
-		'rewrite'               => array( 'slug' => 'leader-role', 'with_front' => true ),
+		'rewrite'               => array( 'slug' => 'saint-role', 'with_front' => true ),
 		'show_admin_column'     => true,
 		'show_in_rest'          => true,
-		'rest_base'             => 'leader-role',
+		'rest_base'             => 'saint-role',
 		'rest_controller_class' => 'WP_REST_Terms_Controller',
 		'show_in_quick_edit'    => true,
 	);
-	register_taxonomy( 'leader-role', array( 'church-leader' ), $args );
+	register_taxonomy( 'saint-role', array( 'saint' ), $args );
 }
 add_action( 'init', 'wasmo_cptui_register_my_taxes' );
 
 /**
- * Register Church Leader Custom Post Type
+ * Register Saint Custom Post Type
  */
-function wasmo_register_church_leader_cpt() {
+function wasmo_register_saint_cpt() {
 	$labels = array(
-		'name'                  => __( 'Church Leaders', 'wasmo' ),
-		'singular_name'         => __( 'Church Leader', 'wasmo' ),
-		'menu_name'             => __( 'Church Leaders', 'wasmo' ),
-		'name_admin_bar'        => __( 'Church Leader', 'wasmo' ),
+		'name'                  => __( 'Saints', 'wasmo' ),
+		'singular_name'         => __( 'Saint', 'wasmo' ),
+		'menu_name'             => __( 'Saints', 'wasmo' ),
+		'name_admin_bar'        => __( 'Saint', 'wasmo' ),
 		'add_new'               => __( 'Add New', 'wasmo' ),
-		'add_new_item'          => __( 'Add New Leader', 'wasmo' ),
-		'new_item'              => __( 'New Church Leader', 'wasmo' ),
-		'edit_item'             => __( 'Edit Church Leader', 'wasmo' ),
-		'view_item'             => __( 'View Church Leader', 'wasmo' ),
-		'all_items'             => __( 'All Church Leaders', 'wasmo' ),
-		'search_items'          => __( 'Search Church Leaders', 'wasmo' ),
-		'parent_item_colon'     => __( 'Parent Church Leaders:', 'wasmo' ),
-		'not_found'             => __( 'No church leaders found.', 'wasmo' ),
-		'not_found_in_trash'    => __( 'No church leaders found in Trash.', 'wasmo' ),
-		'featured_image'        => __( 'Leader Portrait', 'wasmo' ),
-		'set_featured_image'    => __( 'Set leader portrait', 'wasmo' ),
-		'remove_featured_image' => __( 'Remove leader portrait', 'wasmo' ),
-		'use_featured_image'    => __( 'Use as leader portrait', 'wasmo' ),
-		'archives'              => __( 'Church Leader Archives', 'wasmo' ),
-		'insert_into_item'      => __( 'Insert into church leader', 'wasmo' ),
-		'uploaded_to_this_item' => __( 'Uploaded to this church leader', 'wasmo' ),
-		'filter_items_list'     => __( 'Filter church leaders list', 'wasmo' ),
-		'items_list_navigation' => __( 'Church leaders list navigation', 'wasmo' ),
-		'items_list'            => __( 'Church leaders list', 'wasmo' ),
+		'add_new_item'          => __( 'Add New Saint', 'wasmo' ),
+		'new_item'              => __( 'New Saint', 'wasmo' ),
+		'edit_item'             => __( 'Edit Saint', 'wasmo' ),
+		'view_item'             => __( 'View Saint', 'wasmo' ),
+		'all_items'             => __( 'All Saints', 'wasmo' ),
+		'search_items'          => __( 'Search Saints', 'wasmo' ),
+		'parent_item_colon'     => __( 'Parent Saints:', 'wasmo' ),
+		'not_found'             => __( 'No saints found.', 'wasmo' ),
+		'not_found_in_trash'    => __( 'No saints found in Trash.', 'wasmo' ),
+		'featured_image'        => __( 'Portrait', 'wasmo' ),
+		'set_featured_image'    => __( 'Set portrait', 'wasmo' ),
+		'remove_featured_image' => __( 'Remove portrait', 'wasmo' ),
+		'use_featured_image'    => __( 'Use as portrait', 'wasmo' ),
+		'archives'              => __( 'Saint Archives', 'wasmo' ),
+		'insert_into_item'      => __( 'Insert into saint', 'wasmo' ),
+		'uploaded_to_this_item' => __( 'Uploaded to this saint', 'wasmo' ),
+		'filter_items_list'     => __( 'Filter saints list', 'wasmo' ),
+		'items_list_navigation' => __( 'Saints list navigation', 'wasmo' ),
+		'items_list'            => __( 'Saints list', 'wasmo' ),
 	);
 
 	$args = array(
@@ -177,7 +177,7 @@ function wasmo_register_church_leader_cpt() {
 		'show_ui'             => true,
 		'show_in_menu'        => true,
 		'query_var'           => true,
-		'rewrite'             => array( 'slug' => 'church-leader', 'with_front' => true ),
+		'rewrite'             => array( 'slug' => 'saint', 'with_front' => true ),
 		'capability_type'     => 'post',
 		'has_archive'         => true,
 		'hierarchical'        => false,
@@ -185,38 +185,46 @@ function wasmo_register_church_leader_cpt() {
 		'menu_icon'           => 'dashicons-groups',
 		'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt', 'revisions' ),
 		'show_in_rest'        => true,
-		'rest_base'           => 'church-leaders',
+		'rest_base'           => 'saints',
 		'rest_controller_class' => 'WP_REST_Posts_Controller',
-		'taxonomies'          => array( 'leader-role', 'post_tag' ),
+		'taxonomies'          => array( 'saint-role', 'post_tag' ),
 	);
 
-	register_post_type( 'church-leader', $args );
+	register_post_type( 'saint', $args );
 }
-add_action( 'init', 'wasmo_register_church_leader_cpt' );
+add_action( 'init', 'wasmo_register_saint_cpt' );
 
 /**
- * Create default leader role terms on theme activation
+ * Create default saint role terms on theme activation
  */
-function wasmo_create_default_leader_roles() {
+function wasmo_create_default_saint_roles() {
 	$default_roles = array(
-		'president'           => 'President',
-		'first-counselor'      => 'First Counselor',
-		'second-counselor'    => 'Second Counselor',
-		'apostle'             => 'Apostle',
-		'seventy'             => 'Seventy',
-		'presiding-bishopric' => 'Presiding Bishopric',
-		'general-authority'   => 'General Authority',
-		'other'               => 'Other',
+		// Leadership roles
+		'president'                => 'President',
+		'first-counselor'          => 'First Counselor',
+		'second-counselor'         => 'Second Counselor',
+		'apostle'                  => 'Apostle',
+		'seventy'                  => 'Seventy',
+		'presiding-bishopric'      => 'Presiding Bishopric',
+		'general-authority'        => 'General Authority',
+		'relief-society-president' => 'Relief Society President',
+		'church-historian'         => 'Church Historian',
+		// Family/relationship roles
+		'wife'                     => 'Wife',
+		// 'child'                    => 'Child',
+		// Other
+		// 'historical-figure'        => 'Historical Figure',
+		'other'                    => 'Other',
 	);
 
 	foreach ( $default_roles as $slug => $name ) {
-		if ( ! term_exists( $slug, 'leader-role' ) ) {
-			wp_insert_term( $name, 'leader-role', array( 'slug' => $slug ) );
+		if ( ! term_exists( $slug, 'saint-role' ) ) {
+			wp_insert_term( $name, 'saint-role', array( 'slug' => $slug ) );
 		}
 	}
 }
-add_action( 'after_switch_theme', 'wasmo_create_default_leader_roles' );
-add_action( 'init', 'wasmo_create_default_leader_roles', 20 );
+add_action( 'after_switch_theme', 'wasmo_create_default_saint_roles' );
+add_action( 'init', 'wasmo_create_default_saint_roles', 20 );
 
 
 /**
@@ -489,16 +497,16 @@ function wasmo_get_transient_keys_with_prefix( $prefix ) {
 }
 
 /**
- * Add leader role filter dropdown to Church Leaders admin list
+ * Add saint role filter dropdown to Saints admin list
  */
-function wasmo_admin_leader_role_filter() {
+function wasmo_admin_saint_role_filter() {
 	global $typenow;
 
-	if ( 'church-leader' !== $typenow ) {
+	if ( 'saint' !== $typenow ) {
 		return;
 	}
 
-	$taxonomy = 'leader-role';
+	$taxonomy = 'saint-role';
 	$selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( $_GET[ $taxonomy ] ) : '';
 	
 	$terms = get_terms( array(
@@ -523,35 +531,35 @@ function wasmo_admin_leader_role_filter() {
 	
 	echo '</select>';
 }
-add_action( 'restrict_manage_posts', 'wasmo_admin_leader_role_filter' );
+add_action( 'restrict_manage_posts', 'wasmo_admin_saint_role_filter' );
 
 /**
- * Add living/deceased filter dropdown to Church Leaders admin list
+ * Add living/deceased filter dropdown to Saints admin list
  */
-function wasmo_admin_leader_status_filter() {
+function wasmo_admin_saint_status_filter() {
 	global $typenow;
 
-	if ( 'church-leader' !== $typenow ) {
+	if ( 'saint' !== $typenow ) {
 		return;
 	}
 
-	$selected = isset( $_GET['leader_status'] ) ? sanitize_text_field( $_GET['leader_status'] ) : '';
+	$selected = isset( $_GET['saint_status'] ) ? sanitize_text_field( $_GET['saint_status'] ) : '';
 	
-	echo '<select name="leader_status" id="leader_status">';
+	echo '<select name="saint_status" id="saint_status">';
 	echo '<option value="">' . esc_html__( 'All (Living & Deceased)', 'wasmo' ) . '</option>';
 	echo '<option value="living"' . selected( $selected, 'living', false ) . '>' . esc_html__( 'Living Only', 'wasmo' ) . '</option>';
 	echo '<option value="deceased"' . selected( $selected, 'deceased', false ) . '>' . esc_html__( 'Deceased Only', 'wasmo' ) . '</option>';
 	echo '</select>';
 }
-add_action( 'restrict_manage_posts', 'wasmo_admin_leader_status_filter' );
+add_action( 'restrict_manage_posts', 'wasmo_admin_saint_status_filter' );
 
 /**
- * Filter Church Leaders query by living/deceased status
+ * Filter Saints query by living/deceased status
  */
-function wasmo_admin_filter_leaders_by_status( $query ) {
+function wasmo_admin_filter_saints_by_status( $query ) {
 	global $pagenow, $typenow;
 
-	if ( ! is_admin() || 'edit.php' !== $pagenow || 'church-leader' !== $typenow ) {
+	if ( ! is_admin() || 'edit.php' !== $pagenow || 'saint' !== $typenow ) {
 		return;
 	}
 
@@ -559,7 +567,7 @@ function wasmo_admin_filter_leaders_by_status( $query ) {
 		return;
 	}
 
-	$status = isset( $_GET['leader_status'] ) ? sanitize_text_field( $_GET['leader_status'] ) : '';
+	$status = isset( $_GET['saint_status'] ) ? sanitize_text_field( $_GET['saint_status'] ) : '';
 
 	if ( empty( $status ) ) {
 		return;
@@ -592,12 +600,12 @@ function wasmo_admin_filter_leaders_by_status( $query ) {
 
 	$query->set( 'meta_query', $meta_query );
 }
-add_action( 'pre_get_posts', 'wasmo_admin_filter_leaders_by_status' );
+add_action( 'pre_get_posts', 'wasmo_admin_filter_saints_by_status' );
 
 /**
- * Add custom columns to Church Leaders admin list
+ * Add custom columns to Saints admin list
  */
-function wasmo_admin_leader_columns( $columns ) {
+function wasmo_admin_saint_columns( $columns ) {
 	$new_columns = array();
 	
 	foreach ( $columns as $key => $value ) {
@@ -605,26 +613,26 @@ function wasmo_admin_leader_columns( $columns ) {
 		
 		// Add custom columns after title
 		if ( 'title' === $key ) {
-			$new_columns['leader_roles'] = __( 'Roles', 'wasmo' );
-			$new_columns['leader_dates'] = __( 'Life Dates', 'wasmo' );
-			$new_columns['leader_ordained'] = __( 'Ordained', 'wasmo' );
+			$new_columns['saint_roles'] = __( 'Roles', 'wasmo' );
+			$new_columns['saint_dates'] = __( 'Life Dates', 'wasmo' );
+			$new_columns['saint_ordained'] = __( 'Ordained', 'wasmo' );
 		}
 	}
 	
 	// Remove the default taxonomy column if it exists (we're adding our own)
-	unset( $new_columns['taxonomy-leader-role'] );
+	unset( $new_columns['taxonomy-saint-role'] );
 	
 	return $new_columns;
 }
-add_filter( 'manage_church-leader_posts_columns', 'wasmo_admin_leader_columns' );
+add_filter( 'manage_saint_posts_columns', 'wasmo_admin_saint_columns' );
 
 /**
- * Display custom column content for Church Leaders
+ * Display custom column content for Saints
  */
-function wasmo_admin_leader_column_content( $column, $post_id ) {
+function wasmo_admin_saint_column_content( $column, $post_id ) {
 	switch ( $column ) {
-		case 'leader_roles':
-			$terms = wp_get_post_terms( $post_id, 'leader-role', array( 'fields' => 'names' ) );
+		case 'saint_roles':
+			$terms = wp_get_post_terms( $post_id, 'saint-role', array( 'fields' => 'names' ) );
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 				echo esc_html( implode( ', ', $terms ) );
 			} else {
@@ -632,7 +640,7 @@ function wasmo_admin_leader_column_content( $column, $post_id ) {
 			}
 			break;
 			
-		case 'leader_dates':
+		case 'saint_dates':
 			$birthdate = get_field( 'birthdate', $post_id );
 			$deathdate = get_field( 'deathdate', $post_id );
 			
@@ -649,7 +657,7 @@ function wasmo_admin_leader_column_content( $column, $post_id ) {
 			}
 			break;
 			
-		case 'leader_ordained':
+		case 'saint_ordained':
 			$ordained = get_field( 'ordained_date', $post_id );
 			if ( $ordained ) {
 				echo esc_html( date( 'M j, Y', strtotime( $ordained ) ) );
@@ -659,22 +667,22 @@ function wasmo_admin_leader_column_content( $column, $post_id ) {
 			break;
 	}
 }
-add_action( 'manage_church-leader_posts_custom_column', 'wasmo_admin_leader_column_content', 10, 2 );
+add_action( 'manage_saint_posts_custom_column', 'wasmo_admin_saint_column_content', 10, 2 );
 
 /**
  * Make custom columns sortable
  */
-function wasmo_admin_leader_sortable_columns( $columns ) {
-	$columns['leader_dates'] = 'birthdate';
-	$columns['leader_ordained'] = 'ordained_date';
+function wasmo_admin_saint_sortable_columns( $columns ) {
+	$columns['saint_dates'] = 'birthdate';
+	$columns['saint_ordained'] = 'ordained_date';
 	return $columns;
 }
-add_filter( 'manage_edit-church-leader_sortable_columns', 'wasmo_admin_leader_sortable_columns' );
+add_filter( 'manage_edit-saint_sortable_columns', 'wasmo_admin_saint_sortable_columns' );
 
 /**
  * Handle sorting by custom columns
  */
-function wasmo_admin_leader_column_orderby( $query ) {
+function wasmo_admin_saint_column_orderby( $query ) {
 	if ( ! is_admin() || ! $query->is_main_query() ) {
 		return;
 	}
@@ -689,4 +697,4 @@ function wasmo_admin_leader_column_orderby( $query ) {
 		$query->set( 'orderby', 'meta_value' );
 	}
 }
-add_action( 'pre_get_posts', 'wasmo_admin_leader_column_orderby' );
+add_action( 'pre_get_posts', 'wasmo_admin_saint_column_orderby' );

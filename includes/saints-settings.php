@@ -1,6 +1,6 @@
 <?php
 /**
- * Church Leaders Settings
+ * Saints Settings
  * 
  * Admin page for configuring the current First Presidency and other leadership settings.
  *
@@ -12,9 +12,9 @@
  */
 function wasmo_add_leader_settings_page() {
 	add_submenu_page(
-		'edit.php?post_type=church-leader',
-		'Leadership Settings',
-		'Leadership Settings',
+		'edit.php?post_type=saint',
+		'First Presidency Settings',
+		'First Presidency Settings',
 		'manage_options',
 		'leader-settings',
 		'wasmo_render_leader_settings_page'
@@ -48,7 +48,7 @@ add_action( 'update_option', 'wasmo_clear_fp_transient_on_save', 10, 3 );
 function wasmo_render_leader_settings_page() {
 	// Get all church leaders for the dropdown
 	$all_leaders = get_posts( array(
-		'post_type'      => 'church-leader',
+		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
 		'orderby'        => 'title',
@@ -60,7 +60,7 @@ function wasmo_render_leader_settings_page() {
 	$deceased_leaders = array();
 	
 	foreach ( $all_leaders as $leader ) {
-		if ( wasmo_is_leader_living( $leader->ID ) ) {
+		if ( wasmo_is_saint_living( $leader->ID ) ) {
 			$living_leaders[] = $leader;
 		} else {
 			$deceased_leaders[] = $leader;
@@ -76,7 +76,7 @@ function wasmo_render_leader_settings_page() {
 	$computed_fp = wasmo_get_current_first_presidency();
 	?>
 	<div class="wrap">
-		<h1>Church Leadership Settings</h1>
+		<h1>Saintship Settings</h1>
 		
 		<p>Configure the current First Presidency. These settings override the automatic detection based on taxonomy roles.</p>
 
@@ -178,7 +178,7 @@ function wasmo_render_leader_settings_page() {
 					</tr>
 				</table>
 
-				<?php submit_button( 'Save Leadership Settings' ); ?>
+				<?php submit_button( 'Save First Presidency Settings' ); ?>
 			</div>
 		</form>
 
