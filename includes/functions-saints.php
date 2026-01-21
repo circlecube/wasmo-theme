@@ -919,6 +919,79 @@ function wasmo_format_saint_date( $date, $format = 'F j, Y', $show_time_if_set =
 }
 
 /**
+ * Get saint's initials from their name
+ *
+ * @param int $saint_id The saint post ID.
+ * @return string Initials (e.g., "JS" for Joseph Smith, "BWY" for Brigham W. Young).
+ */
+function wasmo_get_saint_initials( $saint_id ) {
+	$first = get_field( 'first_name', $saint_id );
+	$middle = get_field( 'middle_name', $saint_id );
+	$last = get_field( 'last_name', $saint_id );
+	
+	$initials = '';
+	
+	if ( $first ) {
+		$initials .= strtoupper( substr( $first, 0, 1 ) );
+	}
+	if ( $middle ) {
+		$initials .= strtoupper( substr( $middle, 0, 1 ) );
+	}
+	if ( $last ) {
+		$initials .= strtoupper( substr( $last, 0, 1 ) );
+	}
+	
+	// Fallback to title if no ACF fields
+	if ( empty( $initials ) ) {
+		$title = get_the_title( $saint_id );
+		$words = preg_split( '/\s+/', trim( $title ) );
+		foreach ( $words as $word ) {
+			if ( ! empty( $word ) ) {
+				$initials .= strtoupper( substr( $word, 0, 1 ) );
+			}
+			// Limit to 3 initials max
+			if ( strlen( $initials ) >= 3 ) {
+				break;
+			}
+		}
+	}
+	
+	return $initials;
+}
+
+/**
+ * Render a saint card placeholder with SVG icon and initials
+ *
+ * @param int $saint_id The saint post ID.
+ * @param string $gender Optional gender for icon selection ('male', 'female').
+ * @param string $style Optional style variant ('saint' or 'leader').
+ * @return string HTML for the placeholder.
+ */
+function wasmo_get_saint_placeholder( $saint_id, $gender = null, $style = 'saint' ) {
+	$initials = wasmo_get_saint_initials( $saint_id );
+	
+	if ( $gender === null ) {
+		$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	}
+	
+	// Use businesswoman for female, businessman for male
+	$icon_name = ( $gender === 'female' ) ? 'businesswoman' : 'businessman';
+	
+	// Choose base class based on style
+	$base_class = ( $style === 'leader' ) ? 'leader-card-placeholder' : 'saint-card-placeholder';
+	
+	// Add gender class for color styling
+	$gender_class = ( $gender === 'female' ) ? 'placeholder-female' : 'placeholder-male';
+	
+	$html = '<div class="' . esc_attr( $base_class ) . ' ' . esc_attr( $gender_class ) . '">';
+	$html .= '<span class="placeholder-icon">' . wasmo_get_icon_svg( $icon_name, 100 ) . '</span>';
+	$html .= '<span class="placeholder-initials">' . esc_html( $initials ) . '</span>';
+	$html .= '</div>';
+	
+	return $html;
+}
+
+/**
  * Get saint's full display name
  *
  * @param int $saint_id The saint post ID.
@@ -1084,67 +1157,18 @@ function wasmo_render_saint_card(
 	$show_age_dates = true,
 	$show_service_dates = true,
 	$show_role = false,
-	$role_override = ''
+	$role_override = '',
+	$content = '',
 ) {
-	$saint = get_post( $saint_id );
-	$thumbnail = get_the_post_thumbnail_url( $saint_id, 'medium' );
-	$roles = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'names' ) );
-	$role_slugs = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'slugs' ) );
-	$is_living = wasmo_is_saint_living( $saint_id );
-	$fp    = wasmo_get_current_first_presidency();
-	$is_current_pr = $saint_id === $fp['president'];
-	$is_fc = $saint_id === $fp['first-counselor'];
-	$is_sc = $saint_id === $fp['second-counselor'];
-	$is_fp = $is_current_pr || $is_fc || $is_sc;
-	
-	// Check if saint has president role (current or past)
-	$has_president_role = in_array( 'president', $role_slugs, true );
-	?>
-	<a
-		href="<?php echo get_permalink( $saint_id ); ?>" 
-		class="
-			saint-card saint-card-<?php echo esc_attr( $size ); ?>
-			<?php echo $is_living ? 'saint-living' : 'saint-deceased'; ?>
-			<?php echo $is_fp ? 'saint-first-presidency' : ''; ?>
-			<?php echo $has_president_role ? 'saint-president' : ''; ?>
-			<?php echo $is_fc ? 'saint-first-counselor' : ''; ?>
-			<?php echo $is_sc ? 'saint-second-counselor' : ''; ?>
-		"
-		title="<?php echo esc_html( $saint->post_title ); ?>"
-	>
-		<div class="saint-card-image-wrapper">
-			<?php if ( $thumbnail ) : ?>
-				<img src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php echo esc_attr( $saint->post_title ); ?>" class="saint-card-image">
-			<?php else : ?>
-				<div class="saint-card-placeholder">
-					<span><?php
-						// get the first letter of each word in the title and join them together
-						$title_letters = explode( ' ', $saint->post_title );
-						$title_letters = array_map( function( $letter ) {
-							return substr( $letter, 0, 1 );
-						}, $title_letters );
-						echo esc_html( implode( '', $title_letters ) );
-					?></span>
-				</div>
-			<?php endif; ?>
-		</div>
-		<div class="saint-card-info">
-			<span class="saint-card-name"><?php echo esc_html( $saint->post_title ); ?></span>
-			<?php if ( $show_age_dates ) : ?>
-				<span class="saint-card-dates"><?php echo esc_html( wasmo_get_saint_lifespan( $saint_id ) ); ?></span>
-			<?php endif; ?>
-			<?php if ( $show_role && ! empty( $roles ) ) : ?>
-				<span class="saint-card-role"><?php echo esc_html( implode( ', ', $roles ) ); ?></span>
-			<?php endif; ?>
-			<?php if ( ! empty( $role_override ) && $role_override !== '' ) : ?>
-				<span class="saint-card-role"><?php echo esc_html( $role_override ); ?></span>
-			<?php endif; ?>
-			<?php if ( $show_service_dates ) : ?>
-				<span class="saint-card-dates"><?php echo esc_html( wasmo_get_saint_service_date( $saint_id ) ); ?></span>
-			<?php endif; ?>
-		</div>
-	</a>
-	<?php
+	get_template_part( 'template-parts/content/content-saint-card', null, array(
+		'saint_id'           => $saint_id,
+		'size'               => $size,
+		'show_age_dates'     => $show_age_dates,
+		'show_service_dates' => $show_service_dates,
+		'show_role'          => $show_role,
+		'role_override'      => $role_override,
+		'content'            => $content,
+	) );
 }
 
 // ============================================
@@ -1996,6 +2020,124 @@ function wasmo_get_polygamy_stats( $saint_id ) {
 }
 
 /**
+ * Determine if a saint is a celestial polygamist (sequential marriages) vs simultaneous polygamist
+ * 
+ * A "celestial polygamist" is someone sealed to multiple spouses, but only married to one at a time
+ * while living (previous spouses died before subsequent marriages).
+ * 
+ * A "traditional polygamist" was married to multiple living spouses simultaneously.
+ *
+ * @param int $saint_id The saint post ID.
+ * @return array Array with 'type' ('celestial', 'simultaneous', 'none'), 'had_overlapping_marriages', and 'details'.
+ */
+function wasmo_get_polygamy_type( $saint_id ) {
+	$marriages = wasmo_get_all_marriage_data( $saint_id );
+	$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	
+	$result = array(
+		'type'                      => 'none',
+		'had_overlapping_marriages' => false,
+		'overlapping_count'         => 0,
+		'sequential_count'          => 0,
+		'details'                   => array(),
+	);
+	
+	if ( count( $marriages ) <= 1 ) {
+		return $result;
+	}
+	
+	// Build timeline of marriages with spouse death dates
+	$marriage_timeline = array();
+	
+	foreach ( $marriages as $marriage ) {
+		$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
+		$spouse_field = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
+		$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+		$marriage_date = $marriage['marriage_date'] ?? null;
+		$divorce_date = $marriage['divorce_date'] ?? null;
+		
+		if ( ! $marriage_date ) {
+			continue;
+		}
+		
+		$spouse_deathdate = null;
+		$spouse_birthdate = null;
+		$spouse_name = 'Unknown';
+		
+		if ( $spouse_is_saint && $spouse_id ) {
+			$spouse_deathdate = get_field( 'deathdate', $spouse_id );
+			$spouse_birthdate = get_field( 'birthdate', $spouse_id );
+			$spouse_name = get_the_title( $spouse_id );
+		} else {
+			$spouse_name = $marriage['spouse_name'] ?? 'Unknown';
+			$spouse_birthdate = $marriage['spouse_birthdate'] ?? null;
+		}
+		
+		$marriage_timeline[] = array(
+			'spouse_id'        => $spouse_id,
+			'spouse_name'      => $spouse_name,
+			'spouse_birthdate' => $spouse_birthdate,
+			'spouse_deathdate' => $spouse_deathdate,
+			'marriage_date'    => $marriage_date,
+			'divorce_date'     => $divorce_date,
+			'end_date'         => $divorce_date ?: $spouse_deathdate, // Marriage ends at divorce or death
+		);
+	}
+	
+	// Sort by marriage date
+	usort( $marriage_timeline, function( $a, $b ) {
+		return strtotime( $a['marriage_date'] ) - strtotime( $b['marriage_date'] );
+	} );
+	
+	$result['details'] = $marriage_timeline;
+	
+	// Check for overlapping marriages
+	$had_overlap = false;
+	$overlap_count = 0;
+	$sequential_count = 0;
+	
+	for ( $i = 0; $i < count( $marriage_timeline ); $i++ ) {
+		$current = $marriage_timeline[ $i ];
+		$current_start = strtotime( $current['marriage_date'] );
+		
+		// Check against all previous marriages
+		for ( $j = 0; $j < $i; $j++ ) {
+			$previous = $marriage_timeline[ $j ];
+			$previous_end = $previous['end_date'] ? strtotime( $previous['end_date'] ) : null;
+			
+			// If previous marriage had no end date, or ended after current marriage started
+			if ( $previous_end === null || $previous_end > $current_start ) {
+				$had_overlap = true;
+				$overlap_count++;
+				break;
+			}
+		}
+		
+		// Check if this was a sequential marriage (previous spouse died before this marriage)
+		if ( $i > 0 ) {
+			$previous = $marriage_timeline[ $i - 1 ];
+			$previous_end = $previous['end_date'] ? strtotime( $previous['end_date'] ) : null;
+			
+			if ( $previous_end !== null && $previous_end < $current_start ) {
+				$sequential_count++;
+			}
+		}
+	}
+	
+	$result['had_overlapping_marriages'] = $had_overlap;
+	$result['overlapping_count'] = $overlap_count;
+	$result['sequential_count'] = $sequential_count;
+	
+	if ( $had_overlap ) {
+		$result['type'] = 'simultaneous';
+	} else {
+		$result['type'] = 'celestial';
+	}
+	
+	return $result;
+}
+
+/**
  * Get reverse marriages (where this saint is the spouse in another saint's marriage repeater)
  *
  * @param int $saint_id The saint post ID.
@@ -2050,6 +2192,157 @@ function wasmo_get_reverse_marriages( $saint_id ) {
 	} );
 	
 	return array_values( $all_results );
+}
+
+/**
+ * Get the parents of a saint by searching marriage records
+ * 
+ * Performs a reverse lookup to find saints who list this saint as a child
+ * in their marriage records. Returns both mother (who owns the marriage record)
+ * and father (the spouse in that marriage).
+ *
+ * @param int $saint_id The saint post ID.
+ * @return array Array with 'mother' and 'father' keys, each containing saint ID or null.
+ */
+function wasmo_get_saint_parents( $saint_id ) {
+	global $wpdb;
+	
+	$saint_id = intval( $saint_id );
+	$saint_name = get_the_title( $saint_id );
+	$parents = array(
+		'mother' => null,
+		'father' => null,
+		'mother_marriage_index' => null,
+	);
+	
+	// Method 1: Search for child_link field that points to this saint
+	// The meta_key format is: marriages_X_children_Y_child_link
+	$link_results = $wpdb->get_results( $wpdb->prepare(
+		"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} 
+		WHERE meta_key LIKE 'marriages_%%_children_%%_child_link' 
+		AND (
+			meta_value LIKE %s 
+			OR meta_value = %s 
+			OR meta_value LIKE %s
+		)",
+		'%"' . $saint_id . '"%',
+		strval( $saint_id ),
+		'%i:0;i:' . $saint_id . ';%'
+	) );
+	
+	if ( ! empty( $link_results ) ) {
+		foreach ( $link_results as $result ) {
+			$mother_id = intval( $result->post_id );
+			
+			// Skip if it's the saint themselves or invalid
+			if ( $mother_id === $saint_id ) {
+				continue;
+			}
+			
+			$post = get_post( $mother_id );
+			if ( ! $post || $post->post_status === 'trash' || $post->post_type !== 'saint' ) {
+				continue;
+			}
+			
+			// Extract marriage index from meta_key (format: marriages_X_children_Y_child_link)
+			if ( preg_match( '/marriages_(\d+)_children_/', $result->meta_key, $matches ) ) {
+				$marriage_index = intval( $matches[1] );
+				
+				// Get the father (spouse) from this marriage
+				$spouse_meta = get_post_meta( $mother_id, 'marriages_' . $marriage_index . '_spouse', true );
+				$father_id = null;
+				
+				if ( $spouse_meta ) {
+					// Handle different formats (serialized array or plain ID)
+					if ( is_array( $spouse_meta ) ) {
+						$father_id = intval( $spouse_meta[0] ?? 0 );
+					} elseif ( is_serialized( $spouse_meta ) ) {
+						$unserialized = maybe_unserialize( $spouse_meta );
+						$father_id = is_array( $unserialized ) ? intval( $unserialized[0] ?? 0 ) : intval( $unserialized );
+					} else {
+						$father_id = intval( $spouse_meta );
+					}
+				}
+				
+				// Verify father is a valid saint
+				if ( $father_id ) {
+					$father_post = get_post( $father_id );
+					if ( ! $father_post || $father_post->post_status === 'trash' || $father_post->post_type !== 'saint' ) {
+						$father_id = null;
+					}
+				}
+				
+				$parents['mother'] = $mother_id;
+				$parents['father'] = $father_id ?: null;
+				$parents['mother_marriage_index'] = $marriage_index;
+				
+				return $parents;
+			}
+		}
+	}
+	
+	// Method 2: Search by child_name matching the saint's title
+	// This is a fallback for when child_link isn't set but the name matches
+	if ( ! $parents['mother'] && $saint_name ) {
+		$name_results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT post_id, meta_key FROM {$wpdb->postmeta} 
+			WHERE meta_key LIKE 'marriages_%%_children_%%_child_name' 
+			AND LOWER(meta_value) = LOWER(%s)",
+			$saint_name
+		) );
+		
+		if ( ! empty( $name_results ) ) {
+			foreach ( $name_results as $result ) {
+				$mother_id = intval( $result->post_id );
+				
+				// Skip if it's the saint themselves
+				if ( $mother_id === $saint_id ) {
+					continue;
+				}
+				
+				$post = get_post( $mother_id );
+				if ( ! $post || $post->post_status === 'trash' || $post->post_type !== 'saint' ) {
+					continue;
+				}
+				
+				// Extract marriage index
+				if ( preg_match( '/marriages_(\d+)_children_/', $result->meta_key, $matches ) ) {
+					$marriage_index = intval( $matches[1] );
+					
+					// Get the father from this marriage
+					$spouse_meta = get_post_meta( $mother_id, 'marriages_' . $marriage_index . '_spouse', true );
+					$father_id = null;
+					
+					if ( $spouse_meta ) {
+						if ( is_array( $spouse_meta ) ) {
+							$father_id = intval( $spouse_meta[0] ?? 0 );
+						} elseif ( is_serialized( $spouse_meta ) ) {
+							$unserialized = maybe_unserialize( $spouse_meta );
+							$father_id = is_array( $unserialized ) ? intval( $unserialized[0] ?? 0 ) : intval( $unserialized );
+						} else {
+							$father_id = intval( $spouse_meta );
+						}
+					}
+					
+					// Verify father is valid
+					if ( $father_id ) {
+						$father_post = get_post( $father_id );
+						if ( ! $father_post || $father_post->post_status === 'trash' || $father_post->post_type !== 'saint' ) {
+							$father_id = null;
+						}
+					}
+					
+					$parents['mother'] = $mother_id;
+					$parents['father'] = $father_id ?: null;
+					$parents['mother_marriage_index'] = $marriage_index;
+					
+					return $parents;
+				}
+			}
+		}
+	}
+	
+	return $parents;
 }
 
 /**

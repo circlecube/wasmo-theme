@@ -1,0 +1,30 @@
+/**
+ * Frontend styles for Saints Leadership block
+ * Note: Most styling comes from the theme's existing styles for .leaders-grid, .fp-card-wrapper, etc.
+ * This file contains only block-specific overrides.
+ */
+
+.wp-block-wasmo-saints-leadership {
+    margin-bottom: 2rem;
+
+    .leadership-title {
+        margin-bottom: 0.5rem;
+    }
+
+    .leadership-description {
+        color: #666;
+        margin: 0 0 1rem;
+    }
+
+    // Alignment support
+    &.alignwide {
+        max-width: var(--wp--style--global--wide-size, 1200px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &.alignfull {
+        max-width: none;
+        width: 100%;
+    }
+}

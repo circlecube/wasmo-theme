@@ -1,0 +1,30 @@
+/**
+ * Frontend styles for Taxonomy Cloud block
+ * 
+ * Most styles are inherited from existing theme styles
+ * for .tags, .questions, etc.
+ */
+
+.wp-block-wasmo-taxonomy-cloud {
+    .taxonomy-cloud-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // Alignment support
+    &.alignwide {
+        max-width: var(--wp--style--global--wide-size, 1200px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &.alignfull {
+        max-width: none;
+        width: 100%;
+    }
+}

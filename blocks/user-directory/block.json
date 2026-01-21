@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "wasmo/user-directory",
+    "version": "1.0.0",
+    "title": "User Directory",
+    "category": "widgets",
+    "icon": "groups",
+    "description": "Display a directory of user profiles.",
+    "keywords": [
+        "directory",
+        "profiles",
+        "users",
+        "members"
+    ],
+    "textdomain": "wasmo-theme",
+    "editorScript": "file:../../build/index.js",
+    "editorStyle": "file:../../build/index.css",
+    "style": "file:../../build/style-index.css",
+    "render": "file:./render.php",
+    "supports": {
+        "align": [
+            "wide",
+            "full"
+        ],
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    },
+    "attributes": {
+        "context": {
+            "type": "string",
+            "default": "widget"
+        },
+        "maxProfiles": {
+            "type": "number",
+            "default": 9
+        },
+        "showLoadMore": {
+            "type": "boolean",
+            "default": false
+        },
+        "showButtons": {
+            "type": "boolean",
+            "default": true
+        },
+        "taxonomyFilter": {
+            "type": "string",
+            "default": ""
+        },
+        "termId": {
+            "type": "number",
+            "default": 0
+        },
+        "requireImage": {
+            "type": "boolean",
+            "default": true
+        }
+    }
+}

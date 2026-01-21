@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "wasmo/taxonomy-cloud",
+    "version": "1.0.0",
+    "title": "Taxonomy Cloud",
+    "category": "widgets",
+    "icon": "tag",
+    "description": "Display a cloud of taxonomy terms (shelf issues, spectrum, or questions).",
+    "keywords": [
+        "taxonomy",
+        "tags",
+        "shelf",
+        "spectrum",
+        "questions",
+        "cloud"
+    ],
+    "textdomain": "wasmo-theme",
+    "editorScript": "file:../../build/index.js",
+    "editorStyle": "file:../../build/index.css",
+    "style": "file:../../build/style-index.css",
+    "render": "file:./render.php",
+    "supports": {
+        "align": [
+            "wide",
+            "full"
+        ],
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    },
+    "attributes": {
+        "taxonomy": {
+            "type": "string",
+            "default": "shelf"
+        },
+        "title": {
+            "type": "string",
+            "default": ""
+        },
+        "headingLevel": {
+            "type": "number",
+            "default": 3
+        },
+        "showIcon": {
+            "type": "boolean",
+            "default": true
+        },
+        "orderBy": {
+            "type": "string",
+            "default": "name"
+        },
+        "order": {
+            "type": "string",
+            "default": "ASC"
+        },
+        "hideEmpty": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

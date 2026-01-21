@@ -1,0 +1,168 @@
+/**
+ * Editor styles for Saints Leadership block
+ */
+
+.wp-block-wasmo-saints-leadership {
+    .saints-leadership-preview {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 20px;
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dee2e6;
+
+            .preview-icon {
+                font-size: 24px;
+            }
+
+            h3 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 600;
+                flex: 1;
+            }
+
+            .preview-count {
+                background: #6c757d;
+                color: white;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 10px;
+                border-radius: 20px;
+            }
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .preview-description {
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 15px;
+        }
+
+        .preview-cards {
+            display: grid;
+            gap: 10px;
+
+            &.grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            &.grid-6 {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            &.timeline {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .preview-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+
+                .preview-badge {
+                    position: absolute;
+                    top: -8px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #f0810f;
+                    color: white;
+                    font-size: 9px;
+                    font-weight: 600;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    white-space: nowrap;
+                    z-index: 1;
+                }
+
+                .preview-card-image {
+                    width: 100%;
+                    aspect-ratio: 1;
+                    background: #d8d8d8;
+                    border-radius: 4px;
+                    margin-top: 8px;
+                }
+
+                .preview-card-name {
+                    width: 80%;
+                    height: 10px;
+                    background: #e8e8e8;
+                    border-radius: 5px;
+                    margin-top: 6px;
+                }
+            }
+
+            .preview-more {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                color: #666;
+                font-style: italic;
+            }
+        }
+
+        // Leadership group specific styling
+        &.leadership-first-presidency {
+            .preview-header .preview-count {
+                background: #1a237e;
+            }
+
+            .preview-card:nth-child(2) {
+                .preview-badge {
+                    background: #1a237e;
+                }
+
+                .preview-card-image {
+                    border: 2px solid #1a237e;
+                }
+            }
+        }
+
+        &.leadership-quorum-of-twelve {
+            .preview-header .preview-count {
+                background: #4a148c;
+            }
+
+            .preview-card .preview-badge {
+                background: #4a148c;
+                width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                border-radius: 50%;
+            }
+        }
+
+        &.leadership-all-presidents {
+            .preview-header .preview-count {
+                background: #bf360c;
+            }
+
+            .preview-card .preview-badge {
+                background: #bf360c;
+                width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                border-radius: 50%;
+            }
+        }
+    }
+}

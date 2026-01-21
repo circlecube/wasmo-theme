@@ -271,10 +271,11 @@ add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
 function wasmo_before_after($content) {
 	// skip if
 	if (
-		is_user_logged_in() || // logged in or
-		!is_single() || // not a single post or
-		!is_main_query() || // not the main loop or
-		is_embed() // is a post embed
+		is_user_logged_in() // logged in or
+		|| !is_single() // not a single post or
+		|| !is_main_query() // not the main loop or
+		|| is_embed() // is a post embed
+		|| is_singular( 'saint' ) // is a saint post
 	) {
 		return $content;
 	}
@@ -627,6 +628,15 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 		'leader' => /* dashicon businessperson */ '
 <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
   <path d="M13.2 10 11 13l-1-1.4L9 13l-2.2-3C3 11 3 13 3 16.9c0 0 3 1.1 6.4 1.1h1.2c3.4-.1 6.4-1.1 6.4-1.1 0-3.9 0-5.9-3.8-6.9zm-3.2.7L8.4 10l1.6 1.6 1.6-1.6-1.6.7zm0-8.6c-1.9 0-3 1.8-2.7 3.8.3 2 1.3 3.4 2.7 3.4s2.4-1.4 2.7-3.4c.3-2.1-.8-3.8-2.7-3.8z"/>
+</svg>',
+		'businessman' => /* dashicon businessman */ '
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
+  <path d="M17 16.9v-2.5a4.4 4.4 0 0 0-2.1-3.8c-.7-.5-2.2-.6-2.9-.6l-1.6 1.7.6 1.3v3l-1 1.1L9 16v-3l.7-1.3L8 10c-.8 0-2.3.1-3 .6-.7.4-1.1 1-1.5 1.7S3 13.6 3 14.4v2.5S5.6 18 10 18s7-1.1 7-1.1zM10 2.1c-1.9 0-3 1.8-2.7 3.8.3 2 1.3 3.4 2.7 3.4s2.4-1.4 2.7-3.4c.3-2.1-.8-3.8-2.7-3.8z"/>
+</svg>',
+		'businesswoman' => /* dashicon businesswoman */ '
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
+  <path d="M16 11c-.9-.8-2.2-.9-3.4-1l1 2.1-3.6 3.7-3.6-3.6 1-2.2c-1.2 0-2.5.2-3.4 1-.8.7-1 1.9-1 3.1v2.8a22 22 0 0 0 14 0v-2.8c0-1.1-.2-2.3-1-3.1zM6.6 9.3c.8 0 2-.4 2.2-.7-.8-1-1.5-2-.8-3.9 0 0 1.1 1.2 4.3 1.5 0 1-.5 1.7-1.1 2.4.2.3 1.4.7 2.2.7s1.4-.2 1.4-.5-1.3-1.3-1.6-2.2c-.3-.9-.1-1.9-.5-3.1-.6-1.4-2-1.5-2.7-1.5-.7 0-2.1.1-2.7 1.5-.4 1.2-.2 2.2-.5 3.1-.3.9-1.6 1.9-1.6 2.2 0 .3.6.5 1.4.5z"/>
+  <path d="m10 11-2.3-1 2.3 5.8 2.3-5.8z"/>
 </svg>',
 		'familysearch' => /* familysearch icon */ '
 <svg class="fs-icon" viewBox="0 0 48 48" fill="currentColor" width="800" height="800">

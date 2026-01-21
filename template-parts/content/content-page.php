@@ -32,13 +32,6 @@
 		?>
 	</div><!-- .entry-content -->
 
-    <?php
-        // List taxonomies on home page
-        if ( is_front_page() ) {
-            get_template_part( 'template-parts/content/content', 'taxonomies' );
-        }
-    ?>
-
 	<?php if ( get_edit_post_link() ) : ?>
 		<footer class="entry-footer">
 			<?php

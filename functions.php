@@ -23,6 +23,9 @@ require_once( get_stylesheet_directory() . '/includes/saints-associations.php' )
 require_once( get_stylesheet_directory() . '/includes/saints-images.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-settings.php' );
 
+// Load custom blocks
+require_once( get_stylesheet_directory() . '/blocks/index.php' );
+
 /*
 
 # Custom user hook summary/flow

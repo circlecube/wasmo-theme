@@ -39,6 +39,11 @@ while ( have_posts() ) :
 	// Get marriages data (gender-aware: women store directly, men use reverse lookup)
 	$marriages = wasmo_get_all_marriage_data( $saint_id );
 	$polygamy_stats = wasmo_get_polygamy_stats( $saint_id );
+	$polygamy_type = wasmo_get_polygamy_type( $saint_id );
+	
+	// Get parents (reverse lookup from marriage/children records)
+	$parents = wasmo_get_saint_parents( $saint_id );
+	$has_parents = ! empty( $parents['mother'] ) || ! empty( $parents['father'] );
 ?>
 
 <?php
@@ -80,7 +85,8 @@ $classes = array_filter( $classes, function( $class ) {
 							<p class="leader-hometown">
 								<span class="label">Hometown:</span> <?php echo esc_html( $hometown ); ?>
 							</p>
-						<?php endif; ?>
+					<?php endif; ?>	
+						
 						
 						<div class="saint-roles">
 							<?php echo wasmo_get_icon_svg( 'saint', 30 ); ?>
@@ -107,24 +113,27 @@ $classes = array_filter( $classes, function( $class ) {
 				</section>
 			<?php endif; ?>
 
+			<?php if ( $has_parents ) : ?>
+				<section class="leader-parents-section">
+					<h2>Parents</h2>
+					<div class="leaders-grid leaders-grid-small">
+						<?php if ( ! empty( $parents['father'] ) ) : ?>
+							<?php wasmo_render_saint_card( $parents['father'], 'small', false, false, false, 'Father' ); ?>
+						<?php endif; ?>
+						<?php if ( ! empty( $parents['mother'] ) ) : ?>
+							<?php wasmo_render_saint_card( $parents['mother'], 'small', false, false, false, 'Mother' ); ?>
+						<?php endif; ?>
+					</div>
+				</section>
+			<?php endif; ?>
+
 			<?php if ( ! empty( $served_under ) ) : ?>
 				<section class="leader-served-under">
 					<h2>Served Under</h2>
 					<p class="section-description">Church presidents during this leader's apostolic service:</p>
-					<div class="leaders-grid">
-						<?php foreach ( $served_under as $prophet_id ) : 
-							$prophet = get_post( $prophet_id );
-							$prophet_thumbnail = get_the_post_thumbnail_url( $prophet_id, 'thumbnail' );
-						?>
-							<a href="<?php echo get_permalink( $prophet_id ); ?>" class="leader-card leader-card-small">
-								<?php if ( $prophet_thumbnail ) : ?>
-									<img src="<?php echo esc_url( $prophet_thumbnail ); ?>" alt="<?php echo esc_attr( $prophet->post_title ); ?>" class="leader-card-image">
-								<?php else : ?>
-									<div class="leader-card-placeholder"></div>
-								<?php endif; ?>
-								<span class="leader-card-name"><?php echo esc_html( $prophet->post_title ); ?></span>
-								<span class="leader-card-dates"><?php echo esc_html( wasmo_get_saint_lifespan( $prophet_id ) ); ?></span>
-							</a>
+					<div class="leaders-grid leaders-grid-small">
+						<?php foreach ( $served_under as $prophet_id ) : ?>
+							<?php wasmo_render_saint_card( $prophet_id, 'small', false, false, false ); ?>
 						<?php endforeach; ?>
 					</div>
 				</section>
@@ -133,35 +142,31 @@ $classes = array_filter( $classes, function( $class ) {
 			<?php if ( ! empty( $apostles_under ) ) : ?>
 				<section class="leader-apostles-under">
 					<h2>Apostles Who Served During This Presidency</h2>
-					<div class="leaders-grid">
+					<p class="section-description">Apostles who served under this leader during their presidency:</p>
+					<div class="leaders-grid leaders-grid-small">
 						<?php 
-						$count = 0;
 						foreach ( $apostles_under as $apostle_id ) : 
-							if ( $count >= 15 ) break; // Limit display
-							$apostle = get_post( $apostle_id );
-							$apostle_thumbnail = get_the_post_thumbnail_url( $apostle_id, 'thumbnail' );
-						?>
-							<a href="<?php echo get_permalink( $apostle_id ); ?>" class="leader-card leader-card-small">
-								<?php if ( $apostle_thumbnail ) : ?>
-									<img src="<?php echo esc_url( $apostle_thumbnail ); ?>" alt="<?php echo esc_attr( $apostle->post_title ); ?>" class="leader-card-image">
-								<?php else : ?>
-									<div class="leader-card-placeholder"></div>
-								<?php endif; ?>
-								<span class="leader-card-name"><?php echo esc_html( $apostle->post_title ); ?></span>
-							</a>
-						<?php 
-							$count++;
+							wasmo_render_saint_card( $apostle_id, 'small', true, false, false );
 						endforeach; 
 						?>
 					</div>
-					<?php if ( count( $apostles_under ) > 15 ) : ?>
-						<p class="view-all-link">
-							<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>">View all church leaders →</a>
-						</p>
-					<?php endif; ?>
 				</section>
 			<?php endif; ?>
+		</div> <!-- leader-main-content -->
+		<?php
+		get_template_part( 'template-parts/content/content-saint-aside', null, array(
+			'saint_id'      => $saint_id,
+			'is_living'     => $is_living,
+			'is_apostle'    => $is_apostle,
+			'is_president'  => $is_president,
+			'gender'        => $gender,
+			'polygamy_stats' => $polygamy_stats,
+			'polygamy_type' => $polygamy_type,
+		) );
+		?>
+	</div> <!-- leader-content-wrapper -->
 
+			<div class="leader-marriages-section content-full-width">
 			<?php 
 			// Show marriages section (gender-aware: men show wives, women show husbands)
 			if ( ! empty( $marriages ) ) : 
@@ -194,6 +199,7 @@ $classes = array_filter( $classes, function( $class ) {
 						$marriage_year = date( 'Y', strtotime( $marriage_date ) );
 						$spouse_birthdate = get_field( 'birthdate', $spouse_id );
 						$spouse_birthdate_approx = get_field( 'birthdate_approximate', $spouse_id );
+						$spouse_deathdate = get_field( 'deathdate', $spouse_id );
 						
 						// For men showing wives: wife's marital status is on her record
 						// For women showing husbands: woman's own marital status
@@ -212,6 +218,8 @@ $classes = array_filter( $classes, function( $class ) {
 							'spouse_id'                 => $spouse_id,
 							'spouse_name'               => $spouse_post ? $spouse_post->post_title : 'Unknown',
 							'spouse_url'                => get_permalink( $spouse_id ),
+							'spouse_birthdate'          => $spouse_birthdate,
+							'spouse_deathdate'          => $spouse_deathdate,
 							'marriage_date'             => $marriage_date,
 							'marriage_date_approximate' => $marriage_date_approx,
 							'marriage_year'             => $marriage_year,
@@ -232,6 +240,7 @@ $classes = array_filter( $classes, function( $class ) {
 						
 						// Calculate spouse age from spouse_birthdate if available
 						$spouse_birthdate = $marriage['spouse_birthdate'] ?? null;
+						$spouse_deathdate = null; // Non-saint spouses don't have death dates tracked
 						$spouse_age = null;
 						$age_diff = null;
 						if ( $spouse_birthdate && $marriage_date ) {
@@ -253,6 +262,8 @@ $classes = array_filter( $classes, function( $class ) {
 							'spouse_id'                 => null,
 							'spouse_name'               => $spouse_name_text,
 							'spouse_url'                => null,
+							'spouse_birthdate'          => $spouse_birthdate,
+							'spouse_deathdate'          => $spouse_deathdate,
 							'marriage_date'             => $marriage_date,
 							'marriage_date_approximate' => $marriage_date_approx,
 							'marriage_year'             => $marriage_year,
@@ -280,13 +291,22 @@ $classes = array_filter( $classes, function( $class ) {
 				$saint_birth_year = $saint_birthdate ? (int) date( 'Y', strtotime( $saint_birthdate ) ) : null;
 				$saint_death_year = $saint_deathdate ? (int) date( 'Y', strtotime( $saint_deathdate ) ) : (int) date( 'Y' );
 			?>
-				<section class="saint-marriages">
+				<section class="saint-marriages content-full-width">
 					<h2><?php echo esc_html( $spouse_label ); ?> (<?php echo count( $marriages ); ?>)</h2>
-					<?php if ( $polygamy_stats['number_of_marriages'] > 1 ) : ?>
+					<?php if ( $polygamy_stats['number_of_marriages'] > 1 ) : 
+						$is_or_was = $is_living ? 'is' : 'was';
+						$polygamy_label = ( $polygamy_type['type'] === 'celestial' ) ? 'celestial polygamist' : 'polygamist';
+						$spouse_word = ( $gender === 'male' ) ? 'wives' : 'husbands';
+					?>
 						<p class="section-description">
-							<?php echo esc_html( get_the_title( $saint_id ) ); ?> was a polygamist with <?php echo esc_html( $polygamy_stats['number_of_marriages'] ); ?> marriages.
+							<?php echo esc_html( get_the_title( $saint_id ) ); ?> <?php echo $is_or_was; ?> a <strong><?php echo esc_html( $polygamy_label ); ?></strong> with <?php echo esc_html( $polygamy_stats['number_of_marriages'] ); ?> <?php echo $spouse_word; ?>.
+							<?php if ( $polygamy_type['type'] === 'celestial' ) : ?>
+								<em>Note these are sequential marriages &mdash; each previous spouse died before the next marriage, meaning no simultaneous living plural marriages.</em>
+							<?php else : ?>
+								<em>Note these are simultaneous marriages &mdash; married to multiple living spouses at the same time.</em>
+							<?php endif; ?>
 							<?php if ( $polygamy_stats['teenage_brides_count'] > 0 && $gender === 'male' ) : ?>
-								<strong><?php echo esc_html( $polygamy_stats['teenage_brides_count'] ); ?></strong> of these wives were teenagers at the time of marriage.
+								<strong><?php echo esc_html( $polygamy_stats['teenage_brides_count'] ); ?></strong> of these wives were a teenager (18 or less) at the time of marriage.
 							<?php endif; ?>
 						</p>
 					<?php endif; ?>
@@ -449,26 +469,34 @@ $classes = array_filter( $classes, function( $class ) {
 
 					<!-- Marriage Details Table -->
 					<div class="marriages-table-wrapper">
-						<table class="marriages-table">
+						<table class="marriages-table sortable-table" id="marriages-table">
 							<thead>
 								<tr>
-									<th>#</th>
-									<th>Name</th>
-									<th>Marriage Date</th>
+									<th data-sort="int">#</th>
+									<th data-sort="string">Name</th>
+									<th data-sort="date"><?php echo ( $gender === 'male' ) ? 'Born' : 'Spouse Born'; ?></th>
+									<th data-sort="date"><?php echo ( $gender === 'male' ) ? 'Died' : 'Spouse Died'; ?></th>
+									<th data-sort="date">Married</th>
 									<?php if ( $gender === 'female' ) : ?>
-										<th>His Age</th>
-										<th>Her Age</th>
+										<th data-sort="int">His Age</th>
+										<th data-sort="int">Her Age</th>
 									<?php else : ?>
-										<th>Her Age</th>
-										<th>His Age</th>
+										<th data-sort="int">Her Age</th>
+										<th data-sort="int">His Age</th>
 									<?php endif; ?>
-									<th>Age Diff</th>
-									<th>Children</th>
+									<th data-sort="int">Age Diff</th>
+									<th data-sort="int">Children</th>
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ( $chart_marriages as $m ) : ?>
-								<tr class="<?php echo $m['is_teenage'] ? 'teenage-row' : ''; ?>">
+								<?php foreach ( $chart_marriages as $m ) : 
+									$spouse_birth_formatted = $m['spouse_birthdate'] ? wasmo_format_saint_date_with_approx( $m['spouse_birthdate'], 'M j, Y', false, false ) : null;
+									$spouse_death_formatted = $m['spouse_deathdate'] ? wasmo_format_saint_date_with_approx( $m['spouse_deathdate'], 'M j, Y', false, false ) : null;
+								?>
+								<tr class="<?php echo $m['is_teenage'] ? 'teenage-row' : ''; ?>" 
+									data-birth="<?php echo esc_attr( $m['spouse_birthdate'] ?: '9999-12-31' ); ?>"
+									data-death="<?php echo esc_attr( $m['spouse_deathdate'] ?: '9999-12-31' ); ?>"
+									data-married="<?php echo esc_attr( $m['marriage_date'] ?: '9999-12-31' ); ?>">
 									<td class="marriage-order-cell"><?php echo esc_html( $m['order'] ); ?></td>
 									<td>
 										<?php if ( ! empty( $m['spouse_is_saint'] ) && $m['spouse_url'] ) : ?>
@@ -483,7 +511,9 @@ $classes = array_filter( $classes, function( $class ) {
 											<span class="teen-marker" title="Teenage bride">⚠</span>
 										<?php endif; ?>
 									</td>
-									<td>
+									<td class="date-cell"><?php echo $spouse_birth_formatted ? esc_html( $spouse_birth_formatted ) : '—'; ?></td>
+									<td class="date-cell"><?php echo $spouse_death_formatted ? esc_html( $spouse_death_formatted ) : '<span class="living-indicator" title="Still living">●</span>'; ?></td>
+									<td class="date-cell">
 										<?php echo esc_html( wasmo_format_saint_date_with_approx( $m['marriage_date'], 'M j, Y', false, $m['marriage_date_approximate'] ) ); ?>
 									</td>
 									<td class="num <?php echo $m['is_teenage'] ? 'teenage-age' : ''; ?>" title="<?php echo $m['spouse_age_approximate'] ? 'Age is approximate' : ''; ?>">
@@ -658,208 +688,6 @@ $classes = array_filter( $classes, function( $class ) {
 
 		</div>
 
-		<aside class="leader-sidebar">
-			<div class="leader-metadata">
-				<h3>Details</h3>
-				<dl class="leader-meta-list">
-					<?php 
-					// Birth date
-					$birthdate = get_field( 'birthdate' );
-					$birthdate_approx = get_field( 'birthdate_approximate' );
-					if ( $birthdate ) : ?>
-						<dt>Born</dt>
-						<dd><?php echo esc_html( wasmo_format_saint_date_with_approx( $birthdate, 'F j, Y', false, $birthdate_approx ) ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// Death date
-					$deathdate = get_field( 'deathdate' );
-					$deathdate_approx = get_field( 'deathdate_approximate' );
-					if ( $deathdate ) : ?>
-						<dt>Died</dt>
-						<dd><?php echo esc_html( wasmo_format_saint_date_with_approx( $deathdate, 'F j, Y', false, $deathdate_approx ) ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// Age
-					$age = wasmo_get_leader_age( $saint_id );
-					if ( $age !== null ) : ?>
-						<dt><?php echo $is_living ? 'Age' : 'Age at Death'; ?></dt>
-						<dd><?php echo esc_html( $age ); ?> years</dd>
-					<?php endif; ?>
-
-					<?php if ( $is_apostle ) : ?>
-						<?php 
-						// Ordained date (show time if specified for seniority disambiguation)
-						$ordained_date = get_field( 'ordained_date' );
-						if ( $ordained_date ) : ?>
-							<dt>Ordained Apostle</dt>
-							<dd><?php echo esc_html( wasmo_format_saint_date( $ordained_date, 'F j, Y', true ) ); ?></dd>
-						<?php endif; ?>
-
-						<?php 
-						// Service ended early (excommunication, resignation, etc.)
-						$ordain_end = get_field( 'ordain_end' );
-						if ( $ordain_end ) : ?>
-							<dt>Service Ended</dt>
-							<dd><?php echo esc_html( wasmo_format_saint_date( $ordain_end ) ); ?></dd>
-						<?php endif; ?>
-
-						<?php 
-						// Note about service end
-						$ordain_note = get_field( 'ordain_note' );
-						if ( $ordain_note ) : ?>
-							<dt>Status Note</dt>
-							<dd class="leader-ordain-note"><?php echo wp_kses_post( $ordain_note ); ?></dd>
-						<?php endif; ?>
-
-						<?php 
-						// Age at call
-						$age_at_call = wasmo_get_saint_age_at_call( $saint_id );
-						if ( $age_at_call !== null ) : ?>
-							<dt>Age When Called</dt>
-							<dd><?php echo esc_html( $age_at_call ); ?> years</dd>
-						<?php endif; ?>
-
-						<?php 
-						// Years served
-						$years_served = wasmo_get_saint_years_served( $saint_id );
-						if ( $years_served !== null ) : ?>
-							<dt>Years as Apostle</dt>
-							<dd><?php echo esc_html( $years_served ); ?> years</dd>
-						<?php endif; ?>
-
-						<?php if ( $is_living ) : 
-							$seniority = wasmo_get_saint_seniority( $saint_id );
-							if ( $seniority !== null ) : ?>
-								<dt>Current Seniority</dt>
-								<dd>#<?php echo esc_html( $seniority ); ?></dd>
-							<?php endif; ?>
-						<?php endif; ?>
-					<?php endif; ?>
-
-					<?php if ( $is_president ) : ?>
-						<?php 
-						// Became president date
-						$president_date = get_field( 'became_president_date' );
-						if ( $president_date ) : ?>
-							<dt>Became President</dt>
-							<dd><?php echo esc_html( wasmo_format_saint_date( $president_date ) ); ?></dd>
-						<?php endif; ?>
-
-						<?php 
-						// Years as president
-						$years_as_president = wasmo_get_saint_years_as_president( $saint_id );
-						if ( $years_as_president !== null ) : ?>
-							<dt>Years as President</dt>
-							<dd><?php echo esc_html( $years_as_president ); ?> years</dd>
-						<?php endif; ?>
-					<?php endif; ?>
-
-					<?php 
-					// Mission
-					$mission = get_field( 'mission' );
-					if ( $mission ) : ?>
-						<dt>Mission</dt>
-						<dd><?php echo esc_html( $mission ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// Education
-					$education = get_field( 'education' );
-					if ( $education ) : ?>
-						<dt>Education</dt>
-						<dd><?php echo esc_html( $education ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// Profession
-					$profession = get_field( 'profession' );
-					if ( $profession ) : ?>
-						<dt>Profession</dt>
-						<dd><?php echo esc_html( $profession ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// Military
-					$military = get_field( 'military' );
-					if ( $military ) : ?>
-						<dt>Military Service</dt>
-						<dd><?php echo esc_html( $military ); ?></dd>
-					<?php endif; ?>
-
-					<?php 
-					// FamilySearch ID
-					$familysearch_id = get_field( 'familysearch_id' );
-					if ( $familysearch_id ) : ?>
-						<dt>FamilySearch</dt>
-						<dd>
-							<a href="https://www.familysearch.org/tree/person/details/<?php echo esc_attr( $familysearch_id ); ?>" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-								<?php echo wasmo_get_icon_svg( 'familysearch', 32 ); ?>
-								<?php echo esc_html( $familysearch_id ); ?>
-							</a>
-						</dd>
-					<?php endif; ?>
-
-					<?php 
-					// Polygamy stats (computed from marriages)
-					if ( $polygamy_stats['was_polygamist'] ) : ?>
-						<dt>Polygamist</dt>
-						<dd>Yes (<?php echo esc_html( $polygamy_stats['number_of_marriages'] ); ?> <?php echo $gender === 'male' ? 'wives' : 'husbands'; ?>)</dd>
-						
-						<?php if ( $polygamy_stats['number_of_children'] > 0 ) : ?>
-							<dt>Total Children</dt>
-							<dd><?php echo esc_html( $polygamy_stats['number_of_children'] ); ?></dd>
-						<?php endif; ?>
-						
-						<?php if ( $polygamy_stats['teenage_brides_count'] > 0 && $gender === 'male' ) : ?>
-							<dt>Teenage Brides</dt>
-							<dd><?php echo esc_html( $polygamy_stats['teenage_brides_count'] ); ?></dd>
-						<?php endif; ?>
-						
-						<?php if ( $polygamy_stats['largest_age_diff'] > 0 ) : ?>
-							<dt>Largest Age Gap</dt>
-							<dd><?php echo esc_html( $polygamy_stats['largest_age_diff'] ); ?> years</dd>
-						<?php endif; ?>
-						
-						<?php if ( $polygamy_stats['avg_age_diff'] > 0 ) : ?>
-							<dt>Avg Age Difference</dt>
-							<dd><?php echo esc_html( $polygamy_stats['avg_age_diff'] ); ?> years</dd>
-						<?php endif; ?>
-						
-						<?php if ( $polygamy_stats['age_first_marriage'] !== null ) : ?>
-							<dt>Age at First Marriage</dt>
-							<dd><?php echo esc_html( $polygamy_stats['age_first_marriage'] ); ?> years</dd>
-						<?php endif; ?>
-					<?php elseif ( $polygamy_stats['number_of_marriages'] === 1 ) : ?>
-						<?php if ( $polygamy_stats['number_of_children'] > 0 ) : ?>
-							<dt>Children</dt>
-							<dd><?php echo esc_html( $polygamy_stats['number_of_children'] ); ?></dd>
-						<?php endif; ?>
-					<?php endif; ?>
-
-					<?php 
-					// Marital status at marriage (for wives)
-					$marital_status = get_field( 'marital_status_at_marriage' );
-					if ( $marital_status && $marital_status !== 'never_married' ) : 
-						$status_labels = array(
-							'widow' => 'Widow',
-							'divorced' => 'Divorced',
-							'separated' => 'Separated',
-						);
-					?>
-						<dt>Status at Marriage</dt>
-						<dd><?php echo esc_html( $status_labels[ $marital_status ] ?? $marital_status ); ?></dd>
-					<?php endif; ?>
-				</dl>
-			</div>
-
-			<div class="leader-navigation">
-				<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
-					← All Saints
-				</a>
-			</div>
-		</aside>
 	</div>
 </div>
 </article>

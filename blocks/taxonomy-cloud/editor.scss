@@ -1,0 +1,76 @@
+/**
+ * Editor styles for Taxonomy Cloud block
+ */
+
+.wp-block-wasmo-taxonomy-cloud {
+    .taxonomy-cloud-preview {
+        background: #f8f8f8;
+        border: 1px dashed #ccc;
+        border-radius: 8px;
+        padding: 20px;
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+
+            .preview-icon {
+                font-size: 20px;
+            }
+
+            .preview-title {
+                font-weight: 600;
+                font-size: 16px;
+            }
+
+            .preview-heading-level {
+                color: #666;
+                font-size: 12px;
+            }
+        }
+
+        .preview-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+
+            .tag-placeholder {
+                background: #e0e0e0;
+                border-radius: 4px;
+                height: 26px;
+                width: 80px;
+
+                &:nth-child(2) { width: 100px; }
+                &:nth-child(3) { width: 60px; }
+                &:nth-child(4) { width: 90px; }
+                &:nth-child(5) { width: 70px; }
+                &:nth-child(6) { width: 110px; }
+            }
+        }
+
+        .preview-meta {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+
+        &.taxonomy-shelf {
+            border-color: #8b4513;
+            background: #faf5f0;
+        }
+
+        &.taxonomy-spectrum {
+            border-color: #6a5acd;
+            background: #f5f5ff;
+        }
+
+        &.taxonomy-question {
+            border-color: #2e8b57;
+            background: #f0faf5;
+        }
+    }
+}

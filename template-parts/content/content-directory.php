@@ -21,7 +21,7 @@ if ( empty( $context ) ) {
 	$lazy        = true;
 	$offset      = $paged ? ($paged - 1) * $max_profiles : 0;
 }
-if ( 'widget' === $context ) {
+if ( 'widget' === $context && empty( $max_profiles ) ) {
 	$max_profiles = 9;
 }
 if ( empty( $max_profiles ) ) {
@@ -60,10 +60,11 @@ function wasmo_filter_directory( $user ) {
 		return false;
 	}
 
-	// require image if not full directory, bail early if not present
-	$userimg   = get_field( 'photo', 'user_' . $userid );
-	$has_image = $userimg ? true : false;
-	if ( 'full' !== $context && !$has_image ) {
+	// require image based on setting (defaults to true for non-full contexts)
+	$userimg       = get_field( 'photo', 'user_' . $userid );
+	$has_image     = $userimg ? true : false;
+	$require_image = get_query_var( 'require_image', 'full' !== $context );
+	if ( $require_image && ! $has_image ) {
 		return false;
 	}
 
@@ -238,8 +239,11 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 }
 echo $the_directory;
 
+// Check if buttons should be shown (can be suppressed by blocks)
+$show_buttons = get_query_var( 'show_buttons', true );
+
 // directory buttons etc depending on context
-if ( $context === 'full' ) { // main directory
+if ( $show_buttons && $context === 'full' ) { // main directory
 	?>
 		<section class="entry-content alignwide">
 			<p><a href="/login/">Create an account</a> to add your own profile.</p>
@@ -255,7 +259,7 @@ if ( $context === 'full' ) { // main directory
 	<?php
 	get_template_part( 'template-parts/content/content', 'taxonomies' );
 } 
-if ( strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory page
+if ( $show_buttons && strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory page
 	?>
 	<section class="entry-content alignwide">
 		<p><a href="/login/">Create an account</a> to add your own profile.</p>
@@ -270,7 +274,7 @@ if ( strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory page
 	</section>
 	<?php
 } 
-if ( is_front_page() || $context === 'widget' ) { // for widgets (front-page and sidebar)
+if ( $show_buttons && ( is_front_page() || $context === 'widget' ) ) { // for widgets (front-page and sidebar)
 	?>
 	<div class="is-layout-flex wp-block-buttons is-content-justification-center">
 		<?php if ( is_front_page() ) { ?>

@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "wasmo/saints-leadership",
+    "version": "1.0.0",
+    "title": "Saints Leadership",
+    "category": "widgets",
+    "icon": "groups",
+    "description": "Display LDS church leadership groups - First Presidency, Quorum of the Twelve, or All Church Presidents.",
+    "keywords": [
+        "saints",
+        "leadership",
+        "first presidency",
+        "quorum",
+        "twelve",
+        "apostles",
+        "presidents",
+        "prophet"
+    ],
+    "textdomain": "wasmo-theme",
+    "editorScript": "file:../../build/index.js",
+    "editorStyle": "file:../../build/index.css",
+    "style": "file:../../build/style-index.css",
+    "render": "file:./render.php",
+    "supports": {
+        "align": [
+            "wide",
+            "full"
+        ],
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    },
+    "attributes": {
+        "leadershipGroup": {
+            "type": "string",
+            "default": "first-presidency"
+        },
+        "showTitle": {
+            "type": "boolean",
+            "default": true
+        },
+        "showDescription": {
+            "type": "boolean",
+            "default": true
+        },
+        "showBadges": {
+            "type": "boolean",
+            "default": true
+        },
+        "cardSize": {
+            "type": "string",
+            "default": "large"
+        }
+    }
+}

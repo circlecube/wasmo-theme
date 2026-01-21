@@ -1,0 +1,24 @@
+/**
+ * Frontend styles for User Directory block
+ * 
+ * Note: Most styles are inherited from the existing theme styles
+ * for .directory and related classes. This file is for any
+ * block-specific overrides or additions.
+ */
+
+.wp-block-wasmo-user-directory {
+    // Block wrapper styles
+
+    // Alignment support
+    &.alignwide {
+        max-width: var(--wp--style--global--wide-size, 1200px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &.alignfull {
+        max-width: none;
+        width: 100%;
+    }
+
+}

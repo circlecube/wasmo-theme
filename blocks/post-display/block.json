@@ -1,0 +1,126 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "wasmo/post-display",
+    "version": "1.0.0",
+    "title": "Post Display",
+    "category": "widgets",
+    "icon": "admin-post",
+    "description": "Display posts filtered by category, tag, or other criteria with consistent styling.",
+    "keywords": [
+        "posts",
+        "blog",
+        "spotlight",
+        "featured",
+        "category",
+        "latest"
+    ],
+    "textdomain": "wasmo-theme",
+    "editorScript": "file:../../build/index.js",
+    "editorStyle": "file:../../build/index.css",
+    "style": "file:../../build/style-index.css",
+    "render": "file:./render.php",
+    "supports": {
+        "align": [
+            "wide",
+            "full"
+        ],
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    },
+    "attributes": {
+        "title": {
+            "type": "string",
+            "default": "Latest Posts"
+        },
+        "headingLevel": {
+            "type": "number",
+            "default": 2
+        },
+        "showTitle": {
+            "type": "boolean",
+            "default": true
+        },
+        "postsToShow": {
+            "type": "number",
+            "default": 3,
+            "minimum": 1,
+            "maximum": 24
+        },
+        "description": {
+            "type": "string",
+            "default": ""
+        },
+        "categoryId": {
+            "type": "number",
+            "default": 0
+        },
+        "excludeCategoryIds": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "number"
+            }
+        },
+        "tagId": {
+            "type": "number",
+            "default": 0
+        },
+        "displayLayout": {
+            "type": "string",
+            "default": "list"
+        },
+        "gridSize": {
+            "type": "string",
+            "default": "medium"
+        },
+        "showExcerpt": {
+            "type": "boolean",
+            "default": true
+        },
+        "excerptLength": {
+            "type": "number",
+            "default": 25,
+            "minimum": 5,
+            "maximum": 100
+        },
+        "showDate": {
+            "type": "boolean",
+            "default": true
+        },
+        "showAuthor": {
+            "type": "boolean",
+            "default": false
+        },
+        "showFeaturedImage": {
+            "type": "boolean",
+            "default": true
+        },
+        "featuredImageAlign": {
+            "type": "string",
+            "default": "left"
+        },
+        "showButton": {
+            "type": "boolean",
+            "default": true
+        },
+        "buttonText": {
+            "type": "string",
+            "default": "See More Posts"
+        },
+        "buttonUrl": {
+            "type": "string",
+            "default": ""
+        },
+        "orderBy": {
+            "type": "string",
+            "default": "date"
+        },
+        "order": {
+            "type": "string",
+            "default": "DESC"
+        }
+    }
+}
