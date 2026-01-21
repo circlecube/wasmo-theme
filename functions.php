@@ -13,6 +13,7 @@ require_once( get_stylesheet_directory() . '/includes/functions-template-tags.ph
 require_once( get_stylesheet_directory() . '/includes/functions-theme.php' );
 require_once( get_stylesheet_directory() . '/includes/functions-seo.php' );
 require_once( get_stylesheet_directory() . '/includes/functions-saints.php' );
+require_once( get_stylesheet_directory() . '/includes/functions-profile-interactions.php' );
 
 require_once( get_stylesheet_directory() . '/includes/spotlight-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-page.php' );

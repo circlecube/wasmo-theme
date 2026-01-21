@@ -12,16 +12,19 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 <?php get_template_part( 'template-parts/content/content', 'user-header' ); ?>
 
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
-	<h3>About me</h3>
-	<div class="about_me"><?php 
-		echo wasmo_auto_htmlize_text(
-			wasmo_auto_link_text( 
-				wp_kses_post( 
-					get_field( 'about_me', 'user_' . $userid )
+	<div class="profile-section" id="about-me">
+		<h3>About me</h3>
+		<div class="about_me"><?php 
+			echo wasmo_auto_htmlize_text(
+				wasmo_auto_link_text( 
+					wp_kses_post( 
+						get_field( 'about_me', 'user_' . $userid )
+					)
 				)
-			)
-		); 
-	?></div>
+			); 
+		?></div>
+		<?php // wasmo_render_reaction_buttons( $userid, 'about_me' ); ?>
+	</div>
 <?php } ?>
 
 <?php if ( get_field( 'video', 'user_' . $userid ) ) { ?>
@@ -91,7 +94,7 @@ if ( $spectrum_terms ) { ?>
 		$anchor_desc = "Link to 'Why I left the Mormon church' by " . wp_kses_post( $curauth->display_name );
 		$more_desc   = "More stories of 'Why I left' the Mormon church";
 	?>
-	<div id="why-i-left">
+	<div id="why-i-left" class="profile-section">
 		<h3>
 			<a href="#why-i-left" class="question_link_inline question_anchor" title="<?php echo esc_attr( $anchor_desc ); ?>">
 				<sup>#</sup>
@@ -114,6 +117,7 @@ if ( $spectrum_terms ) { ?>
 				);
 			?>
 		</div>
+		<?php // wasmo_render_reaction_buttons( $userid, 'why_i_left' ); ?>
 	</div>
 <?php } ?>
 
@@ -143,7 +147,8 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			$questionterm = get_term( $termtaxid, 'question' );
 			$anchor = "Link to this answer of '" . wp_kses_post( $questionterm->name ) . "' by " . $curauth->display_name;
 			$description = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
-			echo '<h4 class="question" id="' . esc_attr( $questionterm->slug ) . '">';
+			echo '<div class="profile-section question-section" id="' . esc_attr( $questionterm->slug ) . '">';
+			echo '<h4 class="question">';
 			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . $anchor . '">';
 			echo '<sup>#</sup><span class="screen-reader-text">' . $anchor . '</span></a> ';
 			echo wp_kses_post( $questionterm->name );
@@ -151,7 +156,11 @@ if( have_rows( 'questions', 'user_' . $userid ) ):
 			echo wasmo_get_icon_svg( 'link', 20 );
 			echo '<span class="screen-reader-text">' . $description . '</span></a>';
 			echo '</h4>';
+			echo '<div class="answer">';
 			echo wasmo_auto_htmlize_text( wasmo_auto_link_text( wp_kses_post( $answer ) ) );
+			echo '</div>';
+			wasmo_render_reaction_buttons( $userid, 'question_' . $questionterm->slug );
+			echo '</div>';
 		}
     endwhile;
 
@@ -167,6 +176,13 @@ if (
 	$is_this_user = true;
 }
 ?>
+
+<?php 
+// Profile comments section
+set_query_var( 'userid', $userid );
+get_template_part( 'template-parts/content/content', 'user-comments' ); 
+?>
+
 <div class="content-footer">
 	
 	<?php set_query_var( 'userid', $userid ); ?>
