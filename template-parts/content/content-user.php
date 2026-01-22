@@ -56,7 +56,7 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 		echo $iframe;
 	?></div>
 <?php } ?>
-
+<div class="profile-section content-full-width" id="my-shelf">
 <?php 
 $shelf_items = get_field( 'my_shelf', 'user_' . $userid );
 if ( $shelf_items ) { ?>
@@ -72,7 +72,8 @@ if ( $shelf_items ) { ?>
 	</ul>
 <?php } 
 ?>
-
+</div>
+<div class="profile-section content-full-width" id="mormon-spectrum">
 <?php 
 $spectrum_terms = get_field( 'mormon_spectrum', 'user_' . $userid );
 if ( $spectrum_terms ) { ?>
@@ -88,7 +89,7 @@ if ( $spectrum_terms ) { ?>
 	</ul>
 <?php } 
 ?>
-
+</div>
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
 	<?php 
 		$anchor_desc = "Link to 'Why I left the Mormon church' by " . wp_kses_post( $curauth->display_name );

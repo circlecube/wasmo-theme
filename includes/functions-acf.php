@@ -230,7 +230,10 @@ add_action( 'init', 'wasmo_create_default_saint_roles', 20 );
 /**
  * Add ACF options page
  */
-if( function_exists('acf_add_options_page') ) {
+function wasmo_register_acf_options_pages() {
+	if ( ! function_exists( 'acf_add_options_page' ) ) {
+		return;
+	}
 	
 	acf_add_options_page(
 		array(
@@ -242,8 +245,8 @@ if( function_exists('acf_add_options_page') ) {
 			'redirect'    => false
 		)
 	);
-
 }
+add_action( 'acf/init', 'wasmo_register_acf_options_pages' );
 
 /**
  * Get default display name value

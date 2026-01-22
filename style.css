@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          2.2.0
+ Version:          2.3.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -887,6 +887,7 @@ cite span {
 .blog-main article.post .entry-title {
 	font-size: 26px;
 }
+h1.no-line:before,
 .entry .entry-title.no-line:before {
 	display: none !important;
 }
@@ -2920,7 +2921,7 @@ h1.archive-title:before {
 	display: flex;
 	gap: 0.75rem;
 	padding: 0.25rem 0;
-	text-decoration: none;
+	text-decoration: none !important;
 	transition: background 0.15s ease;
 }
 .bar-row:hover {
@@ -2931,7 +2932,7 @@ h1.archive-title:before {
 	flex-shrink: 0;
 	font-size: 0.75rem;
 	overflow: hidden;
-	text-align: right;
+	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	width: 140px;
@@ -4015,12 +4016,7 @@ a.saint-card:hover {
 }
 
 .role-count {
-	background: var(--color-blue-2);
-	border-radius: 12px;
-	color: var(--color-white);
-	font-size: 0.8rem;
-	font-weight: 600;
-	padding: 0.15rem 0.5rem;
+	font-size: 0.52rem;
 }
 
 /* Polygamist Cards */
@@ -4205,8 +4201,8 @@ a.saint-card:hover {
 
 .profile-section .profile-reactions {
 	margin-top: 1rem;
-	padding-top: 0.75rem;
-	border-top: 1px solid var(--color-gray-1);
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid var(--color-gray-1);
 }
 
 /* Reaction Container */
@@ -4253,7 +4249,8 @@ a.saint-card:hover {
 
 .reaction-trigger:disabled {
 	cursor: not-allowed;
-	opacity: 0.6;
+	opacity: .91;
+	background-color: var(--color-gray-0);
 }
 
 .reaction-trigger.has-reaction {
@@ -4300,7 +4297,7 @@ a.saint-card:hover {
 	content: '';
 	position: absolute;
 	bottom: -8px;
-	left: 16px;
+	left: 18px;
 	width: 14px;
 	height: 14px;
 	background: var(--color-white);
@@ -4332,13 +4329,19 @@ a.saint-card:hover {
 	transition: all 0.15s ease;
 }
 
+.reaction-btn:disabled {
+	cursor: not-allowed;
+	opacity: .91;
+	background-color: var(--color-gray-0);
+}
+
 .reaction-btn:hover {
 	background: var(--color-gray-0);
 	transform: scale(1.25);
 }
 
 .reaction-btn.active {
-	background: var(--color-blue-0);
+	background-color: var(--color-orange);
 }
 
 .reaction-btn.loading {
@@ -4403,14 +4406,23 @@ a.saint-card:hover {
 }
 
 /* Login Prompt */
-.reactions-login-prompt {
-	margin: 0;
-	font-size: 0.8rem;
+.entry .entry-content p.reactions-login-prompt {
 	color: var(--color-gray-3);
+	margin: 0;
+	opacity: 0;
+	font-size: 0rem;
+	transition: all .2s ease;
+	transition-delay: 2s;
 }
 
 .reactions-login-prompt a {
 	color: var(--color-blue-2);
+}
+
+.entry .entry-content .reaction-picker-wrapper:hover ~ p.reactions-login-prompt {
+	opacity: 1;
+	font-size: 0.7rem;
+	transition-delay: .1s;
 }
 
 /* Reaction Details Panel */

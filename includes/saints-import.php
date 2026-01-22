@@ -398,6 +398,57 @@ function wasmo_render_leader_import_page() {
 			</p>
 		</div>
 
+		<!-- Export Selected Saint Section -->
+		<div class="card" style="max-width: 800px; margin-bottom: 20px; background: #f3f7e7;">
+			<h2>📤 Export Selected Saint (with Family)</h2>
+			<p>
+				Export a specific saint along with their spouses and children. 
+				Useful for backing up or transferring a single leader's complete family data.
+			</p>
+			
+			<form id="export-selected-saint-form" method="get" action="<?php echo admin_url( 'admin-ajax.php' ); ?>">
+				<input type="hidden" name="action" value="wasmo_export_selected_saint">
+				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'wasmo_export_selected_saint' ); ?>">
+				
+				<p>
+					<label for="saint_id"><strong>Select Saint:</strong></label><br>
+					<select name="saint_id" id="saint_id" style="width: 400px; margin-top: 5px;">
+						<option value="">-- Select a saint --</option>
+						<?php
+						$all_saints = get_posts( array(
+							'post_type'      => 'saint',
+							'posts_per_page' => -1,
+							'post_status'    => 'publish',
+							'orderby'        => 'title',
+							'order'          => 'ASC',
+						) );
+						foreach ( $all_saints as $saint ) {
+							$gender = get_field( 'gender', $saint->ID );
+							$gender_label = $gender === 'male' ? ' (M)' : ( $gender === 'female' ? ' (F)' : '' );
+							echo '<option value="' . esc_attr( $saint->ID ) . '">' . esc_html( $saint->post_title ) . $gender_label . '</option>';
+						}
+						?>
+					</select>
+				</p>
+				<p>
+					<label>
+						<input type="checkbox" name="include_spouses" value="1" checked>
+						Include spouses
+					</label>
+					<br>
+					<label>
+						<input type="checkbox" name="include_children" value="1" checked>
+						Include children (if they have saint records)
+					</label>
+				</p>
+				<p>
+					<button type="submit" class="button button-primary">
+						Download Selected Saint Export
+					</button>
+				</p>
+			</form>
+		</div>
+
 		<!-- Import from File Section -->
 		<div class="card" style="max-width: 800px; margin-bottom: 20px; background: #e7f0f3;">
 			<h2>📥 Import from JSON File</h2>
@@ -783,6 +834,337 @@ function wasmo_export_leaders_json_ajax() {
 	exit;
 }
 add_action( 'wp_ajax_wasmo_export_leaders_json', 'wasmo_export_leaders_json_ajax' );
+
+/**
+ * AJAX handler for exporting a selected saint with family
+ */
+function wasmo_export_selected_saint_ajax() {
+	// Verify nonce
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wasmo_export_selected_saint' ) ) {
+		wp_die( 'Security check failed' );
+	}
+
+	// Check permissions
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Permission denied' );
+	}
+
+	$saint_id = isset( $_GET['saint_id'] ) ? absint( $_GET['saint_id'] ) : 0;
+	if ( ! $saint_id ) {
+		wp_die( 'No saint selected' );
+	}
+
+	$saint = get_post( $saint_id );
+	if ( ! $saint || $saint->post_type !== 'saint' ) {
+		wp_die( 'Invalid saint ID' );
+	}
+
+	$include_spouses = isset( $_GET['include_spouses'] ) && $_GET['include_spouses'] === '1';
+	$include_children = isset( $_GET['include_children'] ) && $_GET['include_children'] === '1';
+
+	$export_data = wasmo_get_saint_family_export_data( $saint_id, $include_spouses, $include_children );
+
+	// Generate filename
+	$filename = sanitize_title( $saint->post_title ) . '-family-export-' . date( 'Y-m-d' ) . '.json';
+
+	// Set headers for JSON download
+	header( 'Content-Type: application/json' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
+
+	echo json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	exit;
+}
+add_action( 'wp_ajax_wasmo_export_selected_saint', 'wasmo_export_selected_saint_ajax' );
+
+/**
+ * Get a single saint's data for export (uses same format as bulk export)
+ *
+ * @param int $saint_id The saint ID.
+ * @return array Saint data in export format.
+ */
+function wasmo_get_single_saint_export_data( $saint_id ) {
+	$leader = get_post( $saint_id );
+	if ( ! $leader || $leader->post_type !== 'saint' ) {
+		return null;
+	}
+
+	// Get roles
+	$role_terms = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'slugs' ) );
+
+	// Get featured image URL
+	$featured_image_url = null;
+	if ( has_post_thumbnail( $saint_id ) ) {
+		$featured_image_url = get_the_post_thumbnail_url( $saint_id, 'full' );
+	}
+
+	// Get leader tag
+	$leader_tag = get_field( 'leader_tag', $saint_id );
+	$leader_tag_slug = null;
+	if ( $leader_tag ) {
+		$tag_term = get_term( $leader_tag, 'post_tag' );
+		if ( $tag_term && ! is_wp_error( $tag_term ) ) {
+			$leader_tag_slug = $tag_term->slug;
+		}
+	}
+
+	// Get marriages data (repeater field)
+	$marriages_raw = get_field( 'marriages', $saint_id );
+	$marriages_export = array();
+	if ( ! empty( $marriages_raw ) && is_array( $marriages_raw ) ) {
+		foreach ( $marriages_raw as $marriage ) {
+			// Check if spouse is a saint (default true for backwards compatibility)
+			$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
+			
+			// Get spouse name - either from saint record or from text field
+			$spouse_id = null;
+			$spouse_name = null;
+			
+			if ( $spouse_is_saint ) {
+				// Get spouse from relationship field
+				$spouse_field = $marriage['spouse'] ?? null;
+				if ( $spouse_field ) {
+					$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+					if ( $spouse_id ) {
+						$spouse_post = get_post( $spouse_id );
+						if ( $spouse_post ) {
+							$spouse_name = $spouse_post->post_title;
+						}
+					}
+				}
+			} else {
+				// Get spouse name from text field (non-saint spouse)
+				$spouse_name = $marriage['spouse_name'] ?? null;
+			}
+			
+			// Get spouse birthdate for non-saint spouses
+			$spouse_birthdate_export = null;
+			if ( ! $spouse_is_saint ) {
+				$spouse_birthdate_export = $marriage['spouse_birthdate'] ?? null;
+			}
+
+			// Get children - handle both nested repeater and simple array formats
+			$children_export = array();
+			$children_field = $marriage['children'] ?? array();
+			if ( ! empty( $children_field ) && is_array( $children_field ) ) {
+				foreach ( $children_field as $child ) {
+					// Check if it's a nested repeater (has 'child_name' key) or simple ID
+					if ( is_array( $child ) && isset( $child['child_name'] ) ) {
+						$child_export = array(
+							'name'      => $child['child_name'] ?? '',
+							'birthdate' => $child['child_birthdate'] ?? null,
+						);
+						// Include child link if exists
+						if ( ! empty( $child['child_link'] ) ) {
+							$child_link_id = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
+							if ( $child_link_id ) {
+								$child_post = get_post( $child_link_id );
+								if ( $child_post ) {
+									$child_export['linked_saint_name'] = $child_post->post_title;
+								}
+							}
+						}
+						$children_export[] = $child_export;
+					} elseif ( is_numeric( $child ) ) {
+						// Legacy format - just an ID
+						$child_post = get_post( $child );
+						if ( $child_post ) {
+							$children_export[] = array(
+								'name' => $child_post->post_title,
+							);
+						}
+					}
+				}
+			}
+
+			$marriages_export[] = array(
+				'spouse_is_saint'           => $spouse_is_saint,
+				'spouse_name'               => $spouse_name,
+				'spouse_birthdate'          => $spouse_birthdate_export,
+				'marriage_date'             => $marriage['marriage_date'] ?? null,
+				'marriage_date_approximate' => (bool) ( $marriage['marriage_date_approximate'] ?? false ),
+				'marriage_notes'            => $marriage['marriage_notes'] ?? null,
+				'divorce_date'              => $marriage['divorce_date'] ?? null,
+				'children'                  => $children_export,
+			);
+		}
+	}
+
+	return array(
+		'name'                       => $leader->post_title,
+		'slug'                       => $leader->post_name,
+		'first_name'                 => get_field( 'first_name', $saint_id ) ?: null,
+		'middle_name'                => get_field( 'middle_name', $saint_id ) ?: null,
+		'last_name'                  => get_field( 'last_name', $saint_id ) ?: null,
+		'gender'                     => get_field( 'gender', $saint_id ) ?: null,
+		'birthdate'                  => get_field( 'birthdate', $saint_id ) ?: null,
+		'birthdate_approximate'      => (bool) get_field( 'birthdate_approximate', $saint_id ),
+		'deathdate'                  => get_field( 'deathdate', $saint_id ) ?: null,
+		'deathdate_approximate'      => (bool) get_field( 'deathdate_approximate', $saint_id ),
+		'familysearch_id'            => get_field( 'familysearch_id', $saint_id ) ?: null,
+		'hometown'                   => get_field( 'hometown', $saint_id ) ?: null,
+		'ordained_date'              => get_field( 'ordained_date', $saint_id ) ?: null,
+		'ordain_end'                 => get_field( 'ordain_end', $saint_id ) ?: null,
+		'ordain_note'                => get_field( 'ordain_note', $saint_id ) ?: null,
+		'became_president_date'      => get_field( 'became_president_date', $saint_id ) ?: null,
+		'education'                  => get_field( 'education', $saint_id ) ?: null,
+		'mission'                    => get_field( 'mission', $saint_id ) ?: null,
+		'profession'                 => get_field( 'profession', $saint_id ) ?: null,
+		'military'                   => get_field( 'military', $saint_id ) ?: null,
+		'polygamist'                 => (bool) get_field( 'polygamist', $saint_id ),
+		'number_of_wives'            => get_field( 'number_of_wives', $saint_id ) ?: null,
+		'marital_status_at_marriage' => get_field( 'marital_status_at_marriage', $saint_id ) ?: null,
+		'marriages'                  => ! empty( $marriages_export ) ? $marriages_export : null,
+		'roles'                      => $role_terms,
+		'leader_tag_slug'            => $leader_tag_slug,
+		'bio'                        => $leader->post_content,
+		'featured_image_url'         => $featured_image_url,
+	);
+}
+
+/**
+ * Get a saint with their family for export
+ *
+ * @param int  $saint_id         The main saint ID.
+ * @param bool $include_spouses  Whether to include spouse data.
+ * @param bool $include_children Whether to include children data.
+ * @return array Export data array.
+ */
+function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true, $include_children = true ) {
+	$exported_ids = array(); // Track already exported to avoid duplicates
+	$export_data = array();
+
+	// Get the main saint's data
+	$main_saint_data = wasmo_get_single_saint_export_data( $saint_id );
+	if ( ! $main_saint_data ) {
+		return array();
+	}
+
+	$export_data[] = $main_saint_data;
+	$exported_ids[] = $saint_id;
+
+	// Collect spouse and children IDs from this saint's marriages
+	$spouse_ids = array();
+	$children_ids = array();
+
+	$marriages = get_field( 'marriages', $saint_id );
+	if ( ! empty( $marriages ) && is_array( $marriages ) ) {
+		foreach ( $marriages as $marriage ) {
+			// Get spouse ID
+			$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
+			if ( $spouse_is_saint ) {
+				$spouse_field = $marriage['spouse'] ?? null;
+				$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+				if ( $spouse_id && ! in_array( $spouse_id, $exported_ids, true ) ) {
+					$spouse_ids[] = $spouse_id;
+				}
+			}
+
+			// Get children IDs (if they're linked to saint records)
+			$children_field = $marriage['children'] ?? array();
+			if ( ! empty( $children_field ) && is_array( $children_field ) ) {
+				foreach ( $children_field as $child ) {
+					if ( is_array( $child ) && ! empty( $child['child_link'] ) ) {
+						$child_link_id = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
+						if ( $child_link_id && ! in_array( $child_link_id, $exported_ids, true ) ) {
+							$children_ids[] = $child_link_id;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Also check reverse marriages (if this saint is listed as a spouse in someone else's record)
+	$reverse_spouses = wasmo_find_saints_married_to( $saint_id );
+	foreach ( $reverse_spouses as $reverse_spouse_id ) {
+		if ( ! in_array( $reverse_spouse_id, $exported_ids, true ) && ! in_array( $reverse_spouse_id, $spouse_ids, true ) ) {
+			$spouse_ids[] = $reverse_spouse_id;
+		}
+
+		// Also get children from these reverse marriages
+		$reverse_marriages = get_field( 'marriages', $reverse_spouse_id );
+		if ( ! empty( $reverse_marriages ) && is_array( $reverse_marriages ) ) {
+			foreach ( $reverse_marriages as $rm ) {
+				$rm_spouse_field = $rm['spouse'] ?? null;
+				$rm_spouse_id = is_array( $rm_spouse_field ) ? ( $rm_spouse_field[0] ?? null ) : $rm_spouse_field;
+				
+				// Only get children if this marriage is with our main saint
+				if ( intval( $rm_spouse_id ) === intval( $saint_id ) ) {
+					$rm_children = $rm['children'] ?? array();
+					if ( ! empty( $rm_children ) && is_array( $rm_children ) ) {
+						foreach ( $rm_children as $child ) {
+							if ( is_array( $child ) && ! empty( $child['child_link'] ) ) {
+								$child_link_id = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
+								if ( $child_link_id && ! in_array( $child_link_id, $exported_ids, true ) && ! in_array( $child_link_id, $children_ids, true ) ) {
+									$children_ids[] = $child_link_id;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Export spouses
+	if ( $include_spouses ) {
+		foreach ( $spouse_ids as $spouse_id ) {
+			$spouse_data = wasmo_get_single_saint_export_data( $spouse_id );
+			if ( $spouse_data ) {
+				$export_data[] = $spouse_data;
+				$exported_ids[] = $spouse_id;
+			}
+		}
+	}
+
+	// Export children
+	if ( $include_children ) {
+		foreach ( $children_ids as $child_id ) {
+			if ( in_array( $child_id, $exported_ids, true ) ) {
+				continue; // Already exported (might be a spouse too)
+			}
+			$child_data = wasmo_get_single_saint_export_data( $child_id );
+			if ( $child_data ) {
+				$export_data[] = $child_data;
+				$exported_ids[] = $child_id;
+			}
+		}
+	}
+
+	return $export_data;
+}
+
+/**
+ * Find saints who have this saint listed as a spouse in their marriages
+ *
+ * @param int $saint_id The saint ID to search for.
+ * @return array Array of saint IDs.
+ */
+function wasmo_find_saints_married_to( $saint_id ) {
+	global $wpdb;
+
+	// Find all posts that have this saint as a spouse in their marriages
+	$results = $wpdb->get_col( $wpdb->prepare(
+		"SELECT DISTINCT post_id FROM {$wpdb->postmeta} 
+		WHERE meta_key LIKE 'marriages_%%_spouse' 
+		AND (meta_value = %s OR meta_value LIKE %s)",
+		$saint_id,
+		'%"' . $saint_id . '"%'
+	) );
+
+	// Filter to only published saints
+	$saint_ids = array();
+	foreach ( $results as $post_id ) {
+		$post = get_post( $post_id );
+		if ( $post && $post->post_type === 'saint' && $post->post_status === 'publish' ) {
+			$saint_ids[] = intval( $post_id );
+		}
+	}
+
+	return $saint_ids;
+}
 
 /**
  * Get all leaders data for export

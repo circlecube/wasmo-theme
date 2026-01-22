@@ -20,6 +20,8 @@ require_once( get_stylesheet_directory() . '/includes/contributor-users-admin-pa
 require_once( get_stylesheet_directory() . '/includes/contributor-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/draft-posts-admin-page.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-import.php' );
+require_once( get_stylesheet_directory() . '/includes/taxonomy-import.php' );
+require_once( get_stylesheet_directory() . '/includes/media-auto-tag.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-associations.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-images.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-settings.php' );

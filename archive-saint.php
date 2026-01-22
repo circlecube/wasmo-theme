@@ -58,6 +58,9 @@ $plural_wives = wasmo_get_cached_wives();
 				<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
 					View Data Charts →
 				</a>
+				<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); ?>" class="btn btn-secondary">
+					View Polygamy Charts →
+				</a>
 			</div>
 		</header>
 
@@ -200,7 +203,7 @@ $plural_wives = wasmo_get_cached_wives();
 
 		</section>
 
-		<footer class="archive-footer">
+		<footer class="archive-footer content-full-width" style="border:0;">
 			<h3>
 				<?php echo wasmo_get_icon_svg( 'saint', 24 ); ?>
 				All Leadership Roles:

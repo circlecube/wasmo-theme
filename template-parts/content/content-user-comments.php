@@ -86,10 +86,12 @@ $profile_owner = get_userdata( $userid );
 						if ( current_user_can( 'moderate_comments' ) || ( is_user_logged_in() && get_current_user_id() === $userid ) ) : 
 						?>
 							<div class="comment-actions">
-								<a href="<?php echo admin_url( 'comment.php?action=editcomment&c=' . $comment->comment_ID ); ?>" class="comment-edit-link">
-									Edit
-								</a>
-								<a href="<?php echo wp_nonce_url( admin_url( 'comment.php?action=trashcomment&c=' . $comment->comment_ID ), 'delete-comment_' . $comment->comment_ID ); ?>" class="comment-delete-link" onclick="return confirm('Delete this comment?');">
+								<?php if ( current_user_can( 'moderate_comments' ) ) : ?>
+									<a href="<?php echo admin_url( 'comment.php?action=editcomment&c=' . $comment->comment_ID ); ?>" class="comment-edit-link">
+										Edit
+									</a>
+								<?php endif; ?>
+								<a href="<?php echo esc_url( wasmo_get_comment_delete_url( $comment->comment_ID ) ); ?>" class="comment-delete-link" onclick="return confirm('Delete this comment?');">
 									Delete
 								</a>
 							</div>

@@ -203,6 +203,22 @@ $pct_large_age_diff = $aggregate['total_wives'] > 0
 	? round( ( $aggregate['large_age_diff_count'] / $aggregate['total_wives'] ) * 100, 1 ) 
 	: 0;
 
+// Youngest bride age (teenage brides are already sorted youngest first)
+$youngest_bride_age = ! empty( $aggregate['all_teenage_brides'] ) 
+	? $aggregate['all_teenage_brides'][0]['bride_age'] 
+	: null;
+
+// Most wives by a single leader (polygamists already sorted by wives desc)
+$most_wives_leader = ! empty( $polygamists ) ? $polygamists[0] : null;
+
+// Count brides under 16
+$brides_under_16 = 0;
+foreach ( $aggregate['all_teenage_brides'] as $bride ) {
+	if ( isset( $bride['bride_age'] ) && $bride['bride_age'] < 16 ) {
+		$brides_under_16++;
+	}
+}
+
 // Sort role counts
 arsort( $aggregate['role_counts'] );
 ?>
@@ -212,7 +228,7 @@ arsort( $aggregate['role_counts'] );
 		<div class="entry-content">
 			
 			<header class="page-header content-full-width">
-				<h1 class="page-title">Polygamy in LDS Leadership</h1>
+				<h1 class="page-title no-line">Polygamy in LDS Leadership</h1>
 				<p class="page-description">
 					Statistics and data about plural marriage among leaders of The Church of Jesus Christ of Latter-day Saints.
 					This page presents historical and contemporary data without editorial commentary.
@@ -225,7 +241,7 @@ arsort( $aggregate['role_counts'] );
 				<div class="stats-grid">
 					<div class="stat-card">
 						<span class="stat-value"><?php echo number_format( $aggregate['total_polygamists'] ); ?></span>
-						<span class="stat-label">Total Polygamist Leaders</span>
+						<span class="stat-label">Total Polygamist Leaders <br><small>(on the site so far)</small></span>
 					</div>
 					<div class="stat-card stat-card-blue">
 						<span class="stat-value"><?php echo number_format( $aggregate['simultaneous_count'] ); ?></span>
@@ -245,18 +261,13 @@ arsort( $aggregate['role_counts'] );
 						<span class="stat-value"><?php echo $avg_wives; ?></span>
 						<span class="stat-label">Avg Wives per Polygamist</span>
 					</div>
+					<?php if ( $most_wives_leader ) : ?>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo number_format( $aggregate['total_children'] ); ?></span>
-						<span class="stat-label">Total Children</span>
+						<span class="stat-value"><?php echo $most_wives_leader['num_wives']; ?></span>
+						<span class="stat-label">Most Wives (Single Leader)</span>
+						<span class="stat-note"><?php echo esc_html( $most_wives_leader['name'] ); ?></span>
 					</div>
-					<div class="stat-card stat-card-highlight">
-						<span class="stat-value"><?php echo number_format( $aggregate['total_teenage_brides'] ); ?></span>
-						<span class="stat-label">Teenage Brides (&lt;18)</span>
-					</div>
-					<div class="stat-card stat-card-highlight">
-						<span class="stat-value"><?php echo $pct_teenage_brides; ?>%</span>
-						<span class="stat-label">Percentage Teenage Brides</span>
-					</div>
+					<?php endif; ?>
 					<div class="stat-card">
 						<span class="stat-value"><?php echo $overall_avg_age_diff; ?> yrs</span>
 						<span class="stat-label">Avg Age Difference</span>
@@ -268,6 +279,30 @@ arsort( $aggregate['role_counts'] );
 					<div class="stat-card">
 						<span class="stat-value"><?php echo $pct_large_age_diff; ?>%</span>
 						<span class="stat-label">Marriages with 20+ yr Gap</span>
+					</div>
+					<div class="stat-card stat-card-highlight">
+						<span class="stat-value"><?php echo number_format( $aggregate['total_teenage_brides'] ); ?></span>
+						<span class="stat-label">Teenage Brides (&lt;18)</span>
+					</div>
+					<?php if ( $brides_under_16 > 0 ) : ?>
+					<div class="stat-card stat-card-highlight">
+						<span class="stat-value"><?php echo $brides_under_16; ?></span>
+						<span class="stat-label">Brides Under 16</span>
+					</div>
+					<?php endif; ?>
+					<div class="stat-card stat-card-highlight">
+						<span class="stat-value"><?php echo $pct_teenage_brides; ?>%</span>
+						<span class="stat-label">Percentage Teenage Brides</span>
+					</div>
+					<?php if ( $youngest_bride_age !== null ) : ?>
+					<div class="stat-card stat-card-highlight">
+						<span class="stat-value"><?php echo $youngest_bride_age; ?></span>
+						<span class="stat-label">Youngest Bride Age</span>
+					</div>
+					<?php endif; ?>
+					<div class="stat-card">
+						<span class="stat-value"><?php echo number_format( $aggregate['total_children'] ); ?></span>
+						<span class="stat-label">Total Children</span>
 					</div>
 				</div>
 			</section>
@@ -413,29 +448,86 @@ arsort( $aggregate['role_counts'] );
 			</section>
 			<?php endif; ?>
 
-			<!-- CHARTS -->
-			<section class="polygamy-charts content-full-width">
-				<h2>Visual Data</h2>
-				<div class="charts-grid">
-					<div class="chart-container">
-						<h3>Top 10 by Number of Wives</h3>
-						<canvas id="wives-chart"></canvas>
+			<!-- VISUAL BAR CHART -->
+			<section class="polygamy-chart-section content-full-width">
+				<h2>Number of Wives by Leader</h2>
+				<div class="chart-options">
+					<div class="option-group">
+						<label for="polygamy-sort">Sort:</label>
+						<select id="polygamy-sort">
+							<option value="wives-desc" selected>Most Wives</option>
+							<option value="wives-asc">Fewest Wives</option>
+							<option value="teenage-desc">Most Teenage Brides</option>
+							<option value="age-diff-desc">Largest Age Gap</option>
+							<option value="alpha">Alphabetical</option>
+						</select>
 					</div>
-					<div class="chart-container">
-						<h3>Age Difference Distribution</h3>
-						<canvas id="age-diff-chart"></canvas>
-					</div>
+				</div>
+				
+				<?php 
+				$max_wives = ! empty( $polygamists ) ? $polygamists[0]['num_wives'] : 1;
+				?>
+				
+				<div id="polygamy-bar-chart" class="apostle-bar-chart">
+					<?php foreach ( $polygamists as $p ) : 
+						$wives_pct = ( $p['num_wives'] / $max_wives ) * 100;
+						$bar_class = in_array( 'president', $p['role_slugs'] ?? array() ) ? 'bar-prophet' : 'bar-historical';
+						if ( $p['num_teenage_brides'] > 0 ) $bar_class .= ' has-teenage';
+						$thumbnail = get_the_post_thumbnail_url( $p['id'], 'thumbnail' );
+					?>
+						<a href="<?php echo esc_url( get_permalink( $p['id'] ) ); ?>" 
+						   class="bar-row polygamy-bar-row" 
+						   data-wives="<?php echo esc_attr( $p['num_wives'] ); ?>"
+						   data-teenage="<?php echo esc_attr( $p['num_teenage_brides'] ); ?>"
+						   data-age-diff="<?php echo esc_attr( $p['largest_age_diff'] ?? 0 ); ?>"
+						   data-name="<?php echo esc_attr( $p['name'] ); ?>">
+							<span class="bar-name">
+								<?php if ( $thumbnail ) : ?>
+									<img src="<?php echo esc_url( $thumbnail ); ?>" alt="" class="bar-thumb">
+								<?php endif; ?>
+								<?php echo esc_html( $p['name'] ); ?>
+								<?php if ( in_array( 'president', $p['role_slugs'] ?? array() ) ) : ?>
+									<span class="president-badge" title="Church President">★</span>
+								<?php endif; ?>
+							</span>
+							<div class="bar-track">
+								<div class="bar <?php echo esc_attr( $bar_class ); ?>" style="width: <?php echo $wives_pct; ?>%;">
+									<span class="bar-value"><?php echo esc_html( $p['num_wives'] ); ?></span>
+								</div>
+							</div>
+							<span class="bar-dates">
+								<?php if ( $p['num_teenage_brides'] > 0 ) : ?>
+									<span class="teenage-count" title="Teenage brides"><?php echo $p['num_teenage_brides']; ?> teen<?php echo $p['num_teenage_brides'] > 1 ? 's' : ''; ?></span>
+								<?php endif; ?>
+								<?php if ( ! empty( $p['largest_age_diff'] ) && $p['largest_age_diff'] > 0 ) : ?>
+									<span class="age-diff" title="Largest age gap"><?php echo $p['largest_age_diff']; ?>yr gap</span>
+								<?php endif; ?>
+							</span>
+						</a>
+					<?php endforeach; ?>
+				</div>
+
+				<div class="chart-legend">
+					<span class="legend-item">
+						<span class="legend-bar bar-prophet"></span> Church Presidents
+					</span>
+					<span class="legend-item">
+						<span class="legend-bar bar-historical"></span> Other Leaders
+					</span>
+					<span class="legend-item">
+						<span class="teenage-marker">●</span> Had Teenage Brides
+					</span>
 				</div>
 			</section>
 
 			<footer class="page-footer content-full-width">
 				<p class="data-note">
-					<strong>Data Note:</strong> Statistics are based on available historical records. 
+					<strong>Data Note:</strong> Statistics are based on available historical records (mainly familysearch.org). 
 					Some marriages may not be fully documented, and ages may be approximate.
 					This data is presented for historical and educational purposes.
 				</p>
 				<p>
-					<a href="<?php echo home_url( '/leaders/' ); ?>" class="btn btn-secondary">← Back to Church Leadership</a>
+					<a href="<?php echo home_url( '/saints/' ); ?>" class="btn btn-secondary">← Back to Church Leadership</a>
 				</p>
 			</footer>
 
@@ -443,76 +535,53 @@ arsort( $aggregate['role_counts'] );
 	</main>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-	// Charts
-	const topPolygamists = <?php 
-		$top_ten = array_slice( $polygamists, 0, 10 );
-		echo json_encode( array(
-			'labels' => array_map( function( $p ) { return $p['name']; }, $top_ten ),
-			'wives'  => array_map( function( $p ) { return $p['num_wives']; }, $top_ten ),
-		) );
-	?>;
+	// Polygamy chart sorting
+	const polygamySortSelect = document.getElementById('polygamy-sort');
+	const polygamyRows = document.querySelectorAll('.polygamy-bar-row');
+	const polygamyChart = document.getElementById('polygamy-bar-chart');
 
-	// Wives chart
-	new Chart(document.getElementById('wives-chart'), {
-		type: 'bar',
-		data: {
-			labels: topPolygamists.labels,
-			datasets: [{
-				label: 'Number of Wives',
-				data: topPolygamists.wives,
-				backgroundColor: 'rgba(0, 112, 153, 0.8)',
-				borderColor: 'rgba(0, 75, 102, 1)',
-				borderWidth: 1
-			}]
-		},
-		options: {
-			indexAxis: 'y',
-			responsive: true,
-			plugins: {
-				legend: { display: false }
-			},
-			scales: {
-				x: { beginAtZero: true }
+	function updatePolygamyChart() {
+		if (!polygamySortSelect || !polygamyChart) return;
+		
+		const sortOrder = polygamySortSelect.value;
+		const rowsArray = Array.from(polygamyRows);
+
+		rowsArray.sort(function(a, b) {
+			let aVal, bVal;
+			
+			switch(sortOrder) {
+				case 'wives-asc':
+					aVal = parseInt(a.getAttribute('data-wives')) || 0;
+					bVal = parseInt(b.getAttribute('data-wives')) || 0;
+					return aVal - bVal;
+				case 'teenage-desc':
+					aVal = parseInt(a.getAttribute('data-teenage')) || 0;
+					bVal = parseInt(b.getAttribute('data-teenage')) || 0;
+					return bVal - aVal;
+				case 'age-diff-desc':
+					aVal = parseInt(a.getAttribute('data-age-diff')) || 0;
+					bVal = parseInt(b.getAttribute('data-age-diff')) || 0;
+					return bVal - aVal;
+				case 'alpha':
+					aVal = a.getAttribute('data-name') || '';
+					bVal = b.getAttribute('data-name') || '';
+					return aVal.localeCompare(bVal);
+				default: // wives-desc
+					aVal = parseInt(a.getAttribute('data-wives')) || 0;
+					bVal = parseInt(b.getAttribute('data-wives')) || 0;
+					return bVal - aVal;
 			}
-		}
-	});
+		});
 
-	// Age difference distribution
-	const ageDiffs = <?php echo json_encode( $aggregate['all_age_diffs'] ); ?>;
-	const ageBuckets = { '0-9': 0, '10-19': 0, '20-29': 0, '30-39': 0, '40+': 0 };
-	ageDiffs.forEach(function(diff) {
-		if (diff < 10) ageBuckets['0-9']++;
-		else if (diff < 20) ageBuckets['10-19']++;
-		else if (diff < 30) ageBuckets['20-29']++;
-		else if (diff < 40) ageBuckets['30-39']++;
-		else ageBuckets['40+']++;
-	});
+		// Re-append in new order
+		rowsArray.forEach(function(row) {
+			polygamyChart.appendChild(row);
+		});
+	}
 
-	new Chart(document.getElementById('age-diff-chart'), {
-		type: 'doughnut',
-		data: {
-			labels: Object.keys(ageBuckets).map(k => k + ' years'),
-			datasets: [{
-				data: Object.values(ageBuckets),
-				backgroundColor: [
-					'rgba(0, 174, 235, 0.8)',
-					'rgba(0, 112, 153, 0.8)',
-					'rgba(240, 124, 39, 0.8)',
-					'rgba(216, 12, 129, 0.8)',
-					'rgba(51, 51, 51, 0.8)'
-				]
-			}]
-		},
-		options: {
-			responsive: true,
-			plugins: {
-				legend: { position: 'bottom' }
-			}
-		}
-	});
+	polygamySortSelect.addEventListener('change', updatePolygamyChart);
 });
 </script>
 

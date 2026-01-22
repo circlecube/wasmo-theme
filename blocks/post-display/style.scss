@@ -39,10 +39,11 @@
             }
 
             .post-display-item {
-                flex-direction: column;
                 border-bottom: none;
-                padding-bottom: 0;
+                flex-direction: column;
+                gap: .25rem;
                 margin-bottom: 0;
+                padding-bottom: 0;
 
                 .post-display-image {
                     width: 100%;
@@ -209,7 +210,7 @@
         line-height: 1.3;
 
         &:hover {
-            // text-decoration: underline;
+            text-decoration: none;
         }
     }
 

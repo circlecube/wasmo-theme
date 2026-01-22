@@ -583,9 +583,9 @@ $classes = array_filter( $classes, function( $class ) {
 										$child_link = is_array( $child_link_field ) ? ( $child_link_field[0] ?? null ) : $child_link_field;
 										
 										// Auto-link: if no explicit link, try to find a saint by name
-										if ( ! $child_link && $child_name ) {
-											$child_link = wasmo_find_saint_by_child_name( $child_name );
-										}
+										// if ( ! $child_link && $child_name ) {
+										// 	$child_link = wasmo_find_saint_by_child_name( $child_name );
+										// }
 									?>
 										<li class="child-item">
 											<?php if ( $child_link ) : ?>
@@ -624,7 +624,7 @@ $classes = array_filter( $classes, function( $class ) {
 				$remaining_posts = array_slice( $related_posts, 6 );
 				?>
 				<section class="leader-related-posts">
-					<h2>Related Posts (<?php echo count( $related_posts ); ?>)</h2>
+					<h2>Posts Related to <?php the_title(); ?></h2>
 					
 					<?php if ( ! empty( $featured_posts ) ) : ?>
 						<div class="related-posts-grid">
@@ -665,7 +665,7 @@ $classes = array_filter( $classes, function( $class ) {
 
 			<?php if ( ! empty( $related_media ) ) : ?>
 				<section class="leader-related-media">
-					<h2>Related Images</h2>
+					<h2>Images Related to <?php the_title(); ?></h2>
 					<div class="media-gallery">
 						<?php foreach ( $related_media as $media ) : 
 							$image_url = wp_get_attachment_image_url( $media->ID, 'medium' );

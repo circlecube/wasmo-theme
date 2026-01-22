@@ -257,7 +257,7 @@ function wasmo_get_default_reaction_types() {
         ),
         'hundred' => array(
             'emoji'       => '💯',
-            'label'       => 'Completely Agree!',
+            'label'       => 'Agree!',
             'description' => 'I feel this too',
         ),
         // 'raised_hands' => array(
@@ -520,12 +520,21 @@ function wasmo_render_reaction_buttons( $profile_user_id, $section ) {
                         class="reaction-btn <?php echo $is_active ? 'active' : ''; ?>" 
                         data-type="<?php echo esc_attr( $slug ); ?>"
                         title="<?php echo esc_attr( $type['label'] ); ?>"
+                        <?php echo ! is_user_logged_in() ? 'disabled' : ''; ?>
                     >
                         <span class="reaction-icon"><?php echo wasmo_get_icon_svg( $icon_key, 24 ); ?></span>
                     </button>
                 <?php endforeach; ?>
             </div>
         </div>
+
+        <?php if ( ! is_user_logged_in() ) : ?>
+            <p class="reactions-login-prompt">
+                <em>
+                <a class="register" href="<?php echo esc_url( home_url('/login/') ); ?>">Join</a> or
+                    <a class="nav-login" href="<?php echo esc_url( home_url('/login/') ); ?>">log in</a> to react or share your own story.</em>
+            </p>
+        <?php endif; ?>
 
         <?php // Reaction summary - shows icons with counts ?>
         <?php if ( $total_count > 0 ) : ?>
@@ -565,12 +574,6 @@ function wasmo_render_reaction_buttons( $profile_user_id, $section ) {
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-
-        <?php if ( ! is_user_logged_in() ) : ?>
-            <p class="reactions-login-prompt">
-                <a href="<?php echo esc_url( wp_login_url( get_author_posts_url( $profile_user_id ) ) ); ?>">Log in</a> to react
-            </p>
-        <?php endif; ?>
     </div>
     <?php
 }
@@ -606,6 +609,7 @@ function wasmo_ajax_toggle_reaction() {
 
     // Get current reaction
     $current = wasmo_get_user_reaction( $profile_user_id, $section );
+    $is_new_reaction = empty( $current );
 
     if ( $current === $reaction_type ) {
         // Remove if clicking same reaction
@@ -615,6 +619,11 @@ function wasmo_ajax_toggle_reaction() {
         // Add or change reaction
         wasmo_add_reaction( $profile_user_id, $section, $reaction_type );
         $action = 'added';
+        
+        // Send email notification only for new reactions (not changes)
+        if ( $is_new_reaction ) {
+            wasmo_notify_profile_reaction( $profile_user_id, $section, $reaction_type );
+        }
     }
 
     // Return updated data
@@ -698,12 +707,80 @@ function wasmo_handle_profile_comment_submission() {
         wp_die( 'Failed to post comment. Please try again.', 'Error', array( 'back_link' => true ) );
     }
 
+    // Send email notification to profile owner
+    wasmo_notify_profile_comment( $profile_user_id, $current_user->ID, $comment_id );
+
     // Redirect back to profile
     $redirect_url = get_author_posts_url( $profile_user_id ) . '#comment-' . $comment_id;
     wp_safe_redirect( $redirect_url );
     exit;
 }
 add_action( 'admin_post_wasmo_submit_profile_comment', 'wasmo_handle_profile_comment_submission' );
+
+/**
+ * Handle profile comment deletion (frontend)
+ */
+function wasmo_handle_profile_comment_deletion() {
+    $comment_id = isset( $_GET['comment_id'] ) ? absint( $_GET['comment_id'] ) : 0;
+    
+    if ( ! $comment_id ) {
+        wp_die( 'Invalid comment.', 'Error', array( 'back_link' => true ) );
+    }
+
+    // Verify nonce
+    if ( ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'delete_profile_comment_' . $comment_id ) ) {
+        wp_die( 'Security check failed.', 'Error', array( 'back_link' => true ) );
+    }
+
+    // Must be logged in
+    if ( ! is_user_logged_in() ) {
+        wp_die( 'You must be logged in to delete comments.', 'Error', array( 'back_link' => true ) );
+    }
+
+    $comment = get_comment( $comment_id );
+    if ( ! $comment ) {
+        wp_die( 'Comment not found.', 'Error', array( 'back_link' => true ) );
+    }
+
+    // Get the profile user ID from the shadow post
+    $profile_user_id = wasmo_get_user_from_comment_post( $comment->comment_post_ID );
+    if ( ! $profile_user_id ) {
+        wp_die( 'Invalid comment post.', 'Error', array( 'back_link' => true ) );
+    }
+
+    $current_user_id = get_current_user_id();
+    
+    // Only profile owner or admins can delete
+    if ( $current_user_id !== $profile_user_id && ! current_user_can( 'moderate_comments' ) ) {
+        wp_die( 'You do not have permission to delete this comment.', 'Error', array( 'back_link' => true ) );
+    }
+
+    // Delete the comment
+    $deleted = wp_delete_comment( $comment_id, true );
+
+    if ( ! $deleted ) {
+        wp_die( 'Failed to delete comment.', 'Error', array( 'back_link' => true ) );
+    }
+
+    // Redirect back to profile
+    $redirect_url = get_author_posts_url( $profile_user_id ) . '#profile-comments';
+    wp_safe_redirect( $redirect_url );
+    exit;
+}
+add_action( 'admin_post_wasmo_delete_profile_comment', 'wasmo_handle_profile_comment_deletion' );
+
+/**
+ * Generate a frontend delete URL for a profile comment
+ *
+ * @param int $comment_id The comment ID
+ * @return string The delete URL
+ */
+function wasmo_get_comment_delete_url( $comment_id ) {
+    return wp_nonce_url(
+        admin_url( 'admin-post.php?action=wasmo_delete_profile_comment&comment_id=' . $comment_id ),
+        'delete_profile_comment_' . $comment_id
+    );
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -757,6 +834,150 @@ function wasmo_get_reaction_stats() {
     }
 
     return $result;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Email Notifications
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * Send email notification when someone reacts to a profile section
+ *
+ * @param int    $profile_user_id The profile owner's user ID
+ * @param string $section         The section reacted to
+ * @param string $reaction_type   The reaction type slug
+ */
+function wasmo_notify_profile_reaction( $profile_user_id, $section, $reaction_type ) {
+    // Check user's notification preference
+    $notify_pref = get_field( 'notify_me_about_reactions', 'user_' . $profile_user_id );
+    // Only send if preference is 'yes' (both) or 'reactions' (reactions only)
+    if ( ! in_array( $notify_pref, array( 'yes', 'reactions' ), true ) ) {
+        return;
+    }
+
+    // Don't notify if user reacts to their own profile
+    $reactor_user_id = get_current_user_id();
+    if ( $reactor_user_id === $profile_user_id ) {
+        return;
+    }
+
+    $profile_owner = get_user_by( 'ID', $profile_user_id );
+    $reactor = get_user_by( 'ID', $reactor_user_id );
+    
+    if ( ! $profile_owner || ! $reactor ) {
+        return;
+    }
+
+    // Get reaction info
+    $reaction_types = wasmo_get_reaction_types();
+    $reaction_info = $reaction_types[ $reaction_type ] ?? null;
+    if ( ! $reaction_info ) {
+        return;
+    }
+
+    // Format section name for display
+    $section_display = ucwords( str_replace( '_', ' ', $section ) );
+    
+    // Build email
+    $profile_url = get_author_posts_url( $profile_user_id );
+    $reactor_profile_url = get_author_posts_url( $reactor_user_id );
+    
+    $to = $profile_owner->user_email;
+    // $reply_to = $reactor->user_email;
+    $subject = sprintf( '%s reacted to your profile on wasmormon.org', $reactor->display_name );
+    
+    $message = sprintf(
+        "Hi %s,\n\n" .
+        "%s reacted to your \"%s\" section with %s %s.\n\n" .
+        "View your profile: %s\n\n" .
+        "See %s's profile: %s\n\n" .
+        "---\n" .
+        "You received this email because someone reacted to your wasmormon.org profile.\n",
+        $profile_owner->display_name,
+        $reactor->display_name,
+        $section_display,
+        $reaction_info['emoji'],
+        $reaction_info['label'],
+        $profile_url,
+        $reactor->display_name,
+        $reactor_profile_url
+    );
+
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        // 'Reply-To: <' . $reply_to . '>'
+    );
+    
+    wp_mail( $to, $subject, $message, $headers );
+}
+
+/**
+ * Send email notification when someone comments on a profile
+ *
+ * @param int $profile_user_id The profile owner's user ID
+ * @param int $commenter_id    The commenter's user ID
+ * @param int $comment_id      The comment ID
+ */
+function wasmo_notify_profile_comment( $profile_user_id, $commenter_id, $comment_id ) {
+    // Check user's notification preference
+    $notify_pref = get_field( 'notify_me_about_reactions', 'user_' . $profile_user_id );
+    // Only send if preference is 'yes' (both) or 'comments' (comments only)
+    if ( ! in_array( $notify_pref, array( 'yes', 'comments' ), true ) ) {
+        return;
+    }
+
+    // Don't notify if user comments on their own profile (shouldn't happen but just in case)
+    if ( $commenter_id === $profile_user_id ) {
+        return;
+    }
+
+    $profile_owner = get_user_by( 'ID', $profile_user_id );
+    $commenter = get_user_by( 'ID', $commenter_id );
+    $comment = get_comment( $comment_id );
+    
+    if ( ! $profile_owner || ! $commenter || ! $comment ) {
+        return;
+    }
+
+    // Build email
+    $profile_url = get_author_posts_url( $profile_user_id ) . '#comment-' . $comment_id;
+    $commenter_profile_url = get_author_posts_url( $commenter_id );
+    
+    $to = $profile_owner->user_email;
+    $reply_to = $commenter->user_email;
+    $subject = sprintf( '%s commented on your profile on wasmormon.org', $commenter->display_name );
+    
+    // Truncate comment for preview
+    $comment_preview = wp_trim_words( $comment->comment_content, 50, '...' );
+    
+    $message = sprintf(
+        "Hi %s,\n\n" .
+        "%s (%s) left a comment on your profile:\n\n" .
+        "---\n" .
+        "%s\n" .
+        "---\n\n" .
+        "View the comment: %s\n\n" .
+        "See %s's profile: %s\n\n" .
+        "If this comment is inappropriate, you can delete it on your profile page when you are logged in.\n\n" .
+        "---\n" .
+        "You received this email because someone commented on your wasmormon.org profile and you've chosen to be notified. If you want to disable these notifications, you can do so in your profile settings .\n",
+        $profile_owner->display_name,
+        $commenter->display_name,
+        $reply_to,
+        $comment_preview,
+        $profile_url,
+        $commenter->display_name,
+        $commenter_profile_url
+    );
+
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        'Reply-To: <' . $reply_to . '>'
+    );
+    
+    wp_mail( $to, $subject, $message, $headers );
 }
 
 /*

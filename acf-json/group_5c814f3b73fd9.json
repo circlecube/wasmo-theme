@@ -446,11 +446,11 @@
         },
         {
             "key": "field_66832f19f60d4",
-            "label": "Allow other site users to contact me?",
+            "label": "Allow other site users to comment or react to my story?",
             "name": "allow_user_contact",
             "aria-label": "",
             "type": "select",
-            "instructions": "This feature is not yet fully developed, but adding the option to gauge interest. The site will soon have the option to allow users to react to other profiles and potentially send messages. The goal is to foster community and connection among fellow site users.",
+            "instructions": "The site allows users to react to answers on another users profile and comment on their profile. These reactions and comments are publicly viewable, but in order to react or comment, a visitor must create an account. This is to foster community and connection among fellow site members but due to the sensitivity of these stories, this feature is entirely opt-in, meaning if you leave this as no, others won't be able to react or comment on your story.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -462,10 +462,50 @@
                 "yes": "Yes",
                 "no": "No"
             },
-            "default_value": false,
+            "default_value": "no",
             "return_format": "value",
             "multiple": 0,
             "allow_null": 0,
+            "allow_in_bindings": 1,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_6971031fee109",
+            "label": "Notify me about other's reactions or comments.",
+            "name": "notify_me_about_reactions",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Choose if you receive an email notification when someone reacts or comments to your story.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_66832f19f60d4",
+                        "operator": "==",
+                        "value": "yes"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "yes": "Reactions and Comments",
+                "reactions": "Reactions only",
+                "comments": "Comments only",
+                "no": "None"
+            },
+            "default_value": "yes",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
             "ui": 0,
             "ajax": 0,
             "placeholder": "",
@@ -676,5 +716,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1753917490
+    "display_title": "",
+    "modified": 1769014334
 }

@@ -78,7 +78,7 @@
         // Handle touch devices - toggle picker on trigger click
         $(document).on('click', '.reaction-trigger:not(:disabled)', function (e) {
             var $wrapper = $(this).closest('.reaction-picker-wrapper');
-            
+
             // On touch devices, toggle the picker
             if ('ontouchstart' in window) {
                 e.preventDefault();
