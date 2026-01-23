@@ -64,6 +64,37 @@ foreach ( $aggregate['all_teenage_brides'] as $bride ) {
 
 // Sort role counts
 arsort( $aggregate['role_counts'] );
+
+// Build expanded young brides list (under 20) for this page only
+// This includes the standard teenage brides (<18) plus 18-19 year olds
+$young_brides = array();
+foreach ( $polygamists as $data ) {
+	foreach ( $data['marriages_data'] as $marriage ) {
+		if ( isset( $marriage['spouse_age'] ) && $marriage['spouse_age'] !== null && $marriage['spouse_age'] < 20 ) {
+			$young_brides[] = array(
+				'bride_id'      => $marriage['spouse_id'],
+				'bride_name'    => $marriage['spouse_name'],
+				'bride_age'     => $marriage['spouse_age'],
+				'husband_id'    => $data['id'],
+				'husband_name'  => $data['name'],
+				'husband_age'   => $marriage['saint_age'],
+				'marriage_date' => $marriage['marriage_date'],
+			);
+		}
+	}
+}
+// Sort by age (youngest first)
+usort( $young_brides, function( $a, $b ) {
+	return ( $a['bride_age'] ?? 99 ) - ( $b['bride_age'] ?? 99 );
+} );
+
+// Count brides 18-19 for display
+$brides_18_19 = 0;
+foreach ( $young_brides as $bride ) {
+	if ( isset( $bride['bride_age'] ) && $bride['bride_age'] >= 18 && $bride['bride_age'] < 20 ) {
+		$brides_18_19++;
+	}
+}
 ?>
 
 <section id="primary" class="content-area">
@@ -72,10 +103,8 @@ arsort( $aggregate['role_counts'] );
 			
 			<header class="page-header content-full-width">
 				<h1 class="page-title no-line">Polygamy in LDS Leadership</h1>
-				<p class="page-description">
-					Statistics and data about plural marriage among leaders of The Church of Jesus Christ of Latter-day Saints.
-					This page presents historical and contemporary data without editorial commentary.
-				</p>
+				<p class="page-description">Statistics and data about plural marriage among leaders of The Church of Jesus Christ of Latter-day Saints from 1830 to present.</p>
+				<p>Polygamy is the practice of marrying multiple spouses (opposed to monogamy where a person is married to only one spouse). When a man is married to more than one wife at the same time, it is technically called polygyny, though the church calls it plural marriage or polygamy. When a woman is married to more than one husband at the same time, it is called polyandry. When there a man has multiple wives who in turn have multiple husbands at the same time, it is called polyamory.</p>
 			</header>
 
 			<!-- AGGREGATE STATISTICS -->
@@ -235,12 +264,14 @@ arsort( $aggregate['role_counts'] );
 				</div>
 			</section>
 
-			<!-- TEENAGE BRIDES LIST -->
-			<?php if ( ! empty( $aggregate['all_teenage_brides'] ) ) : ?>
+			<!-- YOUNG BRIDES LIST (Under 20) -->
+			<?php if ( ! empty( $young_brides ) ) : ?>
 			<section class="teenage-brides-section content-full-width">
-				<h2>Teenage Brides</h2>
+				<h2>Young Brides</h2>
 				<p class="section-description">
-					Women who married church leaders before reaching age 18. 
+					Women who married church leaders before age 20. 
+					This includes <?php echo $aggregate['total_teenage_brides']; ?> teenage brides (under 18) 
+					plus <?php echo $brides_18_19; ?> brides aged 18-19.
 					Listed by age at marriage, youngest first.
 				</p>
 				<div class="table-responsive">
@@ -256,9 +287,17 @@ arsort( $aggregate['role_counts'] );
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $aggregate['all_teenage_brides'] as $bride ) : 
+							<?php foreach ( $young_brides as $bride ) : 
 								$age_gap = ( $bride['husband_age'] ?? 0 ) - ( $bride['bride_age'] ?? 0 );
 								$year = $bride['marriage_date'] ? date( 'Y', strtotime( $bride['marriage_date'] ) ) : '—';
+								// Determine highlight class based on age
+								$age_class = '';
+								if ( $bride['bride_age'] < 16 ) {
+									$age_class = 'highlight-danger';
+								} elseif ( $bride['bride_age'] < 18 ) {
+									$age_class = 'highlight-warning';
+								}
+								// 18-19 year olds get no special highlight
 							?>
 								<tr>
 									<td>
@@ -270,7 +309,7 @@ arsort( $aggregate['role_counts'] );
 											<?php echo esc_html( $bride['bride_name'] ); ?>
 										<?php endif; ?>
 									</td>
-									<td class="<?php echo $bride['bride_age'] < 16 ? 'highlight-danger' : 'highlight-warning'; ?>">
+									<td class="<?php echo esc_attr( $age_class ); ?>">
 										<?php echo $bride['bride_age'] ?? '—'; ?>
 									</td>
 									<td>
@@ -329,9 +368,9 @@ arsort( $aggregate['role_counts'] );
 									<img src="<?php echo esc_url( $thumbnail ); ?>" alt="" class="bar-thumb">
 								<?php endif; ?>
 								<?php echo esc_html( $p['name'] ); ?>
-								<?php if ( in_array( 'president', $p['role_slugs'] ?? array() ) ) : ?>
+								<?php /* if ( in_array( 'president', $p['role_slugs'] ?? array() ) ) : ?>
 									<span class="president-badge" title="Church President">★</span>
-								<?php endif; ?>
+								<?php endif; */ ?>
 							</span>
 							<div class="bar-track">
 								<div class="bar <?php echo esc_attr( $bar_class ); ?>" style="width: <?php echo $wives_pct; ?>%;">
@@ -369,9 +408,14 @@ arsort( $aggregate['role_counts'] );
 					Some marriages may not be fully documented, and ages may be approximate.
 					This data is presented for historical and educational purposes.
 				</p>
-				<p>
-					<a href="<?php echo home_url( '/saints/' ); ?>" class="btn btn-secondary">← Back to Church Leadership</a>
-				</p>
+				<div class="leader-navigation">
+					<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
+						All Saints →
+					</a>
+					<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
+						Saints Data →
+					</a>
+				</div>
 			</footer>
 
 		</div>

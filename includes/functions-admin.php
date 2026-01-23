@@ -101,6 +101,47 @@ function wasmo_hide_notices(){
 add_action( 'admin_head', 'wasmo_hide_notices', 1 );
 
 /**
+ * Add admin CSS for custom columns
+ */
+function wasmo_admin_column_styles() {
+	global $pagenow;
+	
+	// Only on edit pages
+	if ( ! in_array( $pagenow, array( 'edit.php', 'users.php' ) ) ) {
+		return;
+	}
+	?>
+	<style>
+		/* Featured image and user photo columns */
+		.column-featured_image img,
+		.column-user_photo img {
+			width: 60px;
+			height: 60px;
+			object-fit: cover;
+			border-radius: 4px;
+		}
+		
+		/* Ensure column widths are reasonable */
+		.column-featured_image,
+		.column-user_photo {
+			width: 80px;
+		}
+		
+		.column-user_registered,
+		.column-user_last_login,
+		.column-user_last_save {
+			width: 120px;
+		}
+		
+		.column-saint_fsid {
+			width: 100px;
+		}
+	</style>
+	<?php
+}
+add_action( 'admin_head', 'wasmo_admin_column_styles' );
+
+/**
  * Remove wpautop from term description
  */
 remove_filter( 'term_description','wpautop' );

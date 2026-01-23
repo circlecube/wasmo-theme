@@ -133,46 +133,440 @@ foreach ( $all_apostles as $apostle ) {
 				?>
 			</div>
 
-			<!-- Timeline for current apostles -->
-			<div class="current-timeline">
-				<h3>When Each Was Called</h3>
-				<div class="timeline-chart">
-					<?php 
-					$min_year = 9999;
-					$max_year = date( 'Y' );
-					foreach ( $current_apostles as $apostle ) {
-						if ( $apostle['ordained_date'] ) {
-							$year = (int) date( 'Y', strtotime( $apostle['ordained_date'] ) );
-							if ( $year < $min_year ) $min_year = $year;
-						}
-					}
-					$year_range = $max_year - $min_year;
-					
-					foreach ( $current_apostles as $apostle ) : 
-						if ( ! $apostle['ordained_date'] ) continue;
-						$ordained_year = (int) date( 'Y', strtotime( $apostle['ordained_date'] ) );
-						$offset = ( ( $ordained_year - $min_year ) / $year_range ) * 100;
-						$is_president = $apostle['id'] === $first_presidency['president'];
-						$is_fp = $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'];
-						$class = 'bar-twelve';
-						if ( $is_president ) $class = 'bar-prophet';
-						elseif ( $is_fp ) $class = 'bar-first-presidency';
-					?>
-						<div class="timeline-bar-container">
-							<span class="timeline-name"><?php echo esc_html( $apostle['name'] ); ?></span>
-							<div class="timeline-bar-track">
-								<div class="timeline-bar <?php echo $class; ?>" style="left: <?php echo $offset; ?>%;" title="<?php echo esc_attr( $apostle['name'] . ' - ' . $ordained_year ); ?>">
-									<span class="timeline-year"><?php echo $ordained_year; ?></span>
+			<!-- Charts for current apostles -->
+			<?php
+			// Calculate data for current apostle charts
+			$min_year = 9999;
+			$max_year = (int) date( 'Y' );
+			$current_max_tenure = 0;
+			$current_max_age_at_call = 0;
+			$current_max_age = 0;
+			
+			foreach ( $current_apostles as $apostle ) {
+				if ( $apostle['ordained_date'] ) {
+					$year = (int) date( 'Y', strtotime( $apostle['ordained_date'] ) );
+					if ( $year < $min_year ) $min_year = $year;
+				}
+				if ( $apostle['years_served'] > $current_max_tenure ) {
+					$current_max_tenure = $apostle['years_served'];
+				}
+				if ( $apostle['age_at_call'] > $current_max_age_at_call ) {
+					$current_max_age_at_call = $apostle['age_at_call'];
+				}
+				if ( $apostle['age'] > $current_max_age ) {
+					$current_max_age = $apostle['age'];
+				}
+			}
+			$year_range = max( 1, $max_year - $min_year );
+			?>
+
+			<!-- Chart Toggle for Current Apostles -->
+			<div class="current-charts-container">
+				<div class="chart-toggle-container">
+					<div class="chart-toggle">
+						<button class="chart-toggle-btn active" data-chart="called">When Called</button>
+						<button class="chart-toggle-btn" data-chart="service">Service Duration</button>
+						<button class="chart-toggle-btn" data-chart="age-called">Age at Call</button>
+						<button class="chart-toggle-btn" data-chart="current-age">Current Age</button>
+						<button class="chart-toggle-btn" data-chart="president-prob">President Probability</button>
+					</div>
+				</div>
+
+				<!-- When Called Timeline -->
+				<div class="current-chart-panel active" id="current-chart-called">
+					<div class="current-timeline">
+						<p class="chart-subtitle">Year each apostle was ordained to the Quorum of the Twelve</p>
+						<div class="timeline-chart">
+							<?php foreach ( $current_apostles as $apostle ) : 
+								if ( ! $apostle['ordained_date'] ) continue;
+								$ordained_year = (int) date( 'Y', strtotime( $apostle['ordained_date'] ) );
+								$offset = ( ( $ordained_year - $min_year ) / $year_range ) * 100;
+								$is_president = $apostle['id'] === $first_presidency['president'];
+								$is_fp = $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'];
+								$class = 'bar-twelve';
+								if ( $is_president ) $class = 'bar-prophet';
+								elseif ( $is_fp ) $class = 'bar-first-presidency';
+							?>
+								<div class="timeline-bar-container">
+									<span class="timeline-name"><?php echo esc_html( $apostle['name'] ); ?></span>
+									<div class="timeline-bar-track">
+										<div class="timeline-bar <?php echo $class; ?>" style="left: <?php echo $offset; ?>%;" title="<?php echo esc_attr( $apostle['name'] . ' - ' . $ordained_year ); ?>">
+											<span class="timeline-year"><?php echo $ordained_year; ?></span>
+										</div>
+									</div>
 								</div>
+							<?php endforeach; ?>
+							<div class="timeline-axis">
+								<span class="axis-start"><?php echo $min_year; ?></span>
+								<span class="axis-end"><?php echo $max_year; ?></span>
 							</div>
 						</div>
-					<?php endforeach; ?>
-					<div class="timeline-axis">
-						<span class="axis-start"><?php echo $min_year; ?></span>
-						<span class="axis-end"><?php echo $max_year; ?></span>
+					</div>
+				</div>
+
+				<!-- Service Duration Chart -->
+				<div class="current-chart-panel" id="current-chart-service">
+					<div class="current-timeline">
+						<p class="chart-subtitle">Years served as an apostle (sorted by seniority)</p>
+						<div class="horizontal-bar-chart">
+							<?php foreach ( $current_apostles as $apostle ) : 
+								$tenure_pct = $current_max_tenure > 0 ? ( $apostle['years_served'] / $current_max_tenure ) * 100 : 0;
+								$is_president = $apostle['id'] === $first_presidency['president'];
+								$is_fp = $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'];
+								$class = 'bar-twelve';
+								if ( $is_president ) $class = 'bar-prophet';
+								elseif ( $is_fp ) $class = 'bar-first-presidency';
+							?>
+								<div class="horizontal-bar-row">
+									<span class="timeline-name"><?php echo esc_html( $apostle['name'] ); ?></span>
+									<div class="horizontal-bar-track">
+										<div class="horizontal-bar <?php echo $class; ?>" style="width: <?php echo $tenure_pct; ?>%;">
+											<span class="bar-value"><?php echo esc_html( $apostle['years_served'] ); ?> yrs</span>
+										</div>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</div>
+
+				<!-- Age at Call Chart -->
+				<div class="current-chart-panel" id="current-chart-age-called">
+					<div class="current-timeline">
+						<p class="chart-subtitle">How old each apostle was when ordained (sorted by seniority)</p>
+						<div class="horizontal-bar-chart">
+							<?php foreach ( $current_apostles as $apostle ) : 
+								$age_pct = $current_max_age_at_call > 0 ? ( $apostle['age_at_call'] / $current_max_age_at_call ) * 100 : 0;
+								$is_president = $apostle['id'] === $first_presidency['president'];
+								$is_fp = $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'];
+								$class = 'bar-twelve';
+								if ( $is_president ) $class = 'bar-prophet';
+								elseif ( $is_fp ) $class = 'bar-first-presidency';
+							?>
+								<div class="horizontal-bar-row">
+									<span class="timeline-name"><?php echo esc_html( $apostle['name'] ); ?></span>
+									<div class="horizontal-bar-track">
+										<div class="horizontal-bar <?php echo $class; ?>" style="width: <?php echo $age_pct; ?>%;">
+											<span class="bar-value"><?php echo esc_html( $apostle['age_at_call'] ); ?></span>
+										</div>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</div>
+
+				<!-- Current Age Chart -->
+				<div class="current-chart-panel" id="current-chart-current-age">
+					<div class="current-timeline">
+						<p class="chart-subtitle">Current age of each apostle (sorted by seniority)</p>
+						<div class="horizontal-bar-chart">
+							<?php foreach ( $current_apostles as $apostle ) : 
+								$age_pct = $current_max_age > 0 ? ( $apostle['age'] / $current_max_age ) * 100 : 0;
+								$is_president = $apostle['id'] === $first_presidency['president'];
+								$is_fp = $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'];
+								$class = 'bar-twelve';
+								if ( $is_president ) $class = 'bar-prophet';
+								elseif ( $is_fp ) $class = 'bar-first-presidency';
+							?>
+								<div class="horizontal-bar-row">
+									<span class="timeline-name"><?php echo esc_html( $apostle['name'] ); ?></span>
+									<div class="horizontal-bar-track">
+										<div class="horizontal-bar <?php echo $class; ?>" style="width: <?php echo $age_pct; ?>%;">
+											<span class="bar-value"><?php echo esc_html( $apostle['age'] ); ?></span>
+										</div>
+									</div>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</div>
+
+				<!-- President Probability Chart -->
+				<div class="current-chart-panel" id="current-chart-president-prob">
+					<div class="current-timeline">
+						<p class="chart-subtitle">Probability of each apostle becoming the President of the Church over time.</p>
+						<?php 
+						// Calculate president probabilities using simplified actuarial model
+						// Based on methodology from Zelophehad's Daughters
+						// https://zelophehadsdaughters.com/2023/10/17/church-president-probabilities-2023-update/
+						$apostle_data = array();
+						$seniority = 1;
+						foreach ( $current_apostles as $apostle ) {
+							$apostle_data[] = array(
+								'name' => $apostle['name'],
+								'age' => $apostle['age'],
+								'seniority' => $seniority,
+								'is_president' => $apostle['id'] === $first_presidency['president'],
+								'is_fp' => $apostle['id'] === $first_presidency['first-counselor'] || $apostle['id'] === $first_presidency['second-counselor'],
+							);
+							$seniority++;
+						}
+						
+						// Simplified mortality table (annual probability of death by age)
+						// Based on SOA white-collar male annuitant tables
+						if ( ! function_exists( 'wasmo_get_mortality_rate' ) ) {
+							function wasmo_get_mortality_rate( $age ) {
+								if ( $age < 60 ) return 0.005;
+								if ( $age < 70 ) return 0.01 + ( $age - 60 ) * 0.002;
+								if ( $age < 80 ) return 0.03 + ( $age - 70 ) * 0.005;
+								if ( $age < 90 ) return 0.08 + ( $age - 80 ) * 0.015;
+								if ( $age < 100 ) return 0.23 + ( $age - 90 ) * 0.03;
+								return 0.5;
+							}
+						}
+						
+						$current_year = (int) date( 'Y' );
+						$years_to_project = 30;
+						
+						// Calculate probability over time for each apostle
+						$probability_data = array();
+						foreach ( $apostle_data as $idx => $apostle ) {
+							$yearly_probs = array();
+							
+							for ( $year = 0; $year <= $years_to_project; $year++ ) {
+								if ( $idx === 0 ) {
+									// Current president - calculate probability they're still alive/president
+									$prob_alive = 1.0;
+									for ( $y = 0; $y < $year; $y++ ) {
+										$prob_alive *= ( 1 - wasmo_get_mortality_rate( $apostle['age'] + $y ) );
+									}
+									$yearly_probs[] = round( $prob_alive * 100, 1 );
+								} else {
+									// Calculate probability all seniors have died AND this person is alive
+									$prob_seniors_dead = 1.0;
+									for ( $s = 0; $s < $idx; $s++ ) {
+										$senior_age = $apostle_data[$s]['age'];
+										$prob_senior_alive = 1.0;
+										for ( $y = 0; $y < $year; $y++ ) {
+											$prob_senior_alive *= ( 1 - wasmo_get_mortality_rate( $senior_age + $y ) );
+										}
+										$prob_seniors_dead *= ( 1 - $prob_senior_alive );
+									}
+									
+									// Probability this person survives to this year
+									$prob_self_alive = 1.0;
+									for ( $y = 0; $y < $year; $y++ ) {
+										$prob_self_alive *= ( 1 - wasmo_get_mortality_rate( $apostle['age'] + $y ) );
+									}
+									
+									$yearly_probs[] = round( $prob_seniors_dead * $prob_self_alive * 100, 1 );
+								}
+							}
+							
+							$probability_data[] = array(
+								'name' => $apostle['name'],
+								'data' => $yearly_probs,
+								'is_president' => $apostle['is_president'],
+								'is_fp' => $apostle['is_fp'],
+							);
+						}
+						
+						// Generate year labels
+						$year_labels = array();
+						for ( $y = 0; $y <= $years_to_project; $y++ ) {
+							$year_labels[] = $current_year + $y;
+						}
+						
+						// Distinct colors for each apostle - based on site color palette
+						$chart_colors = array(
+							'#f07c27', // site orange - president
+							'#007099', // site blue-2
+							'#d80c81', // site pink
+							'#00aeeb', // site blue
+							'#a3096a', // site pink-2
+							'#004b66', // site blue-3
+							'#6b0646', // site pink-3
+							'#f4a261', // warm orange variant
+							'#2a9d8f', // teal complement
+							'#e76f51', // coral
+							'#264653', // dark teal
+							'#e9c46a', // gold
+							'#457b9d', // steel blue
+							'#bc6c25', // rust
+							'#a8dadc', // light teal
+						);
+						?>
+						
+						<div class="probability-chart-wrapper" style="height: 450px; position: relative;">
+							<canvas id="president-probability-chart"></canvas>
+						</div>
+						
+						<div class="probability-legend">
+							<?php foreach ( $probability_data as $idx => $apostle ) : 
+								$color = $chart_colors[ $idx % count( $chart_colors ) ];
+							?>
+								<span class="prob-legend-item" data-index="<?php echo $idx; ?>">
+									<span class="prob-legend-color" style="background: <?php echo $color; ?>;"></span>
+									<?php echo esc_html( $apostle['name'] ); ?>
+									<?php if ( $apostle['is_president'] ) : ?><small>(current)</small><?php endif; ?>
+								</span>
+							<?php endforeach; ?>
+						</div>
+						
+						<div class="probability-methodology">
+							<p><strong>How is this calculated?</strong></p>
+							<p>
+								The Church uses a strict seniority-based succession system: when the President dies, the senior-most apostle (by ordination date) automatically becomes the new President. This means predicting who will become President is essentially a question of who will outlive whom.
+							</p>
+							<p>
+								For each apostle, we calculate the probability they'll become President in any given future year. This requires two things to happen: (1) all apostles senior to them must have passed away by that year, and (2) they themselves must still be alive. We use actuarial mortality tables—statistical data showing the probability of death at each age—to estimate these survival probabilities. The tables used here are based on Society of Actuaries data for white-collar male annuitants.
+							</p>
+							<p>
+								The current President's line shows his probability of <em>remaining</em> President (i.e., still being alive). Other apostles start near 0% and rise as their seniors age, peak when they're most likely to hold the office, then decline as their own mortality increases.
+							</p>
+							<p>
+								<em>Note: These are statistical estimates only. They assume no changes to the succession system and cannot account for individual health factors. The calculations update automatically as the apostle data changes. For more detailed analyses, see <a href="https://zelophehadsdaughters.com/2023/10/17/church-president-probabilities-2023-update/" target="_blank" rel="noopener">Zelophehad's Daughters</a> or <a href="https://prophetpredict.com/" target="_blank" rel="noopener">ProphetPredict.com</a>.</em>
+							</p>
+						</div>
+						
+						<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+						<script>
+						(function() {
+							const probabilityData = <?php echo json_encode( $probability_data ); ?>;
+							const yearLabels = <?php echo json_encode( $year_labels ); ?>;
+							const chartColors = <?php echo json_encode( $chart_colors ); ?>;
+							
+							let probChart = null;
+							
+							window.initProbabilityChart = function() {
+								const canvas = document.getElementById('president-probability-chart');
+								if (!canvas) return;
+								
+								if (probChart) {
+									probChart.destroy();
+								}
+								
+								const ctx = canvas.getContext('2d');
+								
+								const datasets = probabilityData.map((apostle, idx) => ({
+									label: apostle.name,
+									data: apostle.data,
+									borderColor: chartColors[idx % chartColors.length],
+									backgroundColor: chartColors[idx % chartColors.length] + '20',
+									borderWidth: apostle.is_president ? 3 : 2,
+									pointRadius: 0,
+									pointHoverRadius: 5,
+									tension: 0.3,
+									fill: false,
+								}));
+								
+								probChart = new Chart(ctx, {
+									type: 'line',
+									data: {
+										labels: yearLabels,
+										datasets: datasets
+									},
+									options: {
+										responsive: true,
+										maintainAspectRatio: false,
+										interaction: {
+											mode: 'index',
+											intersect: false,
+										},
+										plugins: {
+											legend: {
+												display: false // We use custom legend
+											},
+											tooltip: {
+												callbacks: {
+													label: function(context) {
+														return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+													}
+												}
+											}
+										},
+										scales: {
+											x: {
+												title: {
+													display: true,
+													text: 'Year',
+													font: { family: "'Josefin Sans', sans-serif", weight: 500 }
+												},
+												ticks: {
+													callback: function(value, index) {
+														// Show every 5 years
+														return index % 5 === 0 ? yearLabels[index] : '';
+													}
+												},
+												grid: {
+													color: 'rgba(0,0,0,0.05)'
+												}
+											},
+											y: {
+												beginAtZero: true,
+												max: 100,
+												title: {
+													display: true,
+													text: 'Probability (%)',
+													font: { family: "'Josefin Sans', sans-serif", weight: 500 }
+												},
+												ticks: {
+													callback: function(value) {
+														return value + '%';
+													}
+												},
+												grid: {
+													color: 'rgba(0,0,0,0.05)'
+												}
+											}
+										}
+									}
+								});
+							};
+							
+							// Toggle legend items
+							document.querySelectorAll('.prob-legend-item').forEach(item => {
+								item.addEventListener('click', function() {
+									const idx = parseInt(this.dataset.index);
+									if (probChart) {
+										const meta = probChart.getDatasetMeta(idx);
+										meta.hidden = !meta.hidden;
+										this.classList.toggle('legend-hidden');
+										probChart.update();
+									}
+								});
+							});
+							
+							// Initialize on load
+							if (document.readyState === 'complete') {
+								window.initProbabilityChart();
+							} else {
+								window.addEventListener('load', window.initProbabilityChart);
+							}
+						})();
+						</script>
 					</div>
 				</div>
 			</div>
+
+			<!-- Chart Toggle Script for Current Apostles -->
+			<script>
+			(function() {
+				const toggleBtns = document.querySelectorAll('.current-charts-container .chart-toggle-btn');
+				const panels = document.querySelectorAll('.current-chart-panel');
+				
+				toggleBtns.forEach(function(btn) {
+					btn.addEventListener('click', function() {
+						const targetChart = this.getAttribute('data-chart');
+						
+						toggleBtns.forEach(function(b) { b.classList.remove('active'); });
+						this.classList.add('active');
+						
+						panels.forEach(function(panel) {
+							panel.classList.remove('active');
+							if (panel.id === 'current-chart-' + targetChart) {
+								panel.classList.add('active');
+								// Reinitialize probability chart when shown (canvas needs to be visible)
+								if (targetChart === 'president-prob' && typeof window.initProbabilityChart === 'function') {
+									setTimeout(window.initProbabilityChart, 50);
+								}
+							}
+						});
+					});
+				});
+			})();
+			</script>
 		</section>
 
 		<!-- All Apostles View -->
@@ -462,10 +856,15 @@ foreach ( $all_apostles as $apostle ) {
 		</section>
 
 		<footer class="charts-footer">
-			<p>
-				Data sourced from church records, FamilySearch, and historical documents. 
-				<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>">View all saints →</a>
-			</p>
+			<p>Data sourced from church records, FamilySearch, and other historical documents. If you see any errors or omissions, please let us know.</p>
+			<div class="leader-navigation">
+				<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
+					All Saints →
+				</a>
+				<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); ?>" class="btn btn-secondary">
+					Polygamy Stats →
+				</a>
+			</div>
 		</footer>
 
 	</main>

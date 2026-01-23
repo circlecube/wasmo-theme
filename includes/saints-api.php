@@ -48,6 +48,10 @@ function wasmo_register_fs_api_routes() {
 				'default'           => false,
 				'sanitize_callback' => 'rest_sanitize_boolean',
 			),
+			'role' => array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			),
 		),
 	) );
 	
@@ -298,6 +302,7 @@ function wasmo_api_get_saints( $request ) {
 	$needs_verification = $request->get_param( 'needs_verification' );
 	$has_fs_id = $request->get_param( 'has_fs_id' );
 	$familysearch_id = $request->get_param( 'familysearch_id' );
+	$role = $request->get_param( 'role' );
 	
 	$args = array(
 		'post_type'      => 'saint',
@@ -309,6 +314,17 @@ function wasmo_api_get_saints( $request ) {
 	);
 	
 	$meta_query = array();
+	
+	// Filter by role (saint-role taxonomy)
+	if ( ! empty( $role ) ) {
+		$args['tax_query'] = array(
+			array(
+				'taxonomy' => 'saint-role',
+				'field'    => 'slug',
+				'terms'    => $role,
+			),
+		);
+	}
 	
 	// Filter by FamilySearch ID
 	if ( ! empty( $familysearch_id ) ) {

@@ -10,6 +10,7 @@ import './style.scss';
 const leadershipLabels = {
     'first-presidency': 'First Presidency',
     'quorum-of-twelve': 'Quorum of the Twelve',
+    'past-presidents': 'Past Church Presidents',
     'all-presidents': 'All Church Presidents',
 };
 
@@ -42,6 +43,14 @@ registerBlockType('wasmo/saints-leadership', {
                         layout: 'grid-6',
                         badges: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
                     };
+                case 'past-presidents':
+                    return {
+                        title: 'Past Church Presidents',
+                        description: 'In chronological order by presidency',
+                        count: 16,
+                        layout: 'timeline',
+                        badges: Array.from({ length: 16 }, (_, i) => `${i + 1}`),
+                    };
                 case 'all-presidents':
                     return {
                         title: 'Church Presidents',
@@ -67,6 +76,7 @@ registerBlockType('wasmo/saints-leadership', {
                             options={[
                                 { label: __('First Presidency', 'wasmo-theme'), value: 'first-presidency' },
                                 { label: __('Quorum of the Twelve', 'wasmo-theme'), value: 'quorum-of-twelve' },
+                                { label: __('Past Church Presidents', 'wasmo-theme'), value: 'past-presidents' },
                                 { label: __('All Church Presidents', 'wasmo-theme'), value: 'all-presidents' },
                             ]}
                             onChange={(value) => setAttributes({ leadershipGroup: value })}

@@ -6,7 +6,7 @@
     "title": "Saints Leadership",
     "category": "widgets",
     "icon": "groups",
-    "description": "Display LDS church leadership groups - First Presidency, Quorum of the Twelve, or All Church Presidents.",
+    "description": "Display LDS church leadership groups - First Presidency, Quorum of the Twelve, Past Church Presidents, or All Church Presidents.",
     "keywords": [
         "saints",
         "leadership",
@@ -37,6 +37,46 @@
             "type": "string",
             "default": "first-presidency"
         },
+        "filterMode": {
+            "type": "string",
+            "default": "preset"
+        },
+        "roleFilter": {
+            "type": "array",
+            "default": []
+        },
+        "roleFilterOperator": {
+            "type": "string",
+            "default": "IN"
+        },
+        "livingStatus": {
+            "type": "string",
+            "default": "all"
+        },
+        "excludeIds": {
+            "type": "array",
+            "default": []
+        },
+        "orderBy": {
+            "type": "string",
+            "default": "title"
+        },
+        "orderByMetaKey": {
+            "type": "string",
+            "default": ""
+        },
+        "order": {
+            "type": "string",
+            "default": "ASC"
+        },
+        "gridColumns": {
+            "type": "number",
+            "default": 5
+        },
+        "layout": {
+            "type": "string",
+            "default": "grid"
+        },
         "showTitle": {
             "type": "boolean",
             "default": true
@@ -52,6 +92,26 @@
         "cardSize": {
             "type": "string",
             "default": "large"
+        },
+        "showAgeDates": {
+            "type": "boolean",
+            "default": true
+        },
+        "showServiceDates": {
+            "type": "boolean",
+            "default": true
+        },
+        "showRoleBadge": {
+            "type": "boolean",
+            "default": false
+        },
+        "customTitle": {
+            "type": "string",
+            "default": ""
+        },
+        "customDescription": {
+            "type": "string",
+            "default": ""
         }
     }
 }

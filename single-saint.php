@@ -7,43 +7,92 @@
 
 get_header();
 
+// Handle cache flush
+if ( isset( $_GET['flush_cache'] ) ) {
+	$flush_saint_id = get_the_ID();
+	delete_transient( 'wasmo_saint_page_' . $flush_saint_id );
+}
+
 while ( have_posts() ) :
 	the_post();
 	
 	$saint_id = get_the_ID();
-	$is_living = wasmo_is_saint_living( $saint_id );
-	$is_apostle = wasmo_saint_has_role( $saint_id, 'apostle' );
-	$is_president = wasmo_saint_has_role( $saint_id, 'president' );
-	$is_wife = wasmo_saint_has_role( $saint_id, 'wife' );
-	$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	$transient_key = 'wasmo_saint_page_' . $saint_id;
+	$cached_data = get_transient( $transient_key );
 	
-	// Get role terms for badges
-	$roles = wp_get_post_terms( $saint_id, 'saint-role' );
-	
-	// Get related content
-	$related_posts = wasmo_get_saint_related_posts( $saint_id, -1 );
-	$related_media = wasmo_get_saint_related_media( $saint_id, 100 );
-	
-	// Get prophets this leader served under (if apostle)
-	$served_under = array();
-	if ( $is_apostle ) {
-		$served_under = wasmo_get_served_with_presidents( $saint_id );
+	if ( false === $cached_data ) {
+		// Cache miss - compute all the data
+		$is_living = wasmo_is_saint_living( $saint_id );
+		$is_apostle = wasmo_saint_has_role( $saint_id, 'apostle' );
+		$is_president = wasmo_saint_has_role( $saint_id, 'president' );
+		$is_wife = wasmo_saint_has_role( $saint_id, 'wife' );
+		$gender = get_field( 'gender', $saint_id ) ?: 'male';
+		
+		// Get role terms for badges
+		$roles = wp_get_post_terms( $saint_id, 'saint-role' );
+		
+		// Get related content
+		$related_posts = wasmo_get_saint_related_posts( $saint_id, -1 );
+		$related_media = wasmo_get_saint_related_media( $saint_id, 100 );
+		
+		// Get prophets this leader served under (if apostle)
+		$served_under = array();
+		if ( $is_apostle ) {
+			$served_under = wasmo_get_served_with_presidents( $saint_id );
+		}
+		
+		// Get apostles who served under this leader (if prophet)
+		$apostles_under = array();
+		if ( $is_president ) {
+			$apostles_under = wasmo_get_apostles_who_served_under( $saint_id );
+		}
+		
+		// Get marriages data (gender-aware: women store directly, men use reverse lookup)
+		$marriages = wasmo_get_all_marriage_data( $saint_id );
+		$polygamy_stats = wasmo_get_polygamy_stats( $saint_id );
+		$polygamy_type = wasmo_get_polygamy_type( $saint_id );
+		
+		// Get parents (reverse lookup from marriage/children records)
+		$parents = wasmo_get_saint_parents( $saint_id );
+		$has_parents = ! empty( $parents['mother'] ) || ! empty( $parents['father'] );
+		
+		// Store in transient (cache for 12 hours)
+		$cached_data = array(
+			'is_living'      => $is_living,
+			'is_apostle'     => $is_apostle,
+			'is_president'   => $is_president,
+			'is_wife'        => $is_wife,
+			'gender'         => $gender,
+			'roles'          => $roles,
+			'related_posts'  => $related_posts,
+			'related_media'  => $related_media,
+			'served_under'   => $served_under,
+			'apostles_under' => $apostles_under,
+			'marriages'      => $marriages,
+			'polygamy_stats' => $polygamy_stats,
+			'polygamy_type'  => $polygamy_type,
+			'parents'        => $parents,
+			'has_parents'    => $has_parents,
+		);
+		set_transient( $transient_key, $cached_data, 12 * HOUR_IN_SECONDS );
+	} else {
+		// Cache hit - extract variables
+		$is_living      = $cached_data['is_living'];
+		$is_apostle     = $cached_data['is_apostle'];
+		$is_president   = $cached_data['is_president'];
+		$is_wife        = $cached_data['is_wife'];
+		$gender         = $cached_data['gender'];
+		$roles          = $cached_data['roles'];
+		$related_posts  = $cached_data['related_posts'];
+		$related_media  = $cached_data['related_media'];
+		$served_under   = $cached_data['served_under'];
+		$apostles_under = $cached_data['apostles_under'];
+		$marriages      = $cached_data['marriages'];
+		$polygamy_stats = $cached_data['polygamy_stats'];
+		$polygamy_type  = $cached_data['polygamy_type'];
+		$parents        = $cached_data['parents'];
+		$has_parents    = $cached_data['has_parents'];
 	}
-	
-	// Get apostles who served under this leader (if prophet)
-	$apostles_under = array();
-	if ( $is_president ) {
-		$apostles_under = wasmo_get_apostles_who_served_under( $saint_id );
-	}
-	
-	// Get marriages data (gender-aware: women store directly, men use reverse lookup)
-	$marriages = wasmo_get_all_marriage_data( $saint_id );
-	$polygamy_stats = wasmo_get_polygamy_stats( $saint_id );
-	$polygamy_type = wasmo_get_polygamy_type( $saint_id );
-	
-	// Get parents (reverse lookup from marriage/children records)
-	$parents = wasmo_get_saint_parents( $saint_id );
-	$has_parents = ! empty( $parents['mother'] ) || ! empty( $parents['father'] );
 ?>
 
 <?php
@@ -231,6 +280,7 @@ $classes = array_filter( $classes, function( $class ) {
 							'children_count'            => $children_counts['total'],
 							'children_displayable'      => $children_counts['displayable'],
 							'marital_status'            => $marital_status,
+							'children_data'             => $children, // Store original children data
 						);
 					}
 					// Handle non-saint spouse (text name only)
@@ -275,6 +325,7 @@ $classes = array_filter( $classes, function( $class ) {
 							'children_count'            => $children_counts['total'],
 							'children_displayable'      => $children_counts['displayable'],
 							'marital_status'            => $marital_status,
+							'children_data'             => $children, // Store original children data
 						);
 					}
 					$order++;
@@ -311,160 +362,433 @@ $classes = array_filter( $classes, function( $class ) {
 						</p>
 					<?php endif; ?>
 
-					<?php if ( count( $chart_marriages ) > 1 && $gender === 'male' ) : ?>
-					<!-- Marriage Age Comparison Chart -->
-					<div class="marriage-chart-section">
-						<h3>Marriage Age Comparison</h3>
-						<p class="chart-subtitle"><?php echo count( $chart_marriages ); ?> wives · Ages at marriage</p>
+					<?php 
+					// Calculate timeline data first (needed for both charts visibility check)
+					// Timeline is relative to the saint's lifespan
+					$timeline_start_year = $saint_birth_year; // Saint's birth
+					$timeline_end_year = $saint_death_year;   // Saint's death (or current year if living)
+					
+					$timeline_marriages = array();
+					$timeline_with_children = array();
+					$total_children_count = 0;
+					
+					foreach ( $chart_marriages as $idx => $m ) {
+						if ( ! $m['marriage_date'] ) continue;
 						
-						<div class="chart-wrapper" style="height: <?php echo max( 300, count( $chart_marriages ) * 40 + 80 ); ?>px;">
-							<canvas id="marriage-age-chart" aria-label="Age comparison chart for <?php echo esc_attr( get_the_title() ); ?>" role="img"></canvas>
-						</div>
+						$marriage_start = (int) date( 'Y', strtotime( $m['marriage_date'] ) );
 						
-						<div class="chart-legend">
-							<span class="legend-item"><span class="legend-color legend-her"></span> Her age</span>
-							<span class="legend-item"><span class="legend-color legend-his"></span> His age</span>
-							<span class="legend-item"><span class="legend-color legend-teen"></span> Teenage bride (&lt;18)</span>
-						</div>
-					</div>
-
-					<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-					<script>
-					(function() {
-						// Defer chart initialization to prevent layout shift
-						function initChart() {
-							const canvas = document.getElementById('marriage-age-chart');
-							if (!canvas) return;
-							const ctx = canvas.getContext('2d');
-							
-							// Marriage data from PHP
-							const marriageData = <?php echo json_encode( $chart_marriages ); ?>;
+						// Marriage end: divorce date, spouse death date, or saint's death/ongoing
+						$marriage_end = null;
+						$is_ongoing = false;
 						
-						const labels = marriageData.map(m => {
-							const year = m.marriage_year;
-							const name = m.spouse_name.split(' ').slice(0, 2).join(' '); // First two words of name
-							return `${name} (${year})`;
-						});
+						if ( ! empty( $m['divorce_date'] ) ) {
+							$marriage_end = (int) date( 'Y', strtotime( $m['divorce_date'] ) );
+						} elseif ( ! empty( $m['spouse_deathdate'] ) ) {
+							// Spouse died - but cap at saint's death if saint died first
+							$spouse_death = (int) date( 'Y', strtotime( $m['spouse_deathdate'] ) );
+							$marriage_end = min( $spouse_death, $timeline_end_year );
+						} else {
+							// No spouse death recorded - marriage lasted until saint's death or ongoing
+							$marriage_end = $timeline_end_year;
+							$is_ongoing = $is_living;
+						}
 						
-						const herAges = marriageData.map(m => parseInt(m.spouse_age) || 0);
-						const hisAges = marriageData.map(m => parseInt(m.saint_age) || 0);
-						const isTeenage = marriageData.map(m => m.is_teenage);
-						
-						// Color scheme
-						const teenageColor = '#c2410c';       // Burnt orange for teenage
-						const herAgeColor = '#0ea5e9';        // Sky blue for her age
-						const hisAgeColor = '#64748b';        // Slate for his age
-						const teenageBg = 'rgba(194, 65, 12, 0.85)';
-						const herAgeBg = 'rgba(14, 165, 233, 0.85)';
-						const hisAgeBg = 'rgba(100, 116, 139, 0.4)';
-						
-						new Chart(ctx, {
-							type: 'bar',
-							data: {
-								labels: labels,
-								datasets: [
-									{
-										label: 'Her Age at Marriage',
-										data: herAges,
-										backgroundColor: herAges.map((age, i) => isTeenage[i] ? teenageBg : herAgeBg),
-										borderColor: herAges.map((age, i) => isTeenage[i] ? teenageColor : herAgeColor),
-										borderWidth: 2,
-										borderRadius: 4,
-										barPercentage: 0.7,
-									},
-									{
-										label: 'His Age at Marriage',
-										data: hisAges,
-										backgroundColor: hisAgeBg,
-										borderColor: hisAgeColor,
-										borderWidth: 1,
-										borderRadius: 4,
-										barPercentage: 0.7,
-									}
-								]
-							},
-							options: {
-								indexAxis: 'y',
-								responsive: true,
-								maintainAspectRatio: false,
-								onClick: (e, elements) => {
-									if (elements.length > 0) {
-										const idx = elements[0].index;
-										const url = marriageData[idx].spouse_url;
-										if (url) window.location.href = url;
-									}
-								},
-								plugins: {
-									legend: {
-										display: false
-									},
-									tooltip: {
-										callbacks: {
-											afterBody: function(context) {
-												const idx = context[0].dataIndex;
-												const m = marriageData[idx];
-												const lines = [];
-												if (m.age_diff > 0) {
-													lines.push(`Age difference: ${m.age_diff} years`);
-												}
-												if (m.marital_status && m.marital_status !== 'never_married') {
-													const statusLabels = { 'widow': 'Widow', 'divorced': 'Divorced', 'separated': 'Separated' };
-													lines.push(`Status at marriage: ${statusLabels[m.marital_status] || m.marital_status}`);
-												}
-												if (m.children_count > 0) {
-													lines.push(`Children: ${m.children_count}`);
-												}
-												if (m.is_teenage) {
-													lines.push('⚠ Teenage bride');
-												}
-												return lines;
-											}
-										}
-									}
-								},
-								scales: {
-									x: {
-										beginAtZero: true,
-										max: Math.max(...hisAges, ...herAges) + 5,
-										title: {
-											display: true,
-											text: 'Age at Marriage',
-											font: {
-												family: "'Josefin Sans', sans-serif",
-												weight: 500
-											}
-										},
-										grid: {
-											color: 'rgba(0,0,0,0.06)'
-										}
-									},
-									y: {
-										ticks: {
-											font: {
-												family: "'Josefin Sans', sans-serif",
-												size: 11
-											}
-										},
-										grid: {
-											display: false
-										}
+						// Get children birth years for this marriage
+						$children_births = array();
+						$children_data = $m['children_data'] ?? array();
+						if ( ! empty( $children_data ) ) {
+							foreach ( $children_data as $child ) {
+								if ( ! empty( $child['child_birthdate'] ) ) {
+									$child_year = (int) date( 'Y', strtotime( $child['child_birthdate'] ) );
+									if ( $child_year >= $timeline_start_year && $child_year <= $timeline_end_year ) {
+										$children_births[] = array(
+											'year' => $child_year,
+											'name' => $child['child_name'] ?? 'Child',
+										);
+										$total_children_count++;
 									}
 								}
 							}
-						});
 						}
 						
-						// Initialize chart after DOM is ready and layout is stable
-						if (document.readyState === 'complete') {
-							// Small delay to ensure CSS has been applied
-							requestAnimationFrame(() => requestAnimationFrame(initChart));
-						} else {
-							window.addEventListener('load', () => {
-								requestAnimationFrame(() => requestAnimationFrame(initChart));
-							});
+						$marriage_entry = array(
+							'name'          => $m['spouse_name'],
+							'url'           => $m['spouse_url'],
+							'is_saint'      => $m['spouse_is_saint'],
+							'marriage_start' => $marriage_start,
+							'marriage_end'   => $marriage_end,
+							'is_ongoing'    => $is_ongoing,
+							'duration'      => $marriage_end - $marriage_start,
+							'children'      => $children_births,
+						);
+						
+						$timeline_marriages[] = $marriage_entry;
+						if ( ! empty( $children_births ) ) {
+							$timeline_with_children[] = $marriage_entry;
 						}
-					})();
-					</script>
+					}
+					
+					// Sort by marriage start year
+					usort( $timeline_marriages, function( $a, $b ) {
+						return $a['marriage_start'] - $b['marriage_start'];
+					} );
+					usort( $timeline_with_children, function( $a, $b ) {
+						return $a['marriage_start'] - $b['marriage_start'];
+					} );
+					
+					$total_years = max( 1, $timeline_end_year - $timeline_start_year );
+					$spouse_color_class = ( $gender === 'male' ) ? 'marriage-bar-wife' : 'marriage-bar-husband';
+					
+					// Determine which charts are available
+					$has_age_chart = ( count( $chart_marriages ) > 1 && $gender === 'male' );
+					$has_timeline_chart = ( count( $timeline_marriages ) >= 1 );
+					$has_children_chart = ( $total_children_count > 0 );
+					
+					// Count available charts for toggle
+					$available_charts = array();
+					if ( $has_timeline_chart ) $available_charts[] = 'timeline';
+					if ( $has_children_chart ) $available_charts[] = 'children';
+					if ( $has_age_chart ) $available_charts[] = 'ages';
+					$has_multiple_charts = count( $available_charts ) > 1;
+				?>
+
+					<?php if ( ! empty( $available_charts ) ) : ?>
+					<!-- Marriage Charts Section -->
+					<div class="marriage-charts-container">
+						<?php if ( $has_multiple_charts ) : ?>
+						<!-- Chart Toggle -->
+						<div class="chart-toggle-container">
+							<div class="chart-toggle">
+								<?php if ( $has_timeline_chart ) : ?>
+									<button class="chart-toggle-btn active" data-chart="timeline">Timeline</button>
+								<?php endif; ?>
+								<?php if ( $has_children_chart ) : ?>
+									<button class="chart-toggle-btn" data-chart="children">Children</button>
+								<?php endif; ?>
+								<?php if ( $has_age_chart ) : ?>
+									<button class="chart-toggle-btn" data-chart="ages">Age Comparison</button>
+								<?php endif; ?>
+							</div>
+						</div>
+						<?php endif; ?>
+
+						<?php if ( $has_timeline_chart ) : ?>
+						<!-- Marriage Timeline Chart -->
+						<div class="marriage-chart-panel <?php echo $has_multiple_charts ? 'active' : ''; ?>" id="chart-timeline">
+							<div class="marriage-chart-section">
+								<?php if ( ! $has_multiple_charts ) : ?>
+								<h3>Marriage Timeline</h3>
+								<?php endif; ?>
+								<p class="chart-subtitle">
+									<?php echo count( $timeline_marriages ); ?> <?php echo ( $gender === 'male' ) ? 'wives' : 'husbands'; ?> · 
+									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; ?>
+								</p>
+								
+								<div class="marriage-timeline-chart">
+									<?php foreach ( $timeline_marriages as $tm ) : 
+										$left_pct = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
+										$width_pct = ( ( $tm['marriage_end'] - $tm['marriage_start'] ) / $total_years ) * 100;
+										if ( $width_pct < 2 ) $width_pct = 2; // Minimum width for visibility
+									?>
+										<div class="marriage-timeline-row">
+											<?php if ( $tm['is_saint'] && $tm['url'] ) : ?>
+												<a href="<?php echo esc_url( $tm['url'] ); ?>" class="marriage-timeline-name">
+													<?php echo esc_html( $tm['name'] ); ?>
+												</a>
+											<?php else : ?>
+												<span class="marriage-timeline-name"><?php echo esc_html( $tm['name'] ); ?></span>
+											<?php endif; ?>
+											<div class="marriage-timeline-track">
+												<div class="marriage-timeline-bar <?php echo esc_attr( $spouse_color_class ); ?> <?php echo $tm['is_ongoing'] ? 'marriage-ongoing' : ''; ?>" 
+													 style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; ?>%;"
+													 title="<?php echo esc_attr( $tm['name'] . ': Married ' . $tm['marriage_start'] . '–' . ( $tm['is_ongoing'] ? 'present' : $tm['marriage_end'] ) . ' (' . $tm['duration'] . ' years)' ); ?>">
+												</div>
+											</div>
+											<span class="marriage-timeline-dates">
+												<?php echo $tm['marriage_start']; ?>–<?php echo $tm['is_ongoing'] ? 'present' : $tm['marriage_end']; ?>
+												<span class="marriage-duration">(<?php echo $tm['duration']; ?> yrs)</span>
+											</span>
+										</div>
+									<?php endforeach; ?>
+									
+									<div class="timeline-axis-row">
+										<span class="timeline-axis-spacer"></span>
+										<div class="timeline-axis marriage-timeline-axis">
+											<?php $quarter_years = round( $total_years / 4 ); ?>
+											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; ?> <small>(born)</small></span>
+											<?php if ( $total_years > 10 ) : ?>
+												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; ?></span>
+												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); ?></span>
+												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); ?></span>
+											<?php endif; ?>
+											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; ?>)</small></span>
+										</div>
+										<span class="timeline-axis-spacer"></span>
+									</div>
+								</div>
+								
+								<div class="chart-legend">
+									<?php if ( $gender === 'male' ) : ?>
+										<span class="legend-item"><span class="legend-color legend-wife"></span> Wife</span>
+									<?php else : ?>
+										<span class="legend-item"><span class="legend-color legend-husband"></span> Husband</span>
+									<?php endif; ?>
+									<?php if ( $is_living ) : ?>
+										<span class="legend-item"><span class="legend-color legend-ongoing"></span> Ongoing</span>
+									<?php endif; ?>
+								</div>
+							</div>
+						</div>
+						<?php endif; ?>
+
+						<?php if ( $has_children_chart ) : ?>
+						<!-- Children Timeline Chart -->
+						<div class="marriage-chart-panel" id="chart-children">
+							<div class="marriage-chart-section">
+								<?php if ( ! $has_multiple_charts ) : ?>
+								<h3>Children Timeline</h3>
+								<?php endif; ?>
+								<p class="chart-subtitle">
+									<?php echo $total_children_count; ?> children from <?php echo count( $timeline_with_children ); ?> <?php echo ( $gender === 'male' ) ? 'wives' : 'husbands'; ?> · 
+									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; ?>
+								</p>
+								
+								<div class="marriage-timeline-chart children-timeline-chart">
+									<?php foreach ( $timeline_with_children as $tm ) : 
+										$left_pct = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
+										$width_pct = ( ( $tm['marriage_end'] - $tm['marriage_start'] ) / $total_years ) * 100;
+										if ( $width_pct < 2 ) $width_pct = 2;
+									?>
+										<div class="marriage-timeline-row">
+											<?php if ( $tm['is_saint'] && $tm['url'] ) : ?>
+												<a href="<?php echo esc_url( $tm['url'] ); ?>" class="marriage-timeline-name">
+													<?php echo esc_html( $tm['name'] ); ?>
+												</a>
+											<?php else : ?>
+												<span class="marriage-timeline-name"><?php echo esc_html( $tm['name'] ); ?></span>
+											<?php endif; ?>
+											<div class="marriage-timeline-track">
+												<div class="marriage-timeline-bar <?php echo esc_attr( $spouse_color_class ); ?>" 
+													 style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; ?>%;">
+													<?php foreach ( $tm['children'] as $child ) : 
+														$child_pct = ( ( $child['year'] - $tm['marriage_start'] ) / max( 1, $tm['marriage_end'] - $tm['marriage_start'] ) ) * 100;
+													?>
+														<span class="child-birth-marker" 
+															  style="left: <?php echo $child_pct; ?>%;"
+															  title="<?php echo esc_attr( $child['name'] . ' born ' . $child['year'] ); ?>"></span>
+													<?php endforeach; ?>
+												</div>
+											</div>
+											<span class="marriage-timeline-dates">
+												<?php echo count( $tm['children'] ); ?> <?php echo count( $tm['children'] ) === 1 ? 'child' : 'children'; ?>
+											</span>
+										</div>
+									<?php endforeach; ?>
+									
+									<div class="timeline-axis-row">
+										<span class="timeline-axis-spacer"></span>
+										<div class="timeline-axis marriage-timeline-axis">
+											<?php $quarter_years = round( $total_years / 4 ); ?>
+											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; ?> <small>(born)</small></span>
+											<?php if ( $total_years > 10 ) : ?>
+												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; ?></span>
+												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); ?></span>
+												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); ?></span>
+											<?php endif; ?>
+											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; ?>)</small></span>
+										</div>
+										<span class="timeline-axis-spacer"></span>
+									</div>
+								</div>
+								
+								<div class="chart-legend">
+									<?php if ( $gender === 'male' ) : ?>
+										<span class="legend-item"><span class="legend-color legend-wife"></span> Wife</span>
+									<?php else : ?>
+										<span class="legend-item"><span class="legend-color legend-husband"></span> Husband</span>
+									<?php endif; ?>
+									<span class="legend-item"><span class="legend-color legend-child-marker"></span> Child born</span>
+								</div>
+							</div>
+						</div>
+						<?php endif; ?>
+
+						<?php if ( $has_age_chart ) : ?>
+						<!-- Marriage Age Comparison Chart -->
+						<div class="marriage-chart-panel <?php echo ! $has_multiple_charts ? 'active' : ''; ?>" id="chart-ages">
+							<div class="marriage-chart-section">
+								<?php if ( ! $has_multiple_charts ) : ?>
+								<h3>Marriage Age Comparison</h3>
+								<?php endif; ?>
+								<p class="chart-subtitle"><?php echo count( $chart_marriages ); ?> wives · Ages at marriage</p>
+								
+								<div class="chart-wrapper" style="height: <?php echo max( 300, count( $chart_marriages ) * 40 + 80 ); ?>px;">
+									<canvas id="marriage-age-chart" aria-label="Age comparison chart for <?php echo esc_attr( get_the_title() ); ?>" role="img"></canvas>
+								</div>
+								
+								<div class="chart-legend">
+									<span class="legend-item"><span class="legend-color legend-her"></span> Her age</span>
+									<span class="legend-item"><span class="legend-color legend-his"></span> His age</span>
+									<span class="legend-item"><span class="legend-color legend-teen"></span> Teenage bride (&lt;18)</span>
+								</div>
+							</div>
+						</div>
+
+						<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+						<script>
+						(function() {
+							let chartInstance = null;
+							
+							window.initAgeChart = function() {
+								const canvas = document.getElementById('marriage-age-chart');
+								if (!canvas) return;
+								
+								// Destroy existing chart if any
+								if (chartInstance) {
+									chartInstance.destroy();
+								}
+								
+								const ctx = canvas.getContext('2d');
+								
+								// Marriage data from PHP
+								const marriageData = <?php echo json_encode( $chart_marriages ); ?>;
+							
+								const labels = marriageData.map(m => {
+									const year = m.marriage_year;
+									const name = m.spouse_name.split(' ').slice(0, 2).join(' ');
+									return `${name} (${year})`;
+								});
+								
+								const herAges = marriageData.map(m => parseInt(m.spouse_age) || 0);
+								const hisAges = marriageData.map(m => parseInt(m.saint_age) || 0);
+								const isTeenage = marriageData.map(m => m.is_teenage);
+								
+								// Color scheme
+								const teenageColor = '#c2410c';
+								const herAgeColor = '#0ea5e9';
+								const hisAgeColor = '#64748b';
+								const teenageBg = 'rgba(194, 65, 12, 0.85)';
+								const herAgeBg = 'rgba(14, 165, 233, 0.85)';
+								const hisAgeBg = 'rgba(100, 116, 139, 0.4)';
+								
+								chartInstance = new Chart(ctx, {
+									type: 'bar',
+									data: {
+										labels: labels,
+										datasets: [
+											{
+												label: 'Her Age at Marriage',
+												data: herAges,
+												backgroundColor: herAges.map((age, i) => isTeenage[i] ? teenageBg : herAgeBg),
+												borderColor: herAges.map((age, i) => isTeenage[i] ? teenageColor : herAgeColor),
+												borderWidth: 2,
+												borderRadius: 4,
+												barPercentage: 0.7,
+											},
+											{
+												label: 'His Age at Marriage',
+												data: hisAges,
+												backgroundColor: hisAgeBg,
+												borderColor: hisAgeColor,
+												borderWidth: 1,
+												borderRadius: 4,
+												barPercentage: 0.7,
+											}
+										]
+									},
+									options: {
+										indexAxis: 'y',
+										responsive: true,
+										maintainAspectRatio: false,
+										onClick: (e, elements) => {
+											if (elements.length > 0) {
+												const idx = elements[0].index;
+												const url = marriageData[idx].spouse_url;
+												if (url) window.location.href = url;
+											}
+										},
+										plugins: {
+											legend: { display: false },
+											tooltip: {
+												callbacks: {
+													afterBody: function(context) {
+														const idx = context[0].dataIndex;
+														const m = marriageData[idx];
+														const lines = [];
+														if (m.age_diff > 0) lines.push(`Age difference: ${m.age_diff} years`);
+														if (m.marital_status && m.marital_status !== 'never_married') {
+															const statusLabels = { 'widow': 'Widow', 'divorced': 'Divorced', 'separated': 'Separated' };
+															lines.push(`Status at marriage: ${statusLabels[m.marital_status] || m.marital_status}`);
+														}
+														if (m.children_count > 0) lines.push(`Children: ${m.children_count}`);
+														if (m.is_teenage) lines.push('⚠ Teenage bride');
+														return lines;
+													}
+												}
+											}
+										},
+										scales: {
+											x: {
+												beginAtZero: true,
+												max: Math.max(...hisAges, ...herAges) + 5,
+												title: {
+													display: true,
+													text: 'Age at Marriage',
+													font: { family: "'Josefin Sans', sans-serif", weight: 500 }
+												},
+												grid: { color: 'rgba(0,0,0,0.06)' }
+											},
+											y: {
+												ticks: { font: { family: "'Josefin Sans', sans-serif", size: 11 } },
+												grid: { display: false }
+											}
+										}
+									}
+								});
+							};
+							
+							// Initialize age chart on load
+							if (document.readyState === 'complete') {
+								requestAnimationFrame(() => requestAnimationFrame(window.initAgeChart));
+							} else {
+								window.addEventListener('load', () => {
+									requestAnimationFrame(() => requestAnimationFrame(window.initAgeChart));
+								});
+							}
+						})();
+						</script>
+						<?php endif; ?>
+
+						<?php if ( $has_multiple_charts ) : ?>
+						<!-- Chart Toggle Script -->
+						<script>
+						(function() {
+							const toggleBtns = document.querySelectorAll('.chart-toggle-btn');
+							const panels = document.querySelectorAll('.marriage-chart-panel');
+							
+							toggleBtns.forEach(function(btn) {
+								btn.addEventListener('click', function() {
+									const targetChart = this.getAttribute('data-chart');
+									
+									toggleBtns.forEach(function(b) { b.classList.remove('active'); });
+									this.classList.add('active');
+									
+									panels.forEach(function(panel) {
+										panel.classList.remove('active');
+										if (panel.id === 'chart-' + targetChart) {
+											panel.classList.add('active');
+											// Reinitialize age chart when shown (canvas needs to be visible)
+											if (targetChart === 'ages' && typeof window.initAgeChart === 'function') {
+												setTimeout(window.initAgeChart, 50);
+											}
+										}
+									});
+								});
+							});
+						})();
+						</script>
+						<?php endif; ?>
+					</div>
 					<?php endif; ?>
 
 					<!-- Marriage Details Table -->

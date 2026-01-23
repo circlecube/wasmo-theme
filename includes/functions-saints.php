@@ -1300,6 +1300,9 @@ function wasmo_clear_saint_transients( $post_id ) {
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_posts_{$post_id}_%'" );
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_media_{$post_id}_%'" );
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_media_{$post_id}_%'" );
+	
+	// Clear single saint page transient
+	delete_transient( 'wasmo_saint_page_' . $post_id );
 }
 add_action( 'save_post', 'wasmo_clear_saint_transients' );
 add_action( 'acf/save_post', 'wasmo_clear_saint_transients', 20 );

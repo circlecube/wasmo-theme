@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          2.4.0
+ Version:          2.5.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -2388,6 +2388,13 @@ a.leader-role-badge:visited {
 }
 .leader-navigation {
 	text-align: center;
+	display: flex;
+	gap: 0.5rem;
+	justify-content: center;
+	margin-top: 1rem;
+	align-items: center;
+	flex-wrap: wrap;
+	flex-direction: column;
 }
 
 /* ============================================
@@ -2521,6 +2528,46 @@ h1.archive-title:before {
 
 .fp-badge-counselor {
 	background: var(--color-blue-2);
+}
+
+/* First Presidency Grid - Mobile first (natural order: president, 1st counselor, 2nd counselor) */
+.fp-grid {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+/* Desktop: Reorder to classic visual (1st counselor, president, 2nd counselor) and scale */
+@media (min-width: 768px) {
+	.fp-grid {
+		flex-direction: row;
+		justify-content: center;
+		align-items: flex-start;
+	}
+	
+	/* Reorder: first counselor first, president middle, second counselor last */
+	.fp-president {
+		order: 2;
+	}
+	.fp-first-counselor {
+		order: 1;
+	}
+	.fp-second-counselor {
+		order: 3;
+	}
+	
+	/* Scale president larger, counselors smaller */
+	.fp-president {
+		transform: scale(1.1);
+		z-index: 2;
+	}
+	
+	.fp-first-counselor,
+	.fp-second-counselor {
+		transform: scale(0.9);
+		margin-top: 1rem; /* Align visually with larger president */
+	}
 }
 
 /* Timeline Layout */
@@ -2830,8 +2877,8 @@ h1.archive-title:before {
 	color: var(--color-gray-3);
 	flex-shrink: 0;
 	font-size: 0.75rem;
+	min-width: 130px;
 	text-align: right;
-	width: 120px;
 }
 .timeline-bar-track {
 	background: var(--color-gray-1);
@@ -2876,6 +2923,240 @@ h1.archive-title:before {
 .timeline-axis span {
 	color: var(--color-gray-2);
 	font-size: 0.75rem;
+}
+
+/* Current Apostles Charts Container */
+.current-charts-container {
+	margin-top: 2rem;
+}
+
+.current-charts-container .chart-toggle-container {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.current-chart-panel {
+	display: none;
+}
+
+.current-chart-panel.active {
+	display: block;
+}
+
+/* Horizontal Bar Chart (for Service Duration, Age at Call) */
+.horizontal-bar-chart {
+	position: relative;
+}
+
+.horizontal-bar-row {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.horizontal-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.horizontal-bar {
+	background: var(--color-blue-2);
+	border-radius: 4px;
+	height: 100%;
+	min-width: 30px;
+	position: relative;
+	transition: width 0.3s ease;
+}
+
+.horizontal-bar.bar-prophet {
+	background: var(--color-orange);
+}
+
+.horizontal-bar.bar-first-presidency {
+	background: var(--color-pink);
+}
+
+.horizontal-bar .bar-value {
+	color: var(--color-white);
+	font-size: 0.7rem;
+	font-weight: 500;
+	padding: 0 0.5rem;
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	white-space: nowrap;
+}
+
+/* First Presidency Service Chart */
+.fp-service-chart {
+	position: relative;
+}
+
+.fp-service-row {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.fp-service-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 24px;
+	position: relative;
+}
+
+.fp-service-bar {
+	border-radius: 4px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+}
+
+.fp-bar-president {
+	background: var(--color-orange);
+}
+
+.fp-bar-counselor {
+	background: var(--color-pink);
+}
+
+.fp-service-summary {
+	color: var(--color-gray-3);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	text-align: right;
+	width: 50px;
+}
+
+/* Legend bar for FP */
+.legend-bar.fp-bar-president {
+	background: var(--color-orange);
+}
+
+.legend-bar.fp-bar-counselor {
+	background: var(--color-pink);
+}
+
+/* President Probability Chart */
+.probability-chart-wrapper {
+	margin: 1.5rem 0;
+	background: var(--color-white);
+	border-radius: 8px;
+	padding: 1rem;
+}
+
+.probability-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	justify-content: center;
+	margin-top: 1rem;
+	padding: 1rem;
+	background: var(--color-gray-0);
+	border-radius: 8px;
+}
+
+.prob-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.8rem;
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+.prob-legend-item:hover {
+	background: var(--color-gray-1);
+}
+
+.prob-legend-item.legend-hidden {
+	opacity: 0.4;
+	text-decoration: line-through;
+}
+
+.prob-legend-item small {
+	color: var(--color-gray-3);
+	font-size: 0.7rem;
+}
+
+.prob-legend-color {
+	width: 16px;
+	height: 3px;
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+.source-link {
+	color: var(--color-gray-3);
+	font-size: 0.75rem;
+	margin-left: 0.25rem;
+	text-decoration: none;
+}
+
+.source-link:hover {
+	color: var(--color-blue-2);
+}
+
+.probability-methodology {
+	background: var(--color-gray-0);
+	border-radius: 8px;
+	padding: 1.25rem;
+	margin-top: 1.5rem;
+	font-size: 0.9rem;
+	line-height: 1.6;
+}
+
+.probability-methodology p {
+	margin-bottom: 0.75rem;
+}
+
+.probability-methodology p:last-child {
+	margin-bottom: 0;
+}
+
+.probability-methodology strong {
+	color: var(--color-gray-4);
+}
+
+.probability-methodology a {
+	color: var(--color-blue-2);
+}
+
+.probability-methodology a:hover {
+	color: var(--color-blue);
+}
+
+.probability-disclaimer {
+	color: var(--color-gray-3);
+	font-size: 0.85rem;
+	font-style: italic;
+	border-left: 3px solid var(--color-gray-1);
+	padding-left: 0.75rem;
+	margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+	.probability-chart-wrapper {
+		height: 350px !important;
+	}
+	
+	.probability-legend {
+		gap: 0.35rem 0.75rem;
+	}
+	
+	.prob-legend-item {
+		font-size: 0.7rem;
+		padding: 0.2rem 0.35rem;
+	}
 }
 
 /* Bar Chart Options */
@@ -2935,7 +3216,7 @@ h1.archive-title:before {
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: 140px;
+	min-width: 140px;
 }
 .bar-track {
 	background: var(--color-gray-0);
@@ -3521,10 +3802,6 @@ a.saint-card:hover {
 	padding: 1rem;
 }
 
-.saint-card-large .saint-card-name {
-	font-size: 1.1rem;
-}
-
 .saint-card-large .saint-card-dates,
 .saint-card-large .saint-card-role {
 	font-size: 0.85rem;
@@ -3624,10 +3901,10 @@ a.saint-card:hover {
 
 /* Teenage Brides Section */
 .teenage-brides-section {
-	background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.05);
-	border-radius: 8px;
-	margin-top: 2rem;
-	padding: 1.5rem;
+	/* background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.05); */
+	/* border-radius: 8px; */
+	margin-top: 4rem;
+	/* padding: 1.5rem; */
 }
 
 .teenage-brides-section h3 {
@@ -3770,6 +4047,256 @@ a.saint-card:hover {
 .legend-teen {
 	background: rgba(194, 65, 12, 0.85);
 	border: 2px solid #c2410c;
+}
+
+/* Marriage Charts Container & Toggle */
+.marriage-charts-container {
+	margin-bottom: 2rem;
+}
+
+.chart-toggle-container {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.chart-toggle {
+	background: var(--color-gray-0);
+	border-radius: 100px;
+	display: inline-flex;
+	padding: 4px;
+}
+
+.chart-toggle-btn {
+	background: transparent;
+	border: none;
+	border-radius: 100px;
+	color: var(--color-gray-3);
+	cursor: pointer;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	padding: 0.5rem 1.25rem;
+	transition: all 0.2s ease;
+}
+
+.chart-toggle-btn.active {
+	background: var(--color-blue-2);
+	color: var(--color-white);
+}
+
+.chart-toggle-btn:hover:not(.active) {
+	background: var(--color-gray-1);
+}
+
+.marriage-chart-panel {
+	display: none;
+}
+
+.marriage-chart-panel.active {
+	display: block;
+}
+
+/* Marriage Timeline Chart */
+.marriage-timeline-chart {
+	padding-bottom: 2rem;
+	position: relative;
+}
+
+.marriage-timeline-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.marriage-timeline-name {
+	color: var(--color-gray-4) !important;
+	flex-shrink: 0;
+	font-size: 0.9rem;
+	font-weight: 500;
+	overflow: hidden;
+	text-decoration: none !important;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 140px;
+}
+
+a.marriage-timeline-name:hover {
+	color: var(--color-blue-2) !important;
+}
+
+.marriage-timeline-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.marriage-timeline-bar {
+	border-radius: 3px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	transition: all 0.3s ease;
+}
+
+/* Wife bar - pink */
+.marriage-bar-wife {
+	background: linear-gradient(135deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+/* Husband bar - blue */
+.marriage-bar-husband {
+	background: linear-gradient(135deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+/* Ongoing marriage - add pattern/stripe */
+.marriage-ongoing {
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 4px,
+		rgba(255, 255, 255, 0.15) 4px,
+		rgba(255, 255, 255, 0.15) 8px
+	);
+}
+
+.marriage-bar-wife.marriage-ongoing {
+	background-color: var(--color-pink-2);
+}
+
+.marriage-bar-husband.marriage-ongoing {
+	background-color: var(--color-blue-2);
+}
+
+.marriage-timeline-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.8rem;
+	text-align: right;
+	min-width: 125px;
+}
+
+.marriage-duration {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Axis row to align with bars */
+.timeline-axis-row {
+	align-items: flex-start;
+	display: flex;
+	gap: 0.75rem;
+	margin-top: 0.5rem;
+}
+
+.timeline-axis-spacer {
+	flex-shrink: 0;
+	width: 140px;
+}
+
+.timeline-axis-spacer:last-child {
+	width: 125px;
+}
+
+.marriage-timeline-axis {
+	border-top: 1px solid var(--color-gray-4);
+	flex: 1;
+	padding-top: 0.5rem;
+	position: relative;
+	margin-left: 0;
+	margin-top: 0.5rem;
+}
+
+.marriage-timeline-axis .axis-label small {
+	color: var(--color-gray-3);
+	display: block;
+	font-size: 0.65rem;
+	font-weight: normal;
+}
+
+/* Child birth markers */
+.child-birth-marker {
+	background: var(--color-gray-0);
+	border: 1px solid var(--color-white);
+	border-radius: 50%;
+	height: 10px;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	transition: all 0.3s ease;
+	width: 10px;
+	z-index: 2;
+}
+
+.child-birth-marker:hover {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-0);
+	transform: translate(-50%, -50%) scale(1.3);
+}
+
+.legend-child-marker {
+	background: var(--color-white);
+	border: 2px solid var(--color-gray-0);
+	border-radius: 50%;
+}
+
+/* Legend colors for timeline */
+.legend-wife {
+	background: linear-gradient(135deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+.legend-husband {
+	background: linear-gradient(135deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+.legend-ongoing {
+	background: var(--color-gray-3);
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 2px,
+		rgba(255, 255, 255, 0.3) 2px,
+		rgba(255, 255, 255, 0.3) 4px
+	);
+}
+
+/* Mobile responsiveness for marriage charts */
+@media (max-width: 640px) {
+	.marriage-timeline-row {
+		flex-wrap: wrap;
+	}
+	
+	.marriage-timeline-name {
+		width: 100%;
+	}
+	
+	.marriage-timeline-track {
+		order: 3;
+		width: 100%;
+	}
+	
+	.marriage-timeline-dates {
+		text-align: left;
+		width: auto;
+	}
+	
+	.chart-toggle-btn {
+		font-size: 0.8rem;
+		padding: 0.4rem 1rem;
+	}
+	
+	.timeline-axis-row {
+		flex-wrap: wrap;
+	}
+	
+	.timeline-axis-spacer {
+		display: none;
+	}
+	
+	.marriage-timeline-axis {
+		width: 100%;
+	}
 }
 
 /* Marriages Table */

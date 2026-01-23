@@ -617,6 +617,7 @@ function wasmo_admin_saint_columns( $columns ) {
 		
 		// Add custom columns after title
 		if ( 'title' === $key ) {
+			$new_columns['saint_fsid'] = __( 'FS ID', 'wasmo' );
 			$new_columns['saint_roles'] = __( 'Roles', 'wasmo' );
 			$new_columns['saint_dates'] = __( 'Life Dates', 'wasmo' );
 			$new_columns['saint_ordained'] = __( 'Ordained', 'wasmo' );
@@ -635,6 +636,15 @@ add_filter( 'manage_saint_posts_columns', 'wasmo_admin_saint_columns' );
  */
 function wasmo_admin_saint_column_content( $column, $post_id ) {
 	switch ( $column ) {
+		case 'saint_fsid':
+			$fsid = get_field( 'familysearch_id', $post_id );
+			if ( $fsid ) {
+				echo esc_html( $fsid );
+			} else {
+				echo '—';
+			}
+			break;
+			
 		case 'saint_roles':
 			$terms = wp_get_post_terms( $post_id, 'saint-role', array( 'fields' => 'names' ) );
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
@@ -702,3 +712,213 @@ function wasmo_admin_saint_column_orderby( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'wasmo_admin_saint_column_orderby' );
+
+/**
+ * Add custom columns to Posts admin list
+ */
+function wasmo_admin_post_columns( $columns ) {
+	$new_columns = array();
+	
+	foreach ( $columns as $key => $value ) {
+		$new_columns[ $key ] = $value;
+		
+		// Add featured image after checkbox
+		if ( 'cb' === $key ) {
+			$new_columns['featured_image'] = __( 'Image', 'wasmo' );
+		}
+		
+		// Add taxonomy columns after title
+		if ( 'title' === $key ) {
+			$new_columns['post_tags'] = __( 'Tags', 'wasmo' );
+			$new_columns['post_shelf'] = __( 'Shelf', 'wasmo' );
+			$new_columns['post_spectrum'] = __( 'Spectrum', 'wasmo' );
+			$new_columns['post_questions'] = __( 'Questions', 'wasmo' );
+		}
+	}
+	
+	return $new_columns;
+}
+add_filter( 'manage_posts_columns', 'wasmo_admin_post_columns' );
+
+/**
+ * Display custom column content for Posts
+ */
+function wasmo_admin_post_column_content( $column, $post_id ) {
+	switch ( $column ) {
+		case 'featured_image':
+			$thumbnail_id = get_post_thumbnail_id( $post_id );
+			if ( $thumbnail_id ) {
+				$thumbnail = wp_get_attachment_image( $thumbnail_id, array( 60, 60 ), false, array( 'style' => 'max-width: 60px; max-height: 60px; object-fit: cover;' ) );
+				echo $thumbnail;
+			} else {
+				echo '—';
+			}
+			break;
+			
+		case 'post_tags':
+			$tags = get_the_term_list( $post_id, 'post_tag', '', ', ', '' );
+			if ( $tags && ! is_wp_error( $tags ) ) {
+				echo $tags;
+			} else {
+				echo '—';
+			}
+			break;
+			
+		case 'post_shelf':
+			$shelf = get_the_term_list( $post_id, 'shelf', '', ', ', '' );
+			if ( $shelf && ! is_wp_error( $shelf ) ) {
+				echo $shelf;
+			} else {
+				echo '—';
+			}
+			break;
+			
+		case 'post_spectrum':
+			$spectrum = get_the_term_list( $post_id, 'spectrum', '', ', ', '' );
+			if ( $spectrum && ! is_wp_error( $spectrum ) ) {
+				echo $spectrum;
+			} else {
+				echo '—';
+			}
+			break;
+			
+		case 'post_questions':
+			$questions = get_the_term_list( $post_id, 'question', '', ', ', '' );
+			if ( $questions && ! is_wp_error( $questions ) ) {
+				echo $questions;
+			} else {
+				echo '—';
+			}
+			break;
+	}
+}
+add_action( 'manage_posts_custom_column', 'wasmo_admin_post_column_content', 10, 2 );
+
+/**
+ * Make custom columns sortable for Posts
+ */
+function wasmo_admin_post_sortable_columns( $columns ) {
+	$columns['featured_image'] = 'has_featured_image';
+	return $columns;
+}
+add_filter( 'manage_edit-post_sortable_columns', 'wasmo_admin_post_sortable_columns' );
+
+/**
+ * Handle sorting by custom columns for Posts
+ */
+function wasmo_admin_post_column_orderby( $query ) {
+	if ( ! is_admin() || ! $query->is_main_query() ) {
+		return;
+	}
+
+	$orderby = $query->get( 'orderby' );
+
+	if ( 'has_featured_image' === $orderby ) {
+		$query->set( 'meta_key', '_thumbnail_id' );
+		$query->set( 'orderby', 'meta_value_num' );
+	}
+}
+add_action( 'pre_get_posts', 'wasmo_admin_post_column_orderby' );
+
+/**
+ * Add custom columns to Users admin list
+ */
+function wasmo_admin_user_columns( $columns ) {
+	// WordPress default order: cb, username, name, email, role, posts
+	$new_columns = array();
+	
+	foreach ( $columns as $key => $value ) {
+		$new_columns[ $key ] = $value;
+		
+		// Add photo after username column
+		if ( 'username' === $key ) {
+			$new_columns['user_photo'] = __( 'Photo', 'wasmo' );
+		}
+		
+		// Add date columns after email
+		if ( 'email' === $key ) {
+			$new_columns['user_registered'] = __( 'Registered', 'wasmo' );
+			$new_columns['user_last_login'] = __( 'Last Login', 'wasmo' );
+			$new_columns['user_last_save'] = __( 'Last Save', 'wasmo' );
+		}
+	}
+	
+	return $new_columns;
+}
+add_filter( 'manage_users_columns', 'wasmo_admin_user_columns' );
+
+/**
+ * Display custom column content for Users
+ */
+function wasmo_admin_user_column_content( $value, $column_name, $user_id ) {
+	switch ( $column_name ) {
+		case 'user_photo':
+			$photo_id = get_field( 'photo', 'user_' . $user_id );
+			if ( $photo_id ) {
+				$image = wp_get_attachment_image( $photo_id, array( 60, 60 ), false, array( 'style' => 'max-width: 60px; max-height: 60px; object-fit: cover;' ) );
+				return $image;
+			} else {
+				// Fallback to gravatar/default
+				$img_url = wasmo_get_user_image_url( $user_id );
+				$user = get_userdata( $user_id );
+				$alt = $user->display_name . ' profile image';
+				return '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $alt ) . '" style="max-width: 60px; max-height: 60px; object-fit: cover;" />';
+			}
+			
+		case 'user_registered':
+			$user = get_userdata( $user_id );
+			if ( $user && $user->user_registered ) {
+				return date( 'M j, Y', strtotime( $user->user_registered ) );
+			}
+			return '—';
+			
+		case 'user_last_login':
+			$last_login = get_user_meta( $user_id, 'last_login', true );
+			if ( $last_login && $last_login > 0 ) {
+				return date( 'M j, Y', $last_login );
+			}
+			return '—';
+			
+		case 'user_last_save':
+			$last_save = get_user_meta( $user_id, 'last_save', true );
+			if ( $last_save && $last_save > 0 ) {
+				return date( 'M j, Y', $last_save );
+			}
+			return '—';
+	}
+	
+	return $value;
+}
+add_filter( 'manage_users_custom_column', 'wasmo_admin_user_column_content', 10, 3 );
+
+/**
+ * Make custom columns sortable for Users
+ */
+function wasmo_admin_user_sortable_columns( $columns ) {
+	$columns['user_registered'] = 'registered';
+	$columns['user_last_login'] = 'last_login';
+	$columns['user_last_save'] = 'last_save';
+	return $columns;
+}
+add_filter( 'manage_users_sortable_columns', 'wasmo_admin_user_sortable_columns' );
+
+/**
+ * Handle sorting by custom columns for Users
+ */
+function wasmo_admin_user_column_orderby( $query ) {
+	if ( ! is_admin() || ! isset( $_GET['orderby'] ) ) {
+		return;
+	}
+
+	$orderby = sanitize_text_field( $_GET['orderby'] );
+
+	if ( 'last_login' === $orderby ) {
+		$query->set( 'meta_key', 'last_login' );
+		$query->set( 'orderby', 'meta_value_num' );
+	} elseif ( 'last_save' === $orderby ) {
+		$query->set( 'meta_key', 'last_save' );
+		$query->set( 'orderby', 'meta_value_num' );
+	}
+	// 'registered' is already handled by WordPress default
+}
+add_action( 'pre_get_users', 'wasmo_admin_user_column_orderby' );

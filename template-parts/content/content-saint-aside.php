@@ -224,7 +224,15 @@ $polygamy_type = $args['polygamy_type'] ?? array();
 
 	<div class="leader-navigation">
 		<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
-			← All Saints
+			All Saints →
 		</a>
+		<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
+			Saints Data →
+		</a>
+		<?php if ( $polygamy_stats['was_polygamist'] ) : ?>
+			<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); ?>" class="btn btn-secondary">
+				Polygamy Stats →
+			</a>
+		<?php endif; ?>
 	</div>
 </aside>
