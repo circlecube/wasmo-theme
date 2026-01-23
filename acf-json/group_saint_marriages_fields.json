@@ -329,7 +329,7 @@
                             "required": 0,
                             "conditional_logic": 0,
                             "wrapper": {
-                                "width": "30",
+                                "width": "20",
                                 "class": "",
                                 "id": ""
                             },
@@ -346,6 +346,27 @@
                             "max": 1,
                             "return_format": "id",
                             "bidirectional_target": [],
+                            "parent_repeater": "field_saint_marriage_children"
+                        },
+                        {
+                            "key": "field_saint_child_familysearch_id",
+                            "label": "FS ID",
+                            "name": "child_familysearch_id",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "FamilySearch ID for this child (for matching/verification).",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": "10",
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "e.g., KWJY-BPD",
+                            "prepend": "",
+                            "append": "",
                             "parent_repeater": "field_saint_marriage_children"
                         }
                     ]
@@ -377,5 +398,5 @@
     "description": "Marriage and family fields for saints with the wife role.",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1736899200
+    "modified": 1737590400
 }

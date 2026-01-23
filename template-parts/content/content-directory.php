@@ -129,7 +129,8 @@ function wasmo_filter_directory_for_tax( $user ){
 
 $transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged ) );
 $transient_exp = WEEK_IN_SECONDS;
-wasmo_delete_transients_with_prefix( 'wasmo_directory' );
+
+// Only skip cache for admin users in debug mode
 if ( current_user_can( 'administrator' ) && WP_DEBUG ) {
 	$transient_name = time();
 }

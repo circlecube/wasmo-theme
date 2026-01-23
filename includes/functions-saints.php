@@ -680,13 +680,21 @@ function wasmo_saint_has_role( $saint_id, $role_slug ) {
 }
 
 /**
- * Get related posts for a saint (via tag and ACF relationship)
+ * Get related posts for a saint (via tag and ACF relationship) - CACHED
  *
  * @param int $saint_id The saint post ID.
  * @param int $limit Maximum number of posts to return.
  * @return array Array of post objects.
  */
 function wasmo_get_saint_related_posts( $saint_id, $limit = 10 ) {
+	// Use transient cache for expensive LIKE queries
+	$transient_key = 'wasmo_saint_posts_' . $saint_id . '_' . $limit;
+	$cached = get_transient( $transient_key );
+	
+	if ( false !== $cached ) {
+		return $cached;
+	}
+	
 	$related_posts = array();
 	$post_ids = array();
 
@@ -731,17 +739,30 @@ function wasmo_get_saint_related_posts( $saint_id, $limit = 10 ) {
 		$related_posts = array_merge( $related_posts, $tag_posts );
 	}
 
-	return array_slice( $related_posts, 0, $limit );
+	$result = array_slice( $related_posts, 0, $limit );
+	
+	// Cache for 12 hours
+	set_transient( $transient_key, $result, 12 * HOUR_IN_SECONDS );
+	
+	return $result;
 }
 
 /**
- * Get related media/images for a saint (via tag and ACF relationship)
+ * Get related media/images for a saint (via tag and ACF relationship) - CACHED
  *
  * @param int $saint_id The saint post ID.
  * @param int $limit Maximum number of media items to return.
  * @return array Array of attachment post objects.
  */
 function wasmo_get_saint_related_media( $saint_id, $limit = 20 ) {
+	// Use transient cache for expensive LIKE queries
+	$transient_key = 'wasmo_saint_media_' . $saint_id . '_' . $limit;
+	$cached = get_transient( $transient_key );
+	
+	if ( false !== $cached ) {
+		return $cached;
+	}
+	
 	$related_media = array();
 	$media_ids = array();
 
@@ -786,7 +807,12 @@ function wasmo_get_saint_related_media( $saint_id, $limit = 20 ) {
 		$related_media = array_merge( $related_media, $tag_media );
 	}
 
-	return array_slice( $related_media, 0, $limit );
+	$result = array_slice( $related_media, 0, $limit );
+	
+	// Cache for 12 hours
+	set_transient( $transient_key, $result, 12 * HOUR_IN_SECONDS );
+	
+	return $result;
 }
 
 /**
@@ -989,6 +1015,53 @@ function wasmo_get_saint_placeholder( $saint_id, $gender = null, $style = 'saint
 	$html .= '</div>';
 	
 	return $html;
+}
+
+/**
+ * Get a mini portrait circle for a saint (32x32px)
+ * Used in marriage tables and children lists
+ *
+ * @param int|null $saint_id The saint post ID, or null for non-saint placeholder.
+ * @param string   $gender   Gender for placeholder styling ('male' or 'female').
+ * @param string   $link_url Optional URL to link the portrait to.
+ * @param string   $name     Name for alt text.
+ * @return string HTML for the mini portrait.
+ */
+function wasmo_get_mini_portrait( $saint_id = null, $gender = 'male', $link_url = null, $name = '' ) {
+	$has_image = false;
+	$image_html = '';
+	
+	// If we have a saint ID, get their gender and check for portrait
+	if ( $saint_id ) {
+		$gender = get_field( 'gender', $saint_id ) ?: $gender;
+		$thumbnail = get_the_post_thumbnail_url( $saint_id, 'thumbnail' );
+		if ( $thumbnail ) {
+			$has_image = true;
+			$image_html = '<img src="' . esc_url( $thumbnail ) . '" alt="' . esc_attr( $name ) . '" class="mini-portrait-img">';
+		}
+	}
+	
+	// Generate placeholder if no image
+	if ( ! $has_image ) {
+		$icon_name = ( $gender === 'female' ) ? 'businesswoman' : 'businessman';
+		$gender_class = ( $gender === 'female' ) ? 'placeholder-female' : 'placeholder-male';
+		$image_html = '<span class="mini-portrait-placeholder ' . esc_attr( $gender_class ) . '">';
+		$image_html .= '<span class="mini-portrait-icon">' . wasmo_get_icon_svg( $icon_name, 20 ) . '</span>';
+		$image_html .= '</span>';
+	}
+	
+	// Build container classes - add gender border class when we have an image
+	$container_classes = 'mini-portrait';
+	if ( $has_image ) {
+		$container_classes .= ( $gender === 'female' ) ? ' mini-portrait-female' : ' mini-portrait-male';
+	}
+	
+	// Wrap in link if provided
+	if ( $link_url ) {
+		return '<a href="' . esc_url( $link_url ) . '" class="' . esc_attr( $container_classes ) . '" title="' . esc_attr( $name ) . '">' . $image_html . '</a>';
+	}
+	
+	return '<span class="' . esc_attr( $container_classes ) . '">' . $image_html . '</span>';
 }
 
 /**
@@ -1207,6 +1280,10 @@ function wasmo_clear_saint_transients( $post_id ) {
 	delete_transient( 'wasmo_archive_wives' );
 	delete_transient( 'wasmo_saint_roles' );
 	
+	// Clear polygamy page transients
+	delete_transient( 'wasmo_polygamists_list' );
+	delete_transient( 'wasmo_polygamy_data' );
+	
 	// Clear individual saint served_with transients
 	global $wpdb;
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_served_with_%'" );
@@ -1217,9 +1294,48 @@ function wasmo_clear_saint_transients( $post_id ) {
 	// Clear role-specific archive transients
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_role_saints_%'" );
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_role_saints_%'" );
+	
+	// Clear related content transients for this saint
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_posts_{$post_id}_%'" );
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_posts_{$post_id}_%'" );
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_media_{$post_id}_%'" );
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_media_{$post_id}_%'" );
 }
 add_action( 'save_post', 'wasmo_clear_saint_transients' );
 add_action( 'acf/save_post', 'wasmo_clear_saint_transients', 20 );
+
+/**
+ * Clear related content transients when posts/media are saved
+ * (in case they have related_leaders relationships)
+ *
+ * @param int $post_id The post ID being saved.
+ */
+function wasmo_clear_related_content_transients( $post_id ) {
+	$post_type = get_post_type( $post_id );
+	
+	// Only run for posts and attachments (not saints - handled separately)
+	if ( ! in_array( $post_type, array( 'post', 'attachment' ), true ) ) {
+		return;
+	}
+	
+	// Check if this post has related_leaders
+	$related_leaders = get_field( 'related_leaders', $post_id );
+	if ( ! empty( $related_leaders ) && is_array( $related_leaders ) ) {
+		global $wpdb;
+		// Clear related transients for each linked saint
+		foreach ( $related_leaders as $saint ) {
+			$saint_id = is_object( $saint ) ? $saint->ID : intval( $saint );
+			if ( $saint_id ) {
+				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_posts_{$saint_id}_%'" );
+				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_posts_{$saint_id}_%'" );
+				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_media_{$saint_id}_%'" );
+				$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_media_{$saint_id}_%'" );
+			}
+		}
+	}
+}
+add_action( 'save_post', 'wasmo_clear_related_content_transients' );
+add_action( 'acf/save_post', 'wasmo_clear_related_content_transients', 20 );
 
 /**
  * Clear saint role transients when a term is edited
@@ -1242,6 +1358,29 @@ function wasmo_clear_saint_role_transients( $term_id, $tt_id, $taxonomy ) {
 add_action( 'edited_term', 'wasmo_clear_saint_role_transients', 10, 3 );
 add_action( 'created_term', 'wasmo_clear_saint_role_transients', 10, 3 );
 add_action( 'delete_term', 'wasmo_clear_saint_role_transients', 10, 3 );
+
+/**
+ * Clear taxonomy cloud transients when terms are edited
+ * 
+ * @param int    $term_id  Term ID.
+ * @param int    $tt_id    Term taxonomy ID.
+ * @param string $taxonomy Taxonomy slug.
+ */
+function wasmo_clear_taxonomy_cloud_transients( $term_id, $tt_id, $taxonomy ) {
+	// Only clear for taxonomies used in taxonomy cloud block
+	$cloud_taxonomies = array( 'shelf', 'spectrum', 'question' );
+	if ( ! in_array( $taxonomy, $cloud_taxonomies, true ) ) {
+		return;
+	}
+	
+	// Clear all taxonomy cloud transients (they have dynamic cache keys)
+	global $wpdb;
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_tax_cloud_%'" );
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_tax_cloud_%'" );
+}
+add_action( 'edited_term', 'wasmo_clear_taxonomy_cloud_transients', 10, 3 );
+add_action( 'created_term', 'wasmo_clear_taxonomy_cloud_transients', 10, 3 );
+add_action( 'delete_term', 'wasmo_clear_taxonomy_cloud_transients', 10, 3 );
 
 // ============================================
 // CACHED ARCHIVE QUERIES
@@ -1589,6 +1728,195 @@ function wasmo_get_cached_saints_by_role( $term_id ) {
 	}
 	
 	return $saints;
+}
+
+/**
+ * Get all polygamists (male saints with more than one wife) - CACHED
+ *
+ * @return array Array of saint post IDs who are polygamists.
+ */
+function wasmo_get_cached_polygamists() {
+	$transient_key = 'wasmo_polygamists_list';
+	$cached = get_transient( $transient_key );
+	
+	if ( false !== $cached ) {
+		return $cached;
+	}
+	
+	global $wpdb;
+	
+	// Find all unique spouse IDs from marriages
+	$spouse_ids = $wpdb->get_col(
+		"SELECT DISTINCT meta_value FROM {$wpdb->postmeta} 
+		WHERE meta_key LIKE 'marriages_%_spouse' 
+		AND meta_value != '' 
+		AND meta_value NOT LIKE 'a:0:%'"
+	);
+	
+	$polygamists = array();
+	$processed = array();
+	
+	foreach ( $spouse_ids as $spouse_data ) {
+		// Handle serialized and non-serialized values
+		if ( is_serialized( $spouse_data ) ) {
+			$unserialized = maybe_unserialize( $spouse_data );
+			$spouse_id = is_array( $unserialized ) ? intval( $unserialized[0] ?? 0 ) : intval( $unserialized );
+		} else {
+			$spouse_id = intval( $spouse_data );
+		}
+		
+		if ( ! $spouse_id || in_array( $spouse_id, $processed, true ) ) {
+			continue;
+		}
+		$processed[] = $spouse_id;
+		
+		// Verify it's a valid saint
+		$post = get_post( $spouse_id );
+		if ( ! $post || $post->post_status !== 'publish' || $post->post_type !== 'saint' ) {
+			continue;
+		}
+		
+		// Only include men
+		$gender = get_field( 'gender', $spouse_id );
+		if ( $gender !== 'male' ) {
+			continue;
+		}
+		
+		// Get marriage data for this potential polygamist
+		$marriages = wasmo_get_all_marriage_data( $spouse_id );
+		
+		if ( count( $marriages ) > 1 ) {
+			$polygamists[] = $spouse_id;
+		}
+	}
+	
+	// Cache for 1 day
+	set_transient( $transient_key, $polygamists, DAY_IN_SECONDS );
+	
+	return $polygamists;
+}
+
+/**
+ * Get comprehensive polygamy data for all polygamists - CACHED
+ *
+ * @return array Array with 'polygamists' (individual data) and 'aggregate' (summary stats).
+ */
+function wasmo_get_cached_polygamy_data() {
+	$transient_key = 'wasmo_polygamy_data';
+	$cached = get_transient( $transient_key );
+	
+	if ( false !== $cached ) {
+		return $cached;
+	}
+	
+	$polygamists = wasmo_get_cached_polygamists();
+	$all_data = array();
+	$aggregate = array(
+		'total_polygamists'      => 0,
+		'total_wives'            => 0,
+		'total_children'         => 0,
+		'total_teenage_brides'   => 0,
+		'all_age_diffs'          => array(),
+		'all_teenage_brides'     => array(),
+		'large_age_diff_count'   => 0,
+		'role_counts'            => array(),
+		'celestial_count'        => 0,
+		'simultaneous_count'     => 0,
+	);
+	
+	foreach ( $polygamists as $saint_id ) {
+		$stats = wasmo_get_polygamy_stats( $saint_id );
+		$polygamy_type = wasmo_get_polygamy_type( $saint_id );
+		$roles = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'names' ) );
+		$role_slugs = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'slugs' ) );
+		
+		// Filter out 'wife' role for men
+		$roles = array_filter( $roles, function( $role ) {
+			return strtolower( $role ) !== 'wife';
+		} );
+		
+		$data = array(
+			'id'                  => $saint_id,
+			'name'                => get_the_title( $saint_id ),
+			'roles'               => $roles,
+			'role_slugs'          => $role_slugs,
+			'num_wives'           => $stats['number_of_marriages'],
+			'num_children'        => $stats['number_of_children'],
+			'num_teenage_brides'  => $stats['teenage_brides_count'],
+			'avg_age_diff'        => $stats['avg_age_diff'],
+			'largest_age_diff'    => $stats['largest_age_diff'],
+			'marriages_data'      => $stats['marriages_data'],
+			'lifespan'            => wasmo_get_saint_lifespan( $saint_id ),
+			'polygamy_type'       => $polygamy_type['type'],
+			'is_living'           => wasmo_is_saint_living( $saint_id ),
+		);
+		
+		$all_data[] = $data;
+		
+		// Aggregate stats
+		$aggregate['total_polygamists']++;
+		$aggregate['total_wives'] += $stats['number_of_marriages'];
+		$aggregate['total_children'] += $stats['number_of_children'];
+		$aggregate['total_teenage_brides'] += $stats['teenage_brides_count'];
+		
+		// Track polygamy type
+		if ( $polygamy_type['type'] === 'celestial' ) {
+			$aggregate['celestial_count']++;
+		} else {
+			$aggregate['simultaneous_count']++;
+		}
+		
+		// Track age differences
+		foreach ( $stats['marriages_data'] as $marriage ) {
+			if ( isset( $marriage['age_diff'] ) && $marriage['age_diff'] !== null ) {
+				$aggregate['all_age_diffs'][] = abs( $marriage['age_diff'] );
+				if ( abs( $marriage['age_diff'] ) >= 20 ) {
+					$aggregate['large_age_diff_count']++;
+				}
+			}
+			
+			// Track teenage brides
+			if ( isset( $marriage['spouse_age'] ) && $marriage['spouse_age'] !== null && $marriage['spouse_age'] < 18 ) {
+				$aggregate['all_teenage_brides'][] = array(
+					'bride_id'      => $marriage['spouse_id'],
+					'bride_name'    => $marriage['spouse_name'],
+					'bride_age'     => $marriage['spouse_age'],
+					'husband_id'    => $saint_id,
+					'husband_name'  => get_the_title( $saint_id ),
+					'husband_age'   => $marriage['saint_age'],
+					'marriage_date' => $marriage['marriage_date'],
+				);
+			}
+		}
+		
+		// Track roles
+		foreach ( $roles as $role ) {
+			if ( ! isset( $aggregate['role_counts'][ $role ] ) ) {
+				$aggregate['role_counts'][ $role ] = 0;
+			}
+			$aggregate['role_counts'][ $role ]++;
+		}
+	}
+	
+	// Sort by number of wives (descending)
+	usort( $all_data, function( $a, $b ) {
+		return $b['num_wives'] - $a['num_wives'];
+	} );
+	
+	// Sort teenage brides by age (youngest first)
+	usort( $aggregate['all_teenage_brides'], function( $a, $b ) {
+		return ( $a['bride_age'] ?? 99 ) - ( $b['bride_age'] ?? 99 );
+	} );
+	
+	$result = array(
+		'polygamists' => $all_data,
+		'aggregate'   => $aggregate,
+	);
+	
+	// Cache for 1 day
+	set_transient( $transient_key, $result, DAY_IN_SECONDS );
+	
+	return $result;
 }
 
 // ============================================
@@ -2283,6 +2611,7 @@ function wasmo_get_saint_parents( $saint_id ) {
 	
 	// Method 2: Search by child_name matching the saint's title
 	// This is a fallback for when child_link isn't set but the name matches
+	// Additional birthdate verification prevents false positives from namesakes
 	if ( ! $parents['mother'] && $saint_name ) {
 		$name_results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT post_id, meta_key FROM {$wpdb->postmeta} 
@@ -2292,6 +2621,9 @@ function wasmo_get_saint_parents( $saint_id ) {
 		) );
 		
 		if ( ! empty( $name_results ) ) {
+			// Get the saint's actual birthdate for verification
+			$saint_birthdate = get_field( 'birthdate', $saint_id );
+			
 			foreach ( $name_results as $result ) {
 				$mother_id = intval( $result->post_id );
 				
@@ -2305,9 +2637,30 @@ function wasmo_get_saint_parents( $saint_id ) {
 					continue;
 				}
 				
-				// Extract marriage index
-				if ( preg_match( '/marriages_(\d+)_children_/', $result->meta_key, $matches ) ) {
+				// Extract marriage index and child index from meta_key
+				// Format: marriages_X_children_Y_child_name
+				if ( preg_match( '/marriages_(\d+)_children_(\d+)_child_name/', $result->meta_key, $matches ) ) {
 					$marriage_index = intval( $matches[1] );
+					$child_index = intval( $matches[2] );
+					
+					// Verify birthdate matches to prevent false positives from namesakes
+					// Only check if the saint has a birthdate; if not, we can't verify
+					if ( $saint_birthdate ) {
+						$child_birthdate_key = 'marriages_' . $marriage_index . '_children_' . $child_index . '_child_birthdate';
+						$recorded_child_birthdate = get_post_meta( $mother_id, $child_birthdate_key, true );
+						
+						// If the mother's record has a birthdate for this child, it must match
+						if ( $recorded_child_birthdate ) {
+							// Normalize dates to Y-m-d for comparison
+							$saint_bd_normalized = date( 'Y-m-d', strtotime( $saint_birthdate ) );
+							$child_bd_normalized = date( 'Y-m-d', strtotime( $recorded_child_birthdate ) );
+							
+							// If dates don't match, this is likely a namesake, not the actual child
+							if ( $saint_bd_normalized !== $child_bd_normalized ) {
+								continue;
+							}
+						}
+					}
 					
 					// Get the father from this marriage
 					$spouse_meta = get_post_meta( $mother_id, 'marriages_' . $marriage_index . '_spouse', true );

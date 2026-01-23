@@ -251,6 +251,44 @@
             "append": ""
         },
         {
+            "key": "field_saint_familysearch_verified",
+            "label": "FamilySearch Verified",
+            "name": "familysearch_verified",
+            "aria-label": "",
+            "type": "date_time_picker",
+            "instructions": "Last time this saint's data was verified against FamilySearch. Managed automatically by the verification tool.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d H:i:s",
+            "return_format": "Y-m-d H:i:s",
+            "first_day": 0
+        },
+        {
+            "key": "field_saint_familysearch_notes",
+            "label": "FamilySearch Notes",
+            "name": "familysearch_notes",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Notes about discrepancies or issues found during FamilySearch verification.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "100",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": 2,
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
             "key": "field_saint_background_accordion",
             "label": "Background",
             "name": "",
@@ -428,5 +466,5 @@
     "description": "Core fields for the Saint custom post type. Role-specific fields appear in separate field groups based on assigned roles.",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1736899200
+    "modified": 1737590400
 }

@@ -22,3 +22,6 @@ wp-content/plugins/hello.php
 
 #node_modules
 /node_modules
+
+#local fs-verify node app and dependencies
+/scripts/fs-verify

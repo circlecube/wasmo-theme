@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          2.3.0
+ Version:          2.4.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -3876,6 +3876,98 @@ a.saint-card:hover {
 	font-size: 0.75rem;
 	font-style: italic;
 	margin-left: 0.25rem;
+}
+
+/* Mini Portrait Circles (32x32px) */
+.mini-portrait {
+	border-radius: 50%;
+	display: inline-flex;
+	flex-shrink: 0;
+	height: 32px;
+	margin-right: 0.5rem;
+	overflow: hidden;
+	vertical-align: middle;
+	width: 32px;
+}
+
+.mini-portrait-img {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+
+/* Gender-specific borders for portraits with images */
+.mini-portrait-male {
+	border: 1px solid var(--color-blue-2);
+}
+
+.mini-portrait-female {
+	border: 1px solid var(--color-pink-2);
+}
+
+.mini-portrait-placeholder {
+	align-items: center;
+	border-radius: 50%;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+.mini-portrait-placeholder.placeholder-male {
+	background: linear-gradient(145deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+.mini-portrait-placeholder.placeholder-female {
+	background: linear-gradient(145deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+.mini-portrait-icon {
+	opacity: 0.5;
+    max-width: 24px;
+    max-height: 26px;
+}
+
+.mini-portrait-icon svg {
+	fill: white;
+	height: 24px;
+	width: 24px;
+}
+
+/* Spouse name cell alignment */
+.spouse-name-cell {
+	align-items: center;
+	display: flex;
+	gap: 0;
+}
+
+.spouse-name-cell a,
+.spouse-name-cell .non-saint-marker,
+.spouse-name-cell .teen-marker {
+	display: inline;
+}
+
+/* Children list with mini portraits */
+.child-item .mini-portrait {
+	margin-left: 0.1rem;
+	margin-right: 0.25rem;
+}
+
+.child-item .child-name {
+	margin-right: 0.25rem;
+}
+
+/* Children group header alignment */
+.children-group-header {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0;
+}
+
+.children-group-header .mini-portrait {
+	margin-left: 0.25rem;
+	margin-right: 0.25rem;
 }
 
 .living-indicator {

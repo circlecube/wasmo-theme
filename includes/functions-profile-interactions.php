@@ -852,8 +852,9 @@ function wasmo_get_reaction_stats() {
 function wasmo_notify_profile_reaction( $profile_user_id, $section, $reaction_type ) {
     // Check user's notification preference
     $notify_pref = get_field( 'notify_me_about_reactions', 'user_' . $profile_user_id );
-    // Only send if preference is 'yes' (both) or 'reactions' (reactions only)
-    if ( ! in_array( $notify_pref, array( 'yes', 'reactions' ), true ) ) {
+    // Send if empty (default on), 'yes' (both), or 'reactions' (reactions only)
+    // Only skip if explicitly set to 'no' or 'comments' (comments only)
+    if ( ! empty( $notify_pref ) && ! in_array( $notify_pref, array( 'yes', 'reactions' ), true ) ) {
         return;
     }
 
@@ -923,8 +924,9 @@ function wasmo_notify_profile_reaction( $profile_user_id, $section, $reaction_ty
 function wasmo_notify_profile_comment( $profile_user_id, $commenter_id, $comment_id ) {
     // Check user's notification preference
     $notify_pref = get_field( 'notify_me_about_reactions', 'user_' . $profile_user_id );
-    // Only send if preference is 'yes' (both) or 'comments' (comments only)
-    if ( ! in_array( $notify_pref, array( 'yes', 'comments' ), true ) ) {
+    // Send if empty (default on), 'yes' (both), or 'comments' (comments only)
+    // Only skip if explicitly set to 'no' or 'reactions' (reactions only)
+    if ( ! empty( $notify_pref ) && ! in_array( $notify_pref, array( 'yes', 'comments' ), true ) ) {
         return;
     }
 

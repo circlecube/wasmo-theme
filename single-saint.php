@@ -499,17 +499,31 @@ $classes = array_filter( $classes, function( $class ) {
 									data-married="<?php echo esc_attr( $m['marriage_date'] ?: '9999-12-31' ); ?>">
 									<td class="marriage-order-cell"><?php echo esc_html( $m['order'] ); ?></td>
 									<td>
-										<?php if ( ! empty( $m['spouse_is_saint'] ) && $m['spouse_url'] ) : ?>
-											<a href="<?php echo esc_url( $m['spouse_url'] ); ?>">
-												<?php echo esc_html( $m['spouse_name'] ); ?>
-											</a>
-										<?php else : ?>
-											<?php echo esc_html( $m['spouse_name'] ); ?>
-											<span class="non-saint-marker" title="Not in database">(non-member)</span>
-										<?php endif; ?>
-										<?php if ( $m['is_teenage'] ) : ?>
-											<span class="teen-marker" title="Teenage bride">⚠</span>
-										<?php endif; ?>
+										<div class="spouse-name-cell">
+											<?php 
+											// Determine spouse gender (opposite of current saint)
+											$spouse_gender = ( $gender === 'male' ) ? 'female' : 'male';
+											$spouse_saint_id = ! empty( $m['spouse_is_saint'] ) ? $m['spouse_id'] : null;
+											echo wasmo_get_mini_portrait( 
+												$spouse_saint_id, 
+												$spouse_gender, 
+												$m['spouse_url'], 
+												$m['spouse_name'] 
+											);
+											?>
+											<?php if ( ! empty( $m['spouse_is_saint'] ) && $m['spouse_url'] ) : ?>
+												<a href="<?php echo esc_url( $m['spouse_url'] ); ?>">
+													<?php echo esc_html( $m['spouse_name'] ); ?>
+												</a>
+											<?php else : ?>
+												<span class="non-saint-marker" title="Not in database">
+													<?php echo esc_html( $m['spouse_name'] ); ?>
+												</span>
+											<?php endif; ?>
+											<?php if ( $m['is_teenage'] ) : ?>
+												<span class="teen-marker" title="Teenage bride">⚠</span>
+											<?php endif; ?>
+										</div>
 									</td>
 									<td class="date-cell"><?php echo $spouse_birth_formatted ? esc_html( $spouse_birth_formatted ) : '—'; ?></td>
 									<td class="date-cell"><?php echo $spouse_death_formatted ? esc_html( $spouse_death_formatted ) : '<span class="living-indicator" title="Still living">●</span>'; ?></td>
@@ -565,14 +579,25 @@ $classes = array_filter( $classes, function( $class ) {
 							if ( ! empty( $children ) && is_array( $children ) ) :
 						?>
 							<div class="marriage-children-group">
-								<h4>
+								<h4 class="children-group-header">
 									With 
+									<?php 
+									// Mini portrait for spouse in children section
+									$spouse_gender_for_children = ( $gender === 'male' ) ? 'female' : 'male';
+									$spouse_url_for_children = ( $spouse_is_saint && $spouse_id ) ? get_permalink( $spouse_id ) : null;
+									echo wasmo_get_mini_portrait( 
+										$spouse_is_saint ? $spouse_id : null, 
+										$spouse_gender_for_children, 
+										$spouse_url_for_children, 
+										$spouse_name 
+									);
+									?>
 									<?php if ( $spouse_is_saint && $spouse_id ) : ?>
 										<a href="<?php echo get_permalink( $spouse_id ); ?>"><?php echo esc_html( $spouse_name ); ?></a>
 									<?php else : ?>
 										<?php echo esc_html( $spouse_name ); ?>
 									<?php endif; ?>
-									(<?php echo esc_html( $children_counts['total'] ); ?> <?php echo $children_counts['total'] === 1 ? 'child' : 'children'; ?>)
+									&nbsp;(<?php echo esc_html( $children_counts['total'] ); ?> <?php echo $children_counts['total'] === 1 ? 'child' : 'children'; ?>)
 								</h4>
 								<?php if ( ! empty( $displayable_children ) ) : ?>
 								<ol class="children-list">
@@ -581,14 +606,18 @@ $classes = array_filter( $classes, function( $class ) {
 										$child_birthdate = $child['child_birthdate'] ?? '';
 										$child_link_field = $child['child_link'] ?? null;
 										$child_link = is_array( $child_link_field ) ? ( $child_link_field[0] ?? null ) : $child_link_field;
-										
-										// Auto-link: if no explicit link, try to find a saint by name
-										// if ( ! $child_link && $child_name ) {
-										// 	$child_link = wasmo_find_saint_by_child_name( $child_name );
-										// }
 									?>
 										<li class="child-item">
-											<?php if ( $child_link ) : ?>
+											<?php if ( $child_link ) : 
+												// Child is linked to a saint - show mini portrait
+												$child_gender = get_field( 'gender', $child_link ) ?: 'male';
+												echo wasmo_get_mini_portrait( 
+													$child_link, 
+													$child_gender, 
+													get_permalink( $child_link ), 
+													$child_name 
+												);
+											?>
 												<a href="<?php echo esc_url( get_permalink( $child_link ) ); ?>" class="child-name">
 													<?php echo esc_html( $child_name ); ?>
 												</a>

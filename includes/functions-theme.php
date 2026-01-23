@@ -36,12 +36,6 @@ add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
  * https://fonts.google.com/specimen/Josefin+Sans
  */
 function wasmo_add_google_fonts() {
-	// wp_enqueue_style( 
-	// 	'wasmo-google-fonts', 
-	// 	'https://fonts.googleapis.com/css?family=Crimson+Text:400,700|Open+Sans:400,700&display=swap', 
-	// 	false
-	// );
-	// https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap
 	wp_enqueue_style( 
 		'wasmo-google-fonts', 
 		'https://fonts.googleapis.com/css?family=Josefin+Sans:ital,wght@0,100..700;1,100..700|Crimson+Text:400,700|Open+Sans:400,700&display=swap', 

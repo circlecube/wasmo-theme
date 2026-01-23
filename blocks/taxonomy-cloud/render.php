@@ -36,16 +36,29 @@ $config = $taxonomy_config[ $taxonomy ] ?? $taxonomy_config['shelf'];
 $title  = ! empty( $custom_title ) ? $custom_title : $config['title'];
 $icon   = $config['icon'];
 
-// Get terms
-$terms = get_terms( array(
-    'taxonomy'   => $taxonomy,
-    'hide_empty' => $hide_empty,
-    'orderby'    => $order_by,
-    'order'      => $order,
-    'count'      => true,
-) );
+// Build cache key based on query parameters
+$cache_key = 'wasmo_tax_cloud_' . md5( $taxonomy . $order_by . $order . ( $hide_empty ? '1' : '0' ) );
+$terms = get_transient( $cache_key );
 
-if ( is_wp_error( $terms ) || empty( $terms ) ) {
+if ( false === $terms ) {
+    // Get terms
+    $terms = get_terms( array(
+        'taxonomy'   => $taxonomy,
+        'hide_empty' => $hide_empty,
+        'orderby'    => $order_by,
+        'order'      => $order,
+        'count'      => true,
+    ) );
+
+    if ( is_wp_error( $terms ) ) {
+        $terms = array();
+    }
+
+    // Cache for 12 hours
+    set_transient( $cache_key, $terms, 12 * HOUR_IN_SECONDS );
+}
+
+if ( empty( $terms ) ) {
     return;
 }
 

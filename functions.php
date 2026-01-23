@@ -25,6 +25,8 @@ require_once( get_stylesheet_directory() . '/includes/media-auto-tag.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-associations.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-images.php' );
 require_once( get_stylesheet_directory() . '/includes/saints-settings.php' );
+require_once( get_stylesheet_directory() . '/includes/fs-verify.php' );
+require_once( get_stylesheet_directory() . '/includes/saints-api.php' );
 
 // Load custom blocks
 require_once( get_stylesheet_directory() . '/blocks/index.php' );
