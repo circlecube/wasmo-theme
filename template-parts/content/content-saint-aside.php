@@ -25,7 +25,11 @@ $polygamy_type = $args['polygamy_type'] ?? array();
 ?>
 
 <aside class="leader-sidebar">
-	<div class="leader-metadata">
+	<button class="leader-sidebar-toggle" aria-expanded="false" aria-controls="leader-metadata">
+		<span class="toggle-text">Details</span>
+		<span class="toggle-icon">▼</span>
+	</button>
+	<div class="leader-metadata" id="leader-metadata">
 		<h3>Details</h3>
 		<dl class="leader-meta-list">
 			<?php 
@@ -236,3 +240,15 @@ $polygamy_type = $args['polygamy_type'] ?? array();
 		<?php endif; ?>
 	</div>
 </aside>
+
+<script>
+(function() {
+	const toggle = document.querySelector('.leader-sidebar-toggle');
+	if (!toggle) return;
+	
+	toggle.addEventListener('click', function() {
+		const isExpanded = this.getAttribute('aria-expanded') === 'true';
+		this.setAttribute('aria-expanded', !isExpanded);
+	});
+})();
+</script>

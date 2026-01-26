@@ -5,7 +5,7 @@
  Author:           Evan Mullins
  Author URI:       https://circlecube.com
  Template:         twentynineteen
- Version:          2.5.0
+ Version:          2.6.0
  License:          GNU General Public License v2 or later
  License URI:      http://www.gnu.org/licenses/gpl-2.0.html
  Text Domain:      wasmo
@@ -2014,6 +2014,23 @@ table.gsc-above-wrapper-area-container td {
 		flex-direction: row;
 	}
 }
+
+/* Mobile: Adjust leader header */
+@media (max-width: 640px) {
+	.leader-header {
+		margin-bottom: 1.5rem;
+		padding: 1rem;
+	}
+	
+	.leader-portrait {
+		max-width: 100%;
+		margin: 0 auto;
+	}
+	
+	.leader-name {
+		font-size: 1.5rem;
+	}
+}
 .leader-portrait {
 	flex-shrink: 0;
 	max-width: 250px;
@@ -2231,10 +2248,73 @@ a.leader-role-badge:visited {
 .leader-sidebar {
 	flex-shrink: 0;
 	width: 100%;
+	position: relative;
 }
+
+/* Mobile: Collapsible accordion (closed by default) */
+.leader-sidebar-toggle {
+	display: none; /* Hidden on desktop */
+}
+
+@media (max-width: 1023px) {
+	.leader-sidebar-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 1rem;
+		background: var(--color-gray-0);
+		border: 1px solid var(--color-gray-1);
+		border-radius: 4px;
+		cursor: pointer;
+		font-family: "Josefin Sans", sans-serif;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-gray-4);
+		margin-bottom: 0;
+		transition: background 0.2s ease;
+	}
+	
+	.leader-sidebar-toggle:hover {
+		background: var(--color-gray-1);
+	}
+	
+	.leader-sidebar-toggle .toggle-icon {
+		transition: transform 0.3s ease;
+		font-size: 0.8rem;
+	}
+	
+	.leader-sidebar-toggle[aria-expanded="true"] .toggle-icon {
+		transform: rotate(180deg);
+	}
+	
+	.leader-metadata {
+		display: none;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease, padding 0.3s ease;
+		padding: 0 1rem;
+	}
+	
+	.leader-sidebar-toggle[aria-expanded="true"] + .leader-metadata,
+	.leader-metadata:target {
+		display: block;
+		max-height: 5000px;
+		padding: 1rem;
+		margin-top: 0.5rem;
+		border: 1px solid var(--color-gray-1);
+		border-radius: 4px;
+		background: var(--color-white);
+	}
+}
+
 @media (min-width: 1024px) {
 	.leader-sidebar {
 		width: 300px;
+	}
+	
+	.leader-metadata {
+		display: block !important; /* Always visible on desktop */
 	}
 }
 
@@ -2662,6 +2742,17 @@ h1.archive-title:before {
 	font-size: 2.5rem;
 	margin: 0 0 1rem;
 }
+
+/* Mobile: Reduce page title size */
+@media (max-width: 640px) {
+	.apostle-charts-page .page-title {
+		font-size: 1.75rem;
+	}
+	
+	.apostle-charts-page {
+		padding: 1rem 0.5rem;
+	}
+}
 .apostle-charts-page .page-title:before {
 	display: none;
 }
@@ -2693,6 +2784,7 @@ h1.archive-title:before {
 	font-size: 0.9rem;
 	padding: 0.5rem 1.25rem;
 	transition: all 0.2s ease;
+	white-space: nowrap;
 }
 .view-btn.active {
 	background: var(--color-blue-2);
@@ -2700,6 +2792,30 @@ h1.archive-title:before {
 }
 .view-btn:hover:not(.active) {
 	background: var(--color-gray-1);
+}
+
+/* Mobile: Make view toggle scrollable */
+@media (max-width: 768px) {
+	.chart-controls {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 2rem;
+		padding: 0 1rem;
+		text-align: left;
+	}
+	
+	.view-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+	
+	.view-btn {
+		flex-shrink: 0;
+		font-size: 0.85rem;
+		padding: 0.4rem 1rem;
+	}
 }
 .entry .entry-content a.btn {
 	text-decoration: none;
@@ -2782,10 +2898,6 @@ h1.archive-title:before {
 	text-align: center;
 	text-decoration: none;
 	transition: all 0.2s ease;
-}
-.current-apostle-card:hover {
-	/* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); */
-	/* transform: translateY(-3px); */
 }
 .current-apostle-card.apostle-prophet {
 	border-color: var(--color-orange);
@@ -2933,6 +3045,34 @@ h1.archive-title:before {
 .current-charts-container .chart-toggle-container {
 	margin-bottom: 1rem;
 	text-align: center;
+}
+
+/* Mobile: Make chart toggles scrollable */
+@media (max-width: 768px) {
+	.current-charts-container .chart-toggle-container,
+	.chart-toggle-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 1rem;
+		padding: 0 1rem;
+		text-align: left;
+	}
+	
+	.current-charts-container .chart-toggle,
+	.chart-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+	
+	.current-charts-container .chart-toggle-btn,
+	.chart-toggle-btn {
+		white-space: nowrap;
+		flex-shrink: 0;
+		font-size: 0.85rem;
+		padding: 0.4rem 1rem;
+	}
 }
 
 .current-chart-panel {
@@ -3183,6 +3323,25 @@ h1.archive-title:before {
 	padding: 0.5rem 1rem;
 }
 
+/* Mobile: Stack chart options vertically */
+@media (max-width: 640px) {
+	.chart-options {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+	}
+	
+	.option-group {
+		width: 100%;
+		justify-content: space-between;
+	}
+	
+	.option-group select {
+		flex: 1;
+		max-width: 100%;
+	}
+}
+
 /* Horizontal Bar Chart */
 .bar-chart-container {
 	background: var(--color-white);
@@ -3430,6 +3589,17 @@ h1.archive-title:before {
 }
 .stat-card.stat-wide {
 	grid-column: span 2;
+}
+
+/* Mobile: Stack stat cards */
+@media (max-width: 640px) {
+	.stats-grid {
+		grid-template-columns: 1fr;
+	}
+	
+	.stat-card.stat-wide {
+		grid-column: span 1;
+	}
 }
 .stat-value {
 	color: var(--color-orange);
@@ -4281,9 +4451,26 @@ a.marriage-timeline-name:hover {
 		width: auto;
 	}
 	
+	/* Chart toggle buttons: scrollable on mobile */
+	.chart-toggle-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 1rem;
+		padding: 0 1rem;
+	}
+	
+	.chart-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+	
 	.chart-toggle-btn {
 		font-size: 0.8rem;
 		padding: 0.4rem 1rem;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 	
 	.timeline-axis-row {
@@ -4539,6 +4726,17 @@ a.marriage-timeline-name:hover {
 	margin-bottom: 1rem;
 }
 
+/* Mobile: Reduce page title size */
+@media (max-width: 640px) {
+	.polygamy-page .page-title {
+		font-size: 1.75rem;
+	}
+	
+	.polygamy-page {
+		padding: 1rem 0.5rem;
+	}
+}
+
 .polygamy-page .page-description {
 	color: var(--color-gray-3);
 	font-size: 1.1rem;
@@ -4575,6 +4773,17 @@ a.marriage-timeline-name:hover {
 	border-radius: 8px;
 	padding: 1.5rem 1rem;
 	text-align: center;
+}
+
+/* Mobile: Stack stat cards */
+@media (max-width: 640px) {
+	.stats-grid {
+		grid-template-columns: 1fr;
+	}
+	
+	.stat-card.stat-wide {
+		grid-column: span 1;
+	}
 }
 
 .stat-card-highlight {
