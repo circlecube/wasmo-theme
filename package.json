@@ -1,6 +1,6 @@
 {
     "name": "wasmo-theme",
-    "version": "2.6.0",
+    "version": "2.6.1",
     "description": "wasmormon.org WordPress Theme",
     "main": "index.js",
     "scripts": {

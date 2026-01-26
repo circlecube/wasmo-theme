@@ -547,6 +547,20 @@ function wasmo_api_create_saint( $request ) {
 		update_field( 'gender', sanitize_text_field( $body['gender'] ), $saint_id );
 	}
 	
+	// Set roles if provided
+	if ( ! empty( $body['roles'] ) && is_array( $body['roles'] ) ) {
+		$term_ids = array();
+		foreach ( $body['roles'] as $role_slug ) {
+			$term = get_term_by( 'slug', sanitize_text_field( $role_slug ), 'saint-role' );
+			if ( $term ) {
+				$term_ids[] = $term->term_id;
+			}
+		}
+		if ( ! empty( $term_ids ) ) {
+			wp_set_object_terms( $saint_id, $term_ids, 'saint-role' );
+		}
+	}
+	
 	return new WP_REST_Response( array(
 		'created' => true,
 		'saint'   => wasmo_format_saint_for_api( $saint_id, true ),

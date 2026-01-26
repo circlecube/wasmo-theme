@@ -99,10 +99,14 @@ function wasmo_render_duplicates_page() {
 			</div>
 		<?php endif; ?>
 
+		<!-- Notice area for AJAX messages -->
+		<div id="wasmo-duplicates-notice" style="display: none; margin: 20px 0;"></div>
+
 		<div class="wasmo-duplicates-header" style="margin: 20px 0;">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 				<div>
 					<p class="description">Find and resolve duplicate saints, with special focus on duplicate wives and extraneous marriage relationships.</p>
+					<p class="description"><strong>Note:</strong> The "Extraneous Wives" tab shows data quality issues (not duplicates) - wives with marriage records that have problems like missing spouse links, FS ID mismatches, or missing reverse lookups.</p>
 				</div>
 				<div>
 					<form method="post" style="display: inline-block; margin-right: 10px;">
@@ -112,7 +116,7 @@ function wasmo_render_duplicates_page() {
 					<?php if ( $ignored_count > 0 ) : ?>
 						<form method="post" style="display: inline-block;">
 							<?php wp_nonce_field( 'wasmo_clear_ignored_nonce' ); ?>
-							<input type="submit" name="wasmo_clear_ignored" class="button" value="Clear Ignored (<?php echo esc_html( $ignored_count ); ?>)" onclick="return confirm('Clear all ignored duplicates?');" />
+							<input type="submit" name="wasmo_clear_ignored" class="button" value="Clear Ignored (<?php echo esc_html( $ignored_count ); ?>)" />
 						</form>
 					<?php endif; ?>
 				</div>
@@ -159,16 +163,12 @@ function wasmo_render_duplicates_page() {
 	<!-- Merge Modal -->
 	<div id="wasmo-merge-modal" style="display: none;">
 		<div class="wasmo-modal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100000;">
-			<div class="wasmo-modal-content" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 4px; max-width: 800px; max-height: 90vh; overflow-y: auto; z-index: 100001;">
+			<div class="wasmo-modal-content" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 4px; max-width: 900px; max-height: 90vh; overflow-y: auto; z-index: 100001;">
 				<h2>Merge Duplicate Saints</h2>
 				<p><strong>Warning:</strong> This action cannot be undone. The source saint will be deleted after merging.</p>
-				<div id="wasmo-merge-saints-comparison"></div>
-				<div style="margin-top: 20px;">
-					<label><strong>Select Primary Saint (data will be preserved):</strong></label><br>
-					<input type="radio" name="wasmo_merge_primary" value="" id="wasmo-merge-primary-1" checked>
-					<label for="wasmo-merge-primary-1" id="wasmo-merge-label-1"></label><br>
-					<input type="radio" name="wasmo_merge_primary" value="" id="wasmo-merge-primary-2">
-					<label for="wasmo-merge-primary-2" id="wasmo-merge-label-2"></label>
+				<p><strong>Click on a saint to select it as the primary (data will be preserved):</strong></p>
+				<div id="wasmo-merge-saints-comparison" style="position: relative;">
+					<!-- Arrow will be inserted here by JavaScript -->
 				</div>
 				<div style="margin-top: 20px;">
 					<button type="button" class="button button-primary" id="wasmo-merge-confirm">Confirm Merge</button>
@@ -240,6 +240,35 @@ function wasmo_render_duplicates_page() {
 			padding: 10px;
 			margin: 10px 0;
 		}
+		.wasmo-merge-saint-card {
+			cursor: pointer;
+			transition: all 0.2s;
+			border: 2px solid transparent;
+		}
+		.wasmo-merge-saint-card:hover {
+			background: #f0f0f0;
+		}
+		.wasmo-merge-saint-card.selected {
+			border: 3px solid #2271b1;
+			background: #f0f7fc;
+			box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.2);
+		}
+		.wasmo-merge-arrow {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 48px;
+			color: #2271b1;
+			z-index: 10;
+			pointer-events: none;
+		}
+		.wasmo-merge-arrow.left {
+			transform: translate(-50%, -50%) rotate(180deg);
+		}
+		.wasmo-merge-arrow.right {
+			transform: translate(-50%, -50%);
+		}
 	</style>
 
 	<script>
@@ -254,6 +283,21 @@ function wasmo_render_duplicates_page() {
 			$('.wasmo-duplicates-tab-content[data-tab="' + tab + '"]').show();
 		});
 
+		// Function to show notice
+		function showNotice(message, type) {
+			type = type || 'success';
+			var noticeClass = type === 'error' ? 'notice-error' : 'notice-success';
+			var notice = $('<div class="notice ' + noticeClass + ' is-dismissible" style="margin: 20px 0;"><p>' + message + '</p></div>');
+			$('#wasmo-duplicates-notice').html(notice).show();
+			
+			// Auto-hide after 5 seconds
+			setTimeout(function() {
+				notice.fadeOut(function() {
+					$('#wasmo-duplicates-notice').hide().empty();
+				});
+			}, 5000);
+		}
+
 		// Ignore duplicate
 		$('.wasmo-ignore-duplicate').on('click', function(e) {
 			e.preventDefault();
@@ -261,10 +305,6 @@ function wasmo_render_duplicates_page() {
 			var saint1 = $btn.data('saint1');
 			var saint2 = $btn.data('saint2');
 			var matchType = $btn.data('match-type');
-
-			if (!confirm('Mark this pair as not duplicates? They will be hidden from future scans.')) {
-				return;
-			}
 
 			$.ajax({
 				url: ajaxurl,
@@ -279,12 +319,13 @@ function wasmo_render_duplicates_page() {
 				success: function(response) {
 					if (response.success) {
 						$btn.closest('.wasmo-duplicate-card').fadeOut();
+						showNotice('Duplicate pair marked as ignored and hidden from future scans.');
 					} else {
-						alert('Error: ' + (response.data || 'Unknown error'));
+						showNotice('Error: ' + (response.data || 'Unknown error'), 'error');
 					}
 				},
 				error: function() {
-					alert('Error ignoring duplicate.');
+					showNotice('Error ignoring duplicate.', 'error');
 				}
 			});
 		});
@@ -307,32 +348,88 @@ function wasmo_render_duplicates_page() {
 				},
 				success: function(response) {
 					if (response.success) {
-						$('#wasmo-merge-saints-comparison').html(response.data.comparison);
-						$('#wasmo-merge-primary-1').val(saint1);
-						$('#wasmo-merge-primary-2').val(saint2);
-						$('#wasmo-merge-label-1').text(response.data.saint1.name + ' (ID: ' + saint1 + ')');
-						$('#wasmo-merge-label-2').text(response.data.saint2.name + ' (ID: ' + saint2 + ')');
+						// Wrap comparison in container with arrow
+						var comparison = $(response.data.comparison);
+						comparison.find('.wasmo-saint-info').first()
+							.addClass('wasmo-merge-saint-card')
+							.attr('data-saint-id', saint1)
+							.attr('data-saint-fsid', response.data.saint1.familysearch_id || '');
+						comparison.find('.wasmo-saint-info').last()
+							.addClass('wasmo-merge-saint-card')
+							.attr('data-saint-id', saint2)
+							.attr('data-saint-fsid', response.data.saint2.familysearch_id || '');
+						
+						// Add arrow container
+						comparison.css('position', 'relative');
+						comparison.append('<div class="wasmo-merge-arrow right">→</div>');
+						
+						$('#wasmo-merge-saints-comparison').html(comparison);
+						
+						// Store saint IDs for later use
+						$('#wasmo-merge-saints-comparison').data('saint1-id', saint1);
+						$('#wasmo-merge-saints-comparison').data('saint2-id', saint2);
+						
+						// Set default selection: prefer saint with FSID
+						var saint1HasFsid = response.data.saint1.familysearch_id && response.data.saint1.familysearch_id !== '';
+						var saint2HasFsid = response.data.saint2.familysearch_id && response.data.saint2.familysearch_id !== '';
+						
+						var defaultPrimaryId;
+						if (saint1HasFsid && !saint2HasFsid) {
+							defaultPrimaryId = saint1;
+						} else if (saint2HasFsid && !saint1HasFsid) {
+							defaultPrimaryId = saint2;
+						} else {
+							// Both have FSID or neither has it - default to first
+							defaultPrimaryId = saint1;
+						}
+						
+						// Select the default primary
+						$('.wasmo-merge-saint-card[data-saint-id="' + defaultPrimaryId + '"]').addClass('selected');
+						updateMergeArrow(defaultPrimaryId);
+						
 						$('#wasmo-merge-modal').show();
 					} else {
-						alert('Error: ' + (response.data || 'Unknown error'));
+						showNotice('Error: ' + (response.data || 'Unknown error'), 'error');
 					}
 				}
 			});
 		});
 
+		// Function to update merge arrow direction
+		function updateMergeArrow(primaryId) {
+			var saint1Id = $('#wasmo-merge-saints-comparison').data('saint1-id');
+			var arrow = $('.wasmo-merge-arrow');
+			
+			if (primaryId == saint1Id) {
+				arrow.removeClass('right').addClass('left');
+			} else {
+				arrow.removeClass('left').addClass('right');
+			}
+		}
+		
+		// Make saint cards clickable to select primary
+		$(document).on('click', '.wasmo-merge-saint-card', function() {
+			$('.wasmo-merge-saint-card').removeClass('selected');
+			$(this).addClass('selected');
+			var primaryId = $(this).data('saint-id');
+			updateMergeArrow(primaryId);
+		});
+		
 		// Confirm merge
 		$('#wasmo-merge-confirm').on('click', function() {
-			var primaryId = $('input[name="wasmo_merge_primary"]:checked').val();
-			var secondaryId = primaryId == $('#wasmo-merge-primary-1').val() 
-				? $('#wasmo-merge-primary-2').val() 
-				: $('#wasmo-merge-primary-1').val();
-
-			if (!primaryId || !secondaryId) {
-				alert('Please select a primary saint.');
+			var primaryCard = $('.wasmo-merge-saint-card.selected');
+			if (primaryCard.length === 0) {
+				showNotice('Please select a primary saint by clicking on one.', 'error');
 				return;
 			}
+			
+			var primaryId = primaryCard.data('saint-id');
+			var saint1Id = $('#wasmo-merge-saints-comparison').data('saint1-id');
+			var saint2Id = $('#wasmo-merge-saints-comparison').data('saint2-id');
+			var secondaryId = primaryId == saint1Id ? saint2Id : saint1Id;
 
-			if (!confirm('Are you sure you want to merge these saints? This cannot be undone.')) {
+			if (!primaryId || !secondaryId) {
+				showNotice('Please select a primary saint.', 'error');
 				return;
 			}
 
@@ -347,14 +444,23 @@ function wasmo_render_duplicates_page() {
 				},
 				success: function(response) {
 					if (response.success) {
-						alert('Saints merged successfully!');
-						location.reload();
+						// Get saint names from the selected cards
+						var primaryCard = $('.wasmo-merge-saint-card.selected');
+						var secondaryCard = $('.wasmo-merge-saint-card').not('.selected');
+						var primaryName = primaryCard.find('h3').first().text().trim();
+						var secondaryName = secondaryCard.find('h3').first().text().trim();
+						
+						$('#wasmo-merge-modal').hide();
+						showNotice('Saints merged successfully! "' + secondaryName + '" merged into "' + primaryName + '". Reloading page...');
+						setTimeout(function() {
+							location.reload();
+						}, 2000);
 					} else {
-						alert('Error: ' + (response.data || 'Unknown error'));
+						showNotice('Error: ' + (response.data || 'Unknown error'), 'error');
 					}
 				},
 				error: function() {
-					alert('Error merging saints.');
+					showNotice('Error merging saints.', 'error');
 				}
 			});
 		});
@@ -394,20 +500,67 @@ function wasmo_render_duplicate_card( $dup ) {
 		</div>
 
 		<?php if ( ! empty( $dup['extraneous_wife_issues'] ) ) : ?>
+			<!-- Extraneous Wife: Single saint with data quality issues -->
 			<div class="wasmo-extraneous-issues">
-				<strong>Issues Found:</strong>
+				<p><strong>⚠️ Data Quality Issues Found:</strong></p>
+				<p class="description">This wife has marriage record issues that need attention. This is <strong>not a duplicate</strong>, but rather a data quality problem with her marriage relationships.</p>
 				<ul>
 					<?php foreach ( $dup['extraneous_wife_issues'] as $issue ) : ?>
 						<li><?php echo esc_html( $issue ); ?></li>
 					<?php endforeach; ?>
 				</ul>
 			</div>
-		<?php endif; ?>
 
-		<div class="wasmo-duplicate-comparison">
+			<div class="wasmo-saint-info" style="max-width: 100%;">
+				<h3>
+					<a href="<?php echo esc_url( $saint1['view_url'] ); ?>" target="_blank">
+						<?php echo esc_html( $saint1['name'] ); ?>
+					</a>
+					(ID: <?php echo esc_html( $saint1['id'] ); ?>)
+				</h3>
+				<?php if ( $saint1['has_portrait'] ) : ?>
+					<img src="<?php echo esc_url( $saint1['portrait_url'] ); ?>" alt="<?php echo esc_attr( $saint1['name'] ); ?>" />
+				<?php endif; ?>
+				<p><strong>Birthdate:</strong> 
+					<?php echo $saint1['birthdate'] ? esc_html( $saint1['birthdate'] ) : '<span class="wasmo-difference">Missing</span>'; ?>
+				</p>
+				<p><strong>Deathdate:</strong> 
+					<?php echo $saint1['deathdate'] ? esc_html( $saint1['deathdate'] ) : '<span class="wasmo-difference">Missing</span>'; ?>
+				</p>
+				<p><strong>FS ID:</strong> 
+					<?php echo $saint1['familysearch_id'] ? esc_html( $saint1['familysearch_id'] ) : '<span class="wasmo-difference">Missing</span>'; ?>
+				</p>
+				<p><strong>Gender:</strong> <?php echo esc_html( $saint1['gender'] ); ?></p>
+				<p><strong>Roles:</strong> <?php echo esc_html( implode( ', ', $saint1['roles'] ) ); ?></p>
+				<p><strong>Marriages:</strong> <?php echo esc_html( $saint1['marriages_count'] ); ?></p>
+				<?php if ( ! empty( $saint1['marriages'] ) ) : ?>
+					<p><strong>Spouse(s):</strong>
+						<?php
+						$spouse_names = array();
+						foreach ( $saint1['marriages'] as $marriage ) {
+							$name = esc_html( $marriage['spouse_name'] );
+							if ( ! empty( $marriage['spouse_id'] ) ) {
+								$name = '<a href="' . esc_url( get_permalink( $marriage['spouse_id'] ) ) . '" target="_blank">' . $name . '</a>';
+							}
+							if ( $marriage['marriage_date'] ) {
+								$name .= ' (' . esc_html( $marriage['marriage_date'] ) . ')';
+							}
+							$spouse_names[] = $name;
+						}
+						echo implode( ', ', $spouse_names );
+						?>
+					</p>
+				<?php endif; ?>
+				<p>
+					<a href="<?php echo esc_url( $saint1['edit_url'] ); ?>" class="button button-small" target="_blank">Edit</a>
+				</p>
+			</div>
+		<?php else : ?>
+			<!-- Regular duplicate comparison -->
+			<div class="wasmo-duplicate-comparison">
 			<div class="wasmo-saint-info">
 				<h3>
-					<a href="<?php echo esc_url( $saint1['edit_url'] ); ?>" target="_blank">
+					<a href="<?php echo esc_url( $saint1['view_url'] ); ?>" target="_blank">
 						<?php echo esc_html( $saint1['name'] ); ?>
 					</a>
 					(ID: <?php echo esc_html( $saint1['id'] ); ?>)
@@ -433,11 +586,32 @@ function wasmo_render_duplicate_card( $dup ) {
 				<p><strong>Gender:</strong> <?php echo esc_html( $saint1['gender'] ); ?></p>
 				<p><strong>Roles:</strong> <?php echo esc_html( implode( ', ', $saint1['roles'] ) ); ?></p>
 				<p><strong>Marriages:</strong> <?php echo esc_html( $saint1['marriages_count'] ); ?></p>
+				<?php if ( ! empty( $saint1['marriages'] ) ) : ?>
+					<p><strong>Spouse(s):</strong>
+						<?php
+						$spouse_names = array();
+						foreach ( $saint1['marriages'] as $marriage ) {
+							$name = esc_html( $marriage['spouse_name'] );
+							if ( ! empty( $marriage['spouse_id'] ) ) {
+								$name = '<a href="' . esc_url( get_permalink( $marriage['spouse_id'] ) ) . '" target="_blank">' . $name . '</a>';
+							}
+							if ( $marriage['marriage_date'] ) {
+								$name .= ' (' . esc_html( $marriage['marriage_date'] ) . ')';
+							}
+							$spouse_names[] = $name;
+						}
+						echo implode( ', ', $spouse_names );
+						?>
+					</p>
+				<?php endif; ?>
+				<p>
+					<a href="<?php echo esc_url( $saint1['edit_url'] ); ?>" class="button button-small" target="_blank">Edit</a>
+				</p>
 			</div>
 
 			<div class="wasmo-saint-info">
 				<h3>
-					<a href="<?php echo esc_url( $saint2['edit_url'] ); ?>" target="_blank">
+					<a href="<?php echo esc_url( $saint2['view_url'] ); ?>" target="_blank">
 						<?php echo esc_html( $saint2['name'] ); ?>
 					</a>
 					(ID: <?php echo esc_html( $saint2['id'] ); ?>)
@@ -463,23 +637,58 @@ function wasmo_render_duplicate_card( $dup ) {
 				<p><strong>Gender:</strong> <?php echo esc_html( $saint2['gender'] ); ?></p>
 				<p><strong>Roles:</strong> <?php echo esc_html( implode( ', ', $saint2['roles'] ) ); ?></p>
 				<p><strong>Marriages:</strong> <?php echo esc_html( $saint2['marriages_count'] ); ?></p>
+				<?php if ( ! empty( $saint2['marriages'] ) ) : ?>
+					<p><strong>Spouse(s):</strong>
+						<?php
+						$spouse_names = array();
+						foreach ( $saint2['marriages'] as $marriage ) {
+							$name = esc_html( $marriage['spouse_name'] );
+							if ( ! empty( $marriage['spouse_id'] ) ) {
+								$name = '<a href="' . esc_url( get_permalink( $marriage['spouse_id'] ) ) . '" target="_blank">' . $name . '</a>';
+							}
+							if ( $marriage['marriage_date'] ) {
+								$name .= ' (' . esc_html( $marriage['marriage_date'] ) . ')';
+							}
+							$spouse_names[] = $name;
+						}
+						echo implode( ', ', $spouse_names );
+						?>
+					</p>
+				<?php endif; ?>
+				<p>
+					<a href="<?php echo esc_url( $saint2['edit_url'] ); ?>" class="button button-small" target="_blank">Edit</a>
+				</p>
 			</div>
 		</div>
+		<?php endif; ?>
 
 		<div class="wasmo-duplicate-actions">
-			<button type="button" class="button wasmo-ignore-duplicate" 
-				data-saint1="<?php echo esc_attr( $saint1['id'] ); ?>"
-				data-saint2="<?php echo esc_attr( $saint2['id'] ); ?>"
-				data-match-type="<?php echo esc_attr( $dup['match_type'] ); ?>">
-				Ignore
-			</button>
-			<button type="button" class="button button-primary wasmo-merge-duplicate"
-				data-saint1="<?php echo esc_attr( $saint1['id'] ); ?>"
-				data-saint2="<?php echo esc_attr( $saint2['id'] ); ?>">
-				Merge
-			</button>
-			<a href="<?php echo esc_url( $saint1['edit_url'] ); ?>" class="button" target="_blank">View Saint 1</a>
-			<a href="<?php echo esc_url( $saint2['edit_url'] ); ?>" class="button" target="_blank">View Saint 2</a>
+			<?php if ( ! empty( $dup['extraneous_wife_issues'] ) ) : ?>
+				<!-- For extraneous wives, only show ignore button (no merge needed) -->
+				<button type="button" class="button wasmo-ignore-duplicate" 
+					data-saint1="<?php echo esc_attr( $saint1['id'] ); ?>"
+					data-saint2="<?php echo esc_attr( $saint2['id'] ); ?>"
+					data-match-type="<?php echo esc_attr( $dup['match_type'] ); ?>">
+					Ignore Issue
+				</button>
+				<a href="<?php echo esc_url( $saint1['edit_url'] ); ?>" class="button button-primary" target="_blank">Edit Saint to Fix Issues</a>
+				<p class="description" style="margin-top: 10px;">
+					<strong>Note:</strong> This is not a duplicate. Review the issues above and fix the marriage record data quality problems manually by editing the saint.
+				</p>
+			<?php else : ?>
+				<!-- Regular duplicate actions -->
+				<button type="button" class="button wasmo-ignore-duplicate" 
+					data-saint1="<?php echo esc_attr( $saint1['id'] ); ?>"
+					data-saint2="<?php echo esc_attr( $saint2['id'] ); ?>"
+					data-match-type="<?php echo esc_attr( $dup['match_type'] ); ?>">
+					Ignore
+				</button>
+				<button type="button" class="button button-primary wasmo-merge-duplicate"
+					data-saint1="<?php echo esc_attr( $saint1['id'] ); ?>"
+					data-saint2="<?php echo esc_attr( $saint2['id'] ); ?>">
+					Merge
+				</button>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php
@@ -531,16 +740,25 @@ function wasmo_find_all_duplicates() {
 	// Remove exact duplicates (same pair) and filter out deleted saints
 	$unique = array();
 	$seen = array();
+	$checked_posts = array(); // Cache post existence checks
+	
 	foreach ( $duplicates as $dup ) {
-		// Skip if either saint no longer exists or is deleted
-		$saint1_exists = get_post( $dup['saint1_id'] ) && get_post_status( $dup['saint1_id'] ) !== false;
-		$saint2_exists = get_post( $dup['saint2_id'] ) && get_post_status( $dup['saint2_id'] ) !== false;
+		$saint1_id = $dup['saint1_id'];
+		$saint2_id = $dup['saint2_id'];
 		
-		if ( ! $saint1_exists || ! $saint2_exists ) {
+		// Check if saints exist (with caching)
+		if ( ! isset( $checked_posts[ $saint1_id ] ) ) {
+			$checked_posts[ $saint1_id ] = get_post( $saint1_id ) && get_post_status( $saint1_id ) !== false;
+		}
+		if ( ! isset( $checked_posts[ $saint2_id ] ) ) {
+			$checked_posts[ $saint2_id ] = get_post( $saint2_id ) && get_post_status( $saint2_id ) !== false;
+		}
+		
+		if ( ! $checked_posts[ $saint1_id ] || ! $checked_posts[ $saint2_id ] ) {
 			continue; // Skip pairs with deleted saints
 		}
 		
-		$key = min( $dup['saint1_id'], $dup['saint2_id'] ) . '-' . max( $dup['saint1_id'], $dup['saint2_id'] );
+		$key = min( $saint1_id, $saint2_id ) . '-' . max( $saint1_id, $saint2_id );
 		if ( ! isset( $seen[ $key ] ) ) {
 			$seen[ $key ] = true;
 			$unique[] = $dup;
@@ -548,6 +766,59 @@ function wasmo_find_all_duplicates() {
 	}
 
 	return $unique;
+}
+
+/**
+ * Bulk load all saint meta data to avoid N+1 queries
+ */
+function wasmo_bulk_load_saint_meta( $saint_ids ) {
+	global $wpdb;
+	
+	if ( empty( $saint_ids ) ) {
+		return array();
+	}
+	
+	$ids_placeholders = implode( ',', array_fill( 0, count( $saint_ids ), '%d' ) );
+	
+	// Load all ACF meta in one query
+	$meta_query = $wpdb->prepare(
+		"SELECT post_id, meta_key, meta_value 
+		FROM {$wpdb->postmeta} 
+		WHERE post_id IN ($ids_placeholders)
+		AND (meta_key = 'familysearch_id' OR meta_key = 'birthdate' OR meta_key = 'deathdate' OR meta_key = 'gender')",
+		...$saint_ids
+	);
+	
+	$meta_results = $wpdb->get_results( $meta_query );
+	
+	$meta_data = array();
+	foreach ( $saint_ids as $id ) {
+		$meta_data[ $id ] = array(
+			'familysearch_id' => '',
+			'birthdate' => '',
+			'deathdate' => '',
+			'gender' => 'male',
+		);
+	}
+	
+	foreach ( $meta_results as $row ) {
+		$post_id = intval( $row->post_id );
+		if ( ! isset( $meta_data[ $post_id ] ) ) {
+			continue;
+		}
+		
+		if ( $row->meta_key === 'familysearch_id' ) {
+			$meta_data[ $post_id ]['familysearch_id'] = $row->meta_value;
+		} elseif ( $row->meta_key === 'birthdate' ) {
+			$meta_data[ $post_id ]['birthdate'] = $row->meta_value;
+		} elseif ( $row->meta_key === 'deathdate' ) {
+			$meta_data[ $post_id ]['deathdate'] = $row->meta_value;
+		} elseif ( $row->meta_key === 'gender' ) {
+			$meta_data[ $post_id ]['gender'] = $row->meta_value ?: 'male';
+		}
+	}
+	
+	return $meta_data;
 }
 
 /**
@@ -574,25 +845,25 @@ function wasmo_find_duplicates_by_fs_id() {
 	
 	$duplicate_fs_ids = $wpdb->get_results( $query );
 	
+	// Get all saint IDs with duplicate FS IDs in one query
+	$all_duplicate_ids = array();
 	foreach ( $duplicate_fs_ids as $dup ) {
-		$saints = get_posts( array(
-			'post_type'      => 'saint',
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'meta_query'     => array(
-				array(
-					'key'   => 'familysearch_id',
-					'value' => $dup->fs_id,
-				),
-			),
+		$saint_ids = $wpdb->get_col( $wpdb->prepare(
+			"SELECT p.ID FROM {$wpdb->posts} p
+			INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+			WHERE pm.meta_key = 'familysearch_id'
+			AND pm.meta_value = %s
+			AND p.post_type = 'saint'
+			AND p.post_status = 'publish'",
+			$dup->fs_id
 		) );
 		
 		// Create pairs
-		for ( $i = 0; $i < count( $saints ); $i++ ) {
-			for ( $j = $i + 1; $j < count( $saints ); $j++ ) {
+		for ( $i = 0; $i < count( $saint_ids ); $i++ ) {
+			for ( $j = $i + 1; $j < count( $saint_ids ); $j++ ) {
 				$pair = wasmo_build_duplicate_pair(
-					$saints[ $i ]->ID,
-					$saints[ $j ]->ID,
+					$saint_ids[ $i ],
+					$saint_ids[ $j ],
 					'fs_id',
 					'very_high',
 					100
@@ -618,49 +889,81 @@ function wasmo_find_duplicates_by_name_dates() {
 		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
+		'fields'         => 'ids', // Only get IDs for performance
 	) );
 	
+	if ( empty( $saints ) ) {
+		return $duplicates;
+	}
+	
+	// Bulk load all meta data
+	$meta_data = wasmo_bulk_load_saint_meta( $saints );
+	
+	// Get all post titles in one query (more efficient)
+	global $wpdb;
+	$ids_placeholders = implode( ',', array_fill( 0, count( $saints ), '%d' ) );
+	$title_results = $wpdb->get_results( $wpdb->prepare(
+		"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)",
+		...$saints
+	) );
+	
+	$titles = array();
+	foreach ( $title_results as $row ) {
+		$titles[ $row->ID ] = $row->post_title;
+	}
+	
 	// Compare each pair
-	for ( $i = 0; $i < count( $saints ); $i++ ) {
-		for ( $j = $i + 1; $j < count( $saints ); $j++ ) {
-			$saint1 = $saints[ $i ];
-			$saint2 = $saints[ $j ];
+	$saint_count = count( $saints );
+	for ( $i = 0; $i < $saint_count; $i++ ) {
+		$saint1_id = $saints[ $i ];
+		if ( ! isset( $titles[ $saint1_id ] ) || ! isset( $meta_data[ $saint1_id ] ) ) {
+			continue;
+		}
+		
+		for ( $j = $i + 1; $j < $saint_count; $j++ ) {
+			$saint2_id = $saints[ $j ];
+			if ( ! isset( $titles[ $saint2_id ] ) || ! isset( $meta_data[ $saint2_id ] ) ) {
+				continue;
+			}
 			
 			// Skip if both have FS IDs and they're different
-			$fs1 = get_field( 'familysearch_id', $saint1->ID );
-			$fs2 = get_field( 'familysearch_id', $saint2->ID );
+			$fs1 = $meta_data[ $saint1_id ]['familysearch_id'];
+			$fs2 = $meta_data[ $saint2_id ]['familysearch_id'];
 			if ( $fs1 && $fs2 && $fs1 !== $fs2 ) {
 				continue;
 			}
 			
 			// Check name similarity
+			$title1 = $titles[ $saint1_id ];
+			$title2 = $titles[ $saint2_id ];
 			$similarity = 0;
+			
 			if ( ! function_exists( 'wasmo_names_match' ) ) {
 				// Fallback if function doesn't exist
-				similar_text( strtolower( $saint1->post_title ), strtolower( $saint2->post_title ), $similarity );
+				similar_text( strtolower( $title1 ), strtolower( $title2 ), $similarity );
 				if ( $similarity < 85 ) {
 					continue;
 				}
 			} else {
-				if ( ! wasmo_names_match( $saint1->post_title, $saint2->post_title ) ) {
+				if ( ! wasmo_names_match( $title1, $title2 ) ) {
 					continue;
 				}
 				if ( function_exists( 'wasmo_normalize_name_for_matching' ) ) {
 					similar_text( 
-						wasmo_normalize_name_for_matching( $saint1->post_title ),
-						wasmo_normalize_name_for_matching( $saint2->post_title ),
+						wasmo_normalize_name_for_matching( $title1 ),
+						wasmo_normalize_name_for_matching( $title2 ),
 						$similarity
 					);
 				} else {
-					similar_text( strtolower( $saint1->post_title ), strtolower( $saint2->post_title ), $similarity );
+					similar_text( strtolower( $title1 ), strtolower( $title2 ), $similarity );
 				}
 			}
 			
-			// Get dates
-			$birth1 = get_field( 'birthdate', $saint1->ID );
-			$death1 = get_field( 'deathdate', $saint1->ID );
-			$birth2 = get_field( 'birthdate', $saint2->ID );
-			$death2 = get_field( 'deathdate', $saint2->ID );
+			// Get dates from bulk-loaded meta
+			$birth1 = $meta_data[ $saint1_id ]['birthdate'];
+			$death1 = $meta_data[ $saint1_id ]['deathdate'];
+			$birth2 = $meta_data[ $saint2_id ]['birthdate'];
+			$death2 = $meta_data[ $saint2_id ]['deathdate'];
 			
 			$birth_match = false;
 			$death_match = false;
@@ -704,8 +1007,8 @@ function wasmo_find_duplicates_by_name_dates() {
 			
 			if ( $match_type ) {
 				$pair = wasmo_build_duplicate_pair(
-					$saint1->ID,
-					$saint2->ID,
+					$saint1_id,
+					$saint2_id,
 					$match_type,
 					$confidence,
 					$similarity,
@@ -736,11 +1039,12 @@ function wasmo_find_duplicates_by_name_dates() {
 function wasmo_find_duplicate_wives() {
 	$duplicates = array();
 	
-	// Get all wives
-	$wives = get_posts( array(
+	// Get all wives (only IDs for performance)
+	$wife_ids = get_posts( array(
 		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
+		'fields'         => 'ids',
 		'tax_query'      => array(
 			array(
 				'taxonomy' => 'saint-role',
@@ -750,28 +1054,61 @@ function wasmo_find_duplicate_wives() {
 		),
 	) );
 	
+	if ( empty( $wife_ids ) ) {
+		return $duplicates;
+	}
+	
+	// Bulk load meta data
+	$meta_data = wasmo_bulk_load_saint_meta( $wife_ids );
+	
+	// Get all post titles in one query (more efficient)
+	global $wpdb;
+	$ids_placeholders = implode( ',', array_fill( 0, count( $wife_ids ), '%d' ) );
+	$title_results = $wpdb->get_results( $wpdb->prepare(
+		"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)",
+		...$wife_ids
+	) );
+	
+	$titles = array();
+	foreach ( $title_results as $row ) {
+		$titles[ $row->ID ] = $row->post_title;
+	}
+	
+	// Bulk load marriages for all wives (only when needed)
+	$wife_count = count( $wife_ids );
+	
 	// Compare each pair of wives
-	for ( $i = 0; $i < count( $wives ); $i++ ) {
-		for ( $j = $i + 1; $j < count( $wives ); $j++ ) {
-			$wife1 = $wives[ $i ];
-			$wife2 = $wives[ $j ];
+	for ( $i = 0; $i < $wife_count; $i++ ) {
+		$wife1_id = $wife_ids[ $i ];
+		if ( ! isset( $titles[ $wife1_id ] ) ) {
+			continue;
+		}
+		
+		for ( $j = $i + 1; $j < $wife_count; $j++ ) {
+			$wife2_id = $wife_ids[ $j ];
+			if ( ! isset( $titles[ $wife2_id ] ) ) {
+				continue;
+			}
 			
-			// Check name similarity
+			// Check name similarity first (fast check)
+			$title1 = $titles[ $wife1_id ];
+			$title2 = $titles[ $wife2_id ];
 			$name_match = false;
 			$similarity = 0;
+			
 			if ( function_exists( 'wasmo_names_match' ) ) {
-				$name_match = wasmo_names_match( $wife1->post_title, $wife2->post_title );
+				$name_match = wasmo_names_match( $title1, $title2 );
 				if ( $name_match && function_exists( 'wasmo_normalize_name_for_matching' ) ) {
 					similar_text( 
-						wasmo_normalize_name_for_matching( $wife1->post_title ),
-						wasmo_normalize_name_for_matching( $wife2->post_title ),
+						wasmo_normalize_name_for_matching( $title1 ),
+						wasmo_normalize_name_for_matching( $title2 ),
 						$similarity
 					);
 				} else {
-					similar_text( strtolower( $wife1->post_title ), strtolower( $wife2->post_title ), $similarity );
+					similar_text( strtolower( $title1 ), strtolower( $title2 ), $similarity );
 				}
 			} else {
-				similar_text( strtolower( $wife1->post_title ), strtolower( $wife2->post_title ), $similarity );
+				similar_text( strtolower( $title1 ), strtolower( $title2 ), $similarity );
 				$name_match = $similarity >= 85;
 			}
 			
@@ -779,9 +1116,9 @@ function wasmo_find_duplicate_wives() {
 				continue;
 			}
 			
-			// Get marriages
-			$marriages1 = get_field( 'marriages', $wife1->ID ) ?: array();
-			$marriages2 = get_field( 'marriages', $wife2->ID ) ?: array();
+			// Only load marriages if names match (lazy loading)
+			$marriages1 = get_field( 'marriages', $wife1_id ) ?: array();
+			$marriages2 = get_field( 'marriages', $wife2_id ) ?: array();
 			
 			// Get husbands
 			$husbands1 = array();
@@ -804,9 +1141,9 @@ function wasmo_find_duplicate_wives() {
 			// Check if linked to same husband
 			$same_husband = ! empty( array_intersect( $husbands1, $husbands2 ) );
 			
-			// Check FS IDs
-			$fs1 = get_field( 'familysearch_id', $wife1->ID );
-			$fs2 = get_field( 'familysearch_id', $wife2->ID );
+			// Check FS IDs from bulk-loaded meta
+			$fs1 = $meta_data[ $wife1_id ]['familysearch_id'] ?? '';
+			$fs2 = $meta_data[ $wife2_id ]['familysearch_id'] ?? '';
 			$same_fs_id = $fs1 && $fs2 && $fs1 === $fs2;
 			
 			if ( $same_husband || $same_fs_id ) {
@@ -814,8 +1151,8 @@ function wasmo_find_duplicate_wives() {
 				$confidence = $same_fs_id ? 'very_high' : 'high';
 				
 				$pair = wasmo_build_duplicate_pair(
-					$wife1->ID,
-					$wife2->ID,
+					$wife1_id,
+					$wife2_id,
 					$match_type,
 					$confidence,
 					$similarity ?? 85
@@ -836,11 +1173,12 @@ function wasmo_find_duplicate_wives() {
 function wasmo_find_extraneous_wives() {
 	$issues = array();
 	
-	// Get all wives
-	$wives = get_posts( array(
+	// Get all wives (only IDs for performance)
+	$wife_ids = get_posts( array(
 		'post_type'      => 'saint',
 		'posts_per_page' => -1,
 		'post_status'    => 'publish',
+		'fields'         => 'ids',
 		'tax_query'      => array(
 			array(
 				'taxonomy' => 'saint-role',
@@ -850,54 +1188,74 @@ function wasmo_find_extraneous_wives() {
 		),
 	) );
 	
-	foreach ( $wives as $wife ) {
-		$marriages = get_field( 'marriages', $wife->ID ) ?: array();
+	if ( empty( $wife_ids ) ) {
+		return $issues;
+	}
+	
+	// Bulk load FS IDs for potential husbands
+	$all_spouse_ids = array();
+	foreach ( $wife_ids as $wife_id ) {
+		$marriages = get_field( 'marriages', $wife_id ) ?: array();
+		foreach ( $marriages as $marriage ) {
+			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
+			if ( $spouse_id ) {
+				$all_spouse_ids[ $spouse_id ] = true;
+			}
+		}
+	}
+	
+	// Bulk load FS IDs for all potential husbands
+	$husband_fs_ids = array();
+	if ( ! empty( $all_spouse_ids ) ) {
+		$spouse_ids_array = array_keys( $all_spouse_ids );
+		$husband_meta = wasmo_bulk_load_saint_meta( $spouse_ids_array );
+		foreach ( $husband_meta as $id => $meta ) {
+			$husband_fs_ids[ $id ] = $meta['familysearch_id'];
+		}
+	}
+	
+	foreach ( $wife_ids as $wife_id ) {
+		$marriages = get_field( 'marriages', $wife_id ) ?: array();
 		$issues_found = array();
 		
 		foreach ( $marriages as $marriage ) {
 			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
 			$spouse_fs_id = $marriage['spouse_familysearch_id'] ?? '';
+			$spouse_is_saint = ! empty( $marriage['spouse_is_saint'] ) || ! empty( $spouse_id );
 			
-			// Issue: Marriage has no spouse linked
-			if ( ! $spouse_id ) {
-				$issues_found[] = 'Marriage entry has no spouse linked';
+			// Issue: Marriage has no spouse linked (for saint spouses)
+			if ( $spouse_is_saint && ! $spouse_id ) {
+				$issues_found[] = 'Marriage entry marked as saint spouse but has no spouse linked';
 				continue;
 			}
 			
-			// Issue: FS ID mismatch
-			$husband_fs_id = get_field( 'familysearch_id', $spouse_id );
-			if ( $spouse_fs_id && $husband_fs_id && $spouse_fs_id !== $husband_fs_id ) {
-				$issues_found[] = sprintf(
-					'Spouse FS ID (%s) does not match husband FS ID (%s)',
-					$spouse_fs_id,
-					$husband_fs_id
-				);
-			}
-			
-			// Issue: Reverse lookup doesn't find wife
-			$husband_marriages = wasmo_get_all_marriage_data( $spouse_id );
-			$found_in_reverse = false;
-			foreach ( $husband_marriages as $hm ) {
-				$wife_id_in_marriage = is_array( $hm['spouse'] ) ? ( $hm['spouse'][0] ?? null ) : $hm['spouse'];
-				if ( $wife_id_in_marriage == $wife->ID ) {
-					$found_in_reverse = true;
-					break;
+			// Issue: FS ID mismatch (only check if spouse IS a saint - for non-saint spouses, 
+			// spouse_familysearch_id is the only FS ID we have, so no mismatch check needed)
+			if ( $spouse_is_saint && $spouse_id ) {
+				$husband_fs_id = $husband_fs_ids[ $spouse_id ] ?? '';
+				if ( $spouse_fs_id && $husband_fs_id && $spouse_fs_id !== $husband_fs_id ) {
+					$issues_found[] = sprintf(
+						'Spouse FS ID in marriage record (%s) does not match husband\'s actual FS ID (%s). The marriage record may have an outdated FS ID.',
+						$spouse_fs_id,
+						$husband_fs_id
+					);
 				}
 			}
 			
-			if ( ! $found_in_reverse ) {
-				$issues_found[] = 'Wife not found in husband\'s reverse lookup';
-			}
+			// Note: We don't check reverse lookup because:
+			// - Marriage data is stored on wives, not husbands
+			// - Reverse lookup for men is just a computed view from wives' records
+			// - If a wife has a marriage pointing to a husband, that's the source of truth
 		}
 		
 		if ( ! empty( $issues_found ) ) {
 			// Create an issue entry for each problematic marriage
 			// For now, we'll create a single entry per wife with all issues
-			$wife_data = wasmo_get_saint_data_for_duplicate( $wife->ID );
+			$wife_data = wasmo_get_saint_data_for_duplicate( $wife_id );
 			if ( $wife_data ) { // Only add if wife still exists
 				$issues[] = array(
-					'saint1_id' => $wife->ID,
-					'saint2_id' => $wife->ID, // Same saint, but we need the structure
+					'saint1_id' => $wife_id,
+					'saint2_id' => $wife_id, // Same saint, but we need the structure
 					'saint1' => $wife_data,
 					'saint2' => $wife_data,
 					'match_type' => 'extraneous_wife',
@@ -948,6 +1306,57 @@ function wasmo_get_saint_data_for_duplicate( $saint_id ) {
 	
 	$roles = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'names' ) );
 	$marriages = get_field( 'marriages', $saint_id ) ?: array();
+	$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	
+	// Get marriage details with spouse names
+	$marriage_details = array();
+	
+	// For women, marriages are stored directly
+	if ( $gender === 'female' ) {
+		foreach ( $marriages as $marriage ) {
+			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
+			$spouse_name = '';
+			
+			if ( $spouse_id ) {
+				$spouse_name = get_the_title( $spouse_id );
+			} elseif ( ! empty( $marriage['spouse_name'] ) ) {
+				$spouse_name = $marriage['spouse_name'] . ' (non-saint)';
+			}
+			
+			if ( $spouse_name ) {
+				$marriage_date = $marriage['marriage_date'] ?? '';
+				$marriage_details[] = array(
+					'spouse_name' => $spouse_name,
+					'marriage_date' => $marriage_date,
+					'spouse_id' => $spouse_id,
+				);
+			}
+		}
+	} else {
+		// For men, get marriages from reverse lookup (wives' records)
+		if ( function_exists( 'wasmo_get_all_marriage_data' ) ) {
+			$marriage_data = wasmo_get_all_marriage_data( $saint_id );
+			foreach ( $marriage_data as $marriage ) {
+				$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
+				$spouse_name = '';
+				
+				if ( $spouse_id ) {
+					$spouse_name = get_the_title( $spouse_id );
+				} elseif ( ! empty( $marriage['spouse_name'] ) ) {
+					$spouse_name = $marriage['spouse_name'];
+				}
+				
+				if ( $spouse_name ) {
+					$marriage_date = $marriage['marriage_date'] ?? '';
+					$marriage_details[] = array(
+						'spouse_name' => $spouse_name,
+						'marriage_date' => $marriage_date,
+						'spouse_id' => $spouse_id,
+					);
+				}
+			}
+		}
+	}
 	
 	return array(
 		'id' => $saint_id,
@@ -955,9 +1364,10 @@ function wasmo_get_saint_data_for_duplicate( $saint_id ) {
 		'birthdate' => get_field( 'birthdate', $saint_id ),
 		'deathdate' => get_field( 'deathdate', $saint_id ),
 		'familysearch_id' => get_field( 'familysearch_id', $saint_id ),
-		'gender' => get_field( 'gender', $saint_id ) ?: 'male',
+		'gender' => $gender,
 		'roles' => $roles ?: array(),
 		'marriages_count' => count( $marriages ),
+		'marriages' => $marriage_details,
 		'has_portrait' => has_post_thumbnail( $saint_id ),
 		'portrait_url' => get_the_post_thumbnail_url( $saint_id, 'thumbnail' ) ?: '',
 		'edit_url' => get_edit_post_link( $saint_id, 'raw' ),
@@ -1352,7 +1762,27 @@ function wasmo_ajax_get_duplicate_details() {
 			<p><strong>Birthdate:</strong> <?php echo esc_html( $saint1_data['birthdate'] ?: 'Missing' ); ?></p>
 			<p><strong>Deathdate:</strong> <?php echo esc_html( $saint1_data['deathdate'] ?: 'Missing' ); ?></p>
 			<p><strong>FS ID:</strong> <?php echo esc_html( $saint1_data['familysearch_id'] ?: 'Missing' ); ?></p>
+			<p><strong>Gender:</strong> <?php echo esc_html( $saint1_data['gender'] ); ?></p>
+			<p><strong>Roles:</strong> <?php echo esc_html( implode( ', ', $saint1_data['roles'] ) ); ?></p>
 			<p><strong>Marriages:</strong> <?php echo esc_html( $saint1_data['marriages_count'] ); ?></p>
+			<?php if ( ! empty( $saint1_data['marriages'] ) ) : ?>
+				<p><strong>Spouse(s):</strong>
+					<?php
+					$spouse_names = array();
+					foreach ( $saint1_data['marriages'] as $marriage ) {
+						$name = esc_html( $marriage['spouse_name'] );
+						if ( ! empty( $marriage['spouse_id'] ) ) {
+							$name = '<a href="' . esc_url( get_permalink( $marriage['spouse_id'] ) ) . '" target="_blank">' . $name . '</a>';
+						}
+						if ( $marriage['marriage_date'] ) {
+							$name .= ' (' . esc_html( $marriage['marriage_date'] ) . ')';
+						}
+						$spouse_names[] = $name;
+					}
+					echo implode( ', ', $spouse_names );
+					?>
+				</p>
+			<?php endif; ?>
 		</div>
 		<div class="wasmo-saint-info">
 			<h3><?php echo esc_html( $saint2_data['name'] ); ?> (ID: <?php echo esc_html( $saint2_id ); ?>)</h3>
@@ -1362,7 +1792,27 @@ function wasmo_ajax_get_duplicate_details() {
 			<p><strong>Birthdate:</strong> <?php echo esc_html( $saint2_data['birthdate'] ?: 'Missing' ); ?></p>
 			<p><strong>Deathdate:</strong> <?php echo esc_html( $saint2_data['deathdate'] ?: 'Missing' ); ?></p>
 			<p><strong>FS ID:</strong> <?php echo esc_html( $saint2_data['familysearch_id'] ?: 'Missing' ); ?></p>
+			<p><strong>Gender:</strong> <?php echo esc_html( $saint2_data['gender'] ); ?></p>
+			<p><strong>Roles:</strong> <?php echo esc_html( implode( ', ', $saint2_data['roles'] ) ); ?></p>
 			<p><strong>Marriages:</strong> <?php echo esc_html( $saint2_data['marriages_count'] ); ?></p>
+			<?php if ( ! empty( $saint2_data['marriages'] ) ) : ?>
+				<p><strong>Spouse(s):</strong>
+					<?php
+					$spouse_names = array();
+					foreach ( $saint2_data['marriages'] as $marriage ) {
+						$name = esc_html( $marriage['spouse_name'] );
+						if ( ! empty( $marriage['spouse_id'] ) ) {
+							$name = '<a href="' . esc_url( get_permalink( $marriage['spouse_id'] ) ) . '" target="_blank">' . $name . '</a>';
+						}
+						if ( $marriage['marriage_date'] ) {
+							$name .= ' (' . esc_html( $marriage['marriage_date'] ) . ')';
+						}
+						$spouse_names[] = $name;
+					}
+					echo implode( ', ', $spouse_names );
+					?>
+				</p>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php
