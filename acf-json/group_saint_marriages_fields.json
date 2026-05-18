@@ -173,6 +173,34 @@
                     "default_to_current_date": 0
                 },
                 {
+                    "key": "field_saint_marriage_spouse_deathdate",
+                    "label": "Spouse Death Date",
+                    "name": "spouse_deathdate",
+                    "aria-label": "",
+                    "type": "date_picker",
+                    "instructions": "Death date of the non-saint spouse (ends the marriage on timelines when not divorced).",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_saint_marriage_spouse_is_saint",
+                                "operator": "!=",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "display_format": "Y-m-d",
+                    "return_format": "Y-m-d",
+                    "first_day": 0,
+                    "parent_repeater": "field_saint_marriages",
+                    "default_to_current_date": 0
+                },
+                {
                     "key": "field_saint_marriage_date",
                     "label": "Marriage Date",
                     "name": "marriage_date",
@@ -398,5 +426,5 @@
     "description": "Marriage and family fields for saints with the wife role.",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1737590400
+    "modified": 1747612800
 }

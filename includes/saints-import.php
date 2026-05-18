@@ -938,10 +938,12 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 				$spouse_name = $marriage['spouse_name'] ?? null;
 			}
 			
-			// Get spouse birthdate for non-saint spouses
+			// Get spouse birthdate/deathdate for non-saint spouses
 			$spouse_birthdate_export = null;
+			$spouse_deathdate_export = null;
 			if ( ! $spouse_is_saint ) {
 				$spouse_birthdate_export = $marriage['spouse_birthdate'] ?? null;
+				$spouse_deathdate_export = $marriage['spouse_deathdate'] ?? null;
 			}
 
 			// Get children - handle both nested repeater and simple array formats
@@ -982,6 +984,7 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 				'spouse_is_saint'           => $spouse_is_saint,
 				'spouse_name'               => $spouse_name,
 				'spouse_birthdate'          => $spouse_birthdate_export,
+				'spouse_deathdate'          => $spouse_deathdate_export,
 				'marriage_date'             => $marriage['marriage_date'] ?? null,
 				'marriage_date_approximate' => (bool) ( $marriage['marriage_date_approximate'] ?? false ),
 				'marriage_notes'            => $marriage['marriage_notes'] ?? null,
@@ -1264,8 +1267,10 @@ function wasmo_get_all_leaders_export_data() {
 				
 				// Get spouse birthdate for non-saint spouses
 				$spouse_birthdate_export = null;
+				$spouse_deathdate_export = null;
 				if ( ! $spouse_is_saint ) {
 					$spouse_birthdate_export = $marriage['spouse_birthdate'] ?? null;
+					$spouse_deathdate_export = $marriage['spouse_deathdate'] ?? null;
 				}
 
 				// Get children - handle both nested repeater and simple array formats
@@ -1295,6 +1300,7 @@ function wasmo_get_all_leaders_export_data() {
 					'spouse_is_saint'           => $spouse_is_saint,
 					'spouse_name'               => $spouse_name,
 					'spouse_birthdate'          => $spouse_birthdate_export,
+					'spouse_deathdate'          => $spouse_deathdate_export,
 					'marriage_date'             => $marriage['marriage_date'] ?? null,
 					'marriage_date_approximate' => (bool) ( $marriage['marriage_date_approximate'] ?? false ),
 					'marriage_notes'            => $marriage['marriage_notes'] ?? null,
@@ -1628,11 +1634,21 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 					}
 				}
 
+				$spouse_deathdate = '';
+				if ( ! $spouse_is_saint && ! empty( $marriage_data['spouse_deathdate'] ) ) {
+					$spouse_deathdate = $marriage_data['spouse_deathdate'];
+					if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $spouse_deathdate ) ) {
+						$parsed = wasmo_parse_leader_date( $spouse_deathdate );
+						$spouse_deathdate = $parsed ?: $spouse_deathdate;
+					}
+				}
+
 				$marriages_to_import[] = array(
 					'spouse_is_saint'           => $spouse_is_saint ? 1 : 0,
 					'spouse'                    => $spouse_id ? array( $spouse_id ) : null,
 					'spouse_name'               => $spouse_name_text,
 					'spouse_birthdate'          => $spouse_birthdate,
+					'spouse_deathdate'          => $spouse_deathdate,
 					'marriage_date'             => $marriage_date,
 					'marriage_date_approximate' => $marriage_date_approx ? 1 : 0,
 					'marriage_notes'            => $marriage_data['marriage_notes'] ?? '',
@@ -1710,6 +1726,9 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 								// Update divorce date if provided
 								if ( ! empty( $new_marriage['divorce_date'] ) ) {
 									$em['divorce_date'] = $new_marriage['divorce_date'];
+								}
+								if ( ! empty( $new_marriage['spouse_deathdate'] ) ) {
+									$em['spouse_deathdate'] = $new_marriage['spouse_deathdate'];
 								}
 								// Update children if provided
 								if ( ! empty( $new_marriage['children'] ) ) {
