@@ -635,6 +635,7 @@ function wasmo_api_update_saint( $request ) {
 					'spouse'                  => null,
 					'spouse_name'             => '',
 					'spouse_birthdate'        => '',
+					'spouse_deathdate'        => '',
 					'spouse_familysearch_id'  => '',
 					'marriage_date'           => '',
 					'marriage_date_approximate' => 0,
@@ -654,6 +655,10 @@ function wasmo_api_update_saint( $request ) {
 				
 				if ( ! empty( $marriage_data['spouse_birthdate'] ) ) {
 					$marriage['spouse_birthdate'] = sanitize_text_field( $marriage_data['spouse_birthdate'] );
+				}
+
+				if ( ! empty( $marriage_data['spouse_deathdate'] ) ) {
+					$marriage['spouse_deathdate'] = sanitize_text_field( $marriage_data['spouse_deathdate'] );
 				}
 				
 				// Handle spouse - if explicitly provided, use it
@@ -955,8 +960,11 @@ function wasmo_format_saint_for_api( $saint_id, $include_marriages = false ) {
 				'spouse_name'         => $spouse_name,
 				'spouse_saint_fs_id'  => $spouse_saint_fs_id,
 				'spouse_familysearch_id' => $spouse_familysearch_id,
+				'spouse_birthdate'    => $marriage['spouse_birthdate'] ?? null,
+				'spouse_deathdate'    => $marriage['spouse_deathdate'] ?? null,
 				'marriage_date'       => $marriage['marriage_date'] ?? null,
 				'marriage_date_approximate' => (bool) ( $marriage['marriage_date_approximate'] ?? false ),
+				'divorce_date'        => $marriage['divorce_date'] ?? null,
 				'children'            => array(),
 			);
 			

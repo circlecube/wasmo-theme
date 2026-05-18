@@ -2155,6 +2155,39 @@ function wasmo_get_children_counts( $marriage ) {
 }
 
 /**
+ * Get spouse death date for a marriage row (saint record or non-saint field).
+ *
+ * @param array $marriage Marriage repeater row.
+ * @return string|null Death date in Y-m-d format, or null.
+ */
+function wasmo_get_marriage_spouse_deathdate( $marriage ) {
+	$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
+	$spouse_field    = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
+	$spouse_id       = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+
+	if ( $spouse_is_saint && $spouse_id ) {
+		$deathdate = get_field( 'deathdate', $spouse_id );
+		return $deathdate ?: null;
+	}
+
+	return ! empty( $marriage['spouse_deathdate'] ) ? $marriage['spouse_deathdate'] : null;
+}
+
+/**
+ * Get when a marriage ended (divorce date takes precedence over spouse death).
+ *
+ * @param array $marriage Marriage repeater row.
+ * @return string|null End date in Y-m-d format, or null if ongoing.
+ */
+function wasmo_get_marriage_end_date( $marriage ) {
+	if ( ! empty( $marriage['divorce_date'] ) ) {
+		return $marriage['divorce_date'];
+	}
+
+	return wasmo_get_marriage_spouse_deathdate( $marriage );
+}
+
+/**
  * Get marriage order for a specific spouse
  *
  * @param int $saint_id The saint post ID.
@@ -2391,19 +2424,19 @@ function wasmo_get_polygamy_type( $saint_id ) {
 			continue;
 		}
 		
-		$spouse_deathdate = null;
 		$spouse_birthdate = null;
-		$spouse_name = 'Unknown';
-		
+		$spouse_name      = 'Unknown';
+
 		if ( $spouse_is_saint && $spouse_id ) {
-			$spouse_deathdate = get_field( 'deathdate', $spouse_id );
 			$spouse_birthdate = get_field( 'birthdate', $spouse_id );
-			$spouse_name = get_the_title( $spouse_id );
+			$spouse_name      = get_the_title( $spouse_id );
 		} else {
-			$spouse_name = $marriage['spouse_name'] ?? 'Unknown';
+			$spouse_name      = $marriage['spouse_name'] ?? 'Unknown';
 			$spouse_birthdate = $marriage['spouse_birthdate'] ?? null;
 		}
-		
+
+		$spouse_deathdate = wasmo_get_marriage_spouse_deathdate( $marriage );
+
 		$marriage_timeline[] = array(
 			'spouse_id'        => $spouse_id,
 			'spouse_name'      => $spouse_name,
@@ -2411,7 +2444,7 @@ function wasmo_get_polygamy_type( $saint_id ) {
 			'spouse_deathdate' => $spouse_deathdate,
 			'marriage_date'    => $marriage_date,
 			'divorce_date'     => $divorce_date,
-			'end_date'         => $divorce_date ?: $spouse_deathdate, // Marriage ends at divorce or death
+			'end_date'         => wasmo_get_marriage_end_date( $marriage ),
 		);
 	}
 	

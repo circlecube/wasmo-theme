@@ -234,6 +234,7 @@ $classes = array_filter( $classes, function( $class ) {
 					$spouse_name_text = $marriage['spouse_name'] ?? null; // For non-saint spouses
 					$marriage_date = $marriage['marriage_date'] ?? null;
 					$marriage_date_approx = $marriage['marriage_date_approximate'] ?? false;
+					$divorce_date = $marriage['divorce_date'] ?? null;
 					$children = $marriage['children'] ?? array();
 					
 					// Get children counts (excluding placeholders for display)
@@ -248,7 +249,7 @@ $classes = array_filter( $classes, function( $class ) {
 						$marriage_year = date( 'Y', strtotime( $marriage_date ) );
 						$spouse_birthdate = get_field( 'birthdate', $spouse_id );
 						$spouse_birthdate_approx = get_field( 'birthdate_approximate', $spouse_id );
-						$spouse_deathdate = get_field( 'deathdate', $spouse_id );
+						$spouse_deathdate = wasmo_get_marriage_spouse_deathdate( $marriage );
 						
 						// For men showing wives: wife's marital status is on her record
 						// For women showing husbands: woman's own marital status
@@ -280,6 +281,7 @@ $classes = array_filter( $classes, function( $class ) {
 							'children_count'            => $children_counts['total'],
 							'children_displayable'      => $children_counts['displayable'],
 							'marital_status'            => $marital_status,
+							'divorce_date'              => $divorce_date,
 							'children_data'             => $children, // Store original children data
 						);
 					}
@@ -290,7 +292,7 @@ $classes = array_filter( $classes, function( $class ) {
 						
 						// Calculate spouse age from spouse_birthdate if available
 						$spouse_birthdate = $marriage['spouse_birthdate'] ?? null;
-						$spouse_deathdate = null; // Non-saint spouses don't have death dates tracked
+						$spouse_deathdate = wasmo_get_marriage_spouse_deathdate( $marriage );
 						$spouse_age = null;
 						$age_diff = null;
 						if ( $spouse_birthdate && $marriage_date ) {
@@ -325,6 +327,7 @@ $classes = array_filter( $classes, function( $class ) {
 							'children_count'            => $children_counts['total'],
 							'children_displayable'      => $children_counts['displayable'],
 							'marital_status'            => $marital_status,
+							'divorce_date'              => $divorce_date,
 							'children_data'             => $children, // Store original children data
 						);
 					}
