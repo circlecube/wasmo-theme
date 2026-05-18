@@ -25,3 +25,5 @@ wp-content/plugins/hello.php
 
 #local fs-verify node app and dependencies
 /scripts/fs-verify
+docs
+AGENTS.md
