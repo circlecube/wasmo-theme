@@ -2188,6 +2188,303 @@ function wasmo_get_marriage_end_date( $marriage ) {
 }
 
 /**
+ * Marriage start/end timestamps from a saint's perspective (capped at their death).
+ *
+ * @param array $marriage   Marriage repeater row.
+ * @param int   $saint_id   The saint who owns the marriage record.
+ * @return array|null Keys start, end (Unix timestamps), or null if no marriage date.
+ */
+function wasmo_get_marriage_window_for_saint( $marriage, $saint_id ) {
+	$start = $marriage['marriage_date'] ?? null;
+	if ( ! $start ) {
+		return null;
+	}
+
+	$start_ts = strtotime( $start );
+	$end      = wasmo_get_marriage_end_date( $marriage );
+	$end_ts   = $end ? strtotime( $end ) : null;
+
+	$saint_death = get_field( 'deathdate', $saint_id );
+	if ( $saint_death ) {
+		$death_ts = strtotime( $saint_death );
+		if ( ! $end_ts || $end_ts > $death_ts ) {
+			$end_ts = $death_ts;
+		}
+	}
+
+	if ( ! $end_ts ) {
+		$end_ts = time();
+	}
+
+	if ( $end_ts < $start_ts ) {
+		$end_ts = $start_ts;
+	}
+
+	return array(
+		'start' => $start_ts,
+		'end'   => $end_ts,
+	);
+}
+
+/**
+ * Whether two marriage windows overlap in time.
+ *
+ * @param array $window_a Window with start/end timestamps.
+ * @param array $window_b Window with start/end timestamps.
+ * @return bool
+ */
+function wasmo_marriage_windows_overlap( $window_a, $window_b ) {
+	return $window_a['start'] < $window_b['end'] && $window_b['start'] < $window_a['end'];
+}
+
+/**
+ * Analyze plural-marriage role for a female saint (sister wife / celestial sister wife).
+ *
+ * @param int $saint_id Female saint post ID.
+ * @return array Context for labels and copy.
+ */
+function wasmo_get_woman_polygamy_context( $saint_id ) {
+	$marriages = wasmo_get_saint_marriages( $saint_id );
+
+	$result = array(
+		'is_sister_wife'            => false,
+		'is_celestial_sister_wife'  => false,
+		'was_plural_wife'           => false,
+		'husbands'                  => array(),
+		'mortal_husband_count'      => 0,
+		'celestial_husband_count'     => 0,
+	);
+
+	foreach ( $marriages as $marriage ) {
+		$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
+		if ( ! $spouse_is_saint ) {
+			continue;
+		}
+
+		$spouse_field = $marriage['spouse'] ?? null;
+		$husband_id   = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+		if ( ! $husband_id ) {
+			continue;
+		}
+
+		$window = wasmo_get_marriage_window_for_saint( $marriage, $saint_id );
+		if ( ! $window ) {
+			continue;
+		}
+
+		$cowife_windows = array();
+		$wife_ids       = wasmo_get_reverse_marriages( $husband_id );
+		$mortal_plural  = false;
+
+		foreach ( $wife_ids as $cowife_id ) {
+			if ( intval( $cowife_id ) === intval( $saint_id ) ) {
+				continue;
+			}
+
+			$cowife_marriages = wasmo_get_saint_marriages( $cowife_id );
+			foreach ( $cowife_marriages as $cowife_marriage ) {
+				$c_spouse = $cowife_marriage['spouse'] ?? null;
+				$c_husband = is_array( $c_spouse ) ? ( $c_spouse[0] ?? null ) : $c_spouse;
+				if ( intval( $c_husband ) !== intval( $husband_id ) ) {
+					continue;
+				}
+
+				$cowife_window = wasmo_get_marriage_window_for_saint( $cowife_marriage, $cowife_id );
+				if ( $cowife_window && wasmo_marriage_windows_overlap( $window, $cowife_window ) ) {
+					$mortal_plural = true;
+					break 2;
+				}
+			}
+		}
+
+		$celestial_plural = count( $wife_ids ) > 1;
+		$husband_type     = wasmo_get_man_polygamy_type( $husband_id );
+
+		if ( $mortal_plural ) {
+			$result['is_sister_wife'] = true;
+			$result['mortal_husband_count']++;
+		}
+		if ( $celestial_plural ) {
+			$result['is_celestial_sister_wife'] = true;
+			$result['celestial_husband_count']++;
+		}
+
+		$result['husbands'][] = array(
+			'husband_id'          => $husband_id,
+			'husband_name'        => get_the_title( $husband_id ),
+			'husband_url'         => get_permalink( $husband_id ),
+			'mortal_plural'       => $mortal_plural,
+			'celestial_plural'    => $celestial_plural,
+			'cowife_count'        => max( 0, count( $wife_ids ) - 1 ),
+			'husband_polygamy_type' => $husband_type['type'],
+		);
+	}
+
+	$result['was_plural_wife'] = $result['is_sister_wife'] || $result['is_celestial_sister_wife'];
+
+	return $result;
+}
+
+/**
+ * Human-readable plural-marriage label for a woman.
+ *
+ * @param array $woman_context From wasmo_get_woman_polygamy_context().
+ * @return string
+ */
+function wasmo_get_woman_polygamy_label( $woman_context ) {
+	if ( ! empty( $woman_context['is_sister_wife'] ) && ! empty( $woman_context['is_celestial_sister_wife'] ) ) {
+		return 'sister wife and celestial sister wife';
+	}
+	if ( ! empty( $woman_context['is_sister_wife'] ) ) {
+		return 'sister wife';
+	}
+	if ( ! empty( $woman_context['is_celestial_sister_wife'] ) ) {
+		return 'celestial sister wife';
+	}
+	return '';
+}
+
+/**
+ * Build sidebar / section copy for a woman's plural-marriage roles.
+ *
+ * @param int    $saint_id       Female saint post ID.
+ * @param array  $woman_context  From wasmo_get_woman_polygamy_context().
+ * @param array  $polygamy_stats From wasmo_get_polygamy_stats().
+ * @param string $is_or_was      "is" or "was".
+ * @return array Keys: primary_label, description, note, show_polygamy_blurb, show_remarriage_blurb.
+ */
+function wasmo_get_woman_polygamy_display( $saint_id, $woman_context, $polygamy_stats, $is_or_was = 'was' ) {
+	$name  = get_the_title( $saint_id );
+	$label = wasmo_get_woman_polygamy_label( $woman_context );
+
+	$display = array(
+		'gender'               => 'female',
+		'primary_label'        => $label,
+		'show_polygamy_blurb'  => ! empty( $woman_context['was_plural_wife'] ),
+		'show_remarriage_blurb' => false,
+		'description'          => '',
+		'note'                 => '',
+		'was_polygamist'       => ! empty( $woman_context['was_plural_wife'] ),
+		'woman_context'        => $woman_context,
+	);
+
+	if ( ! $display['show_polygamy_blurb'] ) {
+		if ( ( $polygamy_stats['number_of_marriages'] ?? 0 ) > 1 ) {
+			$display['show_remarriage_blurb'] = true;
+			$display['description']           = sprintf(
+				'%s %s married %d times. These marriages were sequential and she was not a plural wife during her lifetime.',
+				esc_html( $name ),
+				esc_html( $is_or_was ),
+				(int) $polygamy_stats['number_of_marriages']
+			);
+		}
+		return $display;
+	}
+
+	$display['description'] = sprintf(
+		'%s %s a <strong>%s</strong>.',
+		esc_html( $name ),
+		esc_html( $is_or_was ),
+		esc_html( $label )
+	);
+
+	$notes = array();
+
+	if ( ! empty( $woman_context['is_sister_wife'] ) ) {
+		$notes[] = 'At least one marriage overlapped in time with another living wife of the same husband — plural marriage during her lifetime.';
+	}
+	if ( ! empty( $woman_context['is_celestial_sister_wife'] ) ) {
+		$notes[] = 'In Mormon eternal-marriage doctrine, she is sealed to a husband who has (or had) other wives in the sealing record; those relationships are honored in the afterlife even when wives did not overlap on earth.';
+	}
+
+	$husband_bits = array();
+	foreach ( $woman_context['husbands'] as $h ) {
+		if ( empty( $h['celestial_plural'] ) && empty( $h['mortal_plural'] ) ) {
+			continue;
+		}
+		$parts = array();
+		if ( ! empty( $h['mortal_plural'] ) ) {
+			$parts[] = 'plural wife in life';
+		} elseif ( ! empty( $h['celestial_plural'] ) ) {
+			$parts[] = 'celestial plural marriage via his other wives';
+		}
+		if ( ! empty( $parts ) ) {
+			$husband_bits[] = sprintf(
+				'<a href="%s">%s</a> (%s)',
+				esc_url( $h['husband_url'] ),
+				esc_html( $h['husband_name'] ),
+				esc_html( implode( '; ', $parts ) )
+			);
+		}
+	}
+	if ( ! empty( $husband_bits ) ) {
+		$notes[] = 'Husbands: ' . implode( '; ', $husband_bits ) . '.';
+	}
+
+	$display['note'] = implode( ' ', $notes );
+
+	return $display;
+}
+
+/**
+ * Unified polygamy labels and blurbs for saint templates.
+ *
+ * @param int    $saint_id Saint post ID.
+ * @param string $is_or_was "is" or "was".
+ * @return array Display data for templates.
+ */
+function wasmo_get_polygamy_display( $saint_id, $is_or_was = 'was' ) {
+	$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	$stats  = wasmo_get_polygamy_stats( $saint_id );
+	$name   = get_the_title( $saint_id );
+
+	if ( $gender === 'female' ) {
+		$woman_context = $stats['woman_polygamy'] ?? wasmo_get_woman_polygamy_context( $saint_id );
+		return wasmo_get_woman_polygamy_display( $saint_id, $woman_context, $stats, $is_or_was );
+	}
+
+	$type  = wasmo_get_man_polygamy_type( $saint_id );
+	$count = $stats['number_of_marriages'] ?? 0;
+
+	$display = array(
+		'gender'               => 'male',
+		'primary_label'        => '',
+		'show_polygamy_blurb'  => $count > 1,
+		'show_remarriage_blurb' => false,
+		'description'          => '',
+		'note'                 => '',
+		'was_polygamist'       => $count > 1,
+		'polygamy_type'        => $type,
+	);
+
+	if ( ! $display['show_polygamy_blurb'] ) {
+		return $display;
+	}
+
+	if ( $type['type'] === 'celestial' ) {
+		$display['primary_label'] = 'celestial polygamist';
+		$display['description']   = sprintf(
+			'%s %s a <strong>celestial polygamist</strong> with %d wives.',
+			esc_html( $name ),
+			esc_html( $is_or_was ),
+			(int) $count
+		);
+		$display['note'] = 'These are sequential marriages — each previous spouse died before the next marriage, meaning no simultaneous living plural marriages on earth; in Mormon doctrine, all sealings may still be honored eternally.';
+	} else {
+		$display['primary_label'] = 'polygamist';
+		$display['description']   = sprintf(
+			'%s %s a <strong>polygamist</strong> with %d wives.',
+			esc_html( $name ),
+			esc_html( $is_or_was ),
+			(int) $count
+		);
+		$display['note'] = 'These are simultaneous marriages — married to multiple living spouses at the same time.';
+	}
+
+	return $display;
+}
+
+/**
  * Get marriage order for a specific spouse
  *
  * @param int $saint_id The saint post ID.
@@ -2311,9 +2608,18 @@ function wasmo_get_polygamy_stats( $saint_id ) {
 		'total_age_diff'      => 0,
 		'avg_age_diff'        => 0,
 		'age_first_marriage'  => null,
-		'was_polygamist'      => count( $marriages ) > 1,
+		'was_polygamist'      => false,
 		'marriages_data'      => array(),
+		'woman_polygamy'      => null,
 	);
+	
+	if ( $gender === 'female' ) {
+		$woman_context = wasmo_get_woman_polygamy_context( $saint_id );
+		$stats['woman_polygamy'] = $woman_context;
+		$stats['was_polygamist'] = $woman_context['was_plural_wife'];
+	} else {
+		$stats['was_polygamist'] = count( $marriages ) > 1;
+	}
 	
 	$age_diffs = array();
 	$first_marriage_date = null;
@@ -2395,9 +2701,41 @@ function wasmo_get_polygamy_stats( $saint_id ) {
  * @return array Array with 'type' ('celestial', 'simultaneous', 'none'), 'had_overlapping_marriages', and 'details'.
  */
 function wasmo_get_polygamy_type( $saint_id ) {
-	$marriages = wasmo_get_all_marriage_data( $saint_id );
 	$gender = get_field( 'gender', $saint_id ) ?: 'male';
-	
+
+	if ( $gender === 'female' ) {
+		$woman_context = wasmo_get_woman_polygamy_context( $saint_id );
+		$type          = 'none';
+		if ( ! empty( $woman_context['is_sister_wife'] ) && ! empty( $woman_context['is_celestial_sister_wife'] ) ) {
+			$type = 'sister_wife_and_celestial';
+		} elseif ( ! empty( $woman_context['is_sister_wife'] ) ) {
+			$type = 'sister_wife';
+		} elseif ( ! empty( $woman_context['is_celestial_sister_wife'] ) ) {
+			$type = 'celestial_sister_wife';
+		}
+
+		return array(
+			'type'                      => $type,
+			'had_overlapping_marriages' => ! empty( $woman_context['is_sister_wife'] ),
+			'is_sister_wife'            => ! empty( $woman_context['is_sister_wife'] ),
+			'is_celestial_sister_wife'  => ! empty( $woman_context['is_celestial_sister_wife'] ),
+			'woman_context'             => $woman_context,
+			'details'                   => array(),
+		);
+	}
+
+	return wasmo_get_man_polygamy_type( $saint_id );
+}
+
+/**
+ * Polygamy type for male saints (celestial vs simultaneous polygamist).
+ *
+ * @param int $saint_id Male saint post ID.
+ * @return array Array with 'type' ('celestial', 'simultaneous', 'none'), 'had_overlapping_marriages', and 'details'.
+ */
+function wasmo_get_man_polygamy_type( $saint_id ) {
+	$marriages = wasmo_get_all_marriage_data( $saint_id );
+
 	$result = array(
 		'type'                      => 'none',
 		'had_overlapping_marriages' => false,
@@ -2741,6 +3079,11 @@ function wasmo_get_saint_parents( $saint_id ) {
  * @return bool True if polygamist.
  */
 function wasmo_was_polygamist( $saint_id ) {
+	$gender = get_field( 'gender', $saint_id ) ?: 'male';
+	if ( $gender === 'female' ) {
+		$context = wasmo_get_woman_polygamy_context( $saint_id );
+		return ! empty( $context['was_plural_wife'] );
+	}
 	return wasmo_get_number_of_marriages( $saint_id ) > 1;
 }
 

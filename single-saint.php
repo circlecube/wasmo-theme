@@ -49,8 +49,9 @@ while ( have_posts() ) :
 		
 		// Get marriages data (gender-aware: women store directly, men use reverse lookup)
 		$marriages = wasmo_get_all_marriage_data( $saint_id );
-		$polygamy_stats = wasmo_get_polygamy_stats( $saint_id );
-		$polygamy_type = wasmo_get_polygamy_type( $saint_id );
+		$polygamy_stats   = wasmo_get_polygamy_stats( $saint_id );
+		$polygamy_type    = wasmo_get_polygamy_type( $saint_id );
+		$polygamy_display = wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
 		
 		// Get parents (reverse lookup from marriage/children records)
 		$parents = wasmo_get_saint_parents( $saint_id );
@@ -69,8 +70,9 @@ while ( have_posts() ) :
 			'served_under'   => $served_under,
 			'apostles_under' => $apostles_under,
 			'marriages'      => $marriages,
-			'polygamy_stats' => $polygamy_stats,
-			'polygamy_type'  => $polygamy_type,
+			'polygamy_stats'   => $polygamy_stats,
+			'polygamy_type'    => $polygamy_type,
+			'polygamy_display' => $polygamy_display,
 			'parents'        => $parents,
 			'has_parents'    => $has_parents,
 		);
@@ -88,8 +90,9 @@ while ( have_posts() ) :
 		$served_under   = $cached_data['served_under'];
 		$apostles_under = $cached_data['apostles_under'];
 		$marriages      = $cached_data['marriages'];
-		$polygamy_stats = $cached_data['polygamy_stats'];
-		$polygamy_type  = $cached_data['polygamy_type'];
+		$polygamy_stats   = $cached_data['polygamy_stats'];
+		$polygamy_type    = $cached_data['polygamy_type'];
+		$polygamy_display = $cached_data['polygamy_display'] ?? wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
 		$parents        = $cached_data['parents'];
 		$has_parents    = $cached_data['has_parents'];
 	}
@@ -210,7 +213,8 @@ $classes = array_filter( $classes, function( $class ) {
 			'is_president'  => $is_president,
 			'gender'        => $gender,
 			'polygamy_stats' => $polygamy_stats,
-			'polygamy_type' => $polygamy_type,
+			'polygamy_type'    => $polygamy_type,
+			'polygamy_display' => $polygamy_display,
 		) );
 		?>
 	</div> <!-- leader-content-wrapper -->
@@ -347,17 +351,11 @@ $classes = array_filter( $classes, function( $class ) {
 			?>
 				<section class="saint-marriages content-full-width">
 					<h2><?php echo esc_html( $spouse_label ); ?> (<?php echo count( $marriages ); ?>)</h2>
-					<?php if ( $polygamy_stats['number_of_marriages'] > 1 ) : 
-						$is_or_was = $is_living ? 'is' : 'was';
-						$polygamy_label = ( $polygamy_type['type'] === 'celestial' ) ? 'celestial polygamist' : 'polygamist';
-						$spouse_word = ( $gender === 'male' ) ? 'wives' : 'husbands';
-					?>
+					<?php if ( ! empty( $polygamy_display['show_polygamy_blurb'] ) || ! empty( $polygamy_display['show_remarriage_blurb'] ) ) : ?>
 						<p class="section-description">
-							<?php echo esc_html( get_the_title( $saint_id ) ); ?> <?php echo $is_or_was; ?> a <strong><?php echo esc_html( $polygamy_label ); ?></strong> with <?php echo esc_html( $polygamy_stats['number_of_marriages'] ); ?> <?php echo $spouse_word; ?>.
-							<?php if ( $polygamy_type['type'] === 'celestial' ) : ?>
-								<em>Note these are sequential marriages &mdash; each previous spouse died before the next marriage, meaning no simultaneous living plural marriages.</em>
-							<?php else : ?>
-								<em>Note these are simultaneous marriages &mdash; married to multiple living spouses at the same time.</em>
+							<?php echo wp_kses_post( $polygamy_display['description'] ); ?>
+							<?php if ( ! empty( $polygamy_display['note'] ) ) : ?>
+								<em><?php echo wp_kses_post( $polygamy_display['note'] ); ?></em>
 							<?php endif; ?>
 							<?php if ( $polygamy_stats['teenage_brides_count'] > 0 && $gender === 'male' ) : ?>
 								<strong><?php echo esc_html( $polygamy_stats['teenage_brides_count'] ); ?></strong> of these wives were a teenager (18 or less) at the time of marriage.

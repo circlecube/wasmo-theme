@@ -12,6 +12,7 @@
  * - gender: The saint's gender
  * - polygamy_stats: Array of polygamy statistics
  * - polygamy_type: Array with polygamy type info
+ * - polygamy_display: Gender-aware labels and blurbs
  */
 
 // Get passed variables
@@ -22,6 +23,7 @@ $is_president = $args['is_president'] ?? false;
 $gender = $args['gender'] ?? 'male';
 $polygamy_stats = $args['polygamy_stats'] ?? array();
 $polygamy_type = $args['polygamy_type'] ?? array();
+$polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
 ?>
 
 <aside class="leader-sidebar">
@@ -171,13 +173,22 @@ $polygamy_type = $args['polygamy_type'] ?? array();
 				</dd>
 			<?php endif; ?>
 
-			<?php 
-			// Polygamy stats (computed from marriages)
-			if ( ! empty( $polygamy_stats['was_polygamist'] ) ) : 
-				$polygamy_type_label = ( isset( $polygamy_type['type'] ) && $polygamy_type['type'] === 'celestial' ) ? 'Celestial Polygamist' : 'Polygamist';
+			<?php
+			// Polygamy / plural marriage (gender-specific labels)
+			if ( ! empty( $polygamy_display['show_polygamy_blurb'] ) ) :
+				$polygamy_sidebar_label = ucwords( $polygamy_display['primary_label'] );
+				$plural_marriage_count  = (int) ( $polygamy_stats['number_of_marriages'] ?? 0 );
+				if ( $gender === 'female' && ! empty( $polygamy_display['woman_context']['husbands'] ) ) {
+					$plural_marriage_count = count( $polygamy_display['woman_context']['husbands'] );
+				}
+				if ( $gender === 'male' ) {
+					$plural_marriage_note = $plural_marriage_count . ' ' . ( $plural_marriage_count === 1 ? 'wife' : 'wives' );
+				} else {
+					$plural_marriage_note = $plural_marriage_count . ' ' . ( $plural_marriage_count === 1 ? 'husband' : 'husbands' ) . ' in plural marriage';
+				}
 			?>
-				<dt><?php echo esc_html( $polygamy_type_label ); ?></dt>
-				<dd>Yes (<?php echo esc_html( $polygamy_stats['number_of_marriages'] ); ?> <?php echo $gender === 'male' ? 'wives' : 'husbands'; ?>)</dd>
+				<dt><?php echo esc_html( $polygamy_sidebar_label ); ?></dt>
+				<dd>Yes<?php echo $plural_marriage_count > 0 ? ' (' . esc_html( $plural_marriage_note ) . ')' : ''; ?></dd>
 				
 				<?php if ( ! empty( $polygamy_stats['number_of_children'] ) && $polygamy_stats['number_of_children'] > 0 ) : ?>
 					<dt>Total Children</dt>
@@ -233,7 +244,7 @@ $polygamy_type = $args['polygamy_type'] ?? array();
 		<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
 			Saints Data →
 		</a>
-		<?php if ( $polygamy_stats['was_polygamist'] ) : ?>
+		<?php if ( ! empty( $polygamy_display['was_polygamist'] ) || ! empty( $polygamy_stats['was_polygamist'] ) ) : ?>
 			<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); ?>" class="btn btn-secondary">
 				Polygamy Stats →
 			</a>
