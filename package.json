@@ -24,7 +24,7 @@
         "@wordpress/blocks": "^15.9.0",
         "@wordpress/components": "^34.0.0",
         "@wordpress/data": "^10.36.0",
-        "@wordpress/element": "^7.0.0",
+        "@wordpress/element": "^8.0.0",
         "@wordpress/i18n": "^6.20.0"
     }
 }
