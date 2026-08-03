@@ -11,6 +11,13 @@ $curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('a
 <?php set_query_var( 'userid', $userid ); ?>
 <?php get_template_part( 'template-parts/content/content', 'user-header' ); ?>
 
+<?php
+// Show progress checklist only when viewing your own profile
+if ( is_user_logged_in() && (int) $userid === (int) get_current_user_id() ) {
+	get_template_part( 'template-parts/content/content', 'user-progress' );
+}
+?>
+
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<div class="profile-section" id="about-me">
 		<h3>About me</h3>

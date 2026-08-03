@@ -36,7 +36,9 @@ get_header(); ?>
 	<?php endif; ?>
 
 	<div class="entry-content">
-		<?php 
+		<?php
+			set_query_var( 'userid', get_current_user_id() );
+			get_template_part( 'template-parts/content/content', 'user-progress' );
 			the_content();
 			acf_form(
 				array(
