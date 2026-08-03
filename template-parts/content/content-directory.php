@@ -7,6 +7,7 @@ $termid      = get_query_var( 'termid' );
 $paged       = get_query_var( 'paged' );
 $lazy		 = get_query_var( 'lazy' );
 $showall     = get_query_var( 'showall' );
+$video_only  = get_query_var( 'video_only', false );
 
 // Initialize the remaining vars
 $offset = 0;
@@ -125,9 +126,13 @@ function wasmo_filter_directory_for_tax( $user ){
 	// false if no match found
 	return false;
 }}
+if( !function_exists( "wasmo_filter_directory_has_video" ) ) {
+function wasmo_filter_directory_has_video( $user ) {
+	return (bool) get_field( 'video', 'user_' . $user->ID );
+}}
 
 
-$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged ) );
+$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '' ) );
 $transient_exp = WEEK_IN_SECONDS;
 
 // Only skip cache for admin users in debug mode
@@ -155,6 +160,10 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		$tax_filtered_users = array_filter( $filtered_users, "wasmo_filter_directory_for_tax" );
 		$filtered_users = $tax_filtered_users;
 	}
+	// filter to only profiles with video if requested
+	if ( $video_only ) {
+		$filtered_users = array_filter( $filtered_users, "wasmo_filter_directory_has_video" );
+	}
 	$total_users = count($filtered_users);
 	$counter = 0;
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
@@ -166,6 +175,8 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		$userid = $user->ID;
 		$userimg = get_field( 'photo', 'user_' . $userid );
 		$has_image = $userimg ? true : false;
+		$has_video = (bool) get_field( 'video', 'user_' . $userid );
+		$video_class = $has_video ? 'has-video' : '';
 		$counter++;
 		if ( $offset >= $counter ) { // if offsetting, skip ahead
 			continue;
@@ -205,12 +216,17 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		
 		$the_directory .= '<a title="' . $username . '" class="';
 		$the_directory .= ' person person-' . $counter;
-		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class . ' ' . $image_class;
+		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class . ' ' . $image_class . ' ' . $video_class;
 		$the_directory .= '" href="' . get_author_posts_url( $userid ) . '" id="profile-' . $userid . '">';
 			$the_directory .= '<span class="directory-img">';
 			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
 			$the_directory .= '<span class="directory-name">' . $username . '</span>';
+			if ( $has_video ) {
+				$the_directory .= '<span class="video-indicator" aria-label="Includes video">';
+				$the_directory .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+				$the_directory .= '</span>';
+			}
 		$the_directory .= '</a>';
 		
 
@@ -247,44 +263,44 @@ $show_buttons = get_query_var( 'show_buttons', true );
 if ( $show_buttons && $context === 'full' ) { // main directory
 	?>
 		<section class="entry-content alignwide">
-			<p><a href="/login/">Create an account</a> to add your own profile.</p>
+			<p><a href="/login/">Create an account</a> to share your own story.</p>
 			<div class="is-layout-flex wp-block-buttons">
 				<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-					<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+					<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
 				</div>
 				<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-					<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+					<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
 				</div>
 			</div>
 		</section>
 	<?php
 	get_template_part( 'template-parts/content/content', 'taxonomies' );
-} 
+}
 if ( $show_buttons && strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory page
 	?>
 	<section class="entry-content alignwide">
-		<p><a href="/login/">Create an account</a> to add your own profile.</p>
+		<p><a href="/login/">Create an account</a> to share your own story.</p>
 		<div class="is-layout-flex wp-block-buttons">
 			<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-				<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+				<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
 			</div>
 			<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-				<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+				<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
 			</div>
 		</div>
 	</section>
 	<?php
-} 
+}
 if ( $show_buttons && ( is_front_page() || $context === 'widget' ) ) { // for widgets (front-page and sidebar)
 	?>
 	<div class="is-layout-flex wp-block-buttons is-content-justification-center">
 		<?php if ( is_front_page() ) { ?>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">View All Profiles</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Browse Stories</a>
 		</div>
 		<?php } ?>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Profile</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
 		</div>
 	</div>
 <?php } ?>
