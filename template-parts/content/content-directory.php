@@ -132,7 +132,7 @@ function wasmo_filter_directory_has_video( $user ) {
 }}
 
 
-$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '' ) );
+$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '', $tax && $termid ? $tax . '-' . $termid : '' ) );
 $transient_exp = WEEK_IN_SECONDS;
 
 // Only skip cache for admin users in debug mode
@@ -177,6 +177,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		$has_image = $userimg ? true : false;
 		$has_video = (bool) get_field( 'video', 'user_' . $userid );
 		$video_class = $has_video ? 'has-video' : '';
+		$tagline = get_field( 'tagline', 'user_' . $userid );
 		$counter++;
 		if ( $offset >= $counter ) { // if offsetting, skip ahead
 			continue;
@@ -222,6 +223,9 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
 			$the_directory .= '<span class="directory-name">' . $username . '</span>';
+			if ( $tagline ) {
+				$the_directory .= '<span class="directory-tagline">' . esc_html( wp_strip_all_tags( $tagline ) ) . '</span>';
+			}
 			if ( $has_video ) {
 				$the_directory .= '<span class="video-indicator" aria-label="Includes video">';
 				$the_directory .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';

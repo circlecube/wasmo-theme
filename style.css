@@ -415,6 +415,57 @@ body.logged-in .menu-item.logged-in {
 	width: 16px;
 }
 
+/* Directory: tagline strip above name, fades in on hover on desktop */
+.directory .person .directory-tagline {
+	background-color: rgba(0, 0, 0, 0.6);
+	bottom: 36px;
+	color: var(--color-white);
+	font-size: 13px;
+	height: 28px;
+	line-height: 28px;
+	max-width: 100%;
+	opacity: 0;
+	overflow: hidden;
+	padding: 0 0.5rem;
+	position: absolute;
+	text-align: center;
+	text-overflow: ellipsis;
+	text-shadow: 1px 1px rgba(0,0,0,.25);
+	transition: opacity 0.2s ease;
+	white-space: nowrap;
+	width: 100%;
+	z-index: 1;
+}
+
+/* Name is always visible; higher specificity (3 classes) overrides the 2-class hide rule */
+.the-directory .directory .person .directory-name {
+	bottom: 0;
+	opacity: 1;
+}
+
+/* Desktop: show tagline on hover; keep badges above always-visible name */
+@media only screen and (min-width: 768px) {
+	.the-directory .directory .person .directory-name {
+		bottom: 0;
+		opacity: 1;
+	}
+	.the-directory .directory > .user-week::after,
+	.the-directory .directory > .user-month::after,
+	.the-directory .directory > .updated-week::after,
+	.the-directory .directory > .updated-month::after {
+		bottom: 36px;
+	}
+	.the-directory .directory > .user-week:hover::after,
+	.the-directory .directory > .user-month:hover::after,
+	.the-directory .directory > .updated-week:hover::after,
+	.the-directory .directory > .updated-month:hover::after {
+		bottom: 64px;
+	}
+	.directory .person:hover .directory-tagline {
+		opacity: 1;
+	}
+}
+
 /* Pagination */
 .wasmo-pagination {
 	width: 100%;

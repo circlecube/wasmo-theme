@@ -21,20 +21,20 @@ if ( $in_directory === 'website' || $in_directory === false ) {
     return;
 }
 
-$_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read this wasmormon profile from {name}';
-$_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Great wasmormon profile, {name}!&url={link}';
-// $_toot     = 'Great wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
-$_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read this wasmormon profile from {name}';
-$_email    = 'mailto:?subject=Read this wasmormon profile from {name}&body=Read this wasmormon profile from {name}: {link}';
+$_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read {name}\'s Mormon faith journey story on wasmormon.org';
+$_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text={name} shares their Mormon faith transition story on wasmormon.org&url={link}';
+// $_toot     = '{name} shares their Mormon faith transition story on wasmormon.org {link} @wasmormon@mas.to';
+$_reddit   = 'https://www.reddit.com/submit?url={link}&title={name}\'s Mormon faith journey story - wasmormon.org';
+$_email    = 'mailto:?subject=Mormon faith journey story from {name}&body=Check out {name}\'s Mormon faith journey story on wasmormon.org: {link}';
 
 // links for when it is users own profile
 if ( $is_this_user ) {
 
-$_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=Read my wasmormon profile';
-$_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=Read my wasmormon profile!&url={link}';
-// $_toot     = 'Check out my wasmormon profile, {name}!&url={link} @wasmormon@mas.to';
-$_reddit   = 'https://www.reddit.com/submit?url={link}&title=Read my wasmormon profile';
-$_email    = 'mailto:?subject=Read my wasmormon profile&body=Read my wasmormon profile ({name}): {link}';
+$_facebook = 'https://www.facebook.com/sharer.php?u={link}&t=My Mormon faith journey story on wasmormon.org';
+$_tweet    = 'https://twitter.com/intent/tweet?via=wasmormon&text=I shared my Mormon faith transition story on wasmormon.org&url={link}';
+// $_toot     = 'I shared my Mormon faith transition story on wasmormon.org {link} @wasmormon@mas.to';
+$_reddit   = 'https://www.reddit.com/submit?url={link}&title=My Mormon faith journey story - wasmormon.org';
+$_email    = 'mailto:?subject=My Mormon faith journey story&body=I shared my Mormon faith journey story on wasmormon.org: {link}';
 
 }
 
