@@ -16,7 +16,7 @@
     "author": "wasmormon.org",
     "license": "GPL-2.0-or-later",
     "devDependencies": {
-        "@wordpress/scripts": "^32.3.0",
+        "@wordpress/scripts": "^34.0.0",
         "ajv": "^8.17.1"
     },
     "dependencies": {
