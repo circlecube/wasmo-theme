@@ -90,3 +90,25 @@ function wasmo_loginout_menu_link( $items, $args ) {
 	return $items;
 }
 add_filter( 'wp_nav_menu_items', 'wasmo_loginout_menu_link', 10, 2 );
+
+function wasmo_get_profile_count() {
+	$cached = get_transient( 'wasmo_profile_count' );
+	if ( $cached !== false ) {
+		return (int) $cached;
+	}
+	$users = get_users( [ 'fields' => 'all' ] );
+	$count = 0;
+	foreach ( $users as $user ) {
+		if ( ! get_field( 'hi', 'user_' . $user->ID ) ) continue;
+		if ( ! get_field( 'tagline', 'user_' . $user->ID ) ) continue;
+		$in_dir = get_field( 'in_directory', 'user_' . $user->ID );
+		if ( 'false' === $in_dir || false === $in_dir ) continue;
+		$count++;
+	}
+	set_transient( 'wasmo_profile_count', $count, DAY_IN_SECONDS );
+	return $count;
+}
+function wasmo_profile_count_shortcode() {
+	return number_format( wasmo_get_profile_count() );
+}
+add_shortcode( 'wasmo_profile_count', 'wasmo_profile_count_shortcode' );

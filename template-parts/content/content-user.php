@@ -170,18 +170,43 @@ else :
 endif;
 
 $is_this_user = false;
-if ( 
+if (
 	is_user_logged_in() &&
-	$userid === get_current_user_id() 
+	$userid === get_current_user_id()
 ) {
 	$is_this_user = true;
 }
+
+// Related stories based on shared taxonomy terms
+$related_term = null;
+$related_tax  = '';
+if ( ! empty( $spectrum_terms ) ) {
+	$related_term = $spectrum_terms[0];
+	$related_tax  = 'spectrum';
+} elseif ( ! empty( $shelf_items ) ) {
+	$related_term = $shelf_items[0];
+	$related_tax  = 'shelf';
+}
+if ( $related_term && $related_tax ) {
+	echo '<div class="profile-section related-stories">';
+	echo '<h3>More ' . esc_html( $related_term->name ) . ' Stories</h3>';
+	set_query_var( 'context', 'tax' );
+	set_query_var( 'max_profiles', 6 );
+	set_query_var( 'lazy', false );
+	set_query_var( 'show_buttons', false );
+	set_query_var( 'tax', $related_tax );
+	set_query_var( 'termid', $related_term->term_id );
+	set_query_var( 'require_image', true );
+	set_query_var( 'video_only', false );
+	get_template_part( 'template-parts/content/content', 'directory' );
+	echo '</div>';
+}
 ?>
 
-<?php 
+<?php
 // Profile comments section
 set_query_var( 'userid', $userid );
-get_template_part( 'template-parts/content/content', 'user-comments' ); 
+get_template_part( 'template-parts/content/content', 'user-comments' );
 ?>
 
 <div class="content-footer">
