@@ -118,10 +118,10 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 
 						<div class="is-layout-flex wp-block-buttons">
 							<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Create a Profile</a>
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
 							</div>
 							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">See All Profiles</a>
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Browse Stories</a>
 							</div>
 							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
 								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/questions/' ); ?>" style="border-radius:100px">See Questions</a>

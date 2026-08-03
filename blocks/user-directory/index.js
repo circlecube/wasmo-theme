@@ -10,7 +10,7 @@ import './style.scss';
 
 registerBlockType( 'wasmo/user-directory', {
     edit: ( { attributes, setAttributes } ) => {
-        const { context, maxProfiles, showLoadMore, showButtons, taxonomyFilter, termId, requireImage } = attributes;
+        const { context, maxProfiles, showLoadMore, showButtons, taxonomyFilter, termId, requireImage, videoOnly } = attributes;
         const blockProps = useBlockProps();
 
         // Fetch users for preview
@@ -71,6 +71,13 @@ registerBlockType( 'wasmo/user-directory', {
                     </PanelBody>
 
                     <PanelBody title={ __( 'Filter Options', 'wasmo-theme' ) } initialOpen={ false }>
+                        <ToggleControl
+                            label={ __( 'Video Stories Only', 'wasmo-theme' ) }
+                            checked={ videoOnly }
+                            onChange={ ( value ) => setAttributes( { videoOnly: value } ) }
+                            help={ __( 'Only show profiles that include a video story.', 'wasmo-theme' ) }
+                        />
+
                         <SelectControl
                             label={ __( 'Taxonomy Filter', 'wasmo-theme' ) }
                             value={ taxonomyFilter }
@@ -110,6 +117,7 @@ registerBlockType( 'wasmo/user-directory', {
                         { showLoadMore && <span className="feature-badge">⏬ Load More</span> }
                         { showButtons && <span className="feature-badge">🔘 Buttons</span> }
                         { !requireImage && <span className="feature-badge feature-warning">🖼️ No image required</span> }
+                        { videoOnly && <span className="filter-badge">🎥 Video Only</span> }
                         { taxonomyFilter && (
                             <span className="filter-badge">🏷️ { taxonomyFilter }: { termId }</span>
                         ) }
@@ -138,8 +146,8 @@ registerBlockType( 'wasmo/user-directory', {
 
                     { showButtons && (
                         <div className="preview-buttons">
-                            <span className="preview-button">View All Profiles</span>
-                            <span className="preview-button">Random Profile</span>
+                            <span className="preview-button">Browse Stories</span>
+                            <span className="preview-button">Random Story</span>
                         </div>
                     ) }
                 </div>

@@ -14,6 +14,7 @@ $show_buttons   = $attributes['showButtons'] ?? true;
 $tax_filter     = $attributes['taxonomyFilter'] ?? '';
 $term_id        = $attributes['termId'] ?? 0;
 $require_image  = $attributes['requireImage'] ?? true;
+$video_only     = $attributes['videoOnly'] ?? false;
 
 // Set query vars for the template part
 set_query_var( 'context', $context );
@@ -21,7 +22,8 @@ set_query_var( 'max_profiles', $max_profiles );
 set_query_var( 'lazy', $show_load_more );
 set_query_var( 'showall', false );
 set_query_var( 'require_image', $require_image );
-set_query_var( 'show_buttons', $show_buttons ); // Pass block attribute to template
+set_query_var( 'show_buttons', $show_buttons );
+set_query_var( 'video_only', $video_only );
 
 // Set taxonomy filter if provided
 if ( ! empty( $tax_filter ) && $term_id > 0 ) {
