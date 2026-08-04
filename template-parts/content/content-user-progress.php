@@ -106,6 +106,17 @@ if ( $done < 8 ) {
 	return;
 }
 
+// Load server-saved state and merge with localStorage (handled in JS)
+$saved_further  = [];
+$further_raw    = get_user_meta( $userid, 'wasmo_further_completed', true );
+if ( $further_raw ) {
+	$decoded = json_decode( $further_raw, true );
+	if ( is_array( $decoded ) ) {
+		$saved_further = $decoded;
+	}
+}
+$further_nonce = wp_create_nonce( 'wasmo_further_nonce' );
+
 $further_items = [
 	'share'    => [
 		'label' => 'Share your story on social media',
@@ -193,11 +204,31 @@ $further_items = [
 <script>
 (function () {
 	var storageKey = 'wasmo-further-<?php echo (int) $userid; ?>';
-	var saved = [];
-	try { saved = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (e) {}
+	var ajaxUrl    = '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
+	var nonce      = '<?php echo esc_js( $further_nonce ); ?>';
+
+	// Server state is authoritative; merge with any localStorage extras
+	var serverState = <?php echo wp_json_encode( $saved_further ); ?>;
+	var localState  = [];
+	try { localState = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (e) {}
+
+	// Union: checked if either source says so
+	var initialState = serverState.slice();
+	localState.forEach(function (k) {
+		if (initialState.indexOf(k) === -1) initialState.push(k);
+	});
+	try { localStorage.setItem(storageKey, JSON.stringify(initialState)); } catch (e) {}
+
+	function saveToServer(checked) {
+		var fd = new FormData();
+		fd.append('action', 'wasmo_save_further');
+		fd.append('nonce', nonce);
+		fd.append('items', JSON.stringify(checked));
+		fetch(ajaxUrl, { method: 'POST', body: fd }).catch(function () {});
+	}
 
 	document.querySelectorAll('.story-further-cb').forEach(function (cb) {
-		if (saved.indexOf(cb.name) !== -1) {
+		if (initialState.indexOf(cb.name) !== -1) {
 			cb.checked = true;
 			cb.closest('.story-further-item').classList.add('is-done');
 		}
@@ -207,6 +238,7 @@ $further_items = [
 				document.querySelectorAll('.story-further-cb:checked')
 			).map(function (el) { return el.name; });
 			try { localStorage.setItem(storageKey, JSON.stringify(checked)); } catch (e) {}
+			saveToServer(checked);
 		});
 	});
 })();
