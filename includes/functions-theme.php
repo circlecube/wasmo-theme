@@ -121,9 +121,27 @@ function wasmo_ajax_save_further() {
 	if ( ! $userid ) {
 		wp_send_json_error( 'not_logged_in' );
 	}
-	$allowed = [ 'share', 'video', 'more-q', 'post', 'react', 'comment', 'update', 'invite', 'feedback', 'donate' ];
+	$allowed = [ 'share', 'update', 'video', 'react', 'comment', 'more-q', 'invite', 'post', 'feedback', 'donate' ];
 	$raw     = isset( $_POST['items'] ) ? json_decode( stripslashes( $_POST['items'] ), true ) : [];
 	$items   = is_array( $raw ) ? array_values( array_intersect( $raw, $allowed ) ) : [];
 	update_user_meta( $userid, 'wasmo_further_completed', wp_json_encode( $items ) );
+	wp_send_json_success();
+}
+
+// AJAX: save box open/closed/dismissed state to user meta
+add_action( 'wp_ajax_wasmo_save_box_states', 'wasmo_ajax_save_box_states' );
+function wasmo_ajax_save_box_states() {
+	check_ajax_referer( 'wasmo_further_nonce', 'nonce' );
+	$userid = get_current_user_id();
+	if ( ! $userid ) {
+		wp_send_json_error( 'not_logged_in' );
+	}
+	$states = [
+		'progress_open'      => isset( $_POST['progress_open'] )      ? rest_sanitize_boolean( $_POST['progress_open'] )      : true,
+		'further_open'       => isset( $_POST['further_open'] )       ? rest_sanitize_boolean( $_POST['further_open'] )       : false,
+		'progress_dismissed' => isset( $_POST['progress_dismissed'] ) ? rest_sanitize_boolean( $_POST['progress_dismissed'] ) : false,
+		'further_dismissed'  => isset( $_POST['further_dismissed'] )  ? rest_sanitize_boolean( $_POST['further_dismissed'] )  : false,
+	];
+	update_user_meta( $userid, 'wasmo_box_states', wp_json_encode( $states ) );
 	wp_send_json_success();
 }
