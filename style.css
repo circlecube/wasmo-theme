@@ -5095,55 +5095,105 @@ a.marriage-timeline-name:hover {
    ========================================================================== */
 
 /* Profile Sections */
-/* Story completion progress checklist */
-.story-progress {
-	background: var(--color-white);
-	border: 2px solid var(--color-orange);
+/* Story completion progress checklist + Take Things Further box */
+.story-progress,
+.story-further {
 	border-radius: 8px;
-	margin-bottom: 2rem;
+	margin-bottom: 1.5rem;
+	padding: 0;
+}
+.story-progress {
+	border: 2px solid var(--color-orange);
+}
+.story-further {
+	border: 2px solid var(--color-blue);
+}
+
+/* details/summary reset and layout */
+.story-progress details,
+.story-further details {
 	padding: 1.25rem 1.5rem;
 }
-@media (prefers-color-scheme: dark) {
-	.story-progress {
-		background: var(--global-font-color, #111);
-	}
+.story-progress summary,
+.story-further summary {
+	cursor: pointer;
+	list-style: none;
+	outline: none;
 }
+.story-progress summary::-webkit-details-marker,
+.story-further summary::-webkit-details-marker {
+	display: none;
+}
+.story-progress summary::marker,
+.story-further summary::marker {
+	display: none;
+}
+
+/* header row: title left, count+arrow right */
 .story-progress-header {
-	align-items: baseline;
+	align-items: center;
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.6rem;
 }
 .story-progress-title {
-	font-size: 1.1rem;
+	font-size: 1.05rem;
 	font-weight: 700;
 	letter-spacing: 0.02em;
 	text-transform: uppercase;
+}
+.story-progress-right {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
 }
 .story-progress-count {
 	font-size: 0.9rem;
 	opacity: 0.75;
 }
+
+/* collapse arrow — rotates when open */
+.story-progress-arrow {
+	border-bottom: 2px solid currentColor;
+	border-right: 2px solid currentColor;
+	display: inline-block;
+	flex-shrink: 0;
+	height: 8px;
+	opacity: 0.6;
+	transform: rotate(45deg);
+	transition: transform 0.2s ease;
+	width: 8px;
+}
+details[open] .story-progress-arrow {
+	transform: rotate(-135deg);
+}
+
+/* progress bar — visible in summary (always shown) */
 .story-progress-bar-wrap {
 	background: var(--color-gray-1, #e0e0e0);
 	border-radius: 4px;
 	height: 10px;
-	margin-bottom: 0.75rem;
+	margin-top: 0.1rem;
 	overflow: hidden;
 	width: 100%;
 }
-.story-progress-bar {
+.story-progress .story-progress-bar {
 	background: var(--color-orange);
 	border-radius: 4px;
 	height: 100%;
 	min-width: 4px;
 	transition: width 0.4s ease;
 }
-.story-progress-message {
+
+/* collapsible body content */
+.story-progress-message,
+.story-further .story-progress-message {
 	font-size: 0.95rem;
-	margin: 0 0 1rem;
+	margin: 1rem 0;
 	opacity: 0.85;
 }
+
+/* checklist: 2 columns on desktop */
 .story-progress-checklist {
 	columns: 2;
 	gap: 0.25rem 1.5rem;
@@ -5164,6 +5214,8 @@ a.marriage-timeline-name:hover {
 	gap: 0.4rem;
 	padding: 0.2rem 0;
 }
+
+/* circle check indicator — shared by both boxes */
 .story-progress-check {
 	border-radius: 50%;
 	border: 2px solid currentColor;
@@ -5173,12 +5225,20 @@ a.marriage-timeline-name:hover {
 	position: relative;
 	width: 16px;
 }
-.story-progress-item.is-done .story-progress-check {
-	background: var(--color-orange);
-	border-color: var(--color-orange);
+.story-progress-item.is-done .story-progress-check,
+.story-further-item.is-done .story-progress-check {
 	opacity: 1;
 }
-.story-progress-item.is-done .story-progress-check::after {
+.story-progress .story-progress-item.is-done .story-progress-check {
+	background: var(--color-orange);
+	border-color: var(--color-orange);
+}
+.story-further .story-further-item.is-done .story-progress-check {
+	background: var(--color-blue);
+	border-color: var(--color-blue);
+}
+.story-progress-item.is-done .story-progress-check::after,
+.story-further-item.is-done .story-progress-check::after {
 	border-bottom: 2px solid white;
 	border-right: 2px solid white;
 	content: '';
@@ -5193,6 +5253,8 @@ a.marriage-timeline-name:hover {
 	opacity: 0.6;
 	text-decoration: line-through;
 }
+
+/* Edit CTA button (orange) */
 .story-progress-cta {
 	background: var(--color-orange);
 	border-radius: 100px;
@@ -5208,6 +5270,51 @@ a.marriage-timeline-name:hover {
 	color: white;
 	opacity: 0.85;
 	text-decoration: none;
+}
+
+/* Take Things Further — checklist with interactive checkboxes */
+.story-further-checklist {
+	list-style: none;
+	margin: 0 0 0.5rem;
+	padding: 0;
+}
+.story-further-item {
+	border-bottom: 1px solid var(--color-gray-1, #eee);
+	font-size: 0.9rem;
+	padding: 0.25rem 0;
+}
+.story-further-item:last-child {
+	border-bottom: none;
+}
+.story-further-label {
+	align-items: flex-start;
+	cursor: pointer;
+	display: flex;
+	gap: 0.5rem;
+	padding: 0.2rem 0;
+	user-select: none;
+}
+.story-further-cb {
+	/* hide native checkbox — we use .story-progress-check visually */
+	opacity: 0;
+	position: absolute;
+	width: 0;
+}
+.story-further-item.is-done .story-further-item-label {
+	opacity: 0.55;
+	text-decoration: line-through;
+}
+.story-further-item-label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+.story-further-link {
+	font-size: 0.8rem;
+	opacity: 0.7;
+}
+.story-further-link:hover {
+	opacity: 1;
 }
 
 .profile-section {

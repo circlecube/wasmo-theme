@@ -47,7 +47,7 @@ $_email    = str_replace(['{link}', '{name}'], [$link, $name], $_email );
 
 ?>
 
-<ul class="social-links social-share-links">
+<ul id="story-share" class="social-links social-share-links">
 
     <li>
         <h4 style="margin: 0 0 0.5rem;">

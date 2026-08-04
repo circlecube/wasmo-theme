@@ -1,6 +1,7 @@
 <?php
 /**
- * Template part for the "Complete Your Story" progress checklist.
+ * Template part for the "Complete Your Story" progress checklist
+ * and the "Take Things Further" engagement box.
  * Shown only on a user's own profile and the edit page (logged-in only).
  *
  * Expects $userid to be available via set_query_var / load_template extraction.
@@ -10,13 +11,16 @@ if ( ! $userid || ! is_user_logged_in() ) {
 	return;
 }
 
-// Gather completion state for each of the 10 items
+$user_data = get_userdata( $userid );
+$username  = $user_data ? esc_html( $user_data->display_name ) : '';
+
+// ── Completion checks ─────────────────────────────────────────────────────────
+
 $completed = [];
 
 $completed['hi']       = (bool) get_field( 'hi', 'user_' . $userid );
 $completed['tagline']  = (bool) get_field( 'tagline', 'user_' . $userid );
-$completed['media']    = (bool) get_field( 'photo', 'user_' . $userid )
-                      || (bool) get_field( 'video', 'user_' . $userid );
+$completed['photo']    = (bool) get_field( 'photo', 'user_' . $userid );
 $completed['about_me'] = (bool) get_field( 'about_me', 'user_' . $userid );
 $completed['why_left'] = (bool) get_field( 'why_i_left', 'user_' . $userid );
 
@@ -29,32 +33,34 @@ if ( is_array( $question_rows ) ) {
 		}
 	}
 }
-$completed['q1']      = $answered >= 1;
-$completed['q2']      = $answered >= 2;
-$completed['q3']      = $answered >= 3;
+$completed['q1']       = $answered >= 1;
+$completed['q2']       = $answered >= 2;
+$completed['q3']       = $answered >= 3;
 $completed['spectrum'] = ! empty( get_field( 'mormon_spectrum', 'user_' . $userid ) );
 $completed['shelf']    = ! empty( get_field( 'my_shelf', 'user_' . $userid ) );
 
 $total = count( $completed );
 $done  = count( array_filter( $completed ) );
-$pct   = $total > 0 ? round( $done / $total * 100 ) : 0;
+$pct   = $total > 0 ? (int) round( $done / $total * 100 ) : 0;
 
-if ( $pct === 100 ) {
-	$message = 'Your story is complete! Thank you for sharing.';
-} elseif ( $pct >= 80 ) {
-	$message = 'Almost there — just a few more details to add.';
-} elseif ( $pct >= 50 ) {
-	$message = 'Great progress! Keep going to help others find your story.';
-} elseif ( $pct >= 20 ) {
-	$message = 'Good start — fill in more to make your story shine.';
+// ── Encouragement message ─────────────────────────────────────────────────────
+
+if ( $pct >= 100 ) {
+	$message = "Amazing work, {$username} — your story is complete! Thank you for sharing.";
+} elseif ( $pct >= 70 ) {
+	$message = "You're almost there, {$username}! Just a couple more details will make your story shine.";
+} elseif ( $pct >= 40 ) {
+	$message = "Great start, {$username}! Keep going — each section helps others connect with your experience.";
 } else {
-	$message = 'Help others connect with your experience — complete your story.';
+	$message = "Hi {$username}! Help others find your story by filling in a few more details below.";
 }
+
+// ── Item labels ───────────────────────────────────────────────────────────────
 
 $items = [
 	'hi'       => 'Introduction',
 	'tagline'  => 'Tagline',
-	'media'    => 'Photo or video',
+	'photo'    => 'Photo',
 	'about_me' => 'About me',
 	'why_left' => 'Why I left',
 	'q1'       => 'Question answer (1 of 3)',
@@ -66,23 +72,174 @@ $items = [
 ?>
 
 <aside class="story-progress" aria-label="Story completion progress">
-	<div class="story-progress-header">
-		<span class="story-progress-title">Complete Your Story</span>
-		<span class="story-progress-count"><?php echo esc_html( $done . ' / ' . $total ); ?></span>
-	</div>
-	<div class="story-progress-bar-wrap" role="progressbar" aria-valuenow="<?php echo esc_attr( $pct ); ?>" aria-valuemin="0" aria-valuemax="100" aria-label="<?php echo esc_attr( $pct . '% complete' ); ?>">
-		<div class="story-progress-bar" style="width:<?php echo esc_attr( $pct ); ?>%"></div>
-	</div>
-	<p class="story-progress-message"><?php echo esc_html( $message ); ?></p>
-	<ul class="story-progress-checklist">
-		<?php foreach ( $items as $key => $label ) : ?>
-		<li class="story-progress-item <?php echo $completed[ $key ] ? 'is-done' : 'is-todo'; ?>">
-			<span class="story-progress-check" aria-hidden="true"></span>
-			<span class="story-progress-item-label"><?php echo esc_html( $label ); ?></span>
-		</li>
-		<?php endforeach; ?>
-	</ul>
-	<?php if ( $pct < 100 ) : ?>
-	<a class="story-progress-cta" href="<?php echo esc_url( home_url( '/edit/' ) ); ?>">Edit your story</a>
-	<?php endif; ?>
+	<details open>
+		<summary>
+			<div class="story-progress-header">
+				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; ?></span>
+				<span class="story-progress-right">
+					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
+					<span class="story-progress-arrow" aria-hidden="true"></span>
+				</span>
+			</div>
+			<div class="story-progress-bar-wrap" role="progressbar" aria-valuenow="<?php echo esc_attr( $pct ); ?>" aria-valuemin="0" aria-valuemax="100" aria-label="<?php echo esc_attr( $pct . '% complete' ); ?>">
+				<div class="story-progress-bar" style="width:<?php echo esc_attr( $pct ); ?>%"></div>
+			</div>
+		</summary>
+		<p class="story-progress-message"><?php echo esc_html( $message ); ?></p>
+		<ul class="story-progress-checklist">
+			<?php foreach ( $items as $key => $label ) : ?>
+			<li class="story-progress-item <?php echo $completed[ $key ] ? 'is-done' : 'is-todo'; ?>">
+				<span class="story-progress-check" aria-hidden="true"></span>
+				<span class="story-progress-item-label"><?php echo esc_html( $label ); ?></span>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+		<?php if ( $pct < 100 ) : ?>
+		<a class="story-progress-cta" href="<?php echo esc_url( home_url( '/edit/' ) ); ?>">Edit your story</a>
+		<?php endif; ?>
+	</details>
 </aside>
+
+<?php
+// ── "Take Things Further" box — shown when story is nearly complete (8+/10) ──
+if ( $done < 8 ) {
+	return;
+}
+
+// Load server-saved state and merge with localStorage (handled in JS)
+$saved_further  = [];
+$further_raw    = get_user_meta( $userid, 'wasmo_further_completed', true );
+if ( $further_raw ) {
+	$decoded = json_decode( $further_raw, true );
+	if ( is_array( $decoded ) ) {
+		$saved_further = $decoded;
+	}
+}
+$further_nonce = wp_create_nonce( 'wasmo_further_nonce' );
+
+$further_items = [
+	'share'    => [
+		'label' => 'Share your story on social media',
+		'link'  => '#story-share',
+		'text'  => 'Jump to the share buttons',
+	],
+	'video'    => [
+		'label' => 'Add a video to tell your story',
+		'link'  => home_url( '/edit/' ),
+		'text'  => 'Edit your profile',
+	],
+	'more-q'   => [
+		'label' => 'Answer more questions — or suggest new ones',
+		'link'  => home_url( '/questions/' ),
+		'text'  => 'See all questions',
+	],
+	'post'     => [
+		'label' => 'Submit a post or idea for a new article',
+		'link'  => home_url( '/contact/' ),
+		'text'  => 'Contact us',
+	],
+	'react'    => [
+		'label' => 'Read other profiles and add reactions',
+		'link'  => home_url( '/profiles/' ),
+		'text'  => 'Browse stories',
+	],
+	'comment'  => [
+		'label' => 'Comment on other profiles',
+		'link'  => home_url( '/profiles/' ),
+		'text'  => 'Browse stories',
+	],
+	'update'   => [
+		'label' => 'Update your profile — each save moves you to the top of the list',
+		'link'  => home_url( '/edit/' ),
+		'text'  => 'Edit your profile',
+	],
+	'invite'   => [
+		'label' => 'Invite someone else to share their story',
+		'link'  => null,
+		'text'  => null,
+	],
+	'feedback' => [
+		'label' => 'Send a feature request or idea',
+		'link'  => home_url( '/contact/' ),
+		'text'  => 'Contact form',
+	],
+	'donate'   => [
+		'label' => 'Consider a donation to help keep the site running',
+		'link'  => home_url( '/donate/' ),
+		'text'  => 'Donate',
+	],
+];
+?>
+
+<aside class="story-further" aria-label="Take things further">
+	<details>
+		<summary>
+			<div class="story-progress-header">
+				<span class="story-progress-title">Take Things Further<?php echo $username ? ', ' . $username : ''; ?></span>
+				<span class="story-progress-right">
+					<span class="story-progress-arrow" aria-hidden="true"></span>
+				</span>
+			</div>
+		</summary>
+		<p class="story-progress-message">Your story is in great shape — here are some ways to go even further and help grow the community. Check them off as you go!</p>
+		<ul class="story-further-checklist">
+			<?php foreach ( $further_items as $key => $item ) : ?>
+			<li class="story-further-item" data-key="<?php echo esc_attr( $key ); ?>">
+				<label class="story-further-label">
+					<input class="story-further-cb" type="checkbox" name="<?php echo esc_attr( $key ); ?>">
+					<span class="story-progress-check" aria-hidden="true"></span>
+					<span class="story-further-item-label">
+						<?php echo esc_html( $item['label'] ); ?>
+						<?php if ( $item['link'] ) : ?>
+						<a class="story-further-link" href="<?php echo esc_url( $item['link'] ); ?>"><?php echo esc_html( $item['text'] ); ?></a>
+						<?php endif; ?>
+					</span>
+				</label>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+	</details>
+</aside>
+
+<script>
+(function () {
+	var storageKey = 'wasmo-further-<?php echo (int) $userid; ?>';
+	var ajaxUrl    = '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
+	var nonce      = '<?php echo esc_js( $further_nonce ); ?>';
+
+	// Server state is authoritative; merge with any localStorage extras
+	var serverState = <?php echo wp_json_encode( $saved_further ); ?>;
+	var localState  = [];
+	try { localState = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (e) {}
+
+	// Union: checked if either source says so
+	var initialState = serverState.slice();
+	localState.forEach(function (k) {
+		if (initialState.indexOf(k) === -1) initialState.push(k);
+	});
+	try { localStorage.setItem(storageKey, JSON.stringify(initialState)); } catch (e) {}
+
+	function saveToServer(checked) {
+		var fd = new FormData();
+		fd.append('action', 'wasmo_save_further');
+		fd.append('nonce', nonce);
+		fd.append('items', JSON.stringify(checked));
+		fetch(ajaxUrl, { method: 'POST', body: fd }).catch(function () {});
+	}
+
+	document.querySelectorAll('.story-further-cb').forEach(function (cb) {
+		if (initialState.indexOf(cb.name) !== -1) {
+			cb.checked = true;
+			cb.closest('.story-further-item').classList.add('is-done');
+		}
+		cb.addEventListener('change', function () {
+			cb.closest('.story-further-item').classList.toggle('is-done', cb.checked);
+			var checked = Array.from(
+				document.querySelectorAll('.story-further-cb:checked')
+			).map(function (el) { return el.name; });
+			try { localStorage.setItem(storageKey, JSON.stringify(checked)); } catch (e) {}
+			saveToServer(checked);
+		});
+	});
+})();
+</script>

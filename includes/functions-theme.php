@@ -112,3 +112,18 @@ function wasmo_profile_count_shortcode() {
 	return number_format( wasmo_get_profile_count() );
 }
 add_shortcode( 'wasmo_profile_count', 'wasmo_profile_count_shortcode' );
+
+// AJAX: save "Take Things Further" checked state to user meta
+add_action( 'wp_ajax_wasmo_save_further', 'wasmo_ajax_save_further' );
+function wasmo_ajax_save_further() {
+	check_ajax_referer( 'wasmo_further_nonce', 'nonce' );
+	$userid = get_current_user_id();
+	if ( ! $userid ) {
+		wp_send_json_error( 'not_logged_in' );
+	}
+	$allowed = [ 'share', 'video', 'more-q', 'post', 'react', 'comment', 'update', 'invite', 'feedback', 'donate' ];
+	$raw     = isset( $_POST['items'] ) ? json_decode( stripslashes( $_POST['items'] ), true ) : [];
+	$items   = is_array( $raw ) ? array_values( array_intersect( $raw, $allowed ) ) : [];
+	update_user_meta( $userid, 'wasmo_further_completed', wp_json_encode( $items ) );
+	wp_send_json_success();
+}
