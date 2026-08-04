@@ -21,8 +21,8 @@ $completed = [];
 $completed['hi']       = (bool) get_field( 'hi', 'user_' . $userid );
 $completed['tagline']  = (bool) get_field( 'tagline', 'user_' . $userid );
 $completed['photo']    = (bool) get_field( 'photo', 'user_' . $userid );
-$completed['about_me'] = (bool) get_field( 'about_me', 'user_' . $userid );
 $completed['why_left'] = (bool) get_field( 'why_i_left', 'user_' . $userid );
+$completed['about_me'] = (bool) get_field( 'about_me', 'user_' . $userid );
 
 $question_rows = get_field( 'questions', 'user_' . $userid );
 $answered = 0;
@@ -55,30 +55,49 @@ if ( $pct >= 100 ) {
 	$message = "Hi {$username}! Help others find your story by filling in a few more details below.";
 }
 
-// ── Item labels ───────────────────────────────────────────────────────────────
+// ── Item labels (ordered: foundation → story → community) ────────────────────
 
 $items = [
 	'hi'       => 'Introduction',
 	'tagline'  => 'Tagline',
 	'photo'    => 'Photo',
-	'about_me' => 'About me',
 	'why_left' => 'Why I left',
+	'about_me' => 'About me',
 	'q1'       => 'Question answer (1 of 3)',
 	'q2'       => 'Question answer (2 of 3)',
 	'q3'       => 'Question answer (3 of 3)',
 	'spectrum' => 'Mormon Spectrum label',
 	'shelf'    => 'On my shelf label',
 ];
+
+// ── Box state: open/closed/dismissed (server + localStorage in JS) ────────────
+
+$box_states_raw = get_user_meta( $userid, 'wasmo_box_states', true );
+$box_states     = [];
+if ( $box_states_raw ) {
+	$decoded = json_decode( $box_states_raw, true );
+	if ( is_array( $decoded ) ) {
+		$box_states = $decoded;
+	}
+}
+$progress_open      = isset( $box_states['progress_open'] )      ? (bool) $box_states['progress_open']      : true;
+$progress_dismissed = isset( $box_states['progress_dismissed'] ) ? (bool) $box_states['progress_dismissed'] : false;
+
+// ── Shared nonce for all box AJAX calls ───────────────────────────────────────
+
+$further_nonce = wp_create_nonce( 'wasmo_further_nonce' );
 ?>
 
-<aside class="story-progress" aria-label="Story completion progress">
-	<details open>
+<?php if ( ! $progress_dismissed ) : ?>
+<aside class="story-progress" id="story-progress-box">
+	<details<?php echo $progress_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
 				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; ?></span>
 				<span class="story-progress-right">
 					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
 					<span class="story-progress-arrow" aria-hidden="true"></span>
+					<button class="story-dismiss-btn" aria-label="Dismiss this box" data-box="progress">&#x2715;</button>
 				</span>
 			</div>
 			<div class="story-progress-bar-wrap" role="progressbar" aria-valuenow="<?php echo esc_attr( $pct ); ?>" aria-valuemin="0" aria-valuemax="100" aria-label="<?php echo esc_attr( $pct . '% complete' ); ?>">
@@ -99,44 +118,51 @@ $items = [
 		<?php endif; ?>
 	</details>
 </aside>
+<?php endif; ?>
 
 <?php
 // ── "Take Things Further" box — shown when story is nearly complete (8+/10) ──
 if ( $done < 8 ) {
+	// Still render the restore button in case progress box is dismissed
+	if ( $progress_dismissed ) : ?>
+	<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
+		<?php echo wasmo_get_icon_svg( 'edit', 16 ); ?>
+		<span>My Checklist</span>
+	</button>
+	<?php endif;
 	return;
 }
 
-// Load server-saved state and merge with localStorage (handled in JS)
-$saved_further  = [];
-$further_raw    = get_user_meta( $userid, 'wasmo_further_completed', true );
+// Load further box state
+$further_open      = isset( $box_states['further_open'] )      ? (bool) $box_states['further_open']      : false;
+$further_dismissed = isset( $box_states['further_dismissed'] ) ? (bool) $box_states['further_dismissed'] : false;
+
+// Load server-saved checkbox state for further items
+$saved_further = [];
+$further_raw   = get_user_meta( $userid, 'wasmo_further_completed', true );
 if ( $further_raw ) {
 	$decoded = json_decode( $further_raw, true );
 	if ( is_array( $decoded ) ) {
 		$saved_further = $decoded;
 	}
 }
-$further_nonce = wp_create_nonce( 'wasmo_further_nonce' );
 
+// Ordered low-effort → high-commitment
 $further_items = [
 	'share'    => [
 		'label' => 'Share your story on social media',
 		'link'  => '#story-share',
-		'text'  => 'Jump to the share buttons',
+		'text'  => 'Jump to share buttons',
+	],
+	'update'   => [
+		'label' => 'Update your profile — each save moves you to the top of the list',
+		'link'  => home_url( '/edit/' ),
+		'text'  => 'Edit your profile',
 	],
 	'video'    => [
 		'label' => 'Add a video to tell your story',
 		'link'  => home_url( '/edit/' ),
 		'text'  => 'Edit your profile',
-	],
-	'more-q'   => [
-		'label' => 'Answer more questions — or suggest new ones',
-		'link'  => home_url( '/questions/' ),
-		'text'  => 'See all questions',
-	],
-	'post'     => [
-		'label' => 'Submit a post or idea for a new article',
-		'link'  => home_url( '/contact/' ),
-		'text'  => 'Contact us',
 	],
 	'react'    => [
 		'label' => 'Read other profiles and add reactions',
@@ -148,15 +174,20 @@ $further_items = [
 		'link'  => home_url( '/profiles/' ),
 		'text'  => 'Browse stories',
 	],
-	'update'   => [
-		'label' => 'Update your profile — each save moves you to the top of the list',
-		'link'  => home_url( '/edit/' ),
-		'text'  => 'Edit your profile',
+	'more-q'   => [
+		'label' => 'Answer more questions — or suggest new ones',
+		'link'  => home_url( '/questions/' ),
+		'text'  => 'See all questions',
 	],
 	'invite'   => [
 		'label' => 'Invite someone else to share their story',
 		'link'  => null,
 		'text'  => null,
+	],
+	'post'     => [
+		'label' => 'Submit a post or idea for a new article',
+		'link'  => home_url( '/contact/' ),
+		'text'  => 'Contact us',
 	],
 	'feedback' => [
 		'label' => 'Send a feature request or idea',
@@ -171,13 +202,23 @@ $further_items = [
 ];
 ?>
 
-<aside class="story-further" aria-label="Take things further">
-	<details>
+<?php // Restore button — shown when either box is dismissed ?>
+<?php if ( $progress_dismissed || $further_dismissed ) : ?>
+<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
+	<?php echo wasmo_get_icon_svg( 'edit', 16 ); ?>
+	<span>My Checklist</span>
+</button>
+<?php endif; ?>
+
+<?php if ( ! $further_dismissed ) : ?>
+<aside class="story-further" id="story-further-box">
+	<details<?php echo $further_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
 				<span class="story-progress-title">Take Things Further<?php echo $username ? ', ' . $username : ''; ?></span>
 				<span class="story-progress-right">
 					<span class="story-progress-arrow" aria-hidden="true"></span>
+					<button class="story-dismiss-btn" aria-label="Dismiss this box" data-box="further">&#x2715;</button>
 				</span>
 			</div>
 		</summary>
@@ -200,46 +241,174 @@ $further_items = [
 		</ul>
 	</details>
 </aside>
+<?php endif; ?>
 
 <script>
 (function () {
-	var storageKey = 'wasmo-further-<?php echo (int) $userid; ?>';
-	var ajaxUrl    = '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
-	var nonce      = '<?php echo esc_js( $further_nonce ); ?>';
+	var ajaxUrl  = '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
+	var nonce    = '<?php echo esc_js( $further_nonce ); ?>';
+	var uid      = <?php echo (int) $userid; ?>;
+	var lsKey    = 'wasmo-further-' + uid;
+	var stateKey = 'wasmo-box-states-' + uid;
 
-	// Server state is authoritative; merge with any localStorage extras
-	var serverState = <?php echo wp_json_encode( $saved_further ); ?>;
-	var localState  = [];
-	try { localState = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (e) {}
+	// ── Helpers ───────────────────────────────────────────────────────────────
 
-	// Union: checked if either source says so
-	var initialState = serverState.slice();
-	localState.forEach(function (k) {
-		if (initialState.indexOf(k) === -1) initialState.push(k);
-	});
-	try { localStorage.setItem(storageKey, JSON.stringify(initialState)); } catch (e) {}
-
-	function saveToServer(checked) {
+	function ajax(action, data) {
 		var fd = new FormData();
-		fd.append('action', 'wasmo_save_further');
+		fd.append('action', action);
 		fd.append('nonce', nonce);
-		fd.append('items', JSON.stringify(checked));
+		Object.keys(data).forEach(function (k) { fd.append(k, data[k]); });
 		fetch(ajaxUrl, { method: 'POST', body: fd }).catch(function () {});
 	}
 
+	var stateTimer = null;
+	function saveBoxStates() {
+		clearTimeout(stateTimer);
+		stateTimer = setTimeout(function () {
+			var s = getBoxStates();
+			try { localStorage.setItem(stateKey, JSON.stringify(s)); } catch (e) {}
+			ajax('wasmo_save_box_states', {
+				progress_open:      s.progress_open      ? '1' : '0',
+				further_open:       s.further_open       ? '1' : '0',
+				progress_dismissed: s.progress_dismissed ? '1' : '0',
+				further_dismissed:  s.further_dismissed  ? '1' : '0',
+			});
+		}, 600);
+	}
+
+	// ── Box state: open/closed/dismissed ──────────────────────────────────────
+
+	// Seed from server (embedded in PHP), then layer localStorage on top
+	var serverStates = <?php echo wp_json_encode([
+		'progress_open'      => $progress_open,
+		'further_open'       => $further_open,
+		'progress_dismissed' => $progress_dismissed,
+		'further_dismissed'  => $further_dismissed,
+	]); ?>;
+	var localStates = {};
+	try { localStates = JSON.parse(localStorage.getItem(stateKey) || '{}'); } catch (e) {}
+
+	// localStorage wins for open/closed; server wins for dismissed (more permanent)
+	var boxStates = {
+		progress_open:      'progress_open'      in localStates ? localStates.progress_open      : serverStates.progress_open,
+		further_open:       'further_open'       in localStates ? localStates.further_open       : serverStates.further_open,
+		progress_dismissed: serverStates.progress_dismissed,
+		further_dismissed:  serverStates.further_dismissed,
+	};
+
+	function getBoxStates() { return boxStates; }
+
+	// Apply initial open/closed state (PHP already handles dismissed visibility)
+	var progressDetails = document.querySelector('#story-progress-box details');
+	var furtherDetails  = document.querySelector('#story-further-box details');
+
+	if (progressDetails) {
+		if (boxStates.progress_open) { progressDetails.open = true; }
+		else { progressDetails.open = false; }
+
+		progressDetails.addEventListener('toggle', function () {
+			boxStates.progress_open = progressDetails.open;
+			saveBoxStates();
+		});
+	}
+	if (furtherDetails) {
+		if (boxStates.further_open) { furtherDetails.open = true; }
+		else { furtherDetails.open = false; }
+
+		furtherDetails.addEventListener('toggle', function () {
+			boxStates.further_open = furtherDetails.open;
+			saveBoxStates();
+		});
+	}
+
+	// ── Dismiss buttons ───────────────────────────────────────────────────────
+
+	var restoreBtn = document.getElementById('story-restore-btn');
+
+	function updateRestoreVisibility() {
+		if (!restoreBtn) return;
+		restoreBtn.style.display = (boxStates.progress_dismissed || boxStates.further_dismissed) ? '' : 'none';
+	}
+
+	document.querySelectorAll('.story-dismiss-btn').forEach(function (btn) {
+		btn.addEventListener('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var box = btn.getAttribute('data-box');
+			if (box === 'progress') {
+				boxStates.progress_dismissed = true;
+				var el = document.getElementById('story-progress-box');
+				if (el) el.style.display = 'none';
+			} else if (box === 'further') {
+				boxStates.further_dismissed = true;
+				var el = document.getElementById('story-further-box');
+				if (el) el.style.display = 'none';
+			}
+			// Show restore button (may need to create it dynamically if not rendered)
+			if (!restoreBtn) {
+				restoreBtn = document.createElement('button');
+				restoreBtn.id = 'story-restore-btn';
+				restoreBtn.className = 'story-restore-btn';
+				restoreBtn.setAttribute('aria-label', 'Restore profile checklist');
+				restoreBtn.innerHTML = '<span>My Checklist</span>';
+				var firstBox = document.getElementById('story-progress-box') || document.getElementById('story-further-box');
+				if (firstBox && firstBox.parentNode) {
+					firstBox.parentNode.insertBefore(restoreBtn, firstBox);
+				}
+				restoreBtn.addEventListener('click', restoreBoxes);
+			}
+			updateRestoreVisibility();
+			saveBoxStates();
+		});
+	});
+
+	function restoreBoxes() {
+		boxStates.progress_dismissed = false;
+		boxStates.further_dismissed  = false;
+		var pb = document.getElementById('story-progress-box');
+		var fb = document.getElementById('story-further-box');
+		if (pb) pb.style.display = '';
+		if (fb) fb.style.display = '';
+		updateRestoreVisibility();
+		saveBoxStates();
+	}
+
+	if (restoreBtn) {
+		restoreBtn.addEventListener('click', restoreBoxes);
+		updateRestoreVisibility();
+	}
+
+	// ── Further checkboxes: restore from server + localStorage ────────────────
+
+	var serverChecked = <?php echo wp_json_encode( $saved_further ); ?>;
+	var localChecked  = [];
+	try { localChecked = JSON.parse(localStorage.getItem(lsKey) || '[]'); } catch (e) {}
+
+	var initialChecked = serverChecked.slice();
+	localChecked.forEach(function (k) {
+		if (initialChecked.indexOf(k) === -1) initialChecked.push(k);
+	});
+	try { localStorage.setItem(lsKey, JSON.stringify(initialChecked)); } catch (e) {}
+
+	function saveFurther(checked) {
+		try { localStorage.setItem(lsKey, JSON.stringify(checked)); } catch (e) {}
+		ajax('wasmo_save_further', { items: JSON.stringify(checked) });
+	}
+
 	document.querySelectorAll('.story-further-cb').forEach(function (cb) {
-		if (initialState.indexOf(cb.name) !== -1) {
+		if (initialChecked.indexOf(cb.name) !== -1) {
 			cb.checked = true;
 			cb.closest('.story-further-item').classList.add('is-done');
 		}
 		cb.addEventListener('change', function () {
-			cb.closest('.story-further-item').classList.toggle('is-done', cb.checked);
+			var item = cb.closest('.story-further-item');
+			item.classList.toggle('is-done', cb.checked);
 			var checked = Array.from(
 				document.querySelectorAll('.story-further-cb:checked')
 			).map(function (el) { return el.name; });
-			try { localStorage.setItem(storageKey, JSON.stringify(checked)); } catch (e) {}
-			saveToServer(checked);
+			saveFurther(checked);
 		});
 	});
+
 })();
 </script>
