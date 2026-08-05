@@ -42,7 +42,7 @@ function wasmo_add_google_fonts() {
 		'wasmo-google-fonts',
 		'https://fonts.googleapis.com/css?family=Josefin+Sans:ital,wght@0,100..700;1,100..700|Crimson+Text:400,700|Open+Sans:400,700&display=swap',
 		array(),
-		null
+		wp_get_theme()->get( 'Version' )
 	);
 }
 add_action( 'wp_enqueue_scripts', 'wasmo_add_google_fonts' );

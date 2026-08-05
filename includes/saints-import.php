@@ -2325,8 +2325,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 /**
  * Create or update a wife saint record
  *
- * @param array  $data Wife data from CSV.
- * @param string $husband_name For context.
+ * @param array $data Wife data from CSV.
  * @return array|WP_Error Array with 'id' and 'created' flag, or error.
  */
 function wasmo_create_or_update_wife( $data ) {

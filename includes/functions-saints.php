@@ -2626,9 +2626,8 @@ function wasmo_get_age_at_date( $saint_id, $date ) {
 /**
  * Get age difference between two saints at a specific date
  *
- * @param int    $saint1_id First saint post ID.
- * @param int    $saint2_id Second saint post ID.
- * @param string $date      Date to calculate at (Y-m-d).
+ * @param int $saint1_id First saint post ID.
+ * @param int $saint2_id Second saint post ID.
  * @return int|null Age difference (saint1 - saint2), or null if dates not available.
  */
 function wasmo_get_age_difference( $saint1_id, $saint2_id ) {
