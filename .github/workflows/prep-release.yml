@@ -1,0 +1,222 @@
+# Release preparation: bump semver, sync style.css Version header, verify build, open a PR.
+#
+# Version locations updated:
+#   package.json / package-lock.json  (npm version)
+#   style.css                         (Version: header)
+#
+# RELEASE_PAT is required so GitHub fires the pull_request event on the release PR,
+# enabling CI to run on it. github.token suppresses triggered workflows.
+# Fine-grained PAT: Contents: write + Pull requests: write on circlecube/wasmo-theme.
+#
+# Required repo setting: Settings -> Actions -> General -> Workflow permissions ->
+# "Allow GitHub Actions to create and approve pull requests".
+
+name: Prepare theme release
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: Semantic version bump
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      base_branch:
+        description: Branch the PR targets
+        required: false
+        default: main
+        type: string
+      auto_merge:
+        description: Open a regular PR and enable auto-merge (requires branch protection)
+        required: false
+        default: false
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: prep-release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  prep-release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.base_branch }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Validate versions are aligned
+        run: node scripts/validate-theme-version.mjs --warn
+
+      - name: Record old version
+        id: old
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Bump version in package.json
+        id: bump
+        env:
+          RELEASE_LEVEL: ${{ inputs.level }}
+        run: |
+          npm version "${RELEASE_LEVEL}" --no-git-tag-version --tag-version-prefix=""
+          NEW=$(node -p 'require("./package.json").version')
+          echo "version=${NEW}" >> "$GITHUB_OUTPUT"
+          echo "New version: ${NEW}"
+
+      - name: Sync style.css from package.json
+        run: node scripts/sync-theme-version-from-package.mjs
+
+      - name: Verify versions after sync
+        run: node scripts/validate-theme-version.mjs
+
+      - name: Production build (verify; build/ committed separately)
+        run: npm run build
+
+      - name: Merged PRs since last tag
+        id: merged_prs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          if [ -z "$LATEST_TAG" ]; then
+            echo "prs=No previous git tag found." >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          TAG_DATE=$(git log -1 --format=%cI "$LATEST_TAG")
+          REPO="${{ github.repository }}"
+          MERGED=$(gh pr list --repo "$REPO" --state merged \
+            --base "${{ inputs.base_branch }}" \
+            -L 500 \
+            --json title,number,mergedAt \
+            --jq "[.[] | select(.mergedAt > \"$TAG_DATE\") | \"- #\\(.number) \\(.title)\"] | join(\"\\n\")")
+          if [ -z "$MERGED" ]; then
+            echo "prs=No PRs merged to ${{ inputs.base_branch }} since tag ${LATEST_TAG}." >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "prs<<PRS_LIST"
+              echo "$MERGED"
+              echo "PRS_LIST"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create release branch, commit, push, open PR
+        id: create_pr
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+          OLD_VERSION: ${{ steps.old.outputs.version }}
+          NEW_VERSION: ${{ steps.bump.outputs.version }}
+          MERGED_PRS: ${{ steps.merged_prs.outputs.prs }}
+          BASE_BRANCH: ${{ inputs.base_branch }}
+          RELEASE_LEVEL: ${{ inputs.level }}
+          AUTO_MERGE: ${{ inputs.auto_merge }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          RELEASE_BRANCH="release/${NEW_VERSION}"
+          if [ -n "$(git ls-remote origin "refs/heads/${RELEASE_BRANCH}")" ]; then
+            echo "::error::Remote branch ${RELEASE_BRANCH} already exists. Delete it and re-run."
+            exit 1
+          fi
+
+          git checkout -b "$RELEASE_BRANCH"
+          git add package.json package-lock.json style.css
+          git status
+          git commit -m "chore(release): prepare ${OLD_VERSION} -> ${NEW_VERSION}"
+          git push origin "$RELEASE_BRANCH"
+
+          BODY_FILE="$(mktemp)"
+          {
+            echo "## Release prep (${NEW_VERSION})"
+            echo ""
+            echo "- Bumped **package.json** / **package-lock.json** with \`npm version ${RELEASE_LEVEL}\`"
+            echo "- Synced **style.css** (\`Version:\`) from package.json"
+            echo "- Ran \`npm run build\` to verify compile"
+            echo ""
+            echo "### Merged PRs since last tag"
+            echo ""
+            printf '%s\n' "${MERGED_PRS}"
+            echo ""
+            echo "_Workflow: \`.github/workflows/prep-release.yml\`_"
+          } > "$BODY_FILE"
+
+          if [ "${AUTO_MERGE}" == "true" ]; then
+            PR_URL=$(gh pr create \
+              --base "$BASE_BRANCH" \
+              --head "$RELEASE_BRANCH" \
+              --title "Release prep: ${NEW_VERSION}" \
+              --body-file "$BODY_FILE")
+          else
+            PR_URL=$(gh pr create \
+              --base "$BASE_BRANCH" \
+              --head "$RELEASE_BRANCH" \
+              --title "Release prep: ${NEW_VERSION}" \
+              --body-file "$BODY_FILE" \
+              --draft)
+          fi
+          rm -f "$BODY_FILE"
+          echo "pr_url=${PR_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Enable auto-merge
+        if: ${{ inputs.auto_merge == true }}
+        id: auto_merge
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+          PR_URL: ${{ steps.create_pr.outputs.pr_url }}
+        run: |
+          if gh pr merge --auto --merge "$PR_URL" 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Auto-merge could not be enabled — merge the PR manually: $PR_URL"
+          fi
+
+      - name: Workflow summary
+        env:
+          OLD_VERSION: ${{ steps.old.outputs.version }}
+          NEW_VERSION: ${{ steps.bump.outputs.version }}
+          PR_URL: ${{ steps.create_pr.outputs.pr_url }}
+          MERGED_PRS: ${{ steps.merged_prs.outputs.prs }}
+          AUTO_MERGE: ${{ inputs.auto_merge }}
+          AUTO_MERGE_ENABLED: ${{ steps.auto_merge.outputs.enabled }}
+        run: |
+          {
+            echo "## Release prep summary"
+            echo ""
+            echo "- **Version**: ${OLD_VERSION} -> ${NEW_VERSION}"
+            echo "- **Pull request**: ${PR_URL}"
+            if [ "${AUTO_MERGE}" == "true" ]; then
+              if [ "${AUTO_MERGE_ENABLED}" == "true" ]; then
+                echo "- **Auto-merge**: enabled — will merge once required CI checks pass"
+              else
+                echo "- **Auto-merge**: \u26a0\ufe0f could not be enabled — merge manually"
+              fi
+            fi
+            echo ""
+            echo "### Merged PRs since last tag"
+            echo ""
+            printf '%s\n' "${MERGED_PRS}"
+          } >> "$GITHUB_STEP_SUMMARY"
