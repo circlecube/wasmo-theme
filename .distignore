@@ -2,6 +2,7 @@
 .git
 .github
 /bin
+/scripts
 node_modules
 /src
 tests

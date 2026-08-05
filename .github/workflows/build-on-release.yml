@@ -1,3 +1,11 @@
+# Backward-compatible fallback: builds and packages the theme ZIP when a GitHub Release
+# is published manually through the UI.
+#
+# auto-release.yml handles the normal release flow (release/* branches merging to main).
+# This workflow only fires on manually-published releases. GitHub intentionally blocks
+# release:published events for releases created by GITHUB_TOKEN to prevent loops, so
+# auto-release.yml builds inline to avoid that window between release creation and ZIP upload.
+
 name: Package Theme on Release
 
 on:
@@ -5,80 +13,66 @@ on:
     types:
       - published
 
-env:
-  VERSION: ${GITHUB_REF#refs/tags/*}
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: On Release
+    name: Build and attach ZIP
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Validate version number
-        if: ${{ (github.repository == 'circlecube/wasmo-theme') }}
+      - name: Read version from release tag
+        id: version
         run: |
-          taggedVersion=${{ env.VERSION }}
-          themeVersion=`grep "Version:" style.css | grep -Eo "[0-9\.]*"`
-          echo "Tagged version: $taggedVersion"
-          echo "Code version: $themeVersion"
-          [[ "$taggedVersion" == "$themeVersion" ]] || exit 1
+          VERSION="${{ github.event.release.tag_name }}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version matches style.css
+        run: |
+          TAGGED_VERSION="${{ steps.version.outputs.version }}"
+          THEME_VERSION=$(grep -E "^\s*Version:\s*" style.css | sed -E 's/.*Version:\s*([0-9.]+).*/\1/')
+          echo "Tagged version: ${TAGGED_VERSION}"
+          echo "style.css version: ${THEME_VERSION}"
+          [[ "${TAGGED_VERSION}" == "${THEME_VERSION}" ]] || { echo "::error::Version mismatch: tag ${TAGGED_VERSION} != style.css ${THEME_VERSION}"; exit 1; }
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          coverage: none
-          tools: composer, cs2pr
+          php-version: '8.4'
+          tools: composer
 
-      - name: Setup workflow context
-        id: workflow
-        working-directory: ${{ runner.temp }}
-        env:
-          REPO: ${{ github.repository }}
-        run: |
-          mkdir dist
-          echo "DIST=${PWD}/dist" >> $GITHUB_OUTPUT
-          echo "PACKAGE=${REPO##*/}" >> $GITHUB_OUTPUT
-
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Composer vendor directory
-        uses: actions/cache@v6
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Show versions
-        run: |
-          php --version
-          composer --version
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-
-      - name: Install PHP Dependencies
+      - name: Install PHP dependencies (production)
         run: composer install --no-progress --no-dev --optimize-autoloader --prefer-dist
 
-      - name: Create Distribution Copy
-        run: rsync -r --exclude-from=.distignore . ${{ steps.workflow.outputs.DIST }}/${{ steps.workflow.outputs.PACKAGE }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
 
-      - name: List Distribution Files
-        working-directory: ${{ steps.workflow.outputs.DIST }}
-        run: find .
+      - name: Install JS dependencies and build
+        run: npm ci && npm run build
 
-      - name: Create Zip
-        working-directory: ${{ steps.workflow.outputs.DIST }}
-        run: zip -r ${{ steps.workflow.outputs.PACKAGE }}.zip .
-
-      - name: Upload Release Asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package theme into ZIP
+        id: prep
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" ${{ steps.workflow.outputs.DIST }}/${{ steps.workflow.outputs.PACKAGE }}.zip
+          PACKAGE="${GITHUB_REPOSITORY##*/}"
+          VERSION="${{ steps.version.outputs.version }}"
+          DIST="${{ runner.temp }}/dist"
+          ZIP_NAME="${PACKAGE}.${VERSION}.zip"
+          mkdir -p "${DIST}"
+          rsync -r --exclude-from=.distignore . "${DIST}/${PACKAGE}/"
+          cd "${DIST}"
+          zip -r "${ZIP_NAME}" "${PACKAGE}"
+          echo "dist=${DIST}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload ZIP to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "${{ steps.prep.outputs.dist }}/${{ steps.prep.outputs.zip_name }}"

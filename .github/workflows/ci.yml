@@ -1,0 +1,136 @@
+# CI for wasmo-theme — quality gates on every PR and push to main.
+#
+# Jobs:
+#   changes    — detect which paths changed; gates the jobs below
+#   php-syntax — php -l on all tracked .php files (no composer install needed)
+#   build      — npm ci + version alignment check + npm run build + verify output
+#   phpunit    — composer install (with dev) + PHPUnit test suite
+#
+# NOTE: This is intentionally inline rather than calling the reusable-theme-ci.yml from
+# circlecube/bandiverse, because wasmo's build produces build/index.js (via @wordpress/scripts)
+# not build/theme.css (the bandiverse build system). Staying inline avoids a false failure
+# on the output verify step.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      php: ${{ steps.filter.outputs.php }}
+      node: ${{ steps.filter.outputs.node }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            php:
+              - '**/*.php'
+              - 'composer.json'
+              - 'composer.lock'
+              - 'phpunit.xml.dist'
+              - 'tests/**'
+            node:
+              - 'src/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'webpack.config.js'
+              - 'style.css'
+              - 'scripts/**'
+
+  php-syntax:
+    name: PHP syntax
+    needs: changes
+    if: needs.changes.outputs.php == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Syntax check all tracked .php files
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(git ls-files '*.php' | grep -v '^vendor/' || true)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No PHP files to check."
+            exit 0
+          fi
+          echo "Checking ${#files[@]} PHP file(s)…"
+          for f in "${files[@]}"; do php -l "$f"; done
+          echo "All files passed."
+
+  build:
+    name: Node build & version check
+    needs: changes
+    if: needs.changes.outputs.node == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate version alignment
+        run: node scripts/validate-theme-version.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify build output
+        run: test -f build/index.js
+
+  phpunit:
+    name: PHPUnit
+    needs: changes
+    if: needs.changes.outputs.php == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install PHP dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        run: composer test
