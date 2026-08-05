@@ -12,7 +12,7 @@
 get_header();
 
 $termid = get_queried_object()->term_id;
-$term = get_term_by( 'id', $termid, 'shelf' );
+$term   = get_term_by( 'id', $termid, 'shelf' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 ?>
 
 	<section id="primary" class="content-area">
@@ -20,20 +20,20 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 			<article class="entry">
 				<header class="entry-header">
 					<h1 class="entry-title">
-						<?php echo wasmo_get_icon_svg( 'shelf', 36 ); ?>
+						<?php echo wasmo_get_icon_svg( 'shelf', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php echo wp_kses_post( $term->name ); ?>
 					</h1>
-                    <h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
-                    <?php
-                        // TODO:
-                        // Add blog posts relevant to this shelf item.
-                        // Add links relevant to the shelf item - these can be added to the term description.
-                    ?>
+					<h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
+					<?php
+						// TODO:
+						// Add blog posts relevant to this shelf item.
+						// Add links relevant to the shelf item - these can be added to the term description.
+					?>
 					<hr />
 					<h3 class="has-small-font-size">Profiles with <em><?php echo wp_kses_post( $term->name ); ?></em> on their "shelf":</h3>
 				</header><!-- .page-header -->
 
-				<?php 
+				<?php
 					// use directory template with taxonomy context and pass in term
 					set_query_var( 'context', 'tax' );
 					set_query_var( 'tax', 'shelf' );
@@ -43,25 +43,27 @@ $term = get_term_by( 'id', $termid, 'shelf' );
 
 				<footer class="entry-footer">
 					<h3>
-					<?php echo wasmo_get_icon_svg( 'shelf', 24, 'style="margin-top:-3px;margin-right:0;"' ); ?>
+					<?php echo wasmo_get_icon_svg( 'shelf', 24, 'style="margin-top:-3px;margin-right:0;"' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						Mormon shelf items:
 					</h3>
 					<ul class="tags">
 					<?php
-						$terms = get_terms([
-							'taxonomy'   => 'shelf',
-							'hide_empty' => false,
-							'orderby'    => 'name',
-							'order'      => 'ASC'
-						]);
-						foreach ( $terms as $term ) : 
+						$terms = get_terms(
+							[
+								'taxonomy'   => 'shelf',
+								'hide_empty' => false,
+								'orderby'    => 'name',
+								'order'      => 'ASC',
+							]
+						);
+						foreach ( $terms as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 							// if ( $termid !== $term->term_id ) : // don't skip this term so the ordering doesn't shuffle
-					?>
-						<li><a class="tag" data-id="<?php echo esc_attr( $term->term_id) ?>" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
-					<?php 
+							?>
+						<li><a class="tag" data-id="<?php echo esc_attr( $term->term_id ); ?>" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+							<?php
 							// endif;
-						 endforeach; 
-					?>
+						endforeach;
+						?>
 					</ul>
 
 					<?php

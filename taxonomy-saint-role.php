@@ -7,7 +7,7 @@
 
 get_header();
 
-$term = get_queried_object();
+$term    = get_queried_object(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 $term_id = $term->term_id;
 
 // Get all leaders with this role - cached and pre-sorted
@@ -20,11 +20,11 @@ $first_presidency = wasmo_get_current_first_presidency();
 // For first-counselor and second-counselor, use the settings to determine "current"
 // For other roles, use living/deceased status
 $current_leaders = array();
-$past_leaders = array();
+$past_leaders    = array();
 
 foreach ( $leaders as $leader ) {
 	$is_living = wasmo_is_saint_living( $leader->ID );
-	
+
 	// Check if this is a counselor role that should use settings
 	if ( $term->slug === 'first-counselor' ) {
 		// Current = matches the setting for first counselor
@@ -47,30 +47,28 @@ foreach ( $leaders as $leader ) {
 		} else {
 			$past_leaders[] = $leader;
 		}
-	} else {
+	} elseif ( $is_living ) {
 		// For other roles (apostle, seventy, etc.), use living status
-		if ( $is_living ) {
-			$current_leaders[] = $leader;
-		} else {
-			$past_leaders[] = $leader;
-		}
+		$current_leaders[] = $leader;
+	} else {
+		$past_leaders[] = $leader;
 	}
 }
 
 // Use CMS description if available, otherwise fallback to defaults
 $fallback_descriptions = array(
-	'president'          => 'The President of the Church is considered a prophet, seer, and revelator, and is the highest authority in The Church of Jesus Christ of Latter-day Saints.',
-	'apostle'            => 'Apostles are ordained to the Melchizedek Priesthood office of Apostle and serve as special witnesses of Jesus Christ. The Quorum of the Twelve Apostles is the second-highest governing body of the Church.',
-	'first-presidency'   => 'The First Presidency consists of the President of the Church and his counselors. Together they form the highest governing body of the Church.',
-	'first-counselor'    => 'The First Counselor in the First Presidency assists the President of the Church in directing the affairs of the Church.',
-	'second-counselor'   => 'The Second Counselor in the First Presidency assists the President of the Church in directing the affairs of the Church.',
-	'seventy'            => 'Members of the Seventy are general authorities called to preach the gospel and assist in administering the Church under the direction of the Twelve Apostles.',
+	'president'           => 'The President of the Church is considered a prophet, seer, and revelator, and is the highest authority in The Church of Jesus Christ of Latter-day Saints.',
+	'apostle'             => 'Apostles are ordained to the Melchizedek Priesthood office of Apostle and serve as special witnesses of Jesus Christ. The Quorum of the Twelve Apostles is the second-highest governing body of the Church.',
+	'first-presidency'    => 'The First Presidency consists of the President of the Church and his counselors. Together they form the highest governing body of the Church.',
+	'first-counselor'     => 'The First Counselor in the First Presidency assists the President of the Church in directing the affairs of the Church.',
+	'second-counselor'    => 'The Second Counselor in the First Presidency assists the President of the Church in directing the affairs of the Church.',
+	'seventy'             => 'Members of the Seventy are general authorities called to preach the gospel and assist in administering the Church under the direction of the Twelve Apostles.',
 	'presiding-bishopric' => 'The Presiding Bishopric oversees the temporal affairs of the Church, including finances, welfare, and physical facilities.',
 );
 
 // Prioritize CMS description, fallback to hardcoded defaults
-$role_description = ! empty( $term->description ) 
-	? $term->description 
+$role_description = ! empty( $term->description )
+	? $term->description
 	: ( isset( $fallback_descriptions[ $term->slug ] ) ? $fallback_descriptions[ $term->slug ] : '' );
 ?>
 
@@ -79,7 +77,7 @@ $role_description = ! empty( $term->description )
 		<article class="entry-content">
 			<header class="entry-header saint-role-header">
 				<h1 class="entry-title no-line">
-					<?php echo wasmo_get_icon_svg( 'saint', 36 ); ?>
+					<?php echo wasmo_get_icon_svg( 'saint', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					<?php echo esc_html( $term->name ); ?>
 				</h1>
 				
@@ -123,20 +121,20 @@ $role_description = ! empty( $term->description )
 
 			<footer class="entry-footer saint-role-footer">
 				<h3>
-					<?php echo wasmo_get_icon_svg( 'saint', 24 ); ?>
+					<?php echo wasmo_get_icon_svg( 'saint', 24 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					All Saint Roles:
 				</h3>
 				<ul class="tags role-tags">
 					<?php
 					// Use cached saint roles
 					$all_roles = wasmo_get_cached_saint_roles();
-					
-					foreach ( $all_roles as $role ) : 
+
+					foreach ( $all_roles as $role ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 						$is_current = ( $role->term_id === $term_id );
-					?>
+						?>
 						<li>
 							<a class="tag saint-role-tag <?php echo $is_current ? 'current-role' : ''; ?>" 
-							   href="<?php echo esc_url( get_term_link( $role ) ); ?>">
+								href="<?php echo esc_url( get_term_link( $role ) ); ?>">
 								<?php echo esc_html( $role->name ); ?>
 								<span class="role-count">(<?php echo esc_html( $role->count ); ?>)</span>
 							</a>

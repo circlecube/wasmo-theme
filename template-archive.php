@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Post Archive
- * 
+ *
  * The template for displaying all posts and questions in lists
  *
  * @subpackage wasmo
@@ -27,20 +27,24 @@ get_header();
 
 			<section class="entry the-posts">
 				<div class="entry-content">
-					<?php get_template_part(
+					<?php
+					get_template_part(
 						'template-parts/content/content',
 						'post-archive'
-					); ?>
+					);
+					?>
 				</div>
 			</section>
 
 			<section class="entry the-questions">
 				<div class="entry-content">
-					<?php get_template_part(
+					<?php
+					get_template_part(
 						'template-parts/content/content',
 						'tax-question'
-					); ?>	
-				</div>
+					);
+					?>
+									</div>
 			</section>
 		</main><!-- #main -->
 	</section><!-- #primary -->

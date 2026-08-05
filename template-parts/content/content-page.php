@@ -21,11 +21,11 @@
 	<div class="entry-content">
 		<?php
 		the_content();
-		
+
 
 		wp_link_pages(
 			array(
-				'before' => '<div class="page-links">' . __( 'Pages:', 'twentynineteen' ),
+				'before' => '<div class="page-links">' . __( 'Pages:', 'wasmo-theme' ),
 				'after'  => '</div>',
 			)
 		);
@@ -39,7 +39,7 @@
 				sprintf(
 					wp_kses(
 						/* translators: %s: Post title. Only visible to screen readers. */
-						__( 'Edit <span class="screen-reader-text">%s</span>', 'twentynineteen' ),
+						__( 'Edit <span class="screen-reader-text">%s</span>', 'wasmo-theme' ),
 						array(
 							'span' => array(
 								'class' => array(),

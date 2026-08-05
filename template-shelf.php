@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Shelf
- * 
+ *
  * The template for displaying the shelf taxonomy index
  *
  * @subpackage wasmo
@@ -27,7 +27,7 @@ get_header();
 
 			<section class="entry the-questions">
 				<div class="entry-content">
-                    <?php get_template_part( 'template-parts/content/content', 'tax-shelf' ); ?>
+					<?php get_template_part( 'template-parts/content/content', 'tax-shelf' ); ?>
 				</div>
 			</section>
 		</main><!-- #main -->

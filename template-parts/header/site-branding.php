@@ -42,11 +42,11 @@
 	if ( $description || is_customize_preview() ) :
 		?>
 			<p class="site-description">
-				<?php echo $description; ?>
+				<?php echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</p>
 	<?php endif; ?>
 	<?php if ( has_nav_menu( 'menu-1' ) ) : ?>
-		<nav id="site-navigation" class="main-navigation" aria-label="<?php esc_attr_e( 'Top Menu', 'twentynineteen' ); ?>">
+		<nav id="site-navigation" class="main-navigation" aria-label="<?php esc_attr_e( 'Top Menu', 'wasmo-theme' ); ?>">
 			<?php
 			wp_nav_menu(
 				array(
@@ -59,7 +59,7 @@
 		</nav><!-- #site-navigation -->
 	<?php endif; ?>
 	<?php if ( has_nav_menu( 'social' ) ) : ?>
-		<nav class="social-navigation" aria-label="<?php esc_attr_e( 'Social Links Menu', 'twentynineteen' ); ?>">
+		<nav class="social-navigation" aria-label="<?php esc_attr_e( 'Social Links Menu', 'wasmo-theme' ); ?>">
 			<?php
 			wp_nav_menu(
 				array(

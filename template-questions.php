@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Questions
- * 
+ *
  * The template for displaying all questions in a list
  *
  * @subpackage wasmo
@@ -27,11 +27,13 @@ get_header();
 
 			<section class="entry the-questions">
 				<div class="entry-content">
-					<?php get_template_part(
+					<?php
+					get_template_part(
 						'template-parts/content/content',
 						'tax-question'
-					); ?>	
-				</div>
+					);
+					?>
+									</div>
 			</section>
 		</main><!-- #main -->
 	</section><!-- #primary -->

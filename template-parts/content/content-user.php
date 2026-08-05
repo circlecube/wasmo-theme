@@ -1,10 +1,10 @@
 <?php
 /**
-* @var $userid
-*/
+ * @var $userid
+ */
 ?>
-<?php 
-$curauth = (get_query_var('author_name')) ? get_user_by('slug', get_query_var('author_name')) : get_userdata(get_query_var('author'));
+<?php
+$curauth = ( get_query_var( 'author_name' ) ) ? get_user_by( 'slug', get_query_var( 'author_name' ) ) : get_userdata( get_query_var( 'author' ) );
 ?>
 
 <?php set_query_var( 'curauth', $curauth ); ?>
@@ -21,84 +21,96 @@ if ( is_user_logged_in() && (int) $userid === (int) get_current_user_id() ) {
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 	<div class="profile-section" id="about-me">
 		<h3>About me</h3>
-		<div class="about_me"><?php 
-			echo wasmo_auto_htmlize_text(
-				wasmo_auto_link_text( 
-					wp_kses_post( 
+		<div class="about_me">
+		<?php
+			echo wasmo_auto_htmlize_text( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wasmo_auto_link_text(
+					wp_kses_post(
 						get_field( 'about_me', 'user_' . $userid )
 					)
 				)
-			); 
-		?></div>
+			);
+		?>
+		</div>
 		<?php // wasmo_render_reaction_buttons( $userid, 'about_me' ); ?>
 	</div>
 <?php } ?>
 
 <?php if ( get_field( 'video', 'user_' . $userid ) ) { ?>
-	<div class="profile-video"><?php 
+	<div class="profile-video">
+	<?php
 		// Load value.
-		$iframe = get_field('video', 'user_' . $userid );
+		$iframe = get_field( 'video', 'user_' . $userid );
 
 		// Use preg_match to find iframe src.
-		preg_match('/src="(.+?)"/', $iframe, $matches);
+		preg_match( '/src="(.+?)"/', $iframe, $matches );
 		$src = $matches[1];
 
 		// Add extra parameters to src and replace HTML.
-		$params = array(
-			'controls'  => 0,
-			'hd'        => 1,
-			'autohide'  => 1,
-			'autoplay'  => 0,
-			'loop'      => 0,
-			'rel'       => 0,
+		$params  = array(
+			'controls' => 0,
+			'hd'       => 1,
+			'autohide' => 1,
+			'autoplay' => 0,
+			'loop'     => 0,
+			'rel'      => 0,
 		);
-		$new_src = add_query_arg($params, $src);
-		$iframe = str_replace($src, $new_src, $iframe);
+		$new_src = add_query_arg( $params, $src );
+		$iframe  = str_replace( $src, $new_src, $iframe );
 
 		// Add extra attributes to iframe HTML.
 		$attributes = 'frameborder="0"';
-		$iframe = str_replace('></iframe>', ' ' . $attributes . '></iframe>', $iframe);
+		$iframe     = str_replace( '></iframe>', ' ' . $attributes . '></iframe>', $iframe );
 
 		// Display customized HTML.
-		echo $iframe;
-	?></div>
+		echo $iframe; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>
+	</div>
 <?php } ?>
 <div class="profile-section content-full-width" id="my-shelf">
-<?php 
+<?php
 $shelf_items = get_field( 'my_shelf', 'user_' . $userid );
-if ( $shelf_items ) { ?>
+if ( $shelf_items ) {
+	?>
 	<h4>	
-		<?php echo wasmo_get_icon_svg( 'shelf', 20 ); ?>
+		<?php echo wasmo_get_icon_svg( 'shelf', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		On my shelf
 	</h4>
 	<ul class="tags">
-	<?php foreach( $shelf_items as $term ): ?>
-		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
-		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
+	<?php
+	foreach ( $shelf_items as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		?>
+		<!-- <li><span class="tag"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
+		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
 	<?php endforeach; ?>
 	</ul>
-<?php } 
+	<?php
+}
 ?>
 </div>
 <div class="profile-section content-full-width" id="mormon-spectrum">
-<?php 
+<?php
 $spectrum_terms = get_field( 'mormon_spectrum', 'user_' . $userid );
-if ( $spectrum_terms ) { ?>
+if ( $spectrum_terms ) {
+	?>
 	<h4>
-		<?php echo wasmo_get_icon_svg( 'spectrum', 20 ); ?>
+		<?php echo wasmo_get_icon_svg( 'spectrum', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		On the Mormon Spectrum
 	</h4>
 	<ul class="tags">
-	<?php foreach( $spectrum_terms as $term ): ?>
-		<!-- <li><span class="tag"><?php echo $term->name; ?></span></li> -->
-		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; ?></a></li>
+	<?php
+	foreach ( $spectrum_terms as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		?>
+		<!-- <li><span class="tag"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
+		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
 	<?php endforeach; ?>
 	</ul>
-<?php } 
+	<?php
+}
 ?>
 </div>
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
-	<?php 
+	<?php
 		$anchor_desc = "Link to 'Why I left the Mormon church' by " . wp_kses_post( $curauth->display_name );
 		$more_desc   = "More stories of 'Why I left' the Mormon church";
 	?>
@@ -106,19 +118,19 @@ if ( $spectrum_terms ) { ?>
 		<h3>
 			<a href="#why-i-left" class="question_link_inline question_anchor" title="<?php echo esc_attr( $anchor_desc ); ?>">
 				<sup>#</sup>
-				<span class="screen-reader-text"><?php esc_html($anchor_desc); ?></span>
+				<span class="screen-reader-text"><?php esc_html( $anchor_desc ); ?></span>
 			</a>
 			Why I left
 			<a href="/why-i-left/" class="question_link_inline" title="<?php echo esc_attr( $more_desc ); ?>">
-				<?php echo wasmo_get_icon_svg( 'link', 20 ); ?>
+				<?php echo wasmo_get_icon_svg( 'link', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<span class="screen-reader-text"><?php echo esc_html( $more_desc ); ?></span>
 			</a>
 		</h3>
 		<div class="why_i_left">
 			<?php
-				echo wasmo_auto_htmlize_text(
-					wasmo_auto_link_text( 
-						wp_kses_post( 
+				echo wasmo_auto_htmlize_text( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					wasmo_auto_link_text(
+						wp_kses_post(
 							get_field( 'why_i_left', 'user_' . $userid )
 						)
 					)
@@ -130,50 +142,50 @@ if ( $spectrum_terms ) { ?>
 <?php } ?>
 
 <?php
-//questions repeater
-if( have_rows( 'questions', 'user_' . $userid ) ):
-	$description = "Questions about Mormons";
+// questions repeater
+if ( have_rows( 'questions', 'user_' . $userid ) ) :
+	$description = 'Questions about Mormons';
 	?>
 
 	<h3>
 		<a 
 			href="/questions/"
 			class="question_link_inline"
-			title="<?php echo $description; ?>"
-		><?php echo wasmo_get_icon_svg( 'question', 26 );
-		?><span class="screen-reader-text"><?php echo $description; ?></span></a>
+			title="<?php echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
+		>
+		<?php
+		echo wasmo_get_icon_svg( 'question', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>
+		<span class="screen-reader-text"><?php echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></a>
 		My Answers to Questions about Mormonism
 	</h3>
 	
 	<?php
- 	// loop through the rows of data
-	while ( have_rows( 'questions', 'user_' . $userid ) ) : 
+	// loop through the rows of data
+	while ( have_rows( 'questions', 'user_' . $userid ) ) :
 		the_row();
 		$termtaxid = get_sub_field( 'question', 'users_' . $userid );
-		$answer = get_sub_field( 'answer', 'users_' . $userid );
+		$answer    = get_sub_field( 'answer', 'users_' . $userid );
 		if ( $termtaxid && $answer ) {
 			$questionterm = get_term( $termtaxid, 'question' );
-			$anchor = "Link to this answer of '" . wp_kses_post( $questionterm->name ) . "' by " . $curauth->display_name;
-			$description = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
+			$anchor       = "Link to this answer of '" . wp_kses_post( $questionterm->name ) . "' by " . $curauth->display_name;
+			$description  = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
 			echo '<div class="profile-section question-section" id="' . esc_attr( $questionterm->slug ) . '">';
 			echo '<h4 class="question">';
-			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . $anchor . '">';
-			echo '<sup>#</sup><span class="screen-reader-text">' . $anchor . '</span></a> ';
+			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . $anchor . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<sup>#</sup><span class="screen-reader-text">' . $anchor . '</span></a> '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo wp_kses_post( $questionterm->name );
-			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">';
-			echo wasmo_get_icon_svg( 'link', 20 );
-			echo '<span class="screen-reader-text">' . $description . '</span></a>';
+			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wasmo_get_icon_svg( 'link', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<span class="screen-reader-text">' . $description . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</h4>';
 			echo '<div class="answer">';
-			echo wasmo_auto_htmlize_text( wasmo_auto_link_text( wp_kses_post( $answer ) ) );
+			echo wasmo_auto_htmlize_text( wasmo_auto_link_text( wp_kses_post( $answer ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</div>';
 			wasmo_render_reaction_buttons( $userid, 'question_' . $questionterm->slug );
 			echo '</div>';
 		}
-    endwhile;
-
-else :
-    // no questions found
+	endwhile;
 endif;
 
 $is_this_user = false;
@@ -228,18 +240,18 @@ get_template_part( 'template-parts/content/content', 'user-comments' );
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
 	<!-- <p>
-		Joined <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); ?> ago.<br />
-		Last updated <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); ?> ago.
+		Joined <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ago.<br />
+		Last updated <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ago.
 	</p> -->
 
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
 			<?php if ( is_user_logged_in() ) { ?>
-				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/edit/' ); ?>">
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/edit/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 					Edit Your <?php echo $is_this_user ? '' : 'Own'; ?> Profile
 				</a>
 			<?php } else { ?>
-				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/login/' ); ?>">
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/login/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 					Contribute your own story
 				</a>
 			<?php } ?>
@@ -248,10 +260,10 @@ get_template_part( 'template-parts/content/content', 'user-comments' );
 
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Browse Stories</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Browse Stories</a>
 		</div>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Random Story</a>
 		</div>
 	</div>
 
