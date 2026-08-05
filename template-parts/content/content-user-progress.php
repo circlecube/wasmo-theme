@@ -88,62 +88,18 @@ if ( $box_states_raw ) {
 }
 $progress_open      = isset( $box_states['progress_open'] )      ? (bool) $box_states['progress_open']      : true;
 $progress_dismissed = isset( $box_states['progress_dismissed'] ) ? (bool) $box_states['progress_dismissed'] : false;
+$further_open       = isset( $box_states['further_open'] )       ? (bool) $box_states['further_open']       : false;
+$further_dismissed  = isset( $box_states['further_dismissed'] )  ? (bool) $box_states['further_dismissed']  : false;
+
+// Whether the further box is eligible to show
+$show_further = ( $done >= 8 );
 
 // ── Shared nonce for all box AJAX calls ───────────────────────────────────────
 
 $further_nonce = wp_create_nonce( 'wasmo_further_nonce' );
-?>
 
-<?php if ( ! $progress_dismissed ) : ?>
-<aside class="story-progress" id="story-progress-box">
-	<details<?php echo $progress_open ? ' open' : ''; ?>>
-		<summary>
-			<div class="story-progress-header">
-				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; ?></span>
-				<span class="story-progress-right">
-					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
-					<span class="story-progress-arrow" aria-hidden="true"></span>
-					<button class="story-dismiss-btn" aria-label="Dismiss this box" data-box="progress">&#x2715;</button>
-				</span>
-			</div>
-			<div class="story-progress-bar-wrap" role="progressbar" aria-valuenow="<?php echo esc_attr( $pct ); ?>" aria-valuemin="0" aria-valuemax="100" aria-label="<?php echo esc_attr( $pct . '% complete' ); ?>">
-				<div class="story-progress-bar" style="width:<?php echo esc_attr( $pct ); ?>%"></div>
-			</div>
-		</summary>
-		<p class="story-progress-message"><?php echo esc_html( $message ); ?></p>
-		<ul class="story-progress-checklist">
-			<?php foreach ( $items as $key => $label ) : ?>
-			<li class="story-progress-item <?php echo $completed[ $key ] ? 'is-done' : 'is-todo'; ?>">
-				<span class="story-progress-check" aria-hidden="true"></span>
-				<span class="story-progress-item-label"><?php echo esc_html( $label ); ?></span>
-			</li>
-			<?php endforeach; ?>
-		</ul>
-		<?php if ( $pct < 100 ) : ?>
-		<a class="story-progress-cta" href="<?php echo esc_url( home_url( '/edit/' ) ); ?>">Edit your story</a>
-		<?php endif; ?>
-	</details>
-</aside>
-<?php endif; ?>
+// ── Load further data (needed for JS even when further box isn't shown) ───────
 
-<?php
-// ── "Take Things Further" box — shown when story is nearly complete (8+/10) ──
-if ( $done < 8 ) {
-	// Still render the restore button in case progress box is dismissed
-	if ( $progress_dismissed ) : ?>
-	<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
-		<?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?>
-		<span class="screen-reader-text">My Checklist</span>
-	</button>
-	<?php endif;
-	return;
-}
-
-// Load further box state
-$further_open      = isset( $box_states['further_open'] )      ? (bool) $box_states['further_open']      : false;
-$further_dismissed = isset( $box_states['further_dismissed'] ) ? (bool) $box_states['further_dismissed'] : false;
-
-// Load server-saved checkbox state for further items
 $saved_further = [];
 $further_raw   = get_user_meta( $userid, 'wasmo_further_completed', true );
 if ( $further_raw ) {
@@ -208,16 +164,49 @@ $further_items = [
 ];
 ?>
 
-<?php // Restore button — shown when either box is dismissed ?>
-<?php if ( $progress_dismissed || $further_dismissed ) : ?>
-<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
+<?php // Progress box: always in DOM so JS restore can un-hide it after dismissal ?>
+<aside class="story-progress" id="story-progress-box"<?php echo $progress_dismissed ? ' style="display:none"' : ''; ?>>
+	<details<?php echo $progress_open ? ' open' : ''; ?>>
+		<summary>
+			<div class="story-progress-header">
+				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; ?></span>
+				<span class="story-progress-right">
+					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
+					<span class="story-progress-arrow" aria-hidden="true"></span>
+					<button class="story-dismiss-btn" aria-label="Dismiss this box" data-box="progress">&#x2715;</button>
+				</span>
+			</div>
+			<div class="story-progress-bar-wrap" role="progressbar" aria-valuenow="<?php echo esc_attr( $pct ); ?>" aria-valuemin="0" aria-valuemax="100" aria-label="<?php echo esc_attr( $pct . '% complete' ); ?>">
+				<div class="story-progress-bar" style="width:<?php echo esc_attr( $pct ); ?>%"></div>
+			</div>
+		</summary>
+		<p class="story-progress-message"><?php echo esc_html( $message ); ?></p>
+		<ul class="story-progress-checklist">
+			<?php foreach ( $items as $key => $label ) : ?>
+			<li class="story-progress-item <?php echo $completed[ $key ] ? 'is-done' : 'is-todo'; ?>">
+				<span class="story-progress-check" aria-hidden="true"></span>
+				<span class="story-progress-item-label"><?php echo esc_html( $label ); ?></span>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+		<?php if ( $pct < 100 ) : ?>
+		<a class="story-progress-cta" href="<?php echo esc_url( home_url( '/edit/' ) ); ?>">Edit your story</a>
+		<?php endif; ?>
+	</details>
+</aside>
+
+<?php
+// Restore button: always in DOM; JS controls visibility via updateRestoreVisibility()
+$any_dismissed = $progress_dismissed || ( $show_further && $further_dismissed );
+?>
+<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist"<?php echo ! $any_dismissed ? ' style="display:none"' : ''; ?>>
 	<?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?>
 	<span class="screen-reader-text">My Checklist</span>
 </button>
-<?php endif; ?>
 
-<?php if ( ! $further_dismissed ) : ?>
-<aside class="story-further" id="story-further-box">
+<?php if ( $show_further ) : ?>
+<?php // Further box: always in DOM when eligible; hidden via inline style when dismissed ?>
+<aside class="story-further" id="story-further-box"<?php echo $further_dismissed ? ' style="display:none"' : ''; ?>>
 	<details<?php echo $further_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
@@ -247,7 +236,7 @@ $further_items = [
 		</ul>
 	</details>
 </aside>
-<?php endif; ?>
+<?php endif; // show_further ?>
 
 <script>
 (function () {
@@ -350,19 +339,6 @@ $further_items = [
 				var el = document.getElementById('story-further-box');
 				if (el) el.style.display = 'none';
 			}
-			// Show restore button (may need to create it dynamically if not rendered)
-			if (!restoreBtn) {
-				restoreBtn = document.createElement('button');
-				restoreBtn.id = 'story-restore-btn';
-				restoreBtn.className = 'story-restore-btn';
-				restoreBtn.setAttribute('aria-label', 'Restore profile checklist');
-				restoreBtn.innerHTML = '<span><?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?><span class="screen-reader-text">My Checklist</span></span>';
-				var firstBox = document.getElementById('story-progress-box') || document.getElementById('story-further-box');
-				if (firstBox && firstBox.parentNode) {
-					firstBox.parentNode.insertBefore(restoreBtn, firstBox);
-				}
-				restoreBtn.addEventListener('click', restoreBoxes);
-			}
 			updateRestoreVisibility();
 			saveBoxStates();
 		});
@@ -379,10 +355,11 @@ $further_items = [
 		saveBoxStates();
 	}
 
+	// Restore button is always in DOM — wire it up and sync initial visibility
 	if (restoreBtn) {
 		restoreBtn.addEventListener('click', restoreBoxes);
-		updateRestoreVisibility();
 	}
+	updateRestoreVisibility();
 
 	// ── Further checkboxes: restore from server + localStorage ────────────────
 
