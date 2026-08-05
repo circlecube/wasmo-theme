@@ -48,7 +48,7 @@ if [ ! -d "$WP_TESTS_DIR" ]; then
     git -C "$WP_TESTS_DIR" init -q
     git -C "$WP_TESTS_DIR" remote add origin https://github.com/WordPress/wordpress-develop.git
     git -C "$WP_TESTS_DIR" config core.sparseCheckout true
-    printf 'src/wp-includes\nsrc/wp-admin\ntests/phpunit/includes\ntests/phpunit/data\n' \
+    printf 'src/wp-includes\nsrc/wp-admin\nsrc/*.php\ntests/phpunit/includes\ntests/phpunit/data\n' \
         > "$WP_TESTS_DIR/.git/info/sparse-checkout"
     git -C "$WP_TESTS_DIR" fetch --depth=1 origin "tags/$WP_VERSION" 2>/dev/null \
         || git -C "$WP_TESTS_DIR" fetch --depth=1 origin HEAD
