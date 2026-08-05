@@ -242,7 +242,7 @@ function wasmo_export_taxonomy_ajax() {
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
-	echo json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	echo wp_json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	exit;
 }
 add_action( 'wp_ajax_wasmo_export_taxonomy', 'wasmo_export_taxonomy_ajax' );
@@ -267,7 +267,7 @@ function wasmo_render_taxonomy_import_page() {
 			$message      = 'Please select a JSON file to import.';
 			$message_type = 'error';
 		} else {
-			$json_content = file_get_contents( $_FILES['json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$json_content = file_get_contents( $_FILES['json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$terms_data   = json_decode( $json_content, true );
 
 			if ( json_last_error() !== JSON_ERROR_NONE ) {

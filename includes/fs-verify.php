@@ -157,7 +157,7 @@ function wasmo_get_verified_saints() {
  */
 function wasmo_render_fs_verify_page() {
 	// Handle tab switching
-	$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'verified';
+	$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'verified'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$tabs        = array(
 		'verified' => 'Verified Saints',
 		'pending'  => 'Needs Verification',
@@ -401,7 +401,7 @@ function wasmo_render_fs_pending_tab( $saints_need_verify ) {
 						$fs_ids[] = $fs_id;
 					}
 				}
-					echo json_encode( array_slice( $fs_ids, 0, 50 ) ); // Limit to 50 for manageable batches
+					echo wp_json_encode( array_slice( $fs_ids, 0, 50 ) ); // Limit to 50 for manageable batches
 				?>
 				</textarea>
 				<?php if ( count( $fs_ids ) > 50 ) : ?>
@@ -955,7 +955,7 @@ function wasmo_sideload_fs_portrait( $saint_id, $image_url, $force = false ) {
 	}
 
 	// Get file extension from URL
-	$ext = pathinfo( parse_url( $image_url, PHP_URL_PATH ), PATHINFO_EXTENSION );
+	$ext = pathinfo( wp_parse_url( $image_url, PHP_URL_PATH ), PATHINFO_EXTENSION );
 	if ( ! $ext || ! in_array( $ext, array( 'jpg', 'jpeg', 'png', 'gif', 'webp' ), true ) ) {
 		$ext = 'jpg';
 	}
@@ -977,7 +977,7 @@ function wasmo_sideload_fs_portrait( $saint_id, $image_url, $force = false ) {
 
 	// Clean up temp file if still exists
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp );
+		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {

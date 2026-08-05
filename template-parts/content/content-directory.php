@@ -168,7 +168,7 @@ if ( false === $the_directory ) {
 	$total_users    = count( $filtered_users );
 	$counter        = 0;
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
-	$the_directory .= '<div class="directory directory-' . $context . ' ' . ( $lazy == true ? 'is-lazy' : 'not-lazy' ) . '" data-offset="' . $offset . '" data-total="' . $total_users . '" data-lazy="' . $lazy . '" data-lazy="' . $lazy . '">';
+	$the_directory .= '<div class="directory directory-' . $context . ' ' . ( $lazy == true ? 'is-lazy' : 'not-lazy' ) . '" data-offset="' . $offset . '" data-total="' . $total_users . '" data-lazy="' . $lazy . '" data-lazy="' . $lazy . '">'; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 
 
 	foreach ( $filtered_users as $user ) {

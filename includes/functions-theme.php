@@ -7,7 +7,7 @@ function wasmo_enqueue() {
 
 	$parent_style = 'parent-style'; // This is 'twentynineteen-style' for the Twenty Nineteen theme.
 
-	wp_enqueue_style(
+	wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		$parent_style,
 		get_stylesheet_directory_uri() . '/twentynineteen.css',
 	);
@@ -36,7 +36,7 @@ add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
  * https://fonts.google.com/specimen/Josefin+Sans
  */
 function wasmo_add_google_fonts() {
-	wp_enqueue_style(
+	wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		'wasmo-google-fonts',
 		'https://fonts.googleapis.com/css?family=Josefin+Sans:ital,wght@0,100..700;1,100..700|Crimson+Text:400,700|Open+Sans:400,700&display=swap',
 		false
@@ -64,7 +64,7 @@ add_action( 'after_setup_theme', 'wasmo_setup' );
  * @return string The modified menu items.
  */
 function wasmo_loginout_menu_link( $items, $args ) {
-	if ( $args->theme_location == 'utility' ) {
+	if ( $args->theme_location == 'utility' ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 		$userid = get_current_user_id();
 
 		$login  = '<li class="login"><a href="' . home_url( '/login/' ) . '" class="register">' . wasmo_get_icon_svg( 'join', 24 ) . __( ' Join', 'wasmo' ) . '</a></li>';

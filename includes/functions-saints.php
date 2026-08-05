@@ -344,7 +344,7 @@ function wasmo_get_apostle_seniority_list( $include_deceased = false ) {
  */
 function wasmo_get_saint_seniority( $saint_id, $include_deceased = false ) {
 	$seniority_list = wasmo_get_apostle_seniority_list( $include_deceased );
-	$position       = array_search( $saint_id, $seniority_list );
+	$position       = array_search( $saint_id, $seniority_list ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 
 	if ( false === $position ) {
 		return null;
@@ -728,7 +728,7 @@ function wasmo_get_saint_related_posts( $saint_id, $limit = 10 ) {
 	);
 
 	foreach ( $relationship_posts as $post ) {
-		if ( ! in_array( $post->ID, $post_ids ) ) {
+		if ( ! in_array( $post->ID, $post_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			$post_ids[]      = $post->ID;
 			$related_posts[] = $post;
 		}
@@ -800,7 +800,7 @@ function wasmo_get_saint_related_media( $saint_id, $limit = 20 ) {
 	);
 
 	foreach ( $relationship_media as $media ) {
-		if ( ! in_array( $media->ID, $media_ids ) ) {
+		if ( ! in_array( $media->ID, $media_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			$media_ids[]     = $media->ID;
 			$related_media[] = $media;
 		}
@@ -918,7 +918,7 @@ function wasmo_get_saints_chart_data() {
 			'president_years'       => $president_years,
 			'roles'                 => $roles,
 			'is_first_presidency'   => $is_first_presidency,
-			'is_president'          => in_array( 'president', $roles ),
+			'is_president'          => in_array( 'president', $roles ), // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			'served_under'          => wasmo_get_served_with_presidents( $apostle_id ),
 			'thumbnail'             => $thumbnail_url,
 		);
@@ -2631,7 +2631,7 @@ function wasmo_get_age_at_date( $saint_id, $date ) {
  * @param string $date      Date to calculate at (Y-m-d).
  * @return int|null Age difference (saint1 - saint2), or null if dates not available.
  */
-function wasmo_get_age_difference( $saint1_id, $saint2_id, $date = null ) {
+function wasmo_get_age_difference( $saint1_id, $saint2_id, $date = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	$birth1 = get_field( 'birthdate', $saint1_id );
 	$birth2 = get_field( 'birthdate', $saint2_id );
 
@@ -3189,7 +3189,7 @@ function wasmo_get_leader_age_at_call( $id ) {
 	return wasmo_get_saint_age_at_call( $id ); }
 function wasmo_get_leader_years_as_president( $id ) {
 	return wasmo_get_saint_years_as_president( $id ); }
-function wasmo_get_leader_seniority( $id, $include = false ) {
+function wasmo_get_leader_seniority( $id, $include = false ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.includeFound
 	return wasmo_get_saint_seniority( $id, $include ); }
 function wasmo_get_served_with_prophets( $id ) {
 	return wasmo_get_served_with_presidents( $id ); }

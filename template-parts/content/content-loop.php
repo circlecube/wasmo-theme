@@ -31,7 +31,7 @@
 <?php } elseif ( 'attachment' === get_post_type() ) { ?>
 	<?php
 		// Get image alt text
-		$image_alt = trim( strip_tags( get_post_meta( get_the_ID(), '_wp_attachment_image_alt', true ) ) );
+		$image_alt = trim( wp_strip_all_tags( get_post_meta( get_the_ID(), '_wp_attachment_image_alt', true ) ) );
 	if ( empty( $image_alt ) ) {
 		$image_alt = get_the_title();
 	}

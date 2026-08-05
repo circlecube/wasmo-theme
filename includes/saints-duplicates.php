@@ -71,13 +71,13 @@ function wasmo_render_duplicates_page() {
 		'name_dates' => array_filter(
 			$duplicates,
 			function ( $dup ) {
-				return in_array( $dup['match_type'], array( 'name_birthdate', 'name_deathdate', 'name_birthdate_deathdate' ) );
+				return in_array( $dup['match_type'], array( 'name_birthdate', 'name_deathdate', 'name_birthdate_deathdate' ) ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			}
 		),
 		'wives'      => array_filter(
 			$duplicates,
 			function ( $dup ) {
-				return in_array( $dup['match_type'], array( 'wife_same_husband', 'wife_different_husbands' ) );
+				return in_array( $dup['match_type'], array( 'wife_same_husband', 'wife_different_husbands' ) ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			}
 		),
 		'extraneous' => array_filter(
@@ -823,7 +823,7 @@ function wasmo_bulk_load_saint_meta( $saint_ids ) {
 		"SELECT post_id, meta_key, meta_value
 		FROM {$wpdb->postmeta}
 		WHERE post_id IN ($ids_placeholders)
-		AND (meta_key = 'familysearch_id' OR meta_key = 'birthdate' OR meta_key = 'deathdate' OR meta_key = 'gender')",
+		AND (meta_key = 'familysearch_id' OR meta_key = 'birthdate' OR meta_key = 'deathdate' OR meta_key = 'gender')", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		...$saint_ids
 	);
 	// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -948,7 +948,7 @@ function wasmo_find_duplicates_by_name_dates() {
 	$ids_placeholders = implode( ',', array_fill( 0, count( $saints ), '%d' ) );
 	$title_results    = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			...$saints
 		)
 	);
@@ -1112,7 +1112,7 @@ function wasmo_find_duplicate_wives() {
 	$ids_placeholders = implode( ',', array_fill( 0, count( $wife_ids ), '%d' ) );
 	$title_results    = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			"SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN ($ids_placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			...$wife_ids
 		)
 	);
@@ -1475,7 +1475,7 @@ function wasmo_merge_duplicate_saints_by_id( $primary_id, $merge_from_id ) {
 		foreach ( $marriages as $idx => $marriage ) {
 			// Update spouse relationships
 			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
-			if ( $spouse_id == $merge_from_id ) {
+			if ( $spouse_id == $merge_from_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$marriages[ $idx ]['spouse'] = array( $primary_id );
 				$updated                     = true;
 				++$updates['relationships_updated'];
@@ -1485,7 +1485,7 @@ function wasmo_merge_duplicate_saints_by_id( $primary_id, $merge_from_id ) {
 			if ( ! empty( $marriage['children'] ) ) {
 				foreach ( $marriage['children'] as $child_idx => $child ) {
 					$child_link = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
-					if ( $child_link == $merge_from_id ) {
+					if ( $child_link == $merge_from_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 						$marriages[ $idx ]['children'][ $child_idx ]['child_link'] = array( $primary_id );
 						$updated = true;
 						++$updates['relationships_updated'];
@@ -1648,7 +1648,7 @@ function wasmo_merge_marriages( $target_id, $source_id, &$updates ) {
 			$target_spouse_fs_id = $target_marriage['spouse_familysearch_id'] ?? '';
 
 			// Match by spouse ID or FS ID
-			if ( ( $source_spouse_id && $source_spouse_id == $target_spouse_id ) ||
+			if ( ( $source_spouse_id && $source_spouse_id == $target_spouse_id ) || // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				( $source_spouse_fs_id && $source_spouse_fs_id === $target_spouse_fs_id ) ) {
 				// Merge children
 				$target_children = $target_marriage['children'] ?: array();

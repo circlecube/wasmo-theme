@@ -184,7 +184,7 @@ class Wasmo_Contributor_Post_List_Table extends WP_List_Table {
 				return $item[ $column_name ];
 
 			default:
-				return print_r( $item, true );
+				return print_r( $item, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 	}
 
@@ -199,13 +199,13 @@ class Wasmo_Contributor_Post_List_Table extends WP_List_Table {
 		$order   = 'asc';
 
 		// If orderby is set, use this as the sort column
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = wp_unslash( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$orderby = wp_unslash( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		// If order is set use this as the order
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = wp_unslash( $_GET['order'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['order'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order = wp_unslash( $_GET['order'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		$result = strcmp( $a[ $orderby ], $b[ $orderby ] );

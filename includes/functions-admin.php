@@ -107,7 +107,7 @@ function wasmo_admin_column_styles() {
 	global $pagenow;
 
 	// Only on edit pages
-	if ( ! in_array( $pagenow, array( 'edit.php', 'users.php' ) ) ) {
+	if ( ! in_array( $pagenow, array( 'edit.php', 'users.php' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 		return;
 	}
 	?>
@@ -333,12 +333,12 @@ add_action( 'wp_before_admin_bar_render', 'wasmo_admin_bar_render' );
 function wasmo_posts_for_current_author( $query ) {
 	global $pagenow;
 
-	if ( 'edit.php' != $pagenow || ! $query->is_admin ) {
+	if ( 'edit.php' != $pagenow || ! $query->is_admin ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 		return $query;
 	}
 
 	// Only apply to standard 'post' type, not custom post types like church-leader
-	$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post';
+	$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( $post_type !== 'post' ) {
 		return $query;
 	}
@@ -376,62 +376,62 @@ function wasmo_fix_post_counts( $views ) {
 			'post_status' => $type['status'],
 		);
 		$result = new WP_Query( $query );
-		if ( $type['status'] == null ) :
-			$class        = ( $wp_query->query_vars['post_status'] == null ) ? ' class="current"' : '';
+		if ( $type['status'] == null ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+			$class        = ( $wp_query->query_vars['post_status'] == null ) ? ' class="current"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			$views['all'] = sprintf(
 				'<a href="%s" ' . $class . '>All <span class="count">(%d)</span></a>',
 				admin_url( 'edit.php?post_type=post' ),
 				$result->found_posts
 			);
-		elseif ( $type['status'] == 'publish' ) :
+		elseif ( $type['status'] == 'publish' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			if ( $result->found_posts === 0 ) {
 				unset( $views['publish'] );
 			} else {
-				$class            = ( $wp_query->query_vars['post_status'] == 'publish' ) ? ' class="current"' : '';
+				$class            = ( $wp_query->query_vars['post_status'] == 'publish' ) ? ' class="current"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$views['publish'] = sprintf(
 					'<a href="%s" ' . $class . '>Published <span class="count">(%d)</span></a>',
 					admin_url( 'edit.php?post_status=publish&post_type=post' ),
 					$result->found_posts
 				);
 			}
-		elseif ( $type['status'] == 'draft' ) :
+		elseif ( $type['status'] == 'draft' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			if ( $result->found_posts === 0 ) {
 				unset( $views['draft'] );
 			} else {
-				$class          = ( $wp_query->query_vars['post_status'] == 'draft' ) ? ' class="current"' : '';
+				$class          = ( $wp_query->query_vars['post_status'] == 'draft' ) ? ' class="current"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$views['draft'] = sprintf(
 					'<a href="%s" ' . $class . '>Draft' . ( ( count( $result->posts ) > 1 ) ? 's' : '' ) . ' <span class="count">(%d)</span></a>',
 					admin_url( 'edit.php?post_status=draft&post_type=post' ),
 					$result->found_posts
 				);
 			}
-		elseif ( $type['status'] == 'future' ) :
+		elseif ( $type['status'] == 'future' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			if ( $result->found_posts === 0 ) {
 				unset( $views['future'] );
 			} else {
-				$class           = ( $wp_query->query_vars['post_status'] == 'future' ) ? ' class="future"' : '';
+				$class           = ( $wp_query->query_vars['post_status'] == 'future' ) ? ' class="future"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$views['future'] = sprintf(
 					'<a href="%s" ' . $class . '>Scheduled <span class="count">(%d)</span></a>',
 					admin_url( 'edit.php?post_status=future&post_type=post' ),
 					$result->found_posts
 				);
 			}
-		elseif ( $type['status'] == 'pending' ) :
+		elseif ( $type['status'] == 'pending' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			if ( $result->found_posts === 0 ) {
 				unset( $views['pending'] );
 			} else {
-				$class            = ( $wp_query->query_vars['post_status'] == 'pending' ) ? ' class="current"' : '';
+				$class            = ( $wp_query->query_vars['post_status'] == 'pending' ) ? ' class="current"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$views['pending'] = sprintf(
 					'<a href="%s" ' . $class . '>Pending <span class="count">(%d)</span></a>',
 					admin_url( 'edit.php?post_status=pending&post_type=post' ),
 					$result->found_posts
 				);
 			}
-		elseif ( $type['status'] == 'trash' ) :
+		elseif ( $type['status'] == 'trash' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			if ( $result->found_posts === 0 ) {
 				unset( $views['trash'] );
 			} else {
-				$class          = ( $wp_query->query_vars['post_status'] == 'trash' ) ? ' class="current"' : '';
+				$class          = ( $wp_query->query_vars['post_status'] == 'trash' ) ? ' class="current"' : ''; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 				$views['trash'] = sprintf(
 					'<a href="%s" ' . $class . '>Trash <span class="count">(%d)</span></a>',
 					admin_url( 'edit.php?post_status=trash&post_type=post' ),

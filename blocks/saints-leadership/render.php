@@ -48,7 +48,7 @@ if ( $filter_mode === 'custom' ) {
 
 	// Build cache key from filter criteria
 	$cache_key = 'wasmo_block_filter_' . md5(
-		serialize(
+		serialize( // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 			array(
 				'roles'        => $role_filter,
 				'role_op'      => $role_filter_operator,
@@ -314,7 +314,7 @@ if ( $filter_mode === 'custom' ) {
 
 			// Combine: past presidents + current president
 			$all_presidents = $past_presidents;
-			if ( $current_president_id && ! in_array( $current_president_id, $all_presidents ) ) {
+			if ( $current_president_id && ! in_array( $current_president_id, $all_presidents ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$all_presidents[] = $current_president_id;
 			}
 

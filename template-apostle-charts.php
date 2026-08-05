@@ -11,7 +11,7 @@
 get_header();
 
 // Allow cache clearing via query param (admin only)
-if ( isset( $_GET['clear_cache'] ) && current_user_can( 'manage_options' ) ) {
+if ( isset( $_GET['clear_cache'] ) && current_user_can( 'manage_options' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	delete_transient( 'wasmo_leaders_chart_data' );
 	delete_transient( 'wasmo_apostle_seniority' );
 	delete_transient( 'wasmo_apostle_seniority_all' );
@@ -470,9 +470,9 @@ foreach ( $all_apostles as $apostle ) {
 						<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 						<script>
 						(function() {
-							const probabilityData = <?php echo json_encode( $probability_data ); ?>;
-							const yearLabels = <?php echo json_encode( $year_labels ); ?>;
-							const chartColors = <?php echo json_encode( $chart_colors ); ?>;
+							const probabilityData = <?php echo wp_json_encode( $probability_data ); ?>;
+							const yearLabels = <?php echo wp_json_encode( $year_labels ); ?>;
+							const chartColors = <?php echo wp_json_encode( $chart_colors ); ?>;
 							
 							let probChart = null;
 							

@@ -273,7 +273,7 @@ add_action( 'transition_post_status', 'wasmo_pending_submission_notifications_se
 
 // https://github.com/wp-plugins/oa-social-login/blob/master/filters.txt
 // This function will be called after Social Login has added a new user
-function wasmo_oa_social_login_do_after_user_insert( $user_data, $identity ) {
+function wasmo_oa_social_login_do_after_user_insert( $user_data, $identity ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	// These are the fields from the WordPress database
 	// print_r($user_data);
 	// This is the full social network profile of this user
@@ -287,7 +287,7 @@ function wasmo_oa_social_login_do_after_user_insert( $user_data, $identity ) {
 // add_action ('oa_social_login_action_after_user_insert', 'wasmo_oa_social_login_do_after_user_insert', 10, 2);
 
 // This function will be called before Social Login logs the user in
-function wasmo_oa_social_login_do_before_user_login( $user_data, $identity, $new_registration ) {
+function wasmo_oa_social_login_do_before_user_login( $user_data, $identity, $new_registration ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	// record last login
 	wasmo_user_lastlogin( $user_data->user_login, $user_data );
 	// send welcome?

@@ -271,7 +271,7 @@ add_action( 'acf/init', 'wasmo_register_acf_options_pages' );
  * @param array  $field The field array.
  * @return string The default display name value.
  */
-function wasmo_get_default_display_name_value( $value, $post_id, $field ) {
+function wasmo_get_default_display_name_value( $value, $post_id, $field ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	if ( $value === null || $value === '' ) {
 		$user_id          = intval( substr( $post_id, 5 ) );
 		$user_info        = get_userdata( $user_id );
@@ -291,7 +291,7 @@ add_filter( 'acf/load_value/name=display_name', 'wasmo_get_default_display_name_
  * @param array  $field The field array.
  * @return string The default profile id value.
  */
-function wasmo_get_default_profile_id_value( $value, $post_id, $field ) {
+function wasmo_get_default_profile_id_value( $value, $post_id, $field ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	if ( $value === null || $value === '' ) {
 		$user_id       = intval( substr( $post_id, 5 ) );
 		$user_info     = get_userdata( $user_id );
@@ -407,7 +407,7 @@ add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
  *
  * @param int $user_id The user ID.
  */
-function wasmo_delete_user( $user_id ) {
+function wasmo_delete_user( $user_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
 }
@@ -529,7 +529,7 @@ function wasmo_admin_saint_role_filter() {
 	}
 
 	$taxonomy = 'saint-role';
-	$selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( $_GET[ $taxonomy ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+	$selected = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( $_GET[ $taxonomy ] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 	$terms = get_terms(
 		array(
@@ -567,7 +567,7 @@ function wasmo_admin_saint_status_filter() {
 		return;
 	}
 
-	$selected = isset( $_GET['saint_status'] ) ? sanitize_text_field( wp_unslash( $_GET['saint_status'] ) ) : '';
+	$selected = isset( $_GET['saint_status'] ) ? sanitize_text_field( wp_unslash( $_GET['saint_status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 	echo '<select name="saint_status" id="saint_status">';
 	echo '<option value="">' . esc_html__( 'All (Living & Deceased)', 'wasmo' ) . '</option>';
@@ -591,7 +591,7 @@ function wasmo_admin_filter_saints_by_status( $query ) {
 		return;
 	}
 
-	$status = isset( $_GET['saint_status'] ) ? sanitize_text_field( wp_unslash( $_GET['saint_status'] ) ) : '';
+	$status = isset( $_GET['saint_status'] ) ? sanitize_text_field( wp_unslash( $_GET['saint_status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 	if ( empty( $status ) ) {
 		return;
@@ -926,11 +926,11 @@ add_filter( 'manage_users_sortable_columns', 'wasmo_admin_user_sortable_columns'
  * Handle sorting by custom columns for Users
  */
 function wasmo_admin_user_column_orderby( $query ) {
-	if ( ! is_admin() || ! isset( $_GET['orderby'] ) ) {
+	if ( ! is_admin() || ! isset( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}
 
-	$orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
+	$orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 	if ( 'last_login' === $orderby ) {
 		$query->set( 'meta_key', 'last_login' );

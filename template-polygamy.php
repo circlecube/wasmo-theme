@@ -10,7 +10,7 @@
 get_header();
 
 // Allow cache clearing via query param (admin only)
-if ( isset( $_GET['clear_cache'] ) && current_user_can( 'manage_options' ) ) {
+if ( isset( $_GET['clear_cache'] ) && current_user_can( 'manage_options' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	delete_transient( 'wasmo_polygamists_list' );
 	delete_transient( 'wasmo_polygamy_data' );
 	echo '<div class="notice notice-success" style="padding: 1rem; margin: 1rem; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;"><strong>Polygamy cache cleared!</strong> Refresh to see updated data.</div>';
@@ -362,7 +362,7 @@ foreach ( $young_brides as $bride ) {
 					<?php
 					foreach ( $polygamists as $p ) :
 						$wives_pct = ( $p['num_wives'] / $max_wives ) * 100;
-						$bar_class = in_array( 'president', $p['role_slugs'] ?? array() ) ? 'bar-prophet' : 'bar-historical';
+						$bar_class = in_array( 'president', $p['role_slugs'] ?? array() ) ? 'bar-prophet' : 'bar-historical'; // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 						if ( $p['num_teenage_brides'] > 0 ) {
 							$bar_class .= ' has-teenage';
 						}

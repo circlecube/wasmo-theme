@@ -343,7 +343,7 @@ function wasmo_auto_link_text( $text ) {
 			}
 
 			// make link text from url - removing protocol
-			$text = parse_url( $url, PHP_URL_HOST ) . parse_url( $url, PHP_URL_PATH );
+			$text = wp_parse_url( $url, PHP_URL_HOST ) . wp_parse_url( $url, PHP_URL_PATH );
 
 			// remove the www from the link text
 			$text = preg_replace( '/^www./', '', $text );
@@ -372,7 +372,7 @@ function wasmo_auto_link_text( $text ) {
  * @param  string $startString Startin string to match.
  * @return boolean Wether string begins with startString.
  */
-function wasmo_starts_with( $string, $startString ) {
+function wasmo_starts_with( $string, $startString ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound
 	$len = strlen( $startString );
 	return ( substr( $string, 0, $len ) === $startString );
 }
@@ -446,7 +446,7 @@ add_action( 'init', 'wasmo_random_add_rewrite' );
  */
 function wasmo_random_profile_template() {
 	if ( get_query_var( 'randomprofile' ) ) {
-			wp_redirect( wasmo_get_random_profile_url(), 307 );
+			wp_safe_redirect( wasmo_get_random_profile_url(), 307 );
 			exit;
 	}
 }
@@ -480,8 +480,8 @@ function wasmo_get_random_profile_url() {
  * @param WP_User_Query $class The user query object.
  * @return WP_User_Query The modified user query object.
  */
-function wasmo_random_user_query( $class ) {
-	if ( 'rand' == $class->query_vars['orderby'] ) {
+function wasmo_random_user_query( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound
+	if ( 'rand' == $class->query_vars['orderby'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 		$class->query_orderby = str_replace(
 			'user_login',
 			'RAND()',
@@ -724,7 +724,7 @@ function wasmo_get_user_image_url( $userid ) {
 	} else {
 		$user        = get_userdata( $userid );
 		$hash        = md5( strtolower( trim( $user->user_email ) ) );
-		$default_img = urlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
+		$default_img = rawurlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
 		$gravatar    = $hash . '?s=300&d=' . $default_img;
 		return 'https://www.gravatar.com/avatar/' . $gravatar;
 	}

@@ -151,7 +151,7 @@ class Wasmo_Draft_Post_List_Table extends WP_List_Table {
 			$post           = get_post( $post_id );
 			$content        = $post->post_content;
 			$content_length = strlen( $content );
-			$word_count     = str_word_count( strip_tags( $content ) );
+			$word_count     = str_word_count( wp_strip_all_tags( $content ) );
 
 			// Only include posts that actually have content
 			if ( $content_length > 10 ) {
@@ -203,7 +203,7 @@ class Wasmo_Draft_Post_List_Table extends WP_List_Table {
 				return $item[ $column_name ];
 
 			default:
-				return print_r( $item, true );
+				return print_r( $item, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 	}
 
@@ -218,13 +218,13 @@ class Wasmo_Draft_Post_List_Table extends WP_List_Table {
 		$order   = 'desc';
 
 		// If orderby is set, use this as the sort column
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = wp_unslash( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$orderby = wp_unslash( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		// If order is set use this as the order
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = wp_unslash( $_GET['order'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['order'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order = wp_unslash( $_GET['order'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		// Handle numeric sorting for content_length and word_count

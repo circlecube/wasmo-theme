@@ -263,11 +263,11 @@ function wasmo_render_leader_images_page() {
 									<code><?php echo esc_html( $search_term ); ?></code>
 								</td>
 								<td>
-									<a href="https://en.wikipedia.org/wiki/<?php echo urlencode( str_replace( ' ', '_', $search_term ) ); ?>" 
+									<a href="https://en.wikipedia.org/wiki/<?php echo rawurlencode( str_replace( ' ', '_', $search_term ) ); ?>" 
 										target="_blank" class="button button-small">
 										Wikipedia
 									</a>
-									<a href="https://history.churchofjesuschrist.org/chd/search?query=<?php echo urlencode( $church_history_search ); ?>&tabFacet=people&lang=eng" 
+									<a href="https://history.churchofjesuschrist.org/chd/search?query=<?php echo rawurlencode( $church_history_search ); ?>&tabFacet=people&lang=eng" 
 										target="_blank" class="button button-small">
 										Church History DB
 									</a>
@@ -582,7 +582,7 @@ function wasmo_search_church_history_image( $search_term ) {
 				'Content-Type' => 'application/json',
 				'Accept'       => 'application/json',
 			),
-			'body'       => json_encode( $search_body ),
+			'body'       => wp_json_encode( $search_body ),
 			'user-agent' => 'WasMormon.org Saints Image Importer/1.0 (https://wasmormon.org)',
 		)
 	);
@@ -866,7 +866,7 @@ function wasmo_download_and_attach_image( $image_url, $leader_id ) {
 
 	// Clean up temp file
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp );
+		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {
@@ -1073,7 +1073,7 @@ function wasmo_bulk_import_images( $source = WASMO_IMAGE_SOURCE_AUTO ) {
 
 			if ( $error_code === 'has_image' ) {
 				++$results['skipped'];
-			} elseif ( in_array( $error_code, array( 'no_results', 'no_image', 'no_suitable_image', 'no_images', 'no_image_found' ) ) ) {
+			} elseif ( in_array( $error_code, array( 'no_results', 'no_image', 'no_suitable_image', 'no_images', 'no_image_found' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				++$results['not_found'];
 				$results['errors'][] = $leader->post_title . ': ' . $result->get_error_message();
 			} else {

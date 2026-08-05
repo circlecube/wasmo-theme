@@ -61,6 +61,21 @@
 
         <!-- One-class-per-file: legacy widget files bundle related classes -->
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
+
+        <!-- Direct DB queries: this theme intentionally uses $wpdb directly; blanket caching
+             would require significant refactor and is better handled case-by-case -->
+        <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+        <exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+
+        <!-- Slow DB queries: meta_query/tax_query/meta_key are necessary for this codebase's
+             data model; adding indexes is a server-config concern, not a code-style issue -->
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/>
+
+        <!-- Commented-out code: generates false positives on HTML and SQL fragments in comments -->
+        <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
     </rule>
 
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals">

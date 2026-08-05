@@ -485,7 +485,7 @@ function wasmo_search_media_for_leader( $leader ) {
 		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		foreach ( $results as $row ) {
-			if ( ! in_array( $row->ID, $found_ids ) ) {
+			if ( ! in_array( $row->ID, $found_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$found_ids[]     = $row->ID;
 				$match_locations = array();
 
@@ -522,14 +522,14 @@ function wasmo_search_media_for_leader( $leader ) {
 		$alt_results = $wpdb->get_results( $alt_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		foreach ( $alt_results as $row ) {
-			if ( ! in_array( $row->ID, $found_ids ) ) {
+			if ( ! in_array( $row->ID, $found_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$found_ids[]         = $row->ID;
 				$matches[ $row->ID ] = array(
 					'id'         => $row->ID,
 					'match_term' => $search_term,
 					'match_in'   => array( 'alt_text' ),
 				);
-			} elseif ( isset( $matches[ $row->ID ] ) && ! in_array( 'alt_text', $matches[ $row->ID ]['match_in'] ) ) {
+			} elseif ( isset( $matches[ $row->ID ] ) && ! in_array( 'alt_text', $matches[ $row->ID ]['match_in'] ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$matches[ $row->ID ]['match_in'][] = 'alt_text';
 			}
 		}
@@ -549,14 +549,14 @@ function wasmo_search_media_for_leader( $leader ) {
 		$file_results = $wpdb->get_results( $file_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		foreach ( $file_results as $row ) {
-			if ( ! in_array( $row->ID, $found_ids ) ) {
+			if ( ! in_array( $row->ID, $found_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$found_ids[]         = $row->ID;
 				$matches[ $row->ID ] = array(
 					'id'         => $row->ID,
 					'match_term' => $search_term,
 					'match_in'   => array( 'filename' ),
 				);
-			} elseif ( isset( $matches[ $row->ID ] ) && ! in_array( 'filename', $matches[ $row->ID ]['match_in'] ) ) {
+			} elseif ( isset( $matches[ $row->ID ] ) && ! in_array( 'filename', $matches[ $row->ID ]['match_in'] ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$matches[ $row->ID ]['match_in'][] = 'filename';
 			}
 		}
@@ -637,7 +637,7 @@ function wasmo_preview_leader_associations( $include_text_search = true ) {
 
 				$new_matches = array();
 				foreach ( $text_matches as $media_id => $match_info ) {
-					if ( ! in_array( $media_id, $existing_media ) ) {
+					if ( ! in_array( $media_id, $existing_media ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 						$new_matches[ $media_id ] = $match_info;
 					}
 				}
@@ -778,7 +778,7 @@ function wasmo_add_leader_to_content( $content_id, $leader_id ) {
 	}
 
 	// Check if already associated
-	if ( in_array( $leader_id, $existing ) ) {
+	if ( in_array( $leader_id, $existing ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 		return false;
 	}
 

@@ -8,7 +8,7 @@
 get_header();
 
 // Handle cache flush
-if ( isset( $_GET['flush_cache'] ) ) {
+if ( isset( $_GET['flush_cache'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$flush_saint_id = get_the_ID();
 	delete_transient( 'wasmo_saint_page_' . $flush_saint_id );
 }
@@ -103,7 +103,7 @@ while ( have_posts() ) :
 	$classes = get_post_class( 'saint-single' );
 	$classes = array_filter(
 		$classes,
-		function ( $class ) {
+		function ( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound
 			return strpos( $class, 'saint-role-' ) !== 0;
 		}
 	);
@@ -685,7 +685,7 @@ while ( have_posts() ) :
 								const ctx = canvas.getContext('2d');
 								
 								// Marriage data from PHP
-								const marriageData = <?php echo json_encode( $chart_marriages ); ?>;
+								const marriageData = <?php echo wp_json_encode( $chart_marriages ); ?>;
 							
 								const labels = marriageData.map(m => {
 									const year = m.marriage_year;

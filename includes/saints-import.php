@@ -334,7 +334,7 @@ function wasmo_render_leader_import_page() {
 	// Handle JSON file upload import
 	if ( isset( $_POST['wasmo_import_file'] ) && check_admin_referer( 'wasmo_import_file_nonce' ) ) {
 		if ( ! empty( $_FILES['leaders_json_file']['tmp_name'] ) ) {
-			$file_content = file_get_contents( $_FILES['leaders_json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$file_content = file_get_contents( $_FILES['leaders_json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$leaders_data = json_decode( $file_content, true );
 
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
@@ -848,7 +848,7 @@ function wasmo_export_leaders_json_ajax() {
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
-	echo json_encode( $leaders_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	echo wp_json_encode( $leaders_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	exit;
 }
 add_action( 'wp_ajax_wasmo_export_leaders_json', 'wasmo_export_leaders_json_ajax' );
@@ -891,7 +891,7 @@ function wasmo_export_selected_saint_ajax() {
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
-	echo json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	echo wp_json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	exit;
 }
 add_action( 'wp_ajax_wasmo_export_selected_saint', 'wasmo_export_selected_saint_ajax' );
@@ -1586,7 +1586,7 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 			$image_result = wasmo_import_leader_featured_image( $post_id, $data['featured_image_url'], $data['name'] );
 			if ( is_wp_error( $image_result ) ) {
 				// Log error but don't fail the whole import
-				error_log( 'Failed to import image for ' . $data['name'] . ': ' . $image_result->get_error_message() );
+				error_log( 'Failed to import image for ' . $data['name'] . ': ' . $image_result->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			}
 		}
 	}
@@ -1815,7 +1815,7 @@ function wasmo_import_leader_featured_image( $post_id, $image_url, $leader_name 
 	}
 
 	// Get file extension from URL
-	$path_info = pathinfo( parse_url( $image_url, PHP_URL_PATH ) );
+	$path_info = pathinfo( wp_parse_url( $image_url, PHP_URL_PATH ) );
 	$ext       = isset( $path_info['extension'] ) ? $path_info['extension'] : 'jpg';
 
 	$file_array = array(
@@ -1828,7 +1828,7 @@ function wasmo_import_leader_featured_image( $post_id, $image_url, $leader_name 
 
 	// Clean up temp file
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp );
+		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {
@@ -2084,7 +2084,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 		'errors'    => array(),
 	);
 
-	$handle = fopen( $csv_path, 'r' );
+	$handle = fopen( $csv_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	if ( ! $handle ) {
 		$results['errors'][] = 'Could not open CSV file';
 		return $results;
@@ -2093,7 +2093,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 	// Read header row
 	$headers = fgetcsv( $handle );
 	if ( ! $headers ) {
-		fclose( $handle );
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		$results['errors'][] = 'Could not read CSV headers';
 		return $results;
 	}
@@ -2110,7 +2110,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 
 	$header_count = count( $headers );
 
-	while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+	while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		// Skip empty rows
 		if ( empty( $row ) || ( count( $row ) === 1 && empty( trim( $row[0] ) ) ) ) {
 			continue;
@@ -2162,7 +2162,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 		++$results['updated'];
 	}
 
-	fclose( $handle );
+	fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 	return $results;
 }
 
@@ -2195,7 +2195,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 
 	$leader_id = $leader->ID;
 
-	$handle = fopen( $csv_path, 'r' );
+	$handle = fopen( $csv_path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	if ( ! $handle ) {
 		$results['errors'][] = 'Could not open CSV file';
 		return $results;
@@ -2204,7 +2204,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 	// Read header row
 	$headers = fgetcsv( $handle );
 	if ( ! $headers ) {
-		fclose( $handle );
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		$results['errors'][] = 'Could not read CSV headers';
 		return $results;
 	}
@@ -2221,7 +2221,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 
 	$header_count = count( $headers );
 
-	while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+	while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		// Skip empty rows
 		if ( empty( $row ) || ( count( $row ) === 1 && empty( trim( $row[0] ) ) ) ) {
 			continue;
@@ -2314,7 +2314,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 		}
 	}
 
-	fclose( $handle );
+	fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 	return $results;
 }
@@ -2326,7 +2326,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
  * @param string $husband_name For context.
  * @return array|WP_Error Array with 'id' and 'created' flag, or error.
  */
-function wasmo_create_or_update_wife( $data, $husband_name ) {
+function wasmo_create_or_update_wife( $data, $husband_name ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	$wife_name = trim( $data['wife_name'] ?? '' );
 
 	if ( empty( $wife_name ) ) {
