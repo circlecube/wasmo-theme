@@ -243,7 +243,7 @@ class Wasmo_Spotlight_Post_List_Table extends WP_List_Table {
 				return $item[ $column_name ];
 
 			default:
-				return print_r( $item, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				return wp_json_encode( $item );
 		}
 	}
 

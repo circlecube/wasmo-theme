@@ -481,7 +481,7 @@ function wasmo_get_random_profile_url() {
  * @return WP_User_Query The modified user query object.
  */
 function wasmo_random_user_query( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound
-	if ( 'rand' == $class->query_vars['orderby'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+	if ( 'rand' === $class->query_vars['orderby'] ) {
 		$class->query_orderby = str_replace(
 			'user_login',
 			'RAND()',

@@ -977,7 +977,7 @@ function wasmo_sideload_fs_portrait( $saint_id, $image_url, $force = false ) {
 
 	// Clean up temp file if still exists
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
+		wp_delete_file( $tmp );
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {

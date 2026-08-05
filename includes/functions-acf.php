@@ -268,10 +268,9 @@ add_action( 'acf/init', 'wasmo_register_acf_options_pages' );
  *
  * @param string $value The value.
  * @param string $post_id The post ID.
- * @param array  $field The field array.
  * @return string The default display name value.
  */
-function wasmo_get_default_display_name_value( $value, $post_id, $field ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+function wasmo_get_default_display_name_value( $value, $post_id ) {
 	if ( $value === null || $value === '' ) {
 		$user_id          = intval( substr( $post_id, 5 ) );
 		$user_info        = get_userdata( $user_id );
@@ -288,10 +287,9 @@ add_filter( 'acf/load_value/name=display_name', 'wasmo_get_default_display_name_
  *
  * @param string $value The value.
  * @param string $post_id The post ID.
- * @param array  $field The field array.
  * @return string The default profile id value.
  */
-function wasmo_get_default_profile_id_value( $value, $post_id, $field ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+function wasmo_get_default_profile_id_value( $value, $post_id ) {
 	if ( $value === null || $value === '' ) {
 		$user_id       = intval( substr( $post_id, 5 ) );
 		$user_info     = get_userdata( $user_id );
@@ -404,10 +402,8 @@ add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
 
 /**
  * Delete user
- *
- * @param int $user_id The user ID.
  */
-function wasmo_delete_user( $user_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+function wasmo_delete_user() {
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
 }

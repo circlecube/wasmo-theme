@@ -189,7 +189,7 @@ add_action( 'rest_api_init', 'wasmo_register_fs_api_routes' );
  * Permission check for API endpoints
  * Requires authenticated user with manage_options capability
  */
-function wasmo_api_permission_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+function wasmo_api_permission_check() {
 	// Check if user is authenticated (Application Passwords work with this)
 	if ( ! is_user_logged_in() ) {
 		return new WP_Error(
@@ -1063,7 +1063,7 @@ function wasmo_format_saint_for_api( $saint_id, $include_marriages = false ) {
 /**
  * GET /saints/duplicates - Find saints with duplicate FamilySearch IDs
  */
-function wasmo_api_get_duplicate_saints( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+function wasmo_api_get_duplicate_saints() {
 	global $wpdb;
 
 	// Find FamilySearch IDs that appear more than once
@@ -1201,7 +1201,7 @@ function wasmo_api_merge_saint( $request ) {
 		foreach ( $marriages as $idx => $marriage ) {
 			// Check spouse relationship
 			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
-			if ( $spouse_id == $source_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+			if ( $spouse_id === $source_id ) {
 				$marriages[ $idx ]['spouse'] = array( $target_id );
 				$updated                     = true;
 				++$updates['relationships_updated'];
@@ -1211,7 +1211,7 @@ function wasmo_api_merge_saint( $request ) {
 			if ( ! empty( $marriage['children'] ) ) {
 				foreach ( $marriage['children'] as $child_idx => $child ) {
 					$child_link = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
-					if ( $child_link == $source_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+					if ( $child_link === $source_id ) {
 						$marriages[ $idx ]['children'][ $child_idx ]['child_link'] = array( $target_id );
 						$updated = true;
 						++$updates['relationships_updated'];

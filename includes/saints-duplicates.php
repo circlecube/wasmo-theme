@@ -71,13 +71,13 @@ function wasmo_render_duplicates_page() {
 		'name_dates' => array_filter(
 			$duplicates,
 			function ( $dup ) {
-				return in_array( $dup['match_type'], array( 'name_birthdate', 'name_deathdate', 'name_birthdate_deathdate' ) ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+				return in_array( $dup['match_type'], array( 'name_birthdate', 'name_deathdate', 'name_birthdate_deathdate' ), true );
 			}
 		),
 		'wives'      => array_filter(
 			$duplicates,
 			function ( $dup ) {
-				return in_array( $dup['match_type'], array( 'wife_same_husband', 'wife_different_husbands' ) ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+				return in_array( $dup['match_type'], array( 'wife_same_husband', 'wife_different_husbands' ), true );
 			}
 		),
 		'extraneous' => array_filter(
@@ -1475,7 +1475,7 @@ function wasmo_merge_duplicate_saints_by_id( $primary_id, $merge_from_id ) {
 		foreach ( $marriages as $idx => $marriage ) {
 			// Update spouse relationships
 			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
-			if ( $spouse_id == $merge_from_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+			if ( $spouse_id === $merge_from_id ) {
 				$marriages[ $idx ]['spouse'] = array( $primary_id );
 				$updated                     = true;
 				++$updates['relationships_updated'];
@@ -1485,7 +1485,7 @@ function wasmo_merge_duplicate_saints_by_id( $primary_id, $merge_from_id ) {
 			if ( ! empty( $marriage['children'] ) ) {
 				foreach ( $marriage['children'] as $child_idx => $child ) {
 					$child_link = is_array( $child['child_link'] ) ? ( $child['child_link'][0] ?? null ) : $child['child_link'];
-					if ( $child_link == $merge_from_id ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+					if ( $child_link === $merge_from_id ) {
 						$marriages[ $idx ]['children'][ $child_idx ]['child_link'] = array( $primary_id );
 						$updated = true;
 						++$updates['relationships_updated'];
@@ -1648,7 +1648,7 @@ function wasmo_merge_marriages( $target_id, $source_id, &$updates ) {
 			$target_spouse_fs_id = $target_marriage['spouse_familysearch_id'] ?? '';
 
 			// Match by spouse ID or FS ID
-			if ( ( $source_spouse_id && $source_spouse_id == $target_spouse_id ) || // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+			if ( ( $source_spouse_id && $source_spouse_id === $target_spouse_id ) ||
 				( $source_spouse_fs_id && $source_spouse_fs_id === $target_spouse_fs_id ) ) {
 				// Merge children
 				$target_children = $target_marriage['children'] ?: array();
