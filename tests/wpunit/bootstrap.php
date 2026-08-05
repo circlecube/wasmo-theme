@@ -9,4 +9,6 @@ if ( ! file_exists( "$_tests_dir/includes/functions.php" ) ) {
 
 require_once $_tests_dir . '/includes/functions.php';
 
+define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', dirname( __DIR__, 2 ) . '/vendor/yoast/phpunit-polyfills' );
+
 require $_tests_dir . '/includes/bootstrap.php';

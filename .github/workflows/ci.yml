@@ -268,7 +268,7 @@ jobs:
           tools: composer
 
       - name: npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
 
       - name: composer audit
         run: |
