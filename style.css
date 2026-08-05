@@ -5096,11 +5096,12 @@ a.marriage-timeline-name:hover {
 
 /* Profile Sections */
 /* Story completion progress checklist + Take Things Further box */
-.story-progress,
-.story-further {
+#story-progress-box,
+#story-further-box {
 	border-radius: 8px;
 	margin-bottom: 1.5rem;
 	padding: 0;
+	max-width: 1024px;
 }
 .story-progress {
 	border: 2px solid var(--color-orange);
@@ -5112,7 +5113,7 @@ a.marriage-timeline-name:hover {
 /* details/summary reset and layout */
 .story-progress details,
 .story-further details {
-	padding: 1.25rem 1.5rem;
+	padding: 1rem 1.25rem;
 }
 .story-progress summary,
 .story-further summary {
@@ -5137,10 +5138,8 @@ a.marriage-timeline-name:hover {
 	margin-bottom: 0.6rem;
 }
 .story-progress-title {
-	font-size: 1.05rem;
+	font-size: 1rem;
 	font-weight: 700;
-	letter-spacing: 0.02em;
-	text-transform: uppercase;
 }
 .story-progress-right {
 	align-items: center;
@@ -5224,6 +5223,7 @@ details[open] .story-progress-arrow {
 	opacity: 0.35;
 	position: relative;
 	width: 16px;
+	margin-top: .35rem;
 }
 .story-progress-item.is-done .story-progress-check,
 .story-further-item.is-done .story-progress-check {
@@ -5242,8 +5242,8 @@ details[open] .story-progress-arrow {
 	border-bottom: 2px solid white;
 	border-right: 2px solid white;
 	content: '';
-	height: 8px;
-	left: 3px;
+	height: 10px;
+	left: 4px;
 	position: absolute;
 	top: 1px;
 	transform: rotate(45deg);
@@ -5302,6 +5302,7 @@ details[open] .story-progress-arrow {
 }
 .story-further-item.is-done .story-further-item-label {
 	opacity: 0.55;
+	text-decoration: line-through;
 }
 .story-further-item-label {
 	display: flex;
@@ -5336,6 +5337,7 @@ details[open] .story-progress-arrow {
 }
 .story-dismiss-btn:hover {
 	opacity: 1;
+	background: none;
 }
 
 /* Restore button — small pill shown at top of content when a box is dismissed */
@@ -5349,13 +5351,15 @@ details[open] .story-progress-arrow {
 	display: flex;
 	font-size: 0.8rem;
 	gap: 0.35rem;
-	margin-bottom: 1rem;
-	margin-left: auto;
+	margin-bottom: 0;
+	margin-top: 0;
 	padding: 0.3rem 0.75rem;
 	transition: opacity 0.2s;
+	float: right;
 }
 .story-restore-btn:hover {
 	opacity: 0.75;
+	background: transparent;
 }
 
 .profile-section {

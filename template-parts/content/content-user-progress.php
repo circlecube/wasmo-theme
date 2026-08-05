@@ -5,9 +5,15 @@
  * Shown only on a user's own profile and the edit page (logged-in only).
  *
  * Expects $userid to be available via set_query_var / load_template extraction.
+ * Also, only displays if a user has saved their profile more than 2 times.
  */
 
 if ( ! $userid || ! is_user_logged_in() ) {
+	return;
+}
+
+$profile_saves = get_user_meta( $userid, 'save_count', true );
+if ( ! $profile_saves || $profile_saves < 2 ) {
 	return;
 }
 
@@ -126,8 +132,8 @@ if ( $done < 8 ) {
 	// Still render the restore button in case progress box is dismissed
 	if ( $progress_dismissed ) : ?>
 	<button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
-		<?php echo wasmo_get_icon_svg( 'edit', 16 ); ?>
-		<span>My Checklist</span>
+		<?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?>
+		<span class="screen-reader-text">My Checklist</span>
 	</button>
 	<?php endif;
 	return;
@@ -205,8 +211,8 @@ $further_items = [
 <?php // Restore button — shown when either box is dismissed ?>
 <?php if ( $progress_dismissed || $further_dismissed ) : ?>
 <button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist">
-	<?php echo wasmo_get_icon_svg( 'edit', 16 ); ?>
-	<span>My Checklist</span>
+	<?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?>
+	<span class="screen-reader-text">My Checklist</span>
 </button>
 <?php endif; ?>
 
@@ -215,14 +221,14 @@ $further_items = [
 	<details<?php echo $further_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
-				<span class="story-progress-title">Take Things Further<?php echo $username ? ', ' . $username : ''; ?></span>
+				<span class="story-progress-title">Take Things Further</span>
 				<span class="story-progress-right">
 					<span class="story-progress-arrow" aria-hidden="true"></span>
 					<button class="story-dismiss-btn" aria-label="Dismiss this box" data-box="further">&#x2715;</button>
 				</span>
 			</div>
 		</summary>
-		<p class="story-progress-message">Your story is in great shape — here are some ways to go even further and help grow the community. Check them off as you go!</p>
+		<p class="story-progress-message">Your story is in great shape (you've saved it <?php echo esc_html( $profile_saves ); ?> times)! Keep going, but if you're done, here are some ways to go even further and help grow the community. Check them off as you go!</p>
 		<ul class="story-further-checklist">
 			<?php foreach ( $further_items as $key => $item ) : ?>
 			<li class="story-further-item" data-key="<?php echo esc_attr( $key ); ?>">
@@ -350,7 +356,7 @@ $further_items = [
 				restoreBtn.id = 'story-restore-btn';
 				restoreBtn.className = 'story-restore-btn';
 				restoreBtn.setAttribute('aria-label', 'Restore profile checklist');
-				restoreBtn.innerHTML = '<span>My Checklist</span>';
+				restoreBtn.innerHTML = '<span><?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?><span class="screen-reader-text">My Checklist</span></span>';
 				var firstBox = document.getElementById('story-progress-box') || document.getElementById('story-further-box');
 				if (firstBox && firstBox.parentNode) {
 					firstBox.parentNode.insertBefore(restoreBtn, firstBox);

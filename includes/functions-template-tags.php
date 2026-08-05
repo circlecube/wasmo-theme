@@ -649,6 +649,14 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 	<path d="M23 20.8c-3.8 12 3.7 17.3 3.7 17.3h-3.3s-6.7-6.6-.4-17.3" class="c"/>
 	<path d="M25.6 28.5s-.8 2.3-3 3.3m-5.2-7.6s.4 1.9 2.7 3.5" class="c"/>
 </svg>',
+		'checklist' => /* List Checks https://lucide.dev/icons/checklist */ '
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-checklist-icon lucide-checklist">
+	<path d="M13 5h8"/>
+	<path d="M13 12h8"/>
+	<path d="M13 19h8"/>
+	<path d="m3 17 2 2 4-4"/>
+	<path d="m3 7 2 2 4-4"/>
+</svg>',
 
 		// Twemoji reaction icons (MIT licensed from https://github.com/jdecked/twemoji)
 		'reaction-heart' => /* Red Heart ❤️ */ '
