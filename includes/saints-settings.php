@@ -36,7 +36,7 @@ add_action( 'admin_init', 'wasmo_register_leader_settings' );
  * Clear First Presidency transient when settings are saved
  */
 function wasmo_clear_fp_transient_on_save( $old_value, $value, $option ) {
-	if ( in_array( $option, array( 'wasmo_current_president', 'wasmo_current_first_counselor', 'wasmo_current_second_counselor' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+	if ( in_array( $option, array( 'wasmo_current_president', 'wasmo_current_first_counselor', 'wasmo_current_second_counselor' ), true ) ) {
 		delete_transient( 'wasmo_first_presidency' );
 	}
 }

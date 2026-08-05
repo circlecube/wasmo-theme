@@ -133,7 +133,7 @@ function wasmo_get_media_for_tagging( $limit = 50, $offset = 0, $filter = 'all' 
 		$new_tags        = array_filter(
 			$potential_tags,
 			function ( $tag ) use ( $current_tag_ids ) {
-				return ! in_array( $tag->term_id, $current_tag_ids ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+				return ! in_array( $tag->term_id, $current_tag_ids, true );
 			}
 		);
 
@@ -309,7 +309,7 @@ function wasmo_apply_auto_tags( $media_ids = array(), $dry_run = false ) {
 				$new_tags        = array_filter(
 					$potential_tags,
 					function ( $tag ) use ( $current_tag_ids ) {
-						return ! in_array( $tag->term_id, $current_tag_ids ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+						return ! in_array( $tag->term_id, $current_tag_ids, true );
 					}
 				);
 

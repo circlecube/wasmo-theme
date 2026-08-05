@@ -1586,7 +1586,10 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 			$image_result = wasmo_import_leader_featured_image( $post_id, $data['featured_image_url'], $data['name'] );
 			if ( is_wp_error( $image_result ) ) {
 				// Log error but don't fail the whole import
-				error_log( 'Failed to import image for ' . $data['name'] . ': ' . $image_result->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( 'Failed to import image for ' . $data['name'] . ': ' . $image_result->get_error_message() );
+				}
 			}
 		}
 	}
@@ -1828,7 +1831,7 @@ function wasmo_import_leader_featured_image( $post_id, $image_url, $leader_name 
 
 	// Clean up temp file
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
+		wp_delete_file( $tmp );
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {
@@ -2326,7 +2329,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
  * @param string $husband_name For context.
  * @return array|WP_Error Array with 'id' and 'created' flag, or error.
  */
-function wasmo_create_or_update_wife( $data, $husband_name ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+function wasmo_create_or_update_wife( $data ) {
 	$wife_name = trim( $data['wife_name'] ?? '' );
 
 	if ( empty( $wife_name ) ) {

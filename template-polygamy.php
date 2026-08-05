@@ -362,7 +362,7 @@ foreach ( $young_brides as $bride ) {
 					<?php
 					foreach ( $polygamists as $p ) :
 						$wives_pct = ( $p['num_wives'] / $max_wives ) * 100;
-						$bar_class = in_array( 'president', $p['role_slugs'] ?? array() ) ? 'bar-prophet' : 'bar-historical'; // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+						$bar_class = in_array( 'president', $p['role_slugs'] ?? array(), true ) ? 'bar-prophet' : 'bar-historical';
 						if ( $p['num_teenage_brides'] > 0 ) {
 							$bar_class .= ' has-teenage';
 						}

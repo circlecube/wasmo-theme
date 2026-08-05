@@ -866,7 +866,7 @@ function wasmo_download_and_attach_image( $image_url, $leader_id ) {
 
 	// Clean up temp file
 	if ( file_exists( $tmp ) ) {
-		@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
+		wp_delete_file( $tmp );
 	}
 
 	if ( is_wp_error( $attachment_id ) ) {
@@ -1073,7 +1073,7 @@ function wasmo_bulk_import_images( $source = WASMO_IMAGE_SOURCE_AUTO ) {
 
 			if ( $error_code === 'has_image' ) {
 				++$results['skipped'];
-			} elseif ( in_array( $error_code, array( 'no_results', 'no_image', 'no_suitable_image', 'no_images', 'no_image_found' ) ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+			} elseif ( in_array( $error_code, array( 'no_results', 'no_image', 'no_suitable_image', 'no_images', 'no_image_found' ), true ) ) {
 				++$results['not_found'];
 				$results['errors'][] = $leader->post_title . ': ' . $result->get_error_message();
 			} else {

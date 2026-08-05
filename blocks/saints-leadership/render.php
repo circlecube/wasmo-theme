@@ -314,7 +314,7 @@ if ( $filter_mode === 'custom' ) {
 
 			// Combine: past presidents + current president
 			$all_presidents = $past_presidents;
-			if ( $current_president_id && ! in_array( $current_president_id, $all_presidents ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+			if ( $current_president_id && ! in_array( $current_president_id, $all_presidents, true ) ) {
 				$all_presidents[] = $current_president_id;
 			}
 
