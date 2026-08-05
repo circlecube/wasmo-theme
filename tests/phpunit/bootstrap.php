@@ -1,6 +1,11 @@
 <?php
 
-// Minimal WordPress class stubs for unit testing without a full WordPress installation.
+// Minimal WordPress stubs for unit testing without a full WordPress installation.
+
+if (! defined('HOUR_IN_SECONDS')) {
+    define('HOUR_IN_SECONDS', 3600);
+}
+
 if (! class_exists('WP_Theme')) {
     class WP_Theme {
         public function get(string $header): string {
