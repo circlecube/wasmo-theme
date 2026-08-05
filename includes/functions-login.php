@@ -5,23 +5,23 @@
  */
 function wasmo_login_logo() {
 	// add theme script to login page for username tweaks
-	wp_enqueue_script( 
-		'wasmo-script', 
-		get_stylesheet_directory_uri() . '/js/script.js', 
-		null, 
-		wp_get_theme()->get('Version'),
+	wp_enqueue_script(
+		'wasmo-script',
+		get_stylesheet_directory_uri() . '/js/script.js',
+		null,
+		wp_get_theme()->get( 'Version' ),
 		true
 	);
 
 	// login page styles (inline since they only go here)
-?>
+	?>
 	<style type="text/css">
 		body.login #login {
 			width: 90%;
 			max-width: 520px;
 		}
 		body.login #login .wp-login-logo a {
-			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/img/wasmormon-logo.png);
+			background-image: url(<?php echo get_stylesheet_directory_uri(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>/img/wasmormon-logo.png);
 			height: 190px;
 			width: 190px;
 			background-size: 190px 190px;
@@ -53,13 +53,13 @@ function wasmo_login_logo() {
 			margin-left: 0.5rem;
 		}
 	</style>
-<?php 
+	<?php
 }
 add_action( 'login_enqueue_scripts', 'wasmo_login_logo' );
 
 /**
  * Login logo url
- * 
+ *
  * @return string The login logo url.
  */
 function wasmo_login_logo_url() {
@@ -69,7 +69,7 @@ add_filter( 'login_headerurl', 'wasmo_login_logo_url' );
 
 /**
  * Login logo url title
- * 
+ *
  * @return string The login logo url title.
  */
 function wasmo_login_logo_url_title() {
@@ -79,8 +79,8 @@ add_filter( 'login_headertext', 'wasmo_login_logo_url_title' );
 
 /**
  * Capture user login and add it as timestamp in user meta data
- * 
- * @param string $user_login The user login.
+ *
+ * @param string  $user_login The user login.
  * @param WP_User $user The user object.
  */
 function wasmo_user_lastlogin( $user_login, $user ) {

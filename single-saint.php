@@ -15,96 +15,99 @@ if ( isset( $_GET['flush_cache'] ) ) {
 
 while ( have_posts() ) :
 	the_post();
-	
-	$saint_id = get_the_ID();
+
+	$saint_id      = get_the_ID();
 	$transient_key = 'wasmo_saint_page_' . $saint_id;
-	$cached_data = get_transient( $transient_key );
-	
+	$cached_data   = get_transient( $transient_key );
+
 	if ( false === $cached_data ) {
 		// Cache miss - compute all the data
-		$is_living = wasmo_is_saint_living( $saint_id );
-		$is_apostle = wasmo_saint_has_role( $saint_id, 'apostle' );
+		$is_living    = wasmo_is_saint_living( $saint_id );
+		$is_apostle   = wasmo_saint_has_role( $saint_id, 'apostle' );
 		$is_president = wasmo_saint_has_role( $saint_id, 'president' );
-		$is_wife = wasmo_saint_has_role( $saint_id, 'wife' );
-		$gender = get_field( 'gender', $saint_id ) ?: 'male';
-		
+		$is_wife      = wasmo_saint_has_role( $saint_id, 'wife' );
+		$gender       = get_field( 'gender', $saint_id ) ?: 'male';
+
 		// Get role terms for badges
 		$roles = wp_get_post_terms( $saint_id, 'saint-role' );
-		
+
 		// Get related content
 		$related_posts = wasmo_get_saint_related_posts( $saint_id, -1 );
 		$related_media = wasmo_get_saint_related_media( $saint_id, 100 );
-		
+
 		// Get prophets this leader served under (if apostle)
 		$served_under = array();
 		if ( $is_apostle ) {
 			$served_under = wasmo_get_served_with_presidents( $saint_id );
 		}
-		
+
 		// Get apostles who served under this leader (if prophet)
 		$apostles_under = array();
 		if ( $is_president ) {
 			$apostles_under = wasmo_get_apostles_who_served_under( $saint_id );
 		}
-		
+
 		// Get marriages data (gender-aware: women store directly, men use reverse lookup)
-		$marriages = wasmo_get_all_marriage_data( $saint_id );
+		$marriages        = wasmo_get_all_marriage_data( $saint_id );
 		$polygamy_stats   = wasmo_get_polygamy_stats( $saint_id );
 		$polygamy_type    = wasmo_get_polygamy_type( $saint_id );
 		$polygamy_display = wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
-		
+
 		// Get parents (reverse lookup from marriage/children records)
-		$parents = wasmo_get_saint_parents( $saint_id );
+		$parents     = wasmo_get_saint_parents( $saint_id );
 		$has_parents = ! empty( $parents['mother'] ) || ! empty( $parents['father'] );
-		
+
 		// Store in transient (cache for 12 hours)
 		$cached_data = array(
-			'is_living'      => $is_living,
-			'is_apostle'     => $is_apostle,
-			'is_president'   => $is_president,
-			'is_wife'        => $is_wife,
-			'gender'         => $gender,
-			'roles'          => $roles,
-			'related_posts'  => $related_posts,
-			'related_media'  => $related_media,
-			'served_under'   => $served_under,
-			'apostles_under' => $apostles_under,
-			'marriages'      => $marriages,
+			'is_living'        => $is_living,
+			'is_apostle'       => $is_apostle,
+			'is_president'     => $is_president,
+			'is_wife'          => $is_wife,
+			'gender'           => $gender,
+			'roles'            => $roles,
+			'related_posts'    => $related_posts,
+			'related_media'    => $related_media,
+			'served_under'     => $served_under,
+			'apostles_under'   => $apostles_under,
+			'marriages'        => $marriages,
 			'polygamy_stats'   => $polygamy_stats,
 			'polygamy_type'    => $polygamy_type,
 			'polygamy_display' => $polygamy_display,
-			'parents'        => $parents,
-			'has_parents'    => $has_parents,
+			'parents'          => $parents,
+			'has_parents'      => $has_parents,
 		);
 		set_transient( $transient_key, $cached_data, 12 * HOUR_IN_SECONDS );
 	} else {
 		// Cache hit - extract variables
-		$is_living      = $cached_data['is_living'];
-		$is_apostle     = $cached_data['is_apostle'];
-		$is_president   = $cached_data['is_president'];
-		$is_wife        = $cached_data['is_wife'];
-		$gender         = $cached_data['gender'];
-		$roles          = $cached_data['roles'];
-		$related_posts  = $cached_data['related_posts'];
-		$related_media  = $cached_data['related_media'];
-		$served_under   = $cached_data['served_under'];
-		$apostles_under = $cached_data['apostles_under'];
-		$marriages      = $cached_data['marriages'];
+		$is_living        = $cached_data['is_living'];
+		$is_apostle       = $cached_data['is_apostle'];
+		$is_president     = $cached_data['is_president'];
+		$is_wife          = $cached_data['is_wife'];
+		$gender           = $cached_data['gender'];
+		$roles            = $cached_data['roles'];
+		$related_posts    = $cached_data['related_posts'];
+		$related_media    = $cached_data['related_media'];
+		$served_under     = $cached_data['served_under'];
+		$apostles_under   = $cached_data['apostles_under'];
+		$marriages        = $cached_data['marriages'];
 		$polygamy_stats   = $cached_data['polygamy_stats'];
 		$polygamy_type    = $cached_data['polygamy_type'];
 		$polygamy_display = $cached_data['polygamy_display'] ?? wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
-		$parents        = $cached_data['parents'];
-		$has_parents    = $cached_data['has_parents'];
+		$parents          = $cached_data['parents'];
+		$has_parents      = $cached_data['has_parents'];
 	}
-?>
+	?>
 
-<?php
-// Filter out saint-role-* classes from post_class to avoid archive card styling
-$classes = get_post_class( 'saint-single' );
-$classes = array_filter( $classes, function( $class ) {
-	return strpos( $class, 'saint-role-' ) !== 0;
-});
-?>
+	<?php
+	// Filter out saint-role-* classes from post_class to avoid archive card styling
+	$classes = get_post_class( 'saint-single' );
+	$classes = array_filter(
+		$classes,
+		function ( $class ) {
+			return strpos( $class, 'saint-role-' ) !== 0;
+		}
+	);
+	?>
 <article id="post-<?php the_ID(); ?>" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
 	<div class="entry-content">
 
@@ -131,9 +134,10 @@ $classes = array_filter( $classes, function( $class ) {
 							<?php endif; ?>
 						</p>
 						
-						<?php 
+						<?php
 						$hometown = get_field( 'hometown' );
-						if ( $hometown ) : ?>
+						if ( $hometown ) :
+							?>
 							<p class="leader-hometown">
 								<span class="label">Hometown:</span> <?php echo esc_html( $hometown ); ?>
 							</p>
@@ -141,9 +145,11 @@ $classes = array_filter( $classes, function( $class ) {
 						
 						
 						<div class="saint-roles">
-							<?php echo wasmo_get_icon_svg( 'saint', 30 ); ?>
+							<?php echo wasmo_get_icon_svg( 'saint', 30 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<ul class="tags">
-							<?php foreach ( $roles as $role ) : ?>
+							<?php
+							foreach ( $roles as $role ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+								?>
 								<li>
 									<a href="<?php echo esc_url( get_term_link( $role ) ); ?>" class="tag saint-role-badge saint-role-<?php echo esc_attr( $role->slug ); ?>">
 										<?php echo esc_html( $role->name ); ?>
@@ -196,76 +202,80 @@ $classes = array_filter( $classes, function( $class ) {
 					<h2>Apostles Who Served During This Presidency</h2>
 					<p class="section-description">Apostles who served under this leader during their presidency:</p>
 					<div class="leaders-grid leaders-grid-small">
-						<?php 
-						foreach ( $apostles_under as $apostle_id ) : 
+						<?php
+						foreach ( $apostles_under as $apostle_id ) :
 							wasmo_render_saint_card( $apostle_id, 'small', true, false, false );
-						endforeach; 
+						endforeach;
 						?>
 					</div>
 				</section>
 			<?php endif; ?>
 		</div> <!-- leader-main-content -->
 		<?php
-		get_template_part( 'template-parts/content/content-saint-aside', null, array(
-			'saint_id'      => $saint_id,
-			'is_living'     => $is_living,
-			'is_apostle'    => $is_apostle,
-			'is_president'  => $is_president,
-			'gender'        => $gender,
-			'polygamy_stats' => $polygamy_stats,
-			'polygamy_type'    => $polygamy_type,
-			'polygamy_display' => $polygamy_display,
-		) );
+		get_template_part(
+			'template-parts/content/content-saint-aside',
+			null,
+			array(
+				'saint_id'         => $saint_id,
+				'is_living'        => $is_living,
+				'is_apostle'       => $is_apostle,
+				'is_president'     => $is_president,
+				'gender'           => $gender,
+				'polygamy_stats'   => $polygamy_stats,
+				'polygamy_type'    => $polygamy_type,
+				'polygamy_display' => $polygamy_display,
+			)
+		);
 		?>
 	</div> <!-- leader-content-wrapper -->
 
 			<div class="leader-marriages-section content-full-width">
-			<?php 
+			<?php
 			// Show marriages section (gender-aware: men show wives, women show husbands)
-			if ( ! empty( $marriages ) ) : 
-				$spouse_label = ( $gender === 'female' ) ? 'Husbands' : 'Wives';
+			if ( ! empty( $marriages ) ) :
+				$spouse_label     = ( $gender === 'female' ) ? 'Husbands' : 'Wives';
 				$is_showing_wives = ( $gender === 'male' );
-				
+
 				// Prepare chart data
 				$chart_marriages = array();
-				$order = 1;
+				$order           = 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				foreach ( $marriages as $marriage ) {
 					// Check if spouse is a saint (default true for backwards compatibility)
 					$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
-					
-					$spouse_field = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
-					$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
-					$spouse_name_text = $marriage['spouse_name'] ?? null; // For non-saint spouses
-					$marriage_date = $marriage['marriage_date'] ?? null;
+
+					$spouse_field         = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
+					$spouse_id            = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+					$spouse_name_text     = $marriage['spouse_name'] ?? null; // For non-saint spouses
+					$marriage_date        = $marriage['marriage_date'] ?? null;
 					$marriage_date_approx = $marriage['marriage_date_approximate'] ?? false;
-					$divorce_date = $marriage['divorce_date'] ?? null;
-					$children = $marriage['children'] ?? array();
-					
+					$divorce_date         = $marriage['divorce_date'] ?? null;
+					$children             = $marriage['children'] ?? array();
+
 					// Get children counts (excluding placeholders for display)
 					$children_counts = wasmo_get_children_counts( $marriage );
-					
+
 					// Handle saint spouse
 					if ( $spouse_is_saint && $spouse_id && $marriage_date ) {
-						$spouse_post = get_post( $spouse_id );
-						$spouse_age = wasmo_get_age_at_date( $spouse_id, $marriage_date );
-						$saint_age = wasmo_get_age_at_date( $saint_id, $marriage_date );
-						$age_diff = $saint_age && $spouse_age ? abs( $saint_age - $spouse_age ) : 0;
-						$marriage_year = date( 'Y', strtotime( $marriage_date ) );
-						$spouse_birthdate = get_field( 'birthdate', $spouse_id );
+						$spouse_post             = get_post( $spouse_id );
+						$spouse_age              = wasmo_get_age_at_date( $spouse_id, $marriage_date );
+						$saint_age               = wasmo_get_age_at_date( $saint_id, $marriage_date );
+						$age_diff                = $saint_age && $spouse_age ? abs( $saint_age - $spouse_age ) : 0;
+						$marriage_year           = gmdate( 'Y', strtotime( $marriage_date ) );
+						$spouse_birthdate        = get_field( 'birthdate', $spouse_id );
 						$spouse_birthdate_approx = get_field( 'birthdate_approximate', $spouse_id );
-						$spouse_deathdate = wasmo_get_marriage_spouse_deathdate( $marriage );
-						
+						$spouse_deathdate        = wasmo_get_marriage_spouse_deathdate( $marriage );
+
 						// For men showing wives: wife's marital status is on her record
 						// For women showing husbands: woman's own marital status
 						if ( $is_showing_wives ) {
 							$marital_status = get_field( 'marital_status_at_marriage', $spouse_id );
-							$was_teenage = wasmo_was_teenage_bride( $spouse_id, $marriage_date );
+							$was_teenage    = wasmo_was_teenage_bride( $spouse_id, $marriage_date );
 						} else {
 							$marital_status = get_field( 'marital_status_at_marriage', $saint_id );
 							// For women, check if SHE was a teenage bride
 							$was_teenage = wasmo_was_teenage_bride( $saint_id, $marriage_date );
 						}
-						
+
 						$chart_marriages[] = array(
 							'order'                     => $order,
 							'spouse_is_saint'           => true,
@@ -288,30 +298,28 @@ $classes = array_filter( $classes, function( $class ) {
 							'divorce_date'              => $divorce_date,
 							'children_data'             => $children, // Store original children data
 						);
-					}
-					// Handle non-saint spouse (text name only)
-					elseif ( ! $spouse_is_saint && $spouse_name_text && $marriage_date ) {
-						$saint_age = wasmo_get_age_at_date( $saint_id, $marriage_date );
-						$marriage_year = date( 'Y', strtotime( $marriage_date ) );
-						
+					} elseif ( ! $spouse_is_saint && $spouse_name_text && $marriage_date ) { // Handle non-saint spouse (text name only)
+						$saint_age     = wasmo_get_age_at_date( $saint_id, $marriage_date );
+						$marriage_year = gmdate( 'Y', strtotime( $marriage_date ) );
+
 						// Calculate spouse age from spouse_birthdate if available
 						$spouse_birthdate = $marriage['spouse_birthdate'] ?? null;
 						$spouse_deathdate = wasmo_get_marriage_spouse_deathdate( $marriage );
-						$spouse_age = null;
-						$age_diff = null;
+						$spouse_age       = null;
+						$age_diff         = null;
 						if ( $spouse_birthdate && $marriage_date ) {
-							$birth = new DateTime( $spouse_birthdate );
-							$married = new DateTime( $marriage_date );
+							$birth      = new DateTime( $spouse_birthdate );
+							$married    = new DateTime( $marriage_date );
 							$spouse_age = $birth->diff( $married )->y;
 							if ( $saint_age && $spouse_age ) {
 								$age_diff = abs( $saint_age - $spouse_age );
 							}
 						}
-						
+
 						// For women: her own marital status
 						$marital_status = get_field( 'marital_status_at_marriage', $saint_id );
-						$was_teenage = wasmo_was_teenage_bride( $saint_id, $marriage_date );
-						
+						$was_teenage    = wasmo_was_teenage_bride( $saint_id, $marriage_date );
+
 						$chart_marriages[] = array(
 							'order'                     => $order,
 							'spouse_is_saint'           => false,
@@ -335,20 +343,23 @@ $classes = array_filter( $classes, function( $class ) {
 							'children_data'             => $children, // Store original children data
 						);
 					}
-					$order++;
+					++$order;
 				}
-				
+
 				// Sort by marriage date
-				usort( $chart_marriages, function( $a, $b ) {
-					return strtotime( $a['marriage_date'] ) - strtotime( $b['marriage_date'] );
-				});
-				
+				usort(
+					$chart_marriages,
+					function ( $a, $b ) {
+						return strtotime( $a['marriage_date'] ) - strtotime( $b['marriage_date'] );
+					}
+				);
+
 				// Get saint's birth/death years for timeline context
-				$saint_birthdate = get_field( 'birthdate', $saint_id );
-				$saint_deathdate = get_field( 'deathdate', $saint_id );
-				$saint_birth_year = $saint_birthdate ? (int) date( 'Y', strtotime( $saint_birthdate ) ) : null;
-				$saint_death_year = $saint_deathdate ? (int) date( 'Y', strtotime( $saint_deathdate ) ) : (int) date( 'Y' );
-			?>
+				$saint_birthdate  = get_field( 'birthdate', $saint_id );
+				$saint_deathdate  = get_field( 'deathdate', $saint_id );
+				$saint_birth_year = $saint_birthdate ? (int) gmdate( 'Y', strtotime( $saint_birthdate ) ) : null;
+				$saint_death_year = $saint_deathdate ? (int) gmdate( 'Y', strtotime( $saint_deathdate ) ) : (int) gmdate( 'Y' );
+				?>
 				<section class="saint-marriages content-full-width">
 					<h2><?php echo esc_html( $spouse_label ); ?> (<?php echo count( $marriages ); ?>)</h2>
 					<?php if ( ! empty( $polygamy_display['show_polygamy_blurb'] ) || ! empty( $polygamy_display['show_remarriage_blurb'] ) ) : ?>
@@ -363,95 +374,109 @@ $classes = array_filter( $classes, function( $class ) {
 						</p>
 					<?php endif; ?>
 
-					<?php 
+					<?php
 					// Calculate timeline data first (needed for both charts visibility check)
 					// Timeline is relative to the saint's lifespan
 					$timeline_start_year = $saint_birth_year; // Saint's birth
-					$timeline_end_year = $saint_death_year;   // Saint's death (or current year if living)
-					
-					$timeline_marriages = array();
+					$timeline_end_year   = $saint_death_year;   // Saint's death (or current year if living)
+
+					$timeline_marriages     = array();
 					$timeline_with_children = array();
-					$total_children_count = 0;
-					
-					foreach ( $chart_marriages as $idx => $m ) {
-						if ( ! $m['marriage_date'] ) continue;
-						
-						$marriage_start = (int) date( 'Y', strtotime( $m['marriage_date'] ) );
-						
+					$total_children_count   = 0;
+
+					foreach ( $chart_marriages as $idx => $m ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+						if ( ! $m['marriage_date'] ) {
+							continue;
+						}
+
+						$marriage_start = (int) gmdate( 'Y', strtotime( $m['marriage_date'] ) );
+
 						// Marriage end: divorce date, spouse death date, or saint's death/ongoing
 						$marriage_end = null;
-						$is_ongoing = false;
-						
+						$is_ongoing   = false;
+
 						if ( ! empty( $m['divorce_date'] ) ) {
-							$marriage_end = (int) date( 'Y', strtotime( $m['divorce_date'] ) );
+							$marriage_end = (int) gmdate( 'Y', strtotime( $m['divorce_date'] ) );
 						} elseif ( ! empty( $m['spouse_deathdate'] ) ) {
 							// Spouse died - but cap at saint's death if saint died first
-							$spouse_death = (int) date( 'Y', strtotime( $m['spouse_deathdate'] ) );
+							$spouse_death = (int) gmdate( 'Y', strtotime( $m['spouse_deathdate'] ) );
 							$marriage_end = min( $spouse_death, $timeline_end_year );
 						} else {
 							// No spouse death recorded - marriage lasted until saint's death or ongoing
 							$marriage_end = $timeline_end_year;
-							$is_ongoing = $is_living;
+							$is_ongoing   = $is_living;
 						}
-						
+
 						// Get children birth years for this marriage
 						$children_births = array();
-						$children_data = $m['children_data'] ?? array();
+						$children_data   = $m['children_data'] ?? array();
 						if ( ! empty( $children_data ) ) {
 							foreach ( $children_data as $child ) {
 								if ( ! empty( $child['child_birthdate'] ) ) {
-									$child_year = (int) date( 'Y', strtotime( $child['child_birthdate'] ) );
+									$child_year = (int) gmdate( 'Y', strtotime( $child['child_birthdate'] ) );
 									if ( $child_year >= $timeline_start_year && $child_year <= $timeline_end_year ) {
 										$children_births[] = array(
 											'year' => $child_year,
 											'name' => $child['child_name'] ?? 'Child',
 										);
-										$total_children_count++;
+										++$total_children_count;
 									}
 								}
 							}
 						}
-						
+
 						$marriage_entry = array(
-							'name'          => $m['spouse_name'],
-							'url'           => $m['spouse_url'],
-							'is_saint'      => $m['spouse_is_saint'],
+							'name'           => $m['spouse_name'],
+							'url'            => $m['spouse_url'],
+							'is_saint'       => $m['spouse_is_saint'],
 							'marriage_start' => $marriage_start,
 							'marriage_end'   => $marriage_end,
-							'is_ongoing'    => $is_ongoing,
-							'duration'      => $marriage_end - $marriage_start,
-							'children'      => $children_births,
+							'is_ongoing'     => $is_ongoing,
+							'duration'       => $marriage_end - $marriage_start,
+							'children'       => $children_births,
 						);
-						
+
 						$timeline_marriages[] = $marriage_entry;
 						if ( ! empty( $children_births ) ) {
 							$timeline_with_children[] = $marriage_entry;
 						}
 					}
-					
+
 					// Sort by marriage start year
-					usort( $timeline_marriages, function( $a, $b ) {
-						return $a['marriage_start'] - $b['marriage_start'];
-					} );
-					usort( $timeline_with_children, function( $a, $b ) {
-						return $a['marriage_start'] - $b['marriage_start'];
-					} );
-					
-					$total_years = max( 1, $timeline_end_year - $timeline_start_year );
+					usort(
+						$timeline_marriages,
+						function ( $a, $b ) {
+							return $a['marriage_start'] - $b['marriage_start'];
+						}
+					);
+					usort(
+						$timeline_with_children,
+						function ( $a, $b ) {
+							return $a['marriage_start'] - $b['marriage_start'];
+						}
+					);
+
+					$total_years        = max( 1, $timeline_end_year - $timeline_start_year );
 					$spouse_color_class = ( $gender === 'male' ) ? 'marriage-bar-wife' : 'marriage-bar-husband';
-					
+
 					// Determine which charts are available
-					$has_age_chart = ( count( $chart_marriages ) > 1 && $gender === 'male' );
+					$has_age_chart      = ( count( $chart_marriages ) > 1 && $gender === 'male' );
 					$has_timeline_chart = ( count( $timeline_marriages ) >= 1 );
 					$has_children_chart = ( $total_children_count > 0 );
-					
+
 					// Count available charts for toggle
 					$available_charts = array();
-					if ( $has_timeline_chart ) $available_charts[] = 'timeline';
-					if ( $has_children_chart ) $available_charts[] = 'children';
-					if ( $has_age_chart ) $available_charts[] = 'ages';
+					if ( $has_timeline_chart ) {
+						$available_charts[] = 'timeline';
+					}
+					if ( $has_children_chart ) {
+						$available_charts[] = 'children';
+					}
+					if ( $has_age_chart ) {
+						$available_charts[] = 'ages';
+					}
 					$has_multiple_charts = count( $available_charts ) > 1;
-				?>
+					?>
 
 					<?php if ( ! empty( $available_charts ) ) : ?>
 					<!-- Marriage Charts Section -->
@@ -482,15 +507,18 @@ $classes = array_filter( $classes, function( $class ) {
 								<?php endif; ?>
 								<p class="chart-subtitle">
 									<?php echo count( $timeline_marriages ); ?> <?php echo ( $gender === 'male' ) ? 'wives' : 'husbands'; ?> · 
-									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; ?>
+									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								</p>
 								
 								<div class="marriage-timeline-chart">
-									<?php foreach ( $timeline_marriages as $tm ) : 
-										$left_pct = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
+									<?php
+									foreach ( $timeline_marriages as $tm ) :
+										$left_pct  = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
 										$width_pct = ( ( $tm['marriage_end'] - $tm['marriage_start'] ) / $total_years ) * 100;
-										if ( $width_pct < 2 ) $width_pct = 2; // Minimum width for visibility
-									?>
+										if ( $width_pct < 2 ) {
+											$width_pct = 2; // Minimum width for visibility
+										}
+										?>
 										<div class="marriage-timeline-row">
 											<?php if ( $tm['is_saint'] && $tm['url'] ) : ?>
 												<a href="<?php echo esc_url( $tm['url'] ); ?>" class="marriage-timeline-name">
@@ -501,13 +529,13 @@ $classes = array_filter( $classes, function( $class ) {
 											<?php endif; ?>
 											<div class="marriage-timeline-track">
 												<div class="marriage-timeline-bar <?php echo esc_attr( $spouse_color_class ); ?> <?php echo $tm['is_ongoing'] ? 'marriage-ongoing' : ''; ?>" 
-													 style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; ?>%;"
-													 title="<?php echo esc_attr( $tm['name'] . ': Married ' . $tm['marriage_start'] . '–' . ( $tm['is_ongoing'] ? 'present' : $tm['marriage_end'] ) . ' (' . $tm['duration'] . ' years)' ); ?>">
+													style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%;"
+													title="<?php echo esc_attr( $tm['name'] . ': Married ' . $tm['marriage_start'] . '–' . ( $tm['is_ongoing'] ? 'present' : $tm['marriage_end'] ) . ' (' . $tm['duration'] . ' years)' ); ?>">
 												</div>
 											</div>
 											<span class="marriage-timeline-dates">
-												<?php echo $tm['marriage_start']; ?>–<?php echo $tm['is_ongoing'] ? 'present' : $tm['marriage_end']; ?>
-												<span class="marriage-duration">(<?php echo $tm['duration']; ?> yrs)</span>
+												<?php echo $tm['marriage_start']; ?>–<?php echo $tm['is_ongoing'] ? 'present' : $tm['marriage_end']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+												<span class="marriage-duration">(<?php echo $tm['duration']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> yrs)</span>
 											</span>
 										</div>
 									<?php endforeach; ?>
@@ -516,13 +544,13 @@ $classes = array_filter( $classes, function( $class ) {
 										<span class="timeline-axis-spacer"></span>
 										<div class="timeline-axis marriage-timeline-axis">
 											<?php $quarter_years = round( $total_years / 4 ); ?>
-											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; ?> <small>(born)</small></span>
+											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <small>(born)</small></span>
 											<?php if ( $total_years > 10 ) : ?>
-												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; ?></span>
-												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); ?></span>
-												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); ?></span>
+												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 											<?php endif; ?>
-											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; ?>)</small></span>
+											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>)</small></span>
 										</div>
 										<span class="timeline-axis-spacer"></span>
 									</div>
@@ -550,16 +578,19 @@ $classes = array_filter( $classes, function( $class ) {
 								<h3>Children Timeline</h3>
 								<?php endif; ?>
 								<p class="chart-subtitle">
-									<?php echo $total_children_count; ?> children from <?php echo count( $timeline_with_children ); ?> <?php echo ( $gender === 'male' ) ? 'wives' : 'husbands'; ?> · 
-									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; ?>
+									<?php echo $total_children_count; ?> children from <?php echo count( $timeline_with_children ); ?> <?php echo ( $gender === 'male' ) ? 'wives' : 'husbands'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ·
+									Lifespan: <?php echo $timeline_start_year; ?>–<?php echo $is_living ? 'present' : $timeline_end_year; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								</p>
 								
 								<div class="marriage-timeline-chart children-timeline-chart">
-									<?php foreach ( $timeline_with_children as $tm ) : 
-										$left_pct = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
+									<?php
+									foreach ( $timeline_with_children as $tm ) :
+										$left_pct  = ( ( $tm['marriage_start'] - $timeline_start_year ) / $total_years ) * 100;
 										$width_pct = ( ( $tm['marriage_end'] - $tm['marriage_start'] ) / $total_years ) * 100;
-										if ( $width_pct < 2 ) $width_pct = 2;
-									?>
+										if ( $width_pct < 2 ) {
+											$width_pct = 2;
+										}
+										?>
 										<div class="marriage-timeline-row">
 											<?php if ( $tm['is_saint'] && $tm['url'] ) : ?>
 												<a href="<?php echo esc_url( $tm['url'] ); ?>" class="marriage-timeline-name">
@@ -570,13 +601,14 @@ $classes = array_filter( $classes, function( $class ) {
 											<?php endif; ?>
 											<div class="marriage-timeline-track">
 												<div class="marriage-timeline-bar <?php echo esc_attr( $spouse_color_class ); ?>" 
-													 style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; ?>%;">
-													<?php foreach ( $tm['children'] as $child ) : 
+													style="left: <?php echo $left_pct; ?>%; width: <?php echo $width_pct; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%;">
+													<?php
+													foreach ( $tm['children'] as $child ) :
 														$child_pct = ( ( $child['year'] - $tm['marriage_start'] ) / max( 1, $tm['marriage_end'] - $tm['marriage_start'] ) ) * 100;
-													?>
+														?>
 														<span class="child-birth-marker" 
-															  style="left: <?php echo $child_pct; ?>%;"
-															  title="<?php echo esc_attr( $child['name'] . ' born ' . $child['year'] ); ?>"></span>
+																style="left: <?php echo $child_pct; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%;"
+																title="<?php echo esc_attr( $child['name'] . ' born ' . $child['year'] ); ?>"></span>
 													<?php endforeach; ?>
 												</div>
 											</div>
@@ -590,13 +622,13 @@ $classes = array_filter( $classes, function( $class ) {
 										<span class="timeline-axis-spacer"></span>
 										<div class="timeline-axis marriage-timeline-axis">
 											<?php $quarter_years = round( $total_years / 4 ); ?>
-											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; ?> <small>(born)</small></span>
+											<span class="axis-label" style="left: 0%;"><?php echo $timeline_start_year; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <small>(born)</small></span>
 											<?php if ( $total_years > 10 ) : ?>
-												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; ?></span>
-												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); ?></span>
-												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); ?></span>
+												<span class="axis-label" style="left: 25%;"><?php echo $timeline_start_year + $quarter_years; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+												<span class="axis-label" style="left: 50%;"><?php echo $timeline_start_year + ( $quarter_years * 2 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+												<span class="axis-label" style="left: 75%;"><?php echo $timeline_start_year + ( $quarter_years * 3 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 											<?php endif; ?>
-											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; ?>)</small></span>
+											<span class="axis-label" style="left: 100%;"><?php echo $timeline_end_year; ?> <small>(<?php echo $is_living ? 'now' : 'died'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>)</small></span>
 										</div>
 										<span class="timeline-axis-spacer"></span>
 									</div>
@@ -623,7 +655,7 @@ $classes = array_filter( $classes, function( $class ) {
 								<?php endif; ?>
 								<p class="chart-subtitle"><?php echo count( $chart_marriages ); ?> wives · Ages at marriage</p>
 								
-								<div class="chart-wrapper" style="height: <?php echo max( 300, count( $chart_marriages ) * 40 + 80 ); ?>px;">
+								<div class="chart-wrapper" style="height: <?php echo max( 300, count( $chart_marriages ) * 40 + 80 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>px;">
 									<canvas id="marriage-age-chart" aria-label="Age comparison chart for <?php echo esc_attr( get_the_title() ); ?>" role="img"></canvas>
 								</div>
 								
@@ -635,6 +667,7 @@ $classes = array_filter( $classes, function( $class ) {
 							</div>
 						</div>
 
+						<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- chart.js loaded inline for isolated saint age chart ?>
 						<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 						<script>
 						(function() {
@@ -814,10 +847,11 @@ $classes = array_filter( $classes, function( $class ) {
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ( $chart_marriages as $m ) : 
+								<?php
+								foreach ( $chart_marriages as $m ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 									$spouse_birth_formatted = $m['spouse_birthdate'] ? wasmo_format_saint_date_with_approx( $m['spouse_birthdate'], 'M j, Y', false, false ) : null;
 									$spouse_death_formatted = $m['spouse_deathdate'] ? wasmo_format_saint_date_with_approx( $m['spouse_deathdate'], 'M j, Y', false, false ) : null;
-								?>
+									?>
 								<tr class="<?php echo $m['is_teenage'] ? 'teenage-row' : ''; ?>" 
 									data-birth="<?php echo esc_attr( $m['spouse_birthdate'] ?: '9999-12-31' ); ?>"
 									data-death="<?php echo esc_attr( $m['spouse_deathdate'] ?: '9999-12-31' ); ?>"
@@ -825,15 +859,15 @@ $classes = array_filter( $classes, function( $class ) {
 									<td class="marriage-order-cell"><?php echo esc_html( $m['order'] ); ?></td>
 									<td>
 										<div class="spouse-name-cell">
-											<?php 
+											<?php
 											// Determine spouse gender (opposite of current saint)
-											$spouse_gender = ( $gender === 'male' ) ? 'female' : 'male';
+											$spouse_gender   = ( $gender === 'male' ) ? 'female' : 'male';
 											$spouse_saint_id = ! empty( $m['spouse_is_saint'] ) ? $m['spouse_id'] : null;
-											echo wasmo_get_mini_portrait( 
-												$spouse_saint_id, 
-												$spouse_gender, 
-												$m['spouse_url'], 
-												$m['spouse_name'] 
+											echo wasmo_get_mini_portrait( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+												$spouse_saint_id,
+												$spouse_gender,
+												$m['spouse_url'],
+												$m['spouse_name']
 											);
 											?>
 											<?php if ( ! empty( $m['spouse_is_saint'] ) && $m['spouse_url'] ) : ?>
@@ -873,25 +907,25 @@ $classes = array_filter( $classes, function( $class ) {
 				</section>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Show children section
-			if ( $polygamy_stats['number_of_children'] > 0 ) : 
-			?>
+			if ( $polygamy_stats['number_of_children'] > 0 ) :
+				?>
 				<section class="saint-children">
 					<h2>Children (<?php echo esc_html( $polygamy_stats['number_of_children'] ); ?>)</h2>
 					<div class="children-by-marriage">
-						<?php 
-						foreach ( $marriages as $marriage ) : 
+						<?php
+						foreach ( $marriages as $marriage ) :
 							// Check if spouse is a saint (default true for backwards compatibility)
 							$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
-							
-							$spouse_field = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
-							$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
-							$spouse_name_text = $marriage['spouse_name'] ?? null;
-							$children = $marriage['children'] ?? array();
-							$children_counts = wasmo_get_children_counts( $marriage );
+
+							$spouse_field         = $marriage['spouse'] ?? $marriage['spouse_id'] ?? null;
+							$spouse_id            = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+							$spouse_name_text     = $marriage['spouse_name'] ?? null;
+							$children             = $marriage['children'] ?? array();
+							$children_counts      = wasmo_get_children_counts( $marriage );
 							$displayable_children = wasmo_get_displayable_children( $marriage );
-							
+
 							// Determine spouse name to display
 							if ( $spouse_is_saint && $spouse_id ) {
 								$spouse_name = get_the_title( $spouse_id );
@@ -900,25 +934,25 @@ $classes = array_filter( $classes, function( $class ) {
 							} else {
 								$spouse_name = 'Unknown';
 							}
-							
+
 							if ( ! empty( $children ) && is_array( $children ) ) :
-						?>
+								?>
 							<div class="marriage-children-group">
 								<h4 class="children-group-header">
 									With 
-									<?php 
+									<?php
 									// Mini portrait for spouse in children section
 									$spouse_gender_for_children = ( $gender === 'male' ) ? 'female' : 'male';
-									$spouse_url_for_children = ( $spouse_is_saint && $spouse_id ) ? get_permalink( $spouse_id ) : null;
-									echo wasmo_get_mini_portrait( 
-										$spouse_is_saint ? $spouse_id : null, 
-										$spouse_gender_for_children, 
-										$spouse_url_for_children, 
-										$spouse_name 
+									$spouse_url_for_children    = ( $spouse_is_saint && $spouse_id ) ? get_permalink( $spouse_id ) : null;
+									echo wasmo_get_mini_portrait( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										$spouse_is_saint ? $spouse_id : null,
+										$spouse_gender_for_children,
+										$spouse_url_for_children,
+										$spouse_name
 									);
 									?>
 									<?php if ( $spouse_is_saint && $spouse_id ) : ?>
-										<a href="<?php echo get_permalink( $spouse_id ); ?>"><?php echo esc_html( $spouse_name ); ?></a>
+										<a href="<?php echo get_permalink( $spouse_id ); ?>"><?php echo esc_html( $spouse_name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
 									<?php else : ?>
 										<?php echo esc_html( $spouse_name ); ?>
 									<?php endif; ?>
@@ -926,33 +960,36 @@ $classes = array_filter( $classes, function( $class ) {
 								</h4>
 								<?php if ( ! empty( $displayable_children ) ) : ?>
 								<ol class="children-list">
-									<?php foreach ( $displayable_children as $child ) : 
-										$child_name = $child['child_name'] ?? '';
-										$child_birthdate = $child['child_birthdate'] ?? '';
+									<?php
+									foreach ( $displayable_children as $child ) :
+										$child_name       = $child['child_name'] ?? '';
+										$child_birthdate  = $child['child_birthdate'] ?? '';
 										$child_link_field = $child['child_link'] ?? null;
-										$child_link = is_array( $child_link_field ) ? ( $child_link_field[0] ?? null ) : $child_link_field;
-									?>
+										$child_link       = is_array( $child_link_field ) ? ( $child_link_field[0] ?? null ) : $child_link_field;
+										?>
 										<li class="child-item">
-											<?php if ( $child_link ) : 
+											<?php
+											if ( $child_link ) :
 												// Child is linked to a saint - show mini portrait
 												$child_gender = get_field( 'gender', $child_link ) ?: 'male';
-												echo wasmo_get_mini_portrait( 
-													$child_link, 
-													$child_gender, 
-													get_permalink( $child_link ), 
-													$child_name 
+												echo wasmo_get_mini_portrait( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+													$child_link,
+													$child_gender,
+													get_permalink( $child_link ),
+													$child_name
 												);
-											?>
+												?>
 												<a href="<?php echo esc_url( get_permalink( $child_link ) ); ?>" class="child-name">
 													<?php echo esc_html( $child_name ); ?>
 												</a>
 											<?php else : ?>
 												<span class="child-name"><?php echo esc_html( $child_name ); ?></span>
 											<?php endif; ?>
-											<?php if ( $child_birthdate ) : 
+											<?php
+											if ( $child_birthdate ) :
 												$bd_timestamp = strtotime( $child_birthdate );
-												$formatted_bd = $bd_timestamp ? date( 'M j, Y', $bd_timestamp ) : $child_birthdate;
-											?>
+												$formatted_bd = $bd_timestamp ? gmdate( 'M j, Y', $bd_timestamp ) : $child_birthdate;
+												?>
 												<span class="child-birthdate">(b. <?php echo esc_html( $formatted_bd ); ?>)</span>
 											<?php endif; ?>
 										</li>
@@ -964,17 +1001,17 @@ $classes = array_filter( $classes, function( $class ) {
 								</p> -->
 								<?php endif; ?>
 							</div>
-						<?php 
+								<?php
 							endif;
-						endforeach; 
+						endforeach;
 						?>
 					</div>
 				</section>
 			<?php endif; ?>
 
 			<?php if ( ! empty( $related_posts ) ) : ?>
-				<?php 
-				$featured_posts = array_slice( $related_posts, 0, 6 );
+				<?php
+				$featured_posts  = array_slice( $related_posts, 0, 6 );
 				$remaining_posts = array_slice( $related_posts, 6 );
 				?>
 				<section class="leader-related-posts">
@@ -985,12 +1022,12 @@ $classes = array_filter( $classes, function( $class ) {
 							<?php foreach ( $featured_posts as $related_post ) : ?>
 								<article class="related-post-card related-post">
 									<?php if ( has_post_thumbnail( $related_post->ID ) ) : ?>
-										<a href="<?php echo get_permalink( $related_post->ID ); ?>" class="related-post-thumbnail">
+										<a href="<?php echo get_permalink( $related_post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="related-post-thumbnail">
 											<?php echo get_the_post_thumbnail( $related_post->ID, 'medium' ); ?>
 										</a>
 									<?php endif; ?>
 									<h3 class="related-post-title">
-										<a href="<?php echo get_permalink( $related_post->ID ); ?>">
+										<a href="<?php echo get_permalink( $related_post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 											<?php echo esc_html( $related_post->post_title ); ?>
 										</a>
 									</h3>
@@ -1006,7 +1043,7 @@ $classes = array_filter( $classes, function( $class ) {
 						<ul class="related-posts-list">
 							<?php foreach ( $remaining_posts as $related_post ) : ?>
 								<li>
-									<a href="<?php echo get_permalink( $related_post->ID ); ?>">
+									<a href="<?php echo get_permalink( $related_post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 										<?php echo esc_html( $related_post->post_title ); ?>
 									</a>
 									<span class="related-post-list-date">(<?php echo get_the_date( 'M j, Y', $related_post->ID ); ?>)</span>
@@ -1021,20 +1058,21 @@ $classes = array_filter( $classes, function( $class ) {
 				<section class="leader-related-media">
 					<h2>Images Related to <?php the_title(); ?></h2>
 					<div class="media-gallery">
-						<?php foreach ( $related_media as $media ) : 
+						<?php
+						foreach ( $related_media as $media ) :
 							$image_url = wp_get_attachment_image_url( $media->ID, 'medium' );
-							$alt_text = get_post_meta( $media->ID, '_wp_attachment_image_alt', true );
+							$alt_text  = get_post_meta( $media->ID, '_wp_attachment_image_alt', true );
 							// Link to parent post if it exists, otherwise link to the attachment page
 							$parent_id = $media->post_parent;
-							$link_url = $parent_id ? get_permalink( $parent_id ) : get_attachment_link( $media->ID );
+							$link_url  = $parent_id ? get_permalink( $parent_id ) : get_attachment_link( $media->ID );
 							if ( $image_url ) :
-						?>
+								?>
 							<a href="<?php echo esc_url( $link_url ); ?>" class="media-gallery-item" title="<?php echo esc_html( $alt_text ); ?>">
 								<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $alt_text ); ?>">
 							</a>
-						<?php 
+								<?php
 						endif;
-						endforeach; 
+						endforeach;
 						?>
 					</div>
 				</section>
@@ -1046,7 +1084,7 @@ $classes = array_filter( $classes, function( $class ) {
 </div>
 </article>
 
-<?php
+	<?php
 endwhile;
 
 get_footer();

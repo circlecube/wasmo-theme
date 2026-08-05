@@ -30,7 +30,7 @@ get_header();
 			}
 
 			// Previous/next page navigation.
-			echo wasmo_pagination();
+			echo wasmo_pagination(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		} else {
 

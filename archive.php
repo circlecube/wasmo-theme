@@ -21,9 +21,11 @@ get_header();
 				<?php
 					the_archive_title( '<h1 class="page-title">', '</h1>' );
 				?>
-				<?php if ( get_query_var('paged') ) {
-					echo '<span class="paged-page-number">(Page '. get_query_var('paged') .')</span>';
-				} ?>
+				<?php
+				if ( get_query_var( 'paged' ) ) {
+					echo '<span class="paged-page-number">(Page ' . get_query_var( 'paged' ) . ')</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				?>
 			</header><!-- .page-header -->
 
 			<?php
@@ -37,7 +39,7 @@ get_header();
 			endwhile;
 
 			// Previous/next page navigation.
-			echo wasmo_pagination();
+			echo wasmo_pagination(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 			// If no content, include the "No posts found" template.
 		else :

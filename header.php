@@ -19,9 +19,14 @@
 	<?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?> <?php if ( is_author() ) {
+<body <?php body_class(); ?>
+<?php
+if ( is_author() ) {
 	echo 'itemtype="https://schema.org/ProfilePage" itemscope';
-} ?> data-page-slug="<?php 
+}
+?>
+data-page-slug="
+<?php
 if ( is_singular() ) {
 	echo esc_attr( get_post_field( 'post_name', get_post() ) );
 } elseif ( is_author() ) {
@@ -41,9 +46,10 @@ if ( is_singular() ) {
 } elseif ( is_archive() ) {
 	echo esc_attr( 'archive' );
 }
-?>">
+?>
+">
 <div id="page" class="site">
-	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'twentynineteen' ); ?></a>
+	<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'wasmo-theme' ); ?></a>
 
 		<header id="masthead" class="<?php echo /*is_singular() && twentynineteen_can_show_post_thumbnail() ? 'site-header featured-image' :*/ 'site-header'; ?>">
 
@@ -51,7 +57,9 @@ if ( is_singular() ) {
 				<?php get_template_part( 'template-parts/header/site', 'branding' ); ?>
 			</div><!-- .layout-wrap -->
 
-			<?php /*if ( is_singular() && twentynineteen_can_show_post_thumbnail() ) : ?>
+			<?php
+			/*
+			if ( is_singular() && twentynineteen_can_show_post_thumbnail() ) : ?>
 				<div class="site-featured-image">
 					<?php
 						twentynineteen_post_thumbnail();
@@ -68,7 +76,8 @@ if ( is_singular() ) {
 					</div><!-- .entry-header -->
 					<?php rewind_posts(); ?>
 				</div>
-			<?php endif;*/ ?>
+			<?php endif;*/
+			?>
 		</header><!-- #masthead -->
 
 	<div id="content" class="site-content">

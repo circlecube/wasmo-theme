@@ -14,9 +14,7 @@
 # circlecube/bandiverse, because wasmo's build produces build/index.js (via @wordpress/scripts)
 # not build/theme.css (the bandiverse build system). Staying inline avoids a false failure
 # on the output verify step.
-#
-# NOTE: php-lint runs with continue-on-error: true until legacy includes/ files are
-# brought into compliance. Remove that flag once phpcs reports zero violations.
+
 
 name: CI
 
@@ -97,8 +95,6 @@ jobs:
     needs: changes
     if: needs.changes.outputs.php == 'true'
     runs-on: ubuntu-latest
-    # continue-on-error until legacy includes/ files are WPCS-compliant
-    continue-on-error: true
     permissions:
       contents: read
     steps:
@@ -122,8 +118,6 @@ jobs:
     needs: changes
     if: needs.changes.outputs.node == 'true'
     runs-on: ubuntu-latest
-    # continue-on-error until existing src/ files are lint-clean
-    continue-on-error: true
     permissions:
       contents: read
     steps:

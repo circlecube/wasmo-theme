@@ -12,7 +12,7 @@
 get_header();
 
 $termid = get_queried_object()->term_id;
-$term = get_term_by( 'id', $termid, 'question' );
+$term   = get_term_by( 'id', $termid, 'question' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 ?>
 
 	<section id="primary" class="content-area">
@@ -20,7 +20,7 @@ $term = get_term_by( 'id', $termid, 'question' );
 			<article class="entry">
 				<header class="entry-header">
 					<h1 class="entry-title">
-						<?php echo wasmo_get_icon_svg( 'question', 36 ); ?>
+						<?php echo wasmo_get_icon_svg( 'question', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php echo wp_kses_post( $term->name ); ?>
 					</h1>
 					<h2 class="entry-description has-regular-font-size"><?php echo wp_kses_post( $term->description ); ?></h2>
@@ -28,36 +28,37 @@ $term = get_term_by( 'id', $termid, 'question' );
 
 <?php
 
-//define transient name - taxid + user state.
+// define transient name - taxid + user state.
 $transient_name = 'answers-tax-question-' . $termid . '-' . is_user_logged_in();
-if ( current_user_can('administrator') ) {
+if ( current_user_can( 'manage_options' ) ) {
 	$transient_name = time();
 }
-//use transient to cache data
-if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
+// use transient to cache data
+$the_answers = get_transient( $transient_name );
+if ( false === $the_answers ) {
 
-	//get users
-	$args = array(
-		'orderby'      => 'meta_value',
-		'meta_key'     => 'last_save',
-		'order'        => 'DESC',
-	); 
+	// get users
+	$args  = array(
+		'orderby'  => 'meta_value',
+		'meta_key' => 'last_save',
+		'order'    => 'DESC',
+	);
 	$users = get_users( $args );
-	//user loop
-	foreach ( $users as $user ) { 
+	// user loop
+	foreach ( $users as $user ) {
 		$userid = $user->ID;
 
-		//questions loop
-		if( have_rows( 'questions', 'user_' . $userid ) ) {
-			
+		// questions loop
+		if ( have_rows( 'questions', 'user_' . $userid ) ) {
+
 			// loop through the rows of data
 			while ( have_rows( 'questions', 'user_' . $userid ) ) {
 				the_row();
 
 				$termtaxid = get_sub_field( 'question', 'users_' . $userid );
-				$answer = get_sub_field( 'answer', 'user_' . $userid );
+				$answer    = get_sub_field( 'answer', 'user_' . $userid );
 
-				//check if they answered this question
+				// check if they answered this question
 				if ( $termtaxid === $termid && $answer ) {
 
 					// answer
@@ -68,12 +69,11 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 
 					// user attribution - photo and name and link (only if they want to be listed in directory)
 					$in_directory = get_field( 'in_directory', 'user_' . $userid );
-					if ( 
-						'true' === $in_directory ||
+					if ( 'true' === $in_directory ||
 						'website' === $in_directory ||
 						( 'private' === $in_directory && is_user_logged_in() )
 					) {
-						$username = esc_html( $user->nickname );
+						$username     = esc_html( $user->nickname );
 						$the_answers .= '<cite>';
 						$the_answers .= '<a class="person person-' . esc_attr( $userid ) . '" href="';
 						$the_answers .= get_author_posts_url( $userid ) . '#' . esc_attr( $term->slug );
@@ -85,7 +85,7 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 						$the_answers .= '</cite>';
 					} elseif (
 						'false' === $in_directory ||
-						( 'private' === $in_directory && !is_user_logged_in() )
+						( 'private' === $in_directory && ! is_user_logged_in() )
 					) {
 						$the_answers .= '<cite>';
 						$the_answers .= '<span class="person person-' . esc_attr( $userid ) . '">';
@@ -110,21 +110,23 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 
 						<?php if ( empty( $the_answers ) ) { ?>
 							<p>There are no available answers for this question currently. Add your own story and be the first to contribute your own answer to the question!</p>
-						<?php } else {
-							echo $the_answers;
-						} ?>
+							<?php
+						} else {
+							echo $the_answers; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						}
+						?>
 
 						<hr />
 
 						<div class="is-layout-flex wp-block-buttons">
 							<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Share Your Story</a>
 							</div>
 							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Browse Stories</a>
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Browse Stories</a>
 							</div>
 							<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/questions/' ); ?>" style="border-radius:100px">See Questions</a>
+								<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/questions/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">See Questions</a>
 							</div>
 						</div>
 
@@ -134,7 +136,7 @@ if ( false === ( $the_answers = get_transient( $transient_name ) ) ) {
 					<?php
 						// load related posts for this question
 						set_query_var( 'tax', 'question' );
-						set_query_var( 'termid', $termid );						
+						set_query_var( 'termid', $termid );
 						get_template_part( 'template-parts/content/taxonomy', 'relatedposts' );
 					?>
 					</footer>

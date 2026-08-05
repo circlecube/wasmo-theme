@@ -9,8 +9,8 @@
         "dev": "wp-scripts start",
         "lint:js": "wp-scripts lint-js src",
         "lint:js:fix": "wp-scripts lint-js src --fix",
-        "lint:css": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css'",
-        "lint:css:fix": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css' --fix",
+        "lint:css": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css' --allow-empty-input",
+        "lint:css:fix": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css' --fix --allow-empty-input",
         "env:start": "wp-env start",
         "env:stop": "wp-env stop",
         "test:e2e": "playwright test"

@@ -3,7 +3,7 @@
  * Template part for displaying the saint sidebar/aside
  *
  * @package wasmo
- * 
+ *
  * Expected variables (passed via get_template_part args):
  * - saint_id: The saint post ID
  * - is_living: Whether the saint is living
@@ -16,13 +16,13 @@
  */
 
 // Get passed variables
-$saint_id = $args['saint_id'] ?? get_the_ID();
-$is_living = $args['is_living'] ?? false;
-$is_apostle = $args['is_apostle'] ?? false;
-$is_president = $args['is_president'] ?? false;
-$gender = $args['gender'] ?? 'male';
-$polygamy_stats = $args['polygamy_stats'] ?? array();
-$polygamy_type = $args['polygamy_type'] ?? array();
+$saint_id         = $args['saint_id'] ?? get_the_ID();
+$is_living        = $args['is_living'] ?? false;
+$is_apostle       = $args['is_apostle'] ?? false;
+$is_president     = $args['is_president'] ?? false;
+$gender           = $args['gender'] ?? 'male';
+$polygamy_stats   = $args['polygamy_stats'] ?? array();
+$polygamy_type    = $args['polygamy_type'] ?? array();
 $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $saint_id, $is_living ? 'is' : 'was' );
 ?>
 
@@ -34,76 +34,86 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 	<div class="leader-metadata" id="leader-metadata">
 		<h3>Details</h3>
 		<dl class="leader-meta-list">
-			<?php 
+			<?php
 			// Birth date
-			$birthdate = get_field( 'birthdate', $saint_id );
+			$birthdate        = get_field( 'birthdate', $saint_id );
 			$birthdate_approx = get_field( 'birthdate_approximate', $saint_id );
-			if ( $birthdate ) : ?>
+			if ( $birthdate ) :
+				?>
 				<dt>Born</dt>
 				<dd><?php echo esc_html( wasmo_format_saint_date_with_approx( $birthdate, 'F j, Y', false, $birthdate_approx ) ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Death date
-			$deathdate = get_field( 'deathdate', $saint_id );
+			$deathdate        = get_field( 'deathdate', $saint_id );
 			$deathdate_approx = get_field( 'deathdate_approximate', $saint_id );
-			if ( $deathdate ) : ?>
+			if ( $deathdate ) :
+				?>
 				<dt>Died</dt>
 				<dd><?php echo esc_html( wasmo_format_saint_date_with_approx( $deathdate, 'F j, Y', false, $deathdate_approx ) ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Age
 			$age = wasmo_get_leader_age( $saint_id );
-			if ( $age !== null ) : ?>
+			if ( $age !== null ) :
+				?>
 				<dt><?php echo $is_living ? 'Age' : 'Age at Death'; ?></dt>
 				<dd><?php echo esc_html( $age ); ?> years</dd>
 			<?php endif; ?>
 
 			<?php if ( $is_apostle ) : ?>
-				<?php 
+				<?php
 				// Ordained date (show time if specified for seniority disambiguation)
 				$ordained_date = get_field( 'ordained_date', $saint_id );
-				if ( $ordained_date ) : ?>
+				if ( $ordained_date ) :
+					?>
 					<dt>Ordained Apostle</dt>
 					<dd><?php echo esc_html( wasmo_format_saint_date( $ordained_date, 'F j, Y', true ) ); ?></dd>
 				<?php endif; ?>
 
-				<?php 
+				<?php
 				// Service ended early (excommunication, resignation, etc.)
 				$ordain_end = get_field( 'ordain_end', $saint_id );
-				if ( $ordain_end ) : ?>
+				if ( $ordain_end ) :
+					?>
 					<dt>Service Ended</dt>
 					<dd><?php echo esc_html( wasmo_format_saint_date( $ordain_end ) ); ?></dd>
 				<?php endif; ?>
 
-				<?php 
+				<?php
 				// Note about service end
 				$ordain_note = get_field( 'ordain_note', $saint_id );
-				if ( $ordain_note ) : ?>
+				if ( $ordain_note ) :
+					?>
 					<dt>Status Note</dt>
 					<dd class="leader-ordain-note"><?php echo wp_kses_post( $ordain_note ); ?></dd>
 				<?php endif; ?>
 
-				<?php 
+				<?php
 				// Age at call
 				$age_at_call = wasmo_get_saint_age_at_call( $saint_id );
-				if ( $age_at_call !== null ) : ?>
+				if ( $age_at_call !== null ) :
+					?>
 					<dt>Age When Called</dt>
 					<dd><?php echo esc_html( $age_at_call ); ?> years</dd>
 				<?php endif; ?>
 
-				<?php 
+				<?php
 				// Years served
 				$years_served = wasmo_get_saint_years_served( $saint_id );
-				if ( $years_served !== null ) : ?>
+				if ( $years_served !== null ) :
+					?>
 					<dt>Years as Apostle</dt>
 					<dd><?php echo esc_html( $years_served ); ?> years</dd>
 				<?php endif; ?>
 
-				<?php if ( $is_living ) : 
+				<?php
+				if ( $is_living ) :
 					$seniority = wasmo_get_saint_seniority( $saint_id );
-					if ( $seniority !== null ) : ?>
+					if ( $seniority !== null ) :
+						?>
 						<dt>Current Seniority</dt>
 						<dd>#<?php echo esc_html( $seniority ); ?></dd>
 					<?php endif; ?>
@@ -111,63 +121,70 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 			<?php endif; ?>
 
 			<?php if ( $is_president ) : ?>
-				<?php 
+				<?php
 				// Became president date
 				$president_date = get_field( 'became_president_date', $saint_id );
-				if ( $president_date ) : ?>
+				if ( $president_date ) :
+					?>
 					<dt>Became President</dt>
 					<dd><?php echo esc_html( wasmo_format_saint_date( $president_date ) ); ?></dd>
 				<?php endif; ?>
 
-				<?php 
+				<?php
 				// Years as president
 				$years_as_president = wasmo_get_saint_years_as_president( $saint_id );
-				if ( $years_as_president !== null ) : ?>
+				if ( $years_as_president !== null ) :
+					?>
 					<dt>Years as President</dt>
 					<dd><?php echo esc_html( $years_as_president ); ?> years</dd>
 				<?php endif; ?>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Mission
 			$mission = get_field( 'mission', $saint_id );
-			if ( $mission ) : ?>
+			if ( $mission ) :
+				?>
 				<dt>Mission</dt>
 				<dd><?php echo esc_html( $mission ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Education
 			$education = get_field( 'education', $saint_id );
-			if ( $education ) : ?>
+			if ( $education ) :
+				?>
 				<dt>Education</dt>
 				<dd><?php echo esc_html( $education ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Profession
 			$profession = get_field( 'profession', $saint_id );
-			if ( $profession ) : ?>
+			if ( $profession ) :
+				?>
 				<dt>Profession</dt>
 				<dd><?php echo esc_html( $profession ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Military
 			$military = get_field( 'military', $saint_id );
-			if ( $military ) : ?>
+			if ( $military ) :
+				?>
 				<dt>Military Service</dt>
 				<dd><?php echo esc_html( $military ); ?></dd>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// FamilySearch ID
 			$familysearch_id = get_field( 'familysearch_id', $saint_id );
-			if ( $familysearch_id ) : ?>
+			if ( $familysearch_id ) :
+				?>
 				<dt>FamilySearch</dt>
 				<dd>
 					<a href="https://www.familysearch.org/tree/person/details/<?php echo esc_attr( $familysearch_id ); ?>" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-						<?php echo wasmo_get_icon_svg( 'familysearch', 32 ); ?>
+						<?php echo wasmo_get_icon_svg( 'familysearch', 32 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php echo esc_html( $familysearch_id ); ?>
 					</a>
 				</dd>
@@ -186,7 +203,7 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 				} else {
 					$plural_marriage_note = $plural_marriage_count . ' ' . ( $plural_marriage_count === 1 ? 'husband' : 'husbands' ) . ' in plural marriage';
 				}
-			?>
+				?>
 				<dt><?php echo esc_html( $polygamy_sidebar_label ); ?></dt>
 				<dd>Yes<?php echo $plural_marriage_count > 0 ? ' (' . esc_html( $plural_marriage_note ) . ')' : ''; ?></dd>
 				
@@ -221,16 +238,16 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 				<?php endif; ?>
 			<?php endif; ?>
 
-			<?php 
+			<?php
 			// Marital status at marriage (for wives)
 			$marital_status = get_field( 'marital_status_at_marriage', $saint_id );
-			if ( $marital_status && $marital_status !== 'never_married' ) : 
+			if ( $marital_status && $marital_status !== 'never_married' ) :
 				$status_labels = array(
-					'widow' => 'Widow',
-					'divorced' => 'Divorced',
+					'widow'     => 'Widow',
+					'divorced'  => 'Divorced',
 					'separated' => 'Separated',
 				);
-			?>
+				?>
 				<dt>Status at Marriage</dt>
 				<dd><?php echo esc_html( $status_labels[ $marital_status ] ?? $marital_status ); ?></dd>
 			<?php endif; ?>
@@ -238,14 +255,14 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 	</div>
 
 	<div class="leader-navigation">
-		<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
+		<a href="<?php echo get_post_type_archive_link( 'saint' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
 			All Saints →
 		</a>
-		<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
+		<a href="<?php echo home_url( '/saint-charts/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
 			Saints Data →
 		</a>
 		<?php if ( ! empty( $polygamy_display['was_polygamist'] ) || ! empty( $polygamy_stats['was_polygamist'] ) ) : ?>
-			<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); ?>" class="btn btn-secondary">
+			<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
 				Polygamy Stats →
 			</a>
 		<?php endif; ?>

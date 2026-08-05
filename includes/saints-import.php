@@ -1,7 +1,7 @@
 <?php
 /**
  * Saints JSON Import/Export
- * 
+ *
  * Admin page for importing/exporting church leaders from/to JSON data.
  *
  * @package wasmo
@@ -15,26 +15,28 @@
  */
 function wasmo_find_saint_by_exact_title( $title ) {
 	global $wpdb;
-	
+
 	$title = trim( $title );
 	if ( empty( $title ) ) {
 		return null;
 	}
-	
-	$post_id = $wpdb->get_var( $wpdb->prepare(
-		"SELECT ID FROM {$wpdb->posts} 
+
+	$post_id = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT ID FROM {$wpdb->posts} 
 		WHERE post_type = 'saint' 
 		AND post_status IN ('publish', 'draft', 'pending', 'private')
 		AND post_title = %s 
 		ORDER BY ID ASC 
 		LIMIT 1",
-		$title
-	) );
-	
+			$title
+		)
+	);
+
 	if ( $post_id ) {
 		return get_post( $post_id );
 	}
-	
+
 	return null;
 }
 
@@ -67,48 +69,50 @@ function wasmo_find_saint_by_fuzzy_title( $title ) {
 	if ( $exact ) {
 		return $exact;
 	}
-	
+
 	// Normalize the search title
 	$normalized_search = wasmo_normalize_name_for_matching( $title );
 	if ( empty( $normalized_search ) ) {
 		return null;
 	}
-	
+
 	// Get all saints and compare normalized names
-	$saints = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => array( 'publish', 'draft', 'pending', 'private' ),
-		'fields'         => 'ids',
-	) );
-	
+	$saints = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => array( 'publish', 'draft', 'pending', 'private' ),
+			'fields'         => 'ids',
+		)
+	);
+
 	$best_match = null;
 	$best_score = 0;
-	
+
 	foreach ( $saints as $saint_id ) {
-		$saint_title = get_the_title( $saint_id );
+		$saint_title      = get_the_title( $saint_id );
 		$normalized_title = wasmo_normalize_name_for_matching( $saint_title );
-		
+
 		// Exact normalized match
 		if ( $normalized_search === $normalized_title ) {
 			return get_post( $saint_id );
 		}
-		
+
 		// Calculate similarity for close matches
 		similar_text( $normalized_search, $normalized_title, $percent );
-		
+
 		// Only consider matches above 85% similar
 		if ( $percent > 85 && $percent > $best_score ) {
 			$best_score = $percent;
 			$best_match = $saint_id;
 		}
 	}
-	
+
 	// Return best match if found and above threshold
 	if ( $best_match && $best_score >= 90 ) {
 		return get_post( $best_match );
 	}
-	
+
 	return null;
 }
 
@@ -119,7 +123,7 @@ function wasmo_find_saint_by_fuzzy_title( $title ) {
  */
 function wasmo_find_duplicate_saints() {
 	global $wpdb;
-	
+
 	// First, find exact title duplicates
 	$duplicates = $wpdb->get_results(
 		"SELECT TRIM(post_title) as clean_title, GROUP_CONCAT(ID ORDER BY ID ASC) as post_ids, COUNT(*) as count
@@ -130,16 +134,16 @@ function wasmo_find_duplicate_saints() {
 		HAVING count > 1
 		ORDER BY count DESC, clean_title ASC"
 	);
-	
+
 	$result = array();
 	foreach ( $duplicates as $dup ) {
-		$ids = array_map( 'intval', explode( ',', $dup->post_ids ) );
+		$ids                         = array_map( 'intval', explode( ',', $dup->post_ids ) );
 		$result[ $dup->clean_title ] = array(
 			'count' => (int) $dup->count,
 			'ids'   => $ids,
 		);
 	}
-	
+
 	// Also check for similar titles (case-insensitive)
 	$case_insensitive_dups = $wpdb->get_results(
 		"SELECT LOWER(TRIM(post_title)) as lower_title, GROUP_CONCAT(DISTINCT ID ORDER BY ID ASC) as post_ids, COUNT(DISTINCT ID) as count
@@ -150,13 +154,13 @@ function wasmo_find_duplicate_saints() {
 		HAVING count > 1
 		ORDER BY count DESC, lower_title ASC"
 	);
-	
+
 	foreach ( $case_insensitive_dups as $dup ) {
 		$ids = array_map( 'intval', explode( ',', $dup->post_ids ) );
 		// Get the actual title from the first post
 		$first_post = get_post( $ids[0] );
-		$title_key = $first_post ? $first_post->post_title : $dup->lower_title;
-		
+		$title_key  = $first_post ? $first_post->post_title : $dup->lower_title;
+
 		if ( ! isset( $result[ $title_key ] ) ) {
 			$result[ $title_key . ' (case-insensitive)' ] = array(
 				'count' => (int) $dup->count,
@@ -164,7 +168,7 @@ function wasmo_find_duplicate_saints() {
 			);
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -176,59 +180,68 @@ function wasmo_find_duplicate_saints() {
  */
 function wasmo_merge_duplicate_saints( $title ) {
 	global $wpdb;
-	
+
 	$result = array(
 		'kept'   => null,
 		'merged' => array(),
 		'errors' => array(),
 	);
-	
-	$saints = $wpdb->get_results( $wpdb->prepare(
-		"SELECT ID FROM {$wpdb->posts}
+
+	$saints = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT ID FROM {$wpdb->posts}
 		WHERE post_type = 'saint'
 		AND post_status IN ('publish', 'draft', 'pending', 'private')
 		AND post_title = %s
 		ORDER BY ID ASC",
-		$title
-	) );
-	
+			$title
+		)
+	);
+
 	if ( count( $saints ) <= 1 ) {
 		$result['errors'][] = 'No duplicates found';
 		return $result;
 	}
-	
+
 	// Keep the first one (lowest ID, likely the original)
-	$keeper_id = $saints[0]->ID;
+	$keeper_id      = $saints[0]->ID;
 	$result['kept'] = $keeper_id;
-	
+
 	// Get all duplicates to merge
-	for ( $i = 1; $i < count( $saints ); $i++ ) {
+	$saints_count = count( $saints );
+	for ( $i = 1; $i < $saints_count; $i++ ) {
 		$duplicate_id = $saints[ $i ]->ID;
-		
+
 		// Update any marriage spouse relationships that point to the duplicate
-		$wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->postmeta} 
-			SET meta_value = %s 
-			WHERE meta_key LIKE 'marriages_%%_spouse' 
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->postmeta}
+			SET meta_value = %s
+			WHERE meta_key LIKE 'marriages_%%_spouse'
 			AND meta_value = %s",
-			$keeper_id,
-			$duplicate_id
-		) );
-		
+				$keeper_id,
+				$duplicate_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+
 		// Also update serialized spouse arrays
-		$wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->postmeta} 
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->postmeta} 
 			SET meta_value = REPLACE(meta_value, %s, %s) 
-			WHERE meta_key LIKE 'marriages_%%_spouse'",
-			'"' . $duplicate_id . '"',
-			'"' . $keeper_id . '"'
-		) );
-		
+			WHERE meta_key LIKE 'marriages_%%_spouse'", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+				'"' . $duplicate_id . '"',
+				'"' . $keeper_id . '"'
+			)
+		);
+
 		// Trash the duplicate
 		wp_trash_post( $duplicate_id );
 		$result['merged'][] = $duplicate_id;
 	}
-	
+
 	return $result;
 }
 
@@ -239,22 +252,22 @@ function wasmo_merge_duplicate_saints( $title ) {
  */
 function wasmo_cleanup_orphaned_spouse_refs() {
 	global $wpdb;
-	
+
 	$result = array(
 		'cleaned' => 0,
 		'errors'  => array(),
 	);
-	
+
 	// Find all spouse references in marriages repeater
 	$spouse_refs = $wpdb->get_results(
 		"SELECT post_id, meta_key, meta_value 
 		FROM {$wpdb->postmeta} 
 		WHERE meta_key LIKE 'marriages_%_spouse'"
 	);
-	
+
 	foreach ( $spouse_refs as $ref ) {
 		$spouse_id = null;
-		
+
 		// Check if it's a serialized array or plain value
 		$value = maybe_unserialize( $ref->meta_value );
 		if ( is_array( $value ) && ! empty( $value[0] ) ) {
@@ -262,11 +275,11 @@ function wasmo_cleanup_orphaned_spouse_refs() {
 		} elseif ( is_numeric( $ref->meta_value ) ) {
 			$spouse_id = intval( $ref->meta_value );
 		}
-		
+
 		if ( ! $spouse_id ) {
 			continue;
 		}
-		
+
 		// Check if this post exists and is published
 		$spouse_post = get_post( $spouse_id );
 		if ( ! $spouse_post || $spouse_post->post_status === 'trash' || $spouse_post->post_type !== 'saint' ) {
@@ -275,7 +288,7 @@ function wasmo_cleanup_orphaned_spouse_refs() {
 			if ( preg_match( '/marriages_(\d+)_spouse/', $ref->meta_key, $matches ) ) {
 				$marriage_index = $matches[1];
 				$parent_post_id = $ref->post_id;
-				
+
 				// Get the marriages array and remove this entry
 				$marriages = get_field( 'marriages', $parent_post_id );
 				if ( is_array( $marriages ) && isset( $marriages[ $marriage_index ] ) ) {
@@ -283,12 +296,12 @@ function wasmo_cleanup_orphaned_spouse_refs() {
 					// Re-index array
 					$marriages = array_values( $marriages );
 					update_field( 'marriages', $marriages, $parent_post_id );
-					$result['cleaned']++;
+					++$result['cleaned'];
 				}
 			}
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -312,35 +325,35 @@ add_action( 'admin_menu', 'wasmo_add_leader_import_page' );
  */
 function wasmo_render_leader_import_page() {
 	// Handle form submission
-	$message = '';
+	$message  = '';
 	$imported = 0;
-	$skipped = 0;
-	$updated = 0;
-	$errors = array();
+	$skipped  = 0;
+	$updated  = 0;
+	$errors   = array();
 
 	// Handle JSON file upload import
 	if ( isset( $_POST['wasmo_import_file'] ) && check_admin_referer( 'wasmo_import_file_nonce' ) ) {
 		if ( ! empty( $_FILES['leaders_json_file']['tmp_name'] ) ) {
-			$file_content = file_get_contents( $_FILES['leaders_json_file']['tmp_name'] );
+			$file_content = file_get_contents( $_FILES['leaders_json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$leaders_data = json_decode( $file_content, true );
-			
+
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
 				$message = '<div class="notice notice-error"><p>Invalid JSON file: ' . json_last_error_msg() . '</p></div>';
 			} else {
 				// Update existing is ON by default (unless explicitly unchecked via skip_existing)
-				$update_existing = ! isset( $_POST['skip_existing'] ) || ! $_POST['skip_existing'];
-				$import_images = isset( $_POST['import_images'] ) && $_POST['import_images'];
-				$result = wasmo_import_leaders_from_array( $leaders_data, $update_existing, $import_images );
-				
-				$message = '<div class="notice notice-success"><p>';
-				$message .= sprintf( 
-					'Import complete! %d created, %d updated, %d skipped.', 
-					$result['imported'], 
+				$update_existing = ! isset( $_POST['skip_existing'] ) || ! wp_unslash( $_POST['skip_existing'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$import_images   = isset( $_POST['import_images'] ) && wp_unslash( $_POST['import_images'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$result          = wasmo_import_leaders_from_array( $leaders_data, $update_existing, $import_images );
+
+				$message  = '<div class="notice notice-success"><p>';
+				$message .= sprintf(
+					'Import complete! %d created, %d updated, %d skipped.',
+					$result['imported'],
 					$result['updated'],
 					$result['skipped']
 				);
 				$message .= '</p></div>';
-				
+
 				if ( ! empty( $result['errors'] ) ) {
 					$message .= '<div class="notice notice-warning"><p>Some errors occurred:</p><ul>';
 					foreach ( array_slice( $result['errors'], 0, 10 ) as $error ) {
@@ -359,9 +372,9 @@ function wasmo_render_leader_import_page() {
 
 	// Handle single import
 	if ( isset( $_POST['wasmo_import_single'] ) && check_admin_referer( 'wasmo_import_single_nonce' ) ) {
-		$json_data = stripslashes( $_POST['leader_json'] );
+		$json_data   = stripslashes( wp_unslash( $_POST['leader_json'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		$leader_data = json_decode( $json_data, true );
-		
+
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			$message = '<div class="notice notice-error"><p>Invalid JSON format.</p></div>';
 		} else {
@@ -380,7 +393,7 @@ function wasmo_render_leader_import_page() {
 	<div class="wrap">
 		<h1>Import/Export Saints</h1>
 		
-		<?php echo $message; ?>
+		<?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 		<!-- Export Section -->
 		<div class="card" style="max-width: 800px; margin-bottom: 20px; background: #e7f3e7;">
@@ -389,10 +402,10 @@ function wasmo_render_leader_import_page() {
 				Export all church leaders with their complete data to a JSON file. 
 				This includes all ACF fields, bio content, roles, and featured image URLs.
 			</p>
-			<p><strong>Current leaders in database:</strong> <?php echo $existing_count; ?></p>
+			<p><strong>Current leaders in database:</strong> <?php echo $existing_count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 			<p>
-				<a href="<?php echo admin_url( 'admin-ajax.php?action=wasmo_export_leaders_json&_wpnonce=' . wp_create_nonce( 'wasmo_export_leaders' ) ); ?>" 
-				   class="button button-primary" download>
+				<a href="<?php echo admin_url( 'admin-ajax.php?action=wasmo_export_leaders_json&_wpnonce=' . wp_create_nonce( 'wasmo_export_leaders' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
+					class="button button-primary" download>
 					Download Leaders JSON Export
 				</a>
 			</p>
@@ -406,26 +419,28 @@ function wasmo_render_leader_import_page() {
 				Useful for backing up or transferring a single leader's complete family data.
 			</p>
 			
-			<form id="export-selected-saint-form" method="get" action="<?php echo admin_url( 'admin-ajax.php' ); ?>">
+			<form id="export-selected-saint-form" method="get" action="<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 				<input type="hidden" name="action" value="wasmo_export_selected_saint">
-				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'wasmo_export_selected_saint' ); ?>">
+				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'wasmo_export_selected_saint' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 				
 				<p>
 					<label for="saint_id"><strong>Select Saint:</strong></label><br>
 					<select name="saint_id" id="saint_id" style="width: 400px; margin-top: 5px;">
 						<option value="">-- Select a saint --</option>
 						<?php
-						$all_saints = get_posts( array(
-							'post_type'      => 'saint',
-							'posts_per_page' => -1,
-							'post_status'    => 'publish',
-							'orderby'        => 'title',
-							'order'          => 'ASC',
-						) );
+						$all_saints = get_posts(
+							array(
+								'post_type'      => 'saint',
+								'posts_per_page' => -1,
+								'post_status'    => 'publish',
+								'orderby'        => 'title',
+								'order'          => 'ASC',
+							)
+						);
 						foreach ( $all_saints as $saint ) {
-							$gender = get_field( 'gender', $saint->ID );
+							$gender       = get_field( 'gender', $saint->ID );
 							$gender_label = $gender === 'male' ? ' (M)' : ( $gender === 'female' ? ' (F)' : '' );
-							echo '<option value="' . esc_attr( $saint->ID ) . '">' . esc_html( $saint->post_title ) . $gender_label . '</option>';
+							echo '<option value="' . esc_attr( $saint->ID ) . '">' . esc_html( $saint->post_title ) . $gender_label . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						}
 						?>
 					</select>
@@ -490,17 +505,17 @@ function wasmo_render_leader_import_page() {
 				<?php wp_nonce_field( 'wasmo_import_single_nonce' ); ?>
 				<p>
 					<textarea name="leader_json" rows="10" style="width: 100%; font-family: monospace;" placeholder='{
-  "name": "Leader Name",
-  "first_name": "First",
-  "last_name": "Last",
-  "birthdate": "1900-01-01",
-  "deathdate": "1980-12-31",
-  "hometown": "City, State",
-  "ordained_date": "1930-04-06",
-  "became_president_date": "1970-01-23",
-  "roles": ["president", "apostle"],
-  "bio": "Brief biography content...",
-  "featured_image_url": "https://example.com/image.jpg"
+	"name": "Leader Name",
+	"first_name": "First",
+	"last_name": "Last",
+	"birthdate": "1900-01-01",
+	"deathdate": "1980-12-31",
+	"hometown": "City, State",
+	"ordained_date": "1930-04-06",
+	"became_president_date": "1970-01-23",
+	"roles": ["president", "apostle"],
+	"bio": "Brief biography content...",
+	"featured_image_url": "https://example.com/image.jpg"
 }'></textarea>
 				</p>
 				<p>
@@ -555,43 +570,43 @@ function wasmo_render_leader_import_page() {
 				echo '<div class="notice notice-info"><p>No orphaned references found to clean up.</p></div>';
 			}
 		}
-		
+
 		// Handle duplicate merge action
 		if ( isset( $_POST['wasmo_merge_duplicates'] ) && check_admin_referer( 'wasmo_merge_duplicates_nonce' ) ) {
-			$title_to_merge = sanitize_text_field( $_POST['duplicate_title'] );
-			$merge_result = wasmo_merge_duplicate_saints( $title_to_merge );
-			
+			$title_to_merge = sanitize_text_field( wp_unslash( $_POST['duplicate_title'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$merge_result   = wasmo_merge_duplicate_saints( $title_to_merge );
+
 			if ( ! empty( $merge_result['errors'] ) ) {
 				echo '<div class="notice notice-error"><p>' . esc_html( implode( ', ', $merge_result['errors'] ) ) . '</p></div>';
 			} else {
 				echo '<div class="notice notice-success"><p>Merged ' . count( $merge_result['merged'] ) . ' duplicate(s) of "' . esc_html( $title_to_merge ) . '". Kept ID: ' . esc_html( $merge_result['kept'] ) . '</p></div>';
 			}
 		}
-		
+
 		// Handle merge all duplicates action
 		if ( isset( $_POST['wasmo_merge_all_duplicates'] ) && check_admin_referer( 'wasmo_merge_all_duplicates_nonce' ) ) {
 			$all_duplicates = wasmo_find_duplicate_saints();
-			$total_merged = 0;
+			$total_merged   = 0;
 			foreach ( $all_duplicates as $title => $info ) {
-				$merge_result = wasmo_merge_duplicate_saints( $title );
+				$merge_result  = wasmo_merge_duplicate_saints( $title );
 				$total_merged += count( $merge_result['merged'] );
 			}
 			echo '<div class="notice notice-success"><p>Merged ' . esc_html( $total_merged ) . ' duplicate records.</p></div>';
 		}
-		
+
 		// Handle Marriage Migration Preview
 		$migration_preview = null;
 		if ( isset( $_POST['wasmo_preview_marriage_migration'] ) && check_admin_referer( 'wasmo_marriage_migration_nonce' ) ) {
 			$migration_preview = wasmo_preview_marriage_migration();
 		}
-		
+
 		// Handle Marriage Migration Execute
 		$migration_result = null;
 		if ( isset( $_POST['wasmo_execute_marriage_migration'] ) && check_admin_referer( 'wasmo_marriage_migration_nonce' ) ) {
-			$dry_run = isset( $_POST['dry_run'] ) && $_POST['dry_run'] === '1';
+			$dry_run          = isset( $_POST['dry_run'] ) && $_POST['dry_run'] === '1';
 			$migration_result = wasmo_migrate_marriages_to_wives( $dry_run );
 		}
-		
+
 		// Find duplicates
 		$duplicates = wasmo_find_duplicate_saints();
 		?>
@@ -644,10 +659,10 @@ function wasmo_render_leader_import_page() {
 							<tr>
 								<?php if ( $i === 0 ) : ?>
 								<td rowspan="<?php echo count( $man['marriages'] ); ?>">
-									<a href="<?php echo get_edit_post_link( $man['id'] ); ?>" target="_blank"><?php echo esc_html( $man['name'] ); ?></a>
+									<a href="<?php echo get_edit_post_link( $man['id'] ); ?>" target="_blank"><?php echo esc_html( $man['name'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
 								</td>
 								<?php endif; ?>
-								<td><a href="<?php echo get_edit_post_link( $m['wife_id'] ); ?>" target="_blank"><?php echo esc_html( $m['wife_name'] ); ?></a></td>
+								<td><a href="<?php echo get_edit_post_link( $m['wife_id'] ); ?>" target="_blank"><?php echo esc_html( $m['wife_name'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></td>
 								<td><?php echo esc_html( $m['marriage_date'] ?: 'Unknown' ); ?></td>
 								<td><?php echo esc_html( $m['children_count'] ); ?></td>
 							</tr>
@@ -721,7 +736,7 @@ function wasmo_render_leader_import_page() {
 							<td><?php echo esc_html( $info['count'] ); ?></td>
 							<td>
 								<?php foreach ( $info['ids'] as $i => $id ) : ?>
-									<a href="<?php echo get_edit_post_link( $id ); ?>" target="_blank"><?php echo esc_html( $id ); ?></a><?php echo $i === 0 ? ' (keep)' : ''; ?><?php echo $i < count( $info['ids'] ) - 1 ? ', ' : ''; ?>
+									<a href="<?php echo get_edit_post_link( $id ); ?>" target="_blank"><?php echo esc_html( $id ); ?></a><?php echo $i === 0 ? ' (keep)' : ''; ?><?php echo $i < count( $info['ids'] ) - 1 ? ', ' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								<?php endforeach; ?>
 							</td>
 							<td>
@@ -759,23 +774,26 @@ function wasmo_render_leader_import_page() {
  */
 /**
  * Parse a date string from import data, normalizing partial dates.
- * 
+ *
  * @param string $date_string The date string to parse.
  * @param bool   $return_full Whether to return full result array with approximate flag.
  * @return string|array|null Date string, or array if $return_full is true.
  */
 function wasmo_parse_leader_date( $date_string, $return_full = false ) {
 	if ( empty( $date_string ) ) {
-		return $return_full ? array( 'date' => null, 'approximate' => false ) : null;
+		return $return_full ? array(
+			'date'        => null,
+			'approximate' => false,
+		) : null;
 	}
 
 	// Use the normalization function from functions-saints.php
 	$result = wasmo_normalize_date( $date_string );
-	
+
 	if ( $return_full ) {
 		return $result;
 	}
-	
+
 	return $result['date'];
 }
 
@@ -789,14 +807,14 @@ function wasmo_map_group_to_role( $group ) {
 	$group = strtolower( trim( $group ) );
 
 	$mappings = array(
-		'latter day prophet'    => 'president',
-		'latter day apostle'    => 'apostle',
-		'living apostle'        => 'apostle',
-		'first presidency'      => 'first-presidency',
-		'seventy'               => 'seventy',
-		'presiding bishopric'   => 'presiding-bishopric',
-		'presiding bishop'      => 'presiding-bishopric',
-		'general officer'       => 'general-officer',
+		'latter day prophet'  => 'president',
+		'latter day apostle'  => 'apostle',
+		'living apostle'      => 'apostle',
+		'first presidency'    => 'first-presidency',
+		'seventy'             => 'seventy',
+		'presiding bishopric' => 'presiding-bishopric',
+		'presiding bishop'    => 'presiding-bishopric',
+		'general officer'     => 'general-officer',
 	);
 
 	foreach ( $mappings as $pattern => $slug ) {
@@ -813,7 +831,7 @@ function wasmo_map_group_to_role( $group ) {
  */
 function wasmo_export_leaders_json_ajax() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wasmo_export_leaders' ) ) {
+	if ( ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'wasmo_export_leaders' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		wp_die( 'Security check failed' );
 	}
 
@@ -826,7 +844,7 @@ function wasmo_export_leaders_json_ajax() {
 
 	// Set headers for JSON download
 	header( 'Content-Type: application/json' );
-	header( 'Content-Disposition: attachment; filename="saints-export-' . date( 'Y-m-d' ) . '.json"' );
+	header( 'Content-Disposition: attachment; filename="saints-export-' . gmdate( 'Y-m-d' ) . '.json"' );
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
@@ -840,7 +858,7 @@ add_action( 'wp_ajax_wasmo_export_leaders_json', 'wasmo_export_leaders_json_ajax
  */
 function wasmo_export_selected_saint_ajax() {
 	// Verify nonce
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wasmo_export_selected_saint' ) ) {
+	if ( ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'wasmo_export_selected_saint' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		wp_die( 'Security check failed' );
 	}
 
@@ -859,13 +877,13 @@ function wasmo_export_selected_saint_ajax() {
 		wp_die( 'Invalid saint ID' );
 	}
 
-	$include_spouses = isset( $_GET['include_spouses'] ) && $_GET['include_spouses'] === '1';
+	$include_spouses  = isset( $_GET['include_spouses'] ) && $_GET['include_spouses'] === '1';
 	$include_children = isset( $_GET['include_children'] ) && $_GET['include_children'] === '1';
 
 	$export_data = wasmo_get_saint_family_export_data( $saint_id, $include_spouses, $include_children );
 
 	// Generate filename
-	$filename = sanitize_title( $saint->post_title ) . '-family-export-' . date( 'Y-m-d' ) . '.json';
+	$filename = sanitize_title( $saint->post_title ) . '-family-export-' . gmdate( 'Y-m-d' ) . '.json';
 
 	// Set headers for JSON download
 	header( 'Content-Type: application/json' );
@@ -900,7 +918,7 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 	}
 
 	// Get leader tag
-	$leader_tag = get_field( 'leader_tag', $saint_id );
+	$leader_tag      = get_field( 'leader_tag', $saint_id );
 	$leader_tag_slug = null;
 	if ( $leader_tag ) {
 		$tag_term = get_term( $leader_tag, 'post_tag' );
@@ -910,17 +928,17 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 	}
 
 	// Get marriages data (repeater field)
-	$marriages_raw = get_field( 'marriages', $saint_id );
+	$marriages_raw    = get_field( 'marriages', $saint_id );
 	$marriages_export = array();
 	if ( ! empty( $marriages_raw ) && is_array( $marriages_raw ) ) {
 		foreach ( $marriages_raw as $marriage ) {
 			// Check if spouse is a saint (default true for backwards compatibility)
 			$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
-			
+
 			// Get spouse name - either from saint record or from text field
-			$spouse_id = null;
+			$spouse_id   = null;
 			$spouse_name = null;
-			
+
 			if ( $spouse_is_saint ) {
 				// Get spouse from relationship field
 				$spouse_field = $marriage['spouse'] ?? null;
@@ -937,7 +955,7 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 				// Get spouse name from text field (non-saint spouse)
 				$spouse_name = $marriage['spouse_name'] ?? null;
 			}
-			
+
 			// Get spouse birthdate/deathdate for non-saint spouses
 			$spouse_birthdate_export = null;
 			$spouse_deathdate_export = null;
@@ -948,7 +966,7 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
 
 			// Get children - handle both nested repeater and simple array formats
 			$children_export = array();
-			$children_field = $marriage['children'] ?? array();
+			$children_field  = $marriage['children'] ?? array();
 			if ( ! empty( $children_field ) && is_array( $children_field ) ) {
 				foreach ( $children_field as $child ) {
 					// Check if it's a nested repeater (has 'child_name' key) or simple ID
@@ -1036,7 +1054,7 @@ function wasmo_get_single_saint_export_data( $saint_id ) {
  */
 function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true, $include_children = true ) {
 	$exported_ids = array(); // Track already exported to avoid duplicates
-	$export_data = array();
+	$export_data  = array();
 
 	// Get the main saint's data
 	$main_saint_data = wasmo_get_single_saint_export_data( $saint_id );
@@ -1044,11 +1062,11 @@ function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true,
 		return array();
 	}
 
-	$export_data[] = $main_saint_data;
+	$export_data[]  = $main_saint_data;
 	$exported_ids[] = $saint_id;
 
 	// Collect spouse and children IDs from this saint's marriages
-	$spouse_ids = array();
+	$spouse_ids   = array();
 	$children_ids = array();
 
 	$marriages = get_field( 'marriages', $saint_id );
@@ -1058,7 +1076,7 @@ function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true,
 			$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
 			if ( $spouse_is_saint ) {
 				$spouse_field = $marriage['spouse'] ?? null;
-				$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+				$spouse_id    = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
 				if ( $spouse_id && ! in_array( $spouse_id, $exported_ids, true ) ) {
 					$spouse_ids[] = $spouse_id;
 				}
@@ -1091,8 +1109,8 @@ function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true,
 		if ( ! empty( $reverse_marriages ) && is_array( $reverse_marriages ) ) {
 			foreach ( $reverse_marriages as $rm ) {
 				$rm_spouse_field = $rm['spouse'] ?? null;
-				$rm_spouse_id = is_array( $rm_spouse_field ) ? ( $rm_spouse_field[0] ?? null ) : $rm_spouse_field;
-				
+				$rm_spouse_id    = is_array( $rm_spouse_field ) ? ( $rm_spouse_field[0] ?? null ) : $rm_spouse_field;
+
 				// Only get children if this marriage is with our main saint
 				if ( intval( $rm_spouse_id ) === intval( $saint_id ) ) {
 					$rm_children = $rm['children'] ?? array();
@@ -1116,7 +1134,7 @@ function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true,
 		foreach ( $spouse_ids as $spouse_id ) {
 			$spouse_data = wasmo_get_single_saint_export_data( $spouse_id );
 			if ( $spouse_data ) {
-				$export_data[] = $spouse_data;
+				$export_data[]  = $spouse_data;
 				$exported_ids[] = $spouse_id;
 			}
 		}
@@ -1130,7 +1148,7 @@ function wasmo_get_saint_family_export_data( $saint_id, $include_spouses = true,
 			}
 			$child_data = wasmo_get_single_saint_export_data( $child_id );
 			if ( $child_data ) {
-				$export_data[] = $child_data;
+				$export_data[]  = $child_data;
 				$exported_ids[] = $child_id;
 			}
 		}
@@ -1149,13 +1167,17 @@ function wasmo_find_saints_married_to( $saint_id ) {
 	global $wpdb;
 
 	// Find all posts that have this saint as a spouse in their marriages
-	$results = $wpdb->get_col( $wpdb->prepare(
-		"SELECT DISTINCT post_id FROM {$wpdb->postmeta} 
-		WHERE meta_key LIKE 'marriages_%%_spouse' 
+	// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+	$results = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT DISTINCT post_id FROM {$wpdb->postmeta}
+		WHERE meta_key LIKE 'marriages_%%_spouse'
 		AND (meta_value = %s OR meta_value LIKE %s)",
-		$saint_id,
-		'%"' . $saint_id . '"%'
-	) );
+			$saint_id,
+			'%"' . $saint_id . '"%'
+		)
+	);
+	// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
 
 	// Filter to only published saints
 	$saint_ids = array();
@@ -1171,7 +1193,7 @@ function wasmo_find_saints_married_to( $saint_id ) {
 
 /**
  * Get all leaders data for export
- * 
+ *
  * Exports in a specific order to ensure relationship fields work on import:
  * 1. Presidents (so they exist when referenced as spouses)
  * 2. Apostles (so they exist when referenced as spouses)
@@ -1181,23 +1203,25 @@ function wasmo_find_saints_married_to( $saint_id ) {
  * @return array Array of leader data.
  */
 function wasmo_get_all_leaders_export_data() {
-	$all_leaders = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-		'orderby'        => 'title',
-		'order'          => 'ASC',
-	) );
+	$all_leaders = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		)
+	);
 
 	// Separate leaders by role for proper export ordering
-	$presidents = array();
-	$apostles = array();
+	$presidents   = array();
+	$apostles     = array();
 	$plural_wives = array();
-	$others = array();
+	$others       = array();
 
 	foreach ( $all_leaders as $leader ) {
 		$role_terms = wp_get_post_terms( $leader->ID, 'saint-role', array( 'fields' => 'slugs' ) );
-		
+
 		if ( in_array( 'president', $role_terms, true ) ) {
 			$presidents[] = $leader;
 		} elseif ( in_array( 'apostle', $role_terms, true ) ) {
@@ -1227,7 +1251,7 @@ function wasmo_get_all_leaders_export_data() {
 		}
 
 		// Get leader tag
-		$leader_tag = get_field( 'leader_tag', $leader_id );
+		$leader_tag      = get_field( 'leader_tag', $leader_id );
 		$leader_tag_slug = null;
 		if ( $leader_tag ) {
 			$tag_term = get_term( $leader_tag, 'post_tag' );
@@ -1237,17 +1261,17 @@ function wasmo_get_all_leaders_export_data() {
 		}
 
 		// Get marriages data (repeater field)
-		$marriages_raw = get_field( 'marriages', $leader_id );
+		$marriages_raw    = get_field( 'marriages', $leader_id );
 		$marriages_export = array();
 		if ( ! empty( $marriages_raw ) && is_array( $marriages_raw ) ) {
 			foreach ( $marriages_raw as $marriage ) {
 				// Check if spouse is a saint (default true for backwards compatibility)
 				$spouse_is_saint = isset( $marriage['spouse_is_saint'] ) ? (bool) $marriage['spouse_is_saint'] : true;
-				
+
 				// Get spouse name - either from saint record or from text field
-				$spouse_id = null;
+				$spouse_id   = null;
 				$spouse_name = null;
-				
+
 				if ( $spouse_is_saint ) {
 					// Get spouse from relationship field
 					$spouse_field = $marriage['spouse'] ?? null;
@@ -1264,7 +1288,7 @@ function wasmo_get_all_leaders_export_data() {
 					// Get spouse name and birthdate from text fields (non-saint spouse)
 					$spouse_name = $marriage['spouse_name'] ?? null;
 				}
-				
+
 				// Get spouse birthdate for non-saint spouses
 				$spouse_birthdate_export = null;
 				$spouse_deathdate_export = null;
@@ -1275,7 +1299,7 @@ function wasmo_get_all_leaders_export_data() {
 
 				// Get children - handle both nested repeater and simple array formats
 				$children_export = array();
-				$children_field = $marriage['children'] ?? array();
+				$children_field  = $marriage['children'] ?? array();
 				if ( ! empty( $children_field ) && is_array( $children_field ) ) {
 					foreach ( $children_field as $child ) {
 						// Check if it's a nested repeater (has 'child_name' key) or simple ID
@@ -1349,8 +1373,8 @@ function wasmo_get_all_leaders_export_data() {
  * Import leaders from array data (from file upload)
  *
  * @param array $leaders_data Array of leader data.
- * @param bool $update_existing Whether to update existing leaders.
- * @param bool $import_images Whether to import featured images.
+ * @param bool  $update_existing Whether to update existing leaders.
+ * @param bool  $import_images Whether to import featured images.
  * @return array Result array with counts.
  */
 function wasmo_import_leaders_from_array( $leaders_data, $update_existing = false, $import_images = false ) {
@@ -1366,17 +1390,17 @@ function wasmo_import_leaders_from_array( $leaders_data, $update_existing = fals
 
 		if ( is_wp_error( $result ) ) {
 			$error_code = $result->get_error_code();
-			$name = isset( $leader_data['name'] ) ? $leader_data['name'] : 'Unknown';
+			$name       = isset( $leader_data['name'] ) ? $leader_data['name'] : 'Unknown';
 
 			if ( $error_code === 'exists' ) {
-				$results['skipped']++;
+				++$results['skipped'];
 			} else {
 				$results['errors'][] = $name . ': ' . $result->get_error_message();
 			}
 		} elseif ( is_array( $result ) && isset( $result['updated'] ) && $result['updated'] ) {
-			$results['updated']++;
+			++$results['updated'];
 		} else {
-			$results['imported']++;
+			++$results['imported'];
 		}
 	}
 
@@ -1387,8 +1411,8 @@ function wasmo_import_leaders_from_array( $leaders_data, $update_existing = fals
  * Import a single leader with full data support
  *
  * @param array $data Leader data array.
- * @param bool $update_existing Whether to update if exists.
- * @param bool $import_images Whether to import featured image.
+ * @param bool  $update_existing Whether to update if exists.
+ * @param bool  $import_images Whether to import featured image.
  * @return int|array|WP_Error Post ID, result array, or error.
  */
 function wasmo_import_single_leader_full( $data, $update_existing = false, $import_images = false ) {
@@ -1397,28 +1421,32 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 	}
 
 	// Check if leader already exists
-	$existing = get_posts( array(
-		'post_type'      => 'saint',
-		'post_status'    => 'any',
-		'posts_per_page' => 1,
-		'title'          => $data['name'],
-	) );
+	$existing = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'title'          => $data['name'],
+		)
+	);
 
 	$is_update = false;
-	$post_id = null;
+	$post_id   = null;
 
 	if ( ! empty( $existing ) ) {
 		if ( ! $update_existing ) {
 			return new WP_Error( 'exists', 'Leader already exists.' );
 		}
-		$post_id = $existing[0]->ID;
+		$post_id   = $existing[0]->ID;
 		$is_update = true;
 
 		// Update the post
-		wp_update_post( array(
-			'ID'           => $post_id,
-			'post_content' => isset( $data['bio'] ) ? $data['bio'] : '',
-		) );
+		wp_update_post(
+			array(
+				'ID'           => $post_id,
+				'post_content' => isset( $data['bio'] ) ? $data['bio'] : '',
+			)
+		);
 	} else {
 		// Create the post
 		$post_data = array(
@@ -1438,8 +1466,15 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 
 	// Update ACF text fields
 	$text_fields = array(
-		'first_name', 'middle_name', 'last_name', 'hometown',
-		'education', 'mission', 'profession', 'military', 'familysearch_id',
+		'first_name',
+		'middle_name',
+		'last_name',
+		'hometown',
+		'education',
+		'mission',
+		'profession',
+		'military',
+		'familysearch_id',
 	);
 
 	foreach ( $text_fields as $field ) {
@@ -1503,7 +1538,7 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 
 	// Handle roles
 	if ( ! empty( $data['roles'] ) ) {
-		$roles = is_array( $data['roles'] ) ? $data['roles'] : explode( ',', $data['roles'] );
+		$roles    = is_array( $data['roles'] ) ? $data['roles'] : explode( ',', $data['roles'] );
 		$term_ids = array();
 
 		foreach ( $roles as $role ) {
@@ -1563,8 +1598,8 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 		foreach ( $data['marriages'] as $marriage_data ) {
 			// Check if spouse is a saint (default true for backwards compatibility)
 			$spouse_is_saint = isset( $marriage_data['spouse_is_saint'] ) ? (bool) $marriage_data['spouse_is_saint'] : true;
-			
-			$spouse_id = null;
+
+			$spouse_id        = null;
 			$spouse_name_text = null;
 
 			if ( $spouse_is_saint && ! empty( $marriage_data['spouse_name'] ) ) {
@@ -1587,7 +1622,7 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 						$child_birthdate = $child['birthdate'] ?? '';
 						// Normalize child birthdate to Y-m-d format
 						if ( ! empty( $child_birthdate ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $child_birthdate ) ) {
-							$parsed = wasmo_parse_leader_date( $child_birthdate );
+							$parsed          = wasmo_parse_leader_date( $child_birthdate );
 							$child_birthdate = $parsed ?: $child_birthdate;
 						}
 						$children_to_import[] = array(
@@ -1615,21 +1650,21 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 				// Normalize all dates to ensure consistent Y-m-d format
 				$marriage_date = $marriage_data['marriage_date'] ?? '';
 				if ( ! empty( $marriage_date ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $marriage_date ) ) {
-					$parsed = wasmo_parse_leader_date( $marriage_date );
+					$parsed        = wasmo_parse_leader_date( $marriage_date );
 					$marriage_date = $parsed ?: $marriage_date;
 				}
-				
+
 				$divorce_date = $marriage_data['divorce_date'] ?? '';
 				if ( ! empty( $divorce_date ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $divorce_date ) ) {
-					$parsed = wasmo_parse_leader_date( $divorce_date );
+					$parsed       = wasmo_parse_leader_date( $divorce_date );
 					$divorce_date = $parsed ?: $divorce_date;
 				}
-				
+
 				$spouse_birthdate = '';
 				if ( ! $spouse_is_saint && ! empty( $marriage_data['spouse_birthdate'] ) ) {
 					$spouse_birthdate = $marriage_data['spouse_birthdate'];
 					if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $spouse_birthdate ) ) {
-						$parsed = wasmo_parse_leader_date( $spouse_birthdate );
+						$parsed           = wasmo_parse_leader_date( $spouse_birthdate );
 						$spouse_birthdate = $parsed ?: $spouse_birthdate;
 					}
 				}
@@ -1638,7 +1673,7 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 				if ( ! $spouse_is_saint && ! empty( $marriage_data['spouse_deathdate'] ) ) {
 					$spouse_deathdate = $marriage_data['spouse_deathdate'];
 					if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $spouse_deathdate ) ) {
-						$parsed = wasmo_parse_leader_date( $spouse_deathdate );
+						$parsed           = wasmo_parse_leader_date( $spouse_deathdate );
 						$spouse_deathdate = $parsed ?: $spouse_deathdate;
 					}
 				}
@@ -1661,9 +1696,9 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 		if ( ! empty( $marriages_to_import ) ) {
 			// Get existing marriages to avoid duplicates
 			$existing_marriages = get_field( 'marriages', $post_id ) ?: array();
-			
+
 			// Build lookup arrays for existing marriages (both saint IDs and non-saint names)
-			$existing_spouse_ids = array();
+			$existing_spouse_ids   = array();
 			$existing_spouse_names = array();
 			foreach ( $existing_marriages as $em ) {
 				$em_is_saint = isset( $em['spouse_is_saint'] ) ? (bool) $em['spouse_is_saint'] : true;
@@ -1682,34 +1717,34 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 
 			// Only add marriages that don't already exist
 			foreach ( $marriages_to_import as $new_marriage ) {
-				$new_is_saint = (bool) ( $new_marriage['spouse_is_saint'] ?? true );
-				$new_spouse_id = is_array( $new_marriage['spouse'] ?? null ) ? ( $new_marriage['spouse'][0] ?? null ) : null;
+				$new_is_saint    = (bool) ( $new_marriage['spouse_is_saint'] ?? true );
+				$new_spouse_id   = is_array( $new_marriage['spouse'] ?? null ) ? ( $new_marriage['spouse'][0] ?? null ) : null;
 				$new_spouse_name = strtolower( trim( $new_marriage['spouse_name'] ?? '' ) );
-				
+
 				$already_exists = false;
-				
+
 				if ( $new_is_saint && $new_spouse_id ) {
 					$already_exists = in_array( intval( $new_spouse_id ), $existing_spouse_ids, true );
 				} elseif ( ! $new_is_saint && $new_spouse_name ) {
 					$already_exists = in_array( $new_spouse_name, $existing_spouse_names, true );
 				}
-				
+
 				if ( $already_exists ) {
 					// Marriage already exists, optionally update it
 					if ( $is_update ) {
 						// Find and update the existing marriage entry
 						foreach ( $existing_marriages as &$em ) {
 							$em_is_saint = isset( $em['spouse_is_saint'] ) ? (bool) $em['spouse_is_saint'] : true;
-							$match = false;
-							
+							$match       = false;
+
 							if ( $new_is_saint && $em_is_saint ) {
 								$em_spouse = is_array( $em['spouse'] ?? null ) ? ( $em['spouse'][0] ?? null ) : ( $em['spouse'] ?? null );
-								$match = ( intval( $em_spouse ) === intval( $new_spouse_id ) );
+								$match     = ( intval( $em_spouse ) === intval( $new_spouse_id ) );
 							} elseif ( ! $new_is_saint && ! $em_is_saint ) {
 								$em_name = strtolower( trim( $em['spouse_name'] ?? '' ) );
-								$match = ( $em_name === $new_spouse_name );
+								$match   = ( $em_name === $new_spouse_name );
 							}
-							
+
 							if ( $match ) {
 								// Update marriage date if provided
 								if ( ! empty( $new_marriage['marriage_date'] ) ) {
@@ -1750,7 +1785,10 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 	}
 
 	if ( $is_update ) {
-		return array( 'post_id' => $post_id, 'updated' => true );
+		return array(
+			'post_id' => $post_id,
+			'updated' => true,
+		);
 	}
 
 	return $post_id;
@@ -1759,15 +1797,15 @@ function wasmo_import_single_leader_full( $data, $update_existing = false, $impo
 /**
  * Import featured image for a leader from URL
  *
- * @param int $post_id The post ID.
+ * @param int    $post_id The post ID.
  * @param string $image_url The image URL.
  * @param string $leader_name The leader's name for alt text.
  * @return int|WP_Error Attachment ID or error.
  */
 function wasmo_import_leader_featured_image( $post_id, $image_url, $leader_name ) {
-	require_once( ABSPATH . 'wp-admin/includes/media.php' );
-	require_once( ABSPATH . 'wp-admin/includes/file.php' );
-	require_once( ABSPATH . 'wp-admin/includes/image.php' );
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
 
 	// Download the image
 	$tmp = download_url( $image_url, 60 );
@@ -1778,7 +1816,7 @@ function wasmo_import_leader_featured_image( $post_id, $image_url, $leader_name 
 
 	// Get file extension from URL
 	$path_info = pathinfo( parse_url( $image_url, PHP_URL_PATH ) );
-	$ext = isset( $path_info['extension'] ) ? $path_info['extension'] : 'jpg';
+	$ext       = isset( $path_info['extension'] ) ? $path_info['extension'] : 'jpg';
 
 	$file_array = array(
 		'name'     => sanitize_file_name( $leader_name . '-portrait.' . $ext ),
@@ -1834,12 +1872,16 @@ function wasmo_render_polygamy_import_page() {
 	// Handle summary.csv import
 	if ( isset( $_POST['wasmo_import_summary'] ) && check_admin_referer( 'wasmo_import_summary_nonce' ) ) {
 		if ( ! empty( $_FILES['summary_csv']['tmp_name'] ) ) {
-			$result = wasmo_import_polygamy_summary_csv( $_FILES['summary_csv']['tmp_name'] );
-			$message = '<div class="notice notice-success"><p>';
-			$message .= sprintf( 'Summary import complete! %d updated, %d skipped, %d not found.', 
-				$result['updated'], $result['skipped'], $result['not_found'] );
+			$result   = wasmo_import_polygamy_summary_csv( $_FILES['summary_csv']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$message  = '<div class="notice notice-success"><p>';
+			$message .= sprintf(
+				'Summary import complete! %d updated, %d skipped, %d not found.',
+				$result['updated'],
+				$result['skipped'],
+				$result['not_found']
+			);
 			$message .= '</p></div>';
-			
+
 			if ( ! empty( $result['errors'] ) ) {
 				$message .= '<div class="notice notice-warning"><p>Some errors:</p><ul>';
 				foreach ( array_slice( $result['errors'], 0, 10 ) as $error ) {
@@ -1853,14 +1895,19 @@ function wasmo_render_polygamy_import_page() {
 	// Handle wives CSV import
 	if ( isset( $_POST['wasmo_import_wives'] ) && check_admin_referer( 'wasmo_import_wives_nonce' ) ) {
 		if ( ! empty( $_FILES['wives_csv']['tmp_name'] ) && ! empty( $_POST['leader_name'] ) ) {
-			$leader_name = sanitize_text_field( $_POST['leader_name'] );
-			$result = wasmo_import_wives_csv( $_FILES['wives_csv']['tmp_name'], $leader_name );
-			
-			$message = '<div class="notice notice-success"><p>';
-			$message .= sprintf( 'Wives import complete for %s! %d created, %d updated, %d skipped.', 
-				$leader_name, $result['created'], $result['updated'], $result['skipped'] );
+			$leader_name = sanitize_text_field( wp_unslash( $_POST['leader_name'] ) );
+			$result      = wasmo_import_wives_csv( $_FILES['wives_csv']['tmp_name'], $leader_name ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+			$message  = '<div class="notice notice-success"><p>';
+			$message .= sprintf(
+				'Wives import complete for %s! %d created, %d updated, %d skipped.',
+				$leader_name,
+				$result['created'],
+				$result['updated'],
+				$result['skipped']
+			);
 			$message .= '</p></div>';
-			
+
 			if ( ! empty( $result['errors'] ) ) {
 				$message .= '<div class="notice notice-warning"><p>Some errors:</p><ul>';
 				foreach ( $result['errors'] as $error ) {
@@ -1874,29 +1921,40 @@ function wasmo_render_polygamy_import_page() {
 	// Handle batch wives import
 	if ( isset( $_POST['wasmo_import_wives_batch'] ) && check_admin_referer( 'wasmo_import_wives_batch_nonce' ) ) {
 		if ( ! empty( $_FILES['wives_csv_files']['tmp_name'][0] ) ) {
-			$total = array( 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => array() );
-			
-			foreach ( $_FILES['wives_csv_files']['tmp_name'] as $i => $tmp_name ) {
-				if ( empty( $tmp_name ) ) continue;
-				
-				$filename = $_FILES['wives_csv_files']['name'][$i];
+			$total = array(
+				'created' => 0,
+				'updated' => 0,
+				'skipped' => 0,
+				'errors'  => array(),
+			);
+
+			foreach ( $_FILES['wives_csv_files']['tmp_name'] as $i => $tmp_name ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( empty( $tmp_name ) ) {
+					continue;
+				}
+
+				$filename = $_FILES['wives_csv_files']['name'][ $i ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 				// Extract leader name from filename (e.g., "joseph-smith-wives.csv" -> "Joseph Smith")
 				$leader_slug = preg_replace( '/-wives\.csv$/', '', $filename );
 				$leader_name = ucwords( str_replace( '-', ' ', $leader_slug ) );
-				
+
 				// Handle middle initials: "Russell M Nelson" -> "Russell M. Nelson"
 				$leader_name = preg_replace( '/\b([A-Z])\s/', '$1. ', $leader_name );
-				
-				$result = wasmo_import_wives_csv( $tmp_name, $leader_name );
+
+				$result            = wasmo_import_wives_csv( $tmp_name, $leader_name );
 				$total['created'] += $result['created'];
 				$total['updated'] += $result['updated'];
 				$total['skipped'] += $result['skipped'];
-				$total['errors'] = array_merge( $total['errors'], $result['errors'] );
+				$total['errors']   = array_merge( $total['errors'], $result['errors'] );
 			}
-			
-			$message = '<div class="notice notice-success"><p>';
-			$message .= sprintf( 'Batch import complete! %d wives created, %d updated, %d skipped.', 
-				$total['created'], $total['updated'], $total['skipped'] );
+
+			$message  = '<div class="notice notice-success"><p>';
+			$message .= sprintf(
+				'Batch import complete! %d wives created, %d updated, %d skipped.',
+				$total['created'],
+				$total['updated'],
+				$total['skipped']
+			);
 			$message .= '</p></div>';
 		}
 	}
@@ -1905,7 +1963,7 @@ function wasmo_render_polygamy_import_page() {
 	<div class="wrap">
 		<h1>Import Polygamy Data</h1>
 		
-		<?php echo $message; ?>
+		<?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 		<!-- Summary CSV Import -->
 		<div class="card" style="max-width: 800px; margin-bottom: 20px; background: #f0f3e7;">
@@ -2043,18 +2101,21 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 	// Normalize headers
 	$headers = array_map( 'trim', $headers );
 	$headers = array_map( 'strtolower', $headers );
-	$headers = array_map( function( $h ) {
-		return str_replace( ' ', '_', $h );
-	}, $headers );
+	$headers = array_map(
+		function ( $h ) {
+			return str_replace( ' ', '_', $h );
+		},
+		$headers
+	);
 
 	$header_count = count( $headers );
-	
+
 	while ( ( $row = fgetcsv( $handle ) ) !== false ) {
 		// Skip empty rows
 		if ( empty( $row ) || ( count( $row ) === 1 && empty( trim( $row[0] ) ) ) ) {
 			continue;
 		}
-		
+
 		// Ensure row has same number of elements as headers
 		$row_count = count( $row );
 		if ( $row_count < $header_count ) {
@@ -2064,22 +2125,26 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 			// Trim extra columns
 			$row = array_slice( $row, 0, $header_count );
 		}
-		
+
 		$data = array_combine( $headers, $row );
-		
+
 		$name = trim( $data['name'] ?? '' );
-		if ( empty( $name ) ) continue;
+		if ( empty( $name ) ) {
+			continue;
+		}
 
 		// Find existing saint by name
-		$existing = get_posts( array(
-			'post_type'      => 'saint',
-			'posts_per_page' => 1,
-			'title'          => $name,
-			'post_status'    => 'any',
-		) );
+		$existing = get_posts(
+			array(
+				'post_type'      => 'saint',
+				'posts_per_page' => 1,
+				'title'          => $name,
+				'post_status'    => 'any',
+			)
+		);
 
 		if ( empty( $existing ) ) {
-			$results['not_found']++;
+			++$results['not_found'];
 			$results['errors'][] = "Not found: $name";
 			continue;
 		}
@@ -2094,7 +2159,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 		// Update gender (all in summary are male leaders)
 		update_field( 'gender', 'male', $saint_id );
 
-		$results['updated']++;
+		++$results['updated'];
 	}
 
 	fclose( $handle );
@@ -2103,7 +2168,7 @@ function wasmo_import_polygamy_summary_csv( $csv_path ) {
 
 /**
  * Import wives from a CSV file
- * 
+ *
  * NEW ARCHITECTURE: Marriage data is stored on the WIFE's record, not the husband's.
  * This function creates wife saints and adds their marriage entry (with husband as spouse).
  *
@@ -2147,18 +2212,21 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 	// Normalize headers
 	$headers = array_map( 'trim', $headers );
 	$headers = array_map( 'strtolower', $headers );
-	$headers = array_map( function( $h ) {
-		return str_replace( ' ', '_', $h );
-	}, $headers );
+	$headers = array_map(
+		function ( $h ) {
+			return str_replace( ' ', '_', $h );
+		},
+		$headers
+	);
 
 	$header_count = count( $headers );
-	
+
 	while ( ( $row = fgetcsv( $handle ) ) !== false ) {
 		// Skip empty rows
 		if ( empty( $row ) || ( count( $row ) === 1 && empty( trim( $row[0] ) ) ) ) {
 			continue;
 		}
-		
+
 		// Ensure row has same number of elements as headers
 		$row_count = count( $row );
 		if ( $row_count < $header_count ) {
@@ -2168,41 +2236,43 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 			// Trim extra columns
 			$row = array_slice( $row, 0, $header_count );
 		}
-		
+
 		$data = array_combine( $headers, $row );
-		
+
 		$wife_name = trim( $data['wife_name'] ?? '' );
-		if ( empty( $wife_name ) ) continue;
+		if ( empty( $wife_name ) ) {
+			continue;
+		}
 
 		// Create or find wife saint record
 		$wife_result = wasmo_create_or_update_wife( $data, $leader_name );
-		
+
 		if ( is_wp_error( $wife_result ) ) {
 			$results['errors'][] = "$wife_name: " . $wife_result->get_error_message();
 			continue;
 		}
 
 		$wife_id = $wife_result['id'];
-		
+
 		if ( $wife_result['created'] ) {
-			$results['created']++;
+			++$results['created'];
 		} else {
-			$results['updated']++;
+			++$results['updated'];
 		}
 
 		// Parse marriage date with approximate detection
 		$marriage_date_result = wasmo_parse_leader_date( $data['marriage_date'] ?? '', true );
-		$divorce_date = wasmo_parse_leader_date( $data['divorce_date'] ?? '' );
-		
+		$divorce_date         = wasmo_parse_leader_date( $data['divorce_date'] ?? '' );
+
 		// Get children count and create placeholder children
 		$children_count = 0;
 		foreach ( array_keys( $data ) as $key ) {
-			if ( strpos( $key, 'number_of_children' ) !== false && is_numeric( $data[$key] ) ) {
-				$children_count = intval( $data[$key] );
+			if ( strpos( $key, 'number_of_children' ) !== false && is_numeric( $data[ $key ] ) ) {
+				$children_count = intval( $data[ $key ] );
 				break;
 			}
 		}
-		
+
 		// Generate placeholder children entries
 		$children_entries = array();
 		for ( $i = 1; $i <= $children_count; $i++ ) {
@@ -2211,7 +2281,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 				'child_birthdate' => '',
 				'child_link'      => array(),
 			);
-			$results['children']++;
+			++$results['children'];
 		}
 
 		// Build marriage data for WIFE's record (husband as spouse)
@@ -2226,7 +2296,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 
 		// Get wife's existing marriages
 		$wife_marriages = get_field( 'marriages', $wife_id ) ?: array();
-		
+
 		// Check if this marriage already exists (avoid duplicates)
 		$already_exists = false;
 		foreach ( $wife_marriages as $em ) {
@@ -2236,7 +2306,7 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 				break;
 			}
 		}
-		
+
 		// Add marriage to wife's record if not exists
 		if ( ! $already_exists ) {
 			$wife_marriages[] = $new_marriage;
@@ -2252,13 +2322,13 @@ function wasmo_import_wives_csv( $csv_path, $leader_name ) {
 /**
  * Create or update a wife saint record
  *
- * @param array $data Wife data from CSV.
+ * @param array  $data Wife data from CSV.
  * @param string $husband_name For context.
  * @return array|WP_Error Array with 'id' and 'created' flag, or error.
  */
 function wasmo_create_or_update_wife( $data, $husband_name ) {
 	$wife_name = trim( $data['wife_name'] ?? '' );
-	
+
 	if ( empty( $wife_name ) ) {
 		return new WP_Error( 'no_name', 'Wife name is required' );
 	}
@@ -2274,9 +2344,9 @@ function wasmo_create_or_update_wife( $data, $husband_name ) {
 	} else {
 		// Create new wife post
 		$post_data = array(
-			'post_title'  => $wife_name,
-			'post_type'   => 'saint',
-			'post_status' => 'publish',
+			'post_title'   => $wife_name,
+			'post_type'    => 'saint',
+			'post_status'  => 'publish',
 			'post_content' => '',
 		);
 
@@ -2324,7 +2394,7 @@ function wasmo_create_or_update_wife( $data, $husband_name ) {
 	// Marital status at marriage
 	$status = strtolower( trim( $data['marital_status_at_marriage'] ?? $data['marital_status'] ?? '' ) );
 	if ( $status ) {
-		$status_map = array(
+		$status_map   = array(
 			'never married' => 'never_married',
 			'widow'         => 'widow',
 			'divorced'      => 'divorced',
@@ -2340,7 +2410,10 @@ function wasmo_create_or_update_wife( $data, $husband_name ) {
 		wp_set_post_terms( $wife_id, array( $wife_term->term_id ), 'saint-role', true );
 	}
 
-	return array( 'id' => $wife_id, 'created' => $created );
+	return array(
+		'id'      => $wife_id,
+		'created' => $created,
+	);
 }
 
 // ============================================
@@ -2355,27 +2428,29 @@ function wasmo_create_or_update_wife( $data, $husband_name ) {
  */
 function wasmo_preview_marriage_migration() {
 	$preview = array(
-		'men_with_marriages'   => 0,
-		'total_marriages'      => 0,
-		'total_children'       => 0,
-		'wives_to_update'      => 0,
-		'orphaned_marriages'   => 0,
-		'details'              => array(),
+		'men_with_marriages' => 0,
+		'total_marriages'    => 0,
+		'total_children'     => 0,
+		'wives_to_update'    => 0,
+		'orphaned_marriages' => 0,
+		'details'            => array(),
 	);
 
 	// Find all male saints with marriages
-	$men = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-		'meta_query'     => array(
-			array(
-				'key'     => 'gender',
-				'value'   => 'male',
-				'compare' => '=',
+	$men = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'meta_query'     => array(
+				array(
+					'key'     => 'gender',
+					'value'   => 'male',
+					'compare' => '=',
+				),
 			),
-		),
-	) );
+		)
+	);
 
 	foreach ( $men as $man ) {
 		$marriages = get_field( 'marriages', $man->ID );
@@ -2383,26 +2458,26 @@ function wasmo_preview_marriage_migration() {
 			continue;
 		}
 
-		$preview['men_with_marriages']++;
+		++$preview['men_with_marriages'];
 		$man_detail = array(
-			'id'         => $man->ID,
-			'name'       => $man->post_title,
-			'marriages'  => array(),
+			'id'        => $man->ID,
+			'name'      => $man->post_title,
+			'marriages' => array(),
 		);
 
 		foreach ( $marriages as $marriage ) {
-			$preview['total_marriages']++;
-			
-			$spouse_field = $marriage['spouse'] ?? null;
-			$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
-			$children = $marriage['children'] ?? array();
-			$children_count = is_array( $children ) ? count( $children ) : 0;
+			++$preview['total_marriages'];
+
+			$spouse_field               = $marriage['spouse'] ?? null;
+			$spouse_id                  = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+			$children                   = $marriage['children'] ?? array();
+			$children_count             = is_array( $children ) ? count( $children ) : 0;
 			$preview['total_children'] += $children_count;
 
 			if ( $spouse_id ) {
 				$spouse_post = get_post( $spouse_id );
 				if ( $spouse_post && $spouse_post->post_type === 'saint' ) {
-					$preview['wives_to_update']++;
+					++$preview['wives_to_update'];
 					$man_detail['marriages'][] = array(
 						'wife_id'        => $spouse_id,
 						'wife_name'      => $spouse_post->post_title,
@@ -2410,10 +2485,10 @@ function wasmo_preview_marriage_migration() {
 						'children_count' => $children_count,
 					);
 				} else {
-					$preview['orphaned_marriages']++;
+					++$preview['orphaned_marriages'];
 				}
 			} else {
-				$preview['orphaned_marriages']++;
+				++$preview['orphaned_marriages'];
 			}
 		}
 
@@ -2443,18 +2518,20 @@ function wasmo_migrate_marriages_to_wives( $dry_run = false ) {
 	);
 
 	// Find all male saints with marriages
-	$men = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-		'meta_query'     => array(
-			array(
-				'key'     => 'gender',
-				'value'   => 'male',
-				'compare' => '=',
+	$men = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'meta_query'     => array(
+				array(
+					'key'     => 'gender',
+					'value'   => 'male',
+					'compare' => '=',
+				),
 			),
-		),
-	) );
+		)
+	);
 
 	foreach ( $men as $man ) {
 		$marriages = get_field( 'marriages', $man->ID );
@@ -2462,12 +2539,12 @@ function wasmo_migrate_marriages_to_wives( $dry_run = false ) {
 			continue;
 		}
 
-		$results['processed_men']++;
-		$results['log'][] = "Processing: {$man->post_title} (ID: {$man->ID}) - " . count( $marriages ) . " marriages";
+		++$results['processed_men'];
+		$results['log'][] = "Processing: {$man->post_title} (ID: {$man->ID}) - " . count( $marriages ) . ' marriages';
 
 		foreach ( $marriages as $marriage ) {
 			$spouse_field = $marriage['spouse'] ?? null;
-			$spouse_id = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
+			$spouse_id    = is_array( $spouse_field ) ? ( $spouse_field[0] ?? null ) : $spouse_field;
 
 			if ( ! $spouse_id ) {
 				$results['errors'][] = "Man {$man->post_title}: Marriage has no spouse linked";
@@ -2512,26 +2589,26 @@ function wasmo_migrate_marriages_to_wives( $dry_run = false ) {
 				if ( ! $already_exists ) {
 					$wife_marriages[] = $new_marriage;
 					update_field( 'marriages', $wife_marriages, $spouse_id );
-					$results['migrated_marriages']++;
+					++$results['migrated_marriages'];
 					$results['migrated_children'] += $children_count;
-					$results['log'][] = "  → Migrated to {$spouse_post->post_title}: marriage + {$children_count} children";
+					$results['log'][]              = "  → Migrated to {$spouse_post->post_title}: marriage + {$children_count} children";
 				} else {
 					$results['log'][] = "  → Skipped {$spouse_post->post_title}: marriage already exists";
 				}
 			} else {
-				$results['migrated_marriages']++;
+				++$results['migrated_marriages'];
 				$results['migrated_children'] += $children_count;
-				$results['log'][] = "  [DRY RUN] Would migrate to {$spouse_post->post_title}: marriage + {$children_count} children";
+				$results['log'][]              = "  [DRY RUN] Would migrate to {$spouse_post->post_title}: marriage + {$children_count} children";
 			}
 		}
 
 		// Clear marriages from man's record (backup first)
 		if ( ! $dry_run ) {
 			// Store backup in post meta
-			update_post_meta( $man->ID, '_marriages_backup_' . date( 'Y-m-d_H-i-s' ), $marriages );
+			update_post_meta( $man->ID, '_marriages_backup_' . gmdate( 'Y-m-d_H-i-s' ), $marriages );
 			// Clear the marriages field
 			update_field( 'marriages', array(), $man->ID );
-			$results['cleared_men']++;
+			++$results['cleared_men'];
 			$results['log'][] = "  ✓ Cleared marriages from {$man->post_title}";
 		} else {
 			$results['log'][] = "  [DRY RUN] Would clear marriages from {$man->post_title}";

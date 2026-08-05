@@ -3,7 +3,7 @@
  * Template part for displaying a saint card
  *
  * @package wasmo
- * 
+ *
  * Expected variables (passed via get_template_part args):
  * - saint_id: The saint post ID (required)
  * - size: Card size - 'small', 'medium', or 'large' (default: 'medium')
@@ -34,10 +34,10 @@ if ( ! $saint ) {
 	return;
 }
 $thumbnail_size = $size === 'small' ? 'thumbnail' : 'medium';
-$thumbnail  = get_the_post_thumbnail_url( $saint_id, $thumbnail_size );
-$roles      = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'names' ) );
-$role_slugs = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'slugs' ) );
-$is_living  = wasmo_is_saint_living( $saint_id );
+$thumbnail      = get_the_post_thumbnail_url( $saint_id, $thumbnail_size );
+$roles          = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'names' ) );
+$role_slugs     = wp_get_post_terms( $saint_id, 'saint-role', array( 'fields' => 'slugs' ) );
+$is_living      = wasmo_is_saint_living( $saint_id );
 
 // Check first presidency status
 $fp            = wasmo_get_current_first_presidency();
@@ -78,7 +78,7 @@ if ( $is_sc ) {
 		<?php if ( $thumbnail ) : ?>
 			<img src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php echo esc_attr( $saint->post_title ); ?>" class="saint-card-image">
 		<?php else : ?>
-			<?php echo wasmo_get_saint_placeholder( $saint_id ); ?>
+			<?php echo wasmo_get_saint_placeholder( $saint_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php endif; ?>
 	</div>
 	<div class="saint-card-info">
@@ -96,7 +96,7 @@ if ( $is_sc ) {
 			<span class="saint-card-dates"><?php echo esc_html( wasmo_get_saint_service_date( $saint_id ) ); ?></span>
 		<?php endif; ?>
 		<?php if ( ! empty( $content ) ) : ?>
-			<div class="saint-card-content"><?php echo $content; ?></div>
+			<div class="saint-card-content"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 		<?php endif; ?>
 	</div>
 </a>

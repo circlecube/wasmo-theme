@@ -1,26 +1,26 @@
 <?php
 // Get vars from query
-$context     = get_query_var( 'context' );
+$context      = get_query_var( 'context' );
 $max_profiles = get_query_var( 'max_profiles' );
-$tax         = get_query_var( 'tax' );
-$termid      = get_query_var( 'termid' );
-$paged       = get_query_var( 'paged' );
-$lazy		 = get_query_var( 'lazy' );
-$showall     = get_query_var( 'showall' );
-$video_only  = get_query_var( 'video_only', false );
+$tax          = get_query_var( 'tax' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+$termid       = get_query_var( 'termid' );
+$paged        = get_query_var( 'paged' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+$lazy         = get_query_var( 'lazy' );
+$showall      = get_query_var( 'showall' );
+$video_only   = get_query_var( 'video_only', false );
 
 // Initialize the remaining vars
 $offset = 0;
-$max = 48;
+$max    = 48;
 
 if ( empty( $lazy ) ) {
 	$lazy = false;
 }
 if ( empty( $context ) ) {
-	$context     = 'full';
+	$context      = 'full';
 	$max_profiles = $max;
-	$lazy        = true;
-	$offset      = $paged ? ($paged - 1) * $max_profiles : 0;
+	$lazy         = true;
+	$offset       = $paged ? ( $paged - 1 ) * $max_profiles : 0;
 }
 if ( 'widget' === $context && empty( $max_profiles ) ) {
 	$max_profiles = 9;
@@ -41,106 +41,107 @@ if ( is_user_logged_in() ) {
 }
 
 // only add to directory if user includes themself and has filled out the first two fields
-if( !function_exists( "wasmo_filter_directory" ) ) {
-function wasmo_filter_directory( $user ) {
-	// global $context, $state;
-	$context = get_query_var( 'context' );
-	if ( empty( $context ) ) {
-		$context = 'full';
-	}
-
-	if ( is_user_logged_in() ) {
-		$state = 'private';
-	} else {
-		$state = 'public';
-	}
-	$userid = $user->ID;
-	
-	// require both hi and tagline content, bail early if not present
-	if ( !get_field( 'hi', 'user_' . $userid ) || !get_field( 'tagline', 'user_' . $userid ) ) {
-		return false;
-	}
-
-	// require image based on setting (defaults to true for non-full contexts)
-	$userimg       = get_field( 'photo', 'user_' . $userid );
-	$has_image     = $userimg ? true : false;
-	$require_image = get_query_var( 'require_image', 'full' !== $context );
-	if ( $require_image && ! $has_image ) {
-		return false;
-	}
-
-	$in_directory = get_field( 'in_directory', 'user_' . $userid );
-	// true = public
-	// private = only to a logged in user
-	// website = show on web but not on social
-	// false = don't show anywhere
-
-	// is privacy setting set to false
-	if( 'false' === $in_directory ) {
-		return false;
-	}
-
-	// is privacy setting set to private and user is logged in?
-	if ( 'private' === $in_directory && 'private' !== $state ) {
-		return false;
-	}
-	
-	// not bailed yet?
-	return true;
-}}
-if( !function_exists( "wasmo_filter_directory_for_tax" ) ) {
-function wasmo_filter_directory_for_tax( $user ){
-	// global $tax, $termid;
-	$tax = get_query_var('tax');
-	$termid = get_query_var('termid');
-	$userid = $user->ID;
-	
-	// skip if $context doesn't start with `taxonomy`
-	// if ( strpos( $context, 'taxonomy' ) !== 0 ) {
-	// 	return true;
-	// }
-	// echo $tax;
-
-	// determine if user has term selected
-	$userterms = null;
-	if ( $tax === 'spectrum' ) {
-		$userterms = get_field( 'mormon_spectrum', 'user_' . $userid );
-	} else if ( $tax === 'shelf') {
-		$userterms = get_field( 'my_shelf', 'user_' . $userid );
-	} else {
-		return false;
-	}
-
-	// bail early if no terms
-	if ( empty( $userterms ) ) {
-		return false;
-	}
-
-	// check each userterm for termid match
-	foreach ( $userterms as $userterm ) {
-		if ( $userterm->term_id === $termid ) {
-			return true;
+if ( ! function_exists( 'wasmo_filter_directory' ) ) {
+	function wasmo_filter_directory( $user ) {
+		// global $context, $state;
+		$context = get_query_var( 'context' );
+		if ( empty( $context ) ) {
+			$context = 'full';
 		}
-	}
 
-	// false if no match found
-	return false;
-}}
-if( !function_exists( "wasmo_filter_directory_has_video" ) ) {
-function wasmo_filter_directory_has_video( $user ) {
-	return (bool) get_field( 'video', 'user_' . $user->ID );
-}}
+		if ( is_user_logged_in() ) {
+			$state = 'private';
+		} else {
+			$state = 'public';
+		}
+		$userid = $user->ID;
+
+		// require both hi and tagline content, bail early if not present
+		if ( ! get_field( 'hi', 'user_' . $userid ) || ! get_field( 'tagline', 'user_' . $userid ) ) {
+			return false;
+		}
+
+		// require image based on setting (defaults to true for non-full contexts)
+		$userimg       = get_field( 'photo', 'user_' . $userid );
+		$has_image     = $userimg ? true : false;
+		$require_image = get_query_var( 'require_image', 'full' !== $context );
+		if ( $require_image && ! $has_image ) {
+			return false;
+		}
+
+		$in_directory = get_field( 'in_directory', 'user_' . $userid );
+		// true = public
+		// private = only to a logged in user
+		// website = show on web but not on social
+		// false = don't show anywhere
+
+		// is privacy setting set to false
+		if ( 'false' === $in_directory ) {
+			return false;
+		}
+
+		// is privacy setting set to private and user is logged in?
+		if ( 'private' === $in_directory && 'private' !== $state ) {
+			return false;
+		}
+
+		// not bailed yet?
+		return true;
+	}}
+if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
+	function wasmo_filter_directory_for_tax( $user ) {
+		// global $tax, $termid;
+		$tax    = get_query_var( 'tax' );
+		$termid = get_query_var( 'termid' );
+		$userid = $user->ID;
+
+		// skip if $context doesn't start with `taxonomy`
+		// if ( strpos( $context, 'taxonomy' ) !== 0 ) {
+		//  return true;
+		// }
+		// echo $tax;
+
+		// determine if user has term selected
+		$userterms = null;
+		if ( $tax === 'spectrum' ) {
+			$userterms = get_field( 'mormon_spectrum', 'user_' . $userid );
+		} elseif ( $tax === 'shelf' ) {
+			$userterms = get_field( 'my_shelf', 'user_' . $userid );
+		} else {
+			return false;
+		}
+
+		// bail early if no terms
+		if ( empty( $userterms ) ) {
+			return false;
+		}
+
+		// check each userterm for termid match
+		foreach ( $userterms as $userterm ) {
+			if ( $userterm->term_id === $termid ) {
+				return true;
+			}
+		}
+
+		// false if no match found
+		return false;
+	}}
+if ( ! function_exists( 'wasmo_filter_directory_has_video' ) ) {
+	function wasmo_filter_directory_has_video( $user ) {
+		return (bool) get_field( 'video', 'user_' . $user->ID );
+	}}
 
 
-$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '', $tax && $termid ? $tax . '-' . $termid : '' ) );
-$transient_exp = WEEK_IN_SECONDS;
+$transient_name = implode( '-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '', $tax && $termid ? $tax . '-' . $termid : '' ) );
+$transient_exp  = WEEK_IN_SECONDS;
 
 // Only skip cache for admin users in debug mode
-if ( current_user_can( 'administrator' ) && WP_DEBUG ) {
+if ( current_user_can( 'manage_options' ) && WP_DEBUG ) {
 	$transient_name = time();
 }
-//use transient to cache data
-if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
+// use transient to cache data
+$the_directory = get_transient( $transient_name );
+if ( false === $the_directory ) {
 	$the_directory = '';
 
 	/* Start the Loop */
@@ -148,64 +149,62 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		'orderby'  => 'meta_value',
 		'meta_key' => 'last_save',
 		'order'    => 'DESC',
-		'fields'   => 'all'
+		'fields'   => 'all',
 	);
 
 	// Array of WP_User objects.
 	$users = get_users( $args );
 	// filter out users we don't want
-	$filtered_users = array_filter( $users, "wasmo_filter_directory" );
+	$filtered_users = array_filter( $users, 'wasmo_filter_directory' );
 	// maybe additional filter for taxonomy
-	if ( !empty( $tax ) ) {
-		$tax_filtered_users = array_filter( $filtered_users, "wasmo_filter_directory_for_tax" );
-		$filtered_users = $tax_filtered_users;
+	if ( ! empty( $tax ) ) {
+		$tax_filtered_users = array_filter( $filtered_users, 'wasmo_filter_directory_for_tax' );
+		$filtered_users     = $tax_filtered_users;
 	}
 	// filter to only profiles with video if requested
 	if ( $video_only ) {
-		$filtered_users = array_filter( $filtered_users, "wasmo_filter_directory_has_video" );
+		$filtered_users = array_filter( $filtered_users, 'wasmo_filter_directory_has_video' );
 	}
-	$total_users = count($filtered_users);
-	$counter = 0;
+	$total_users    = count( $filtered_users );
+	$counter        = 0;
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
 	$the_directory .= '<div class="directory directory-' . $context . ' ' . ( $lazy == true ? 'is-lazy' : 'not-lazy' ) . '" data-offset="' . $offset . '" data-total="' . $total_users . '" data-lazy="' . $lazy . '" data-lazy="' . $lazy . '">';
-	
+
 
 	foreach ( $filtered_users as $user ) {
 
-		$userid = $user->ID;
-		$userimg = get_field( 'photo', 'user_' . $userid );
-		$has_image = $userimg ? true : false;
-		$has_video = (bool) get_field( 'video', 'user_' . $userid );
+		$userid      = $user->ID;
+		$userimg     = get_field( 'photo', 'user_' . $userid );
+		$has_image   = $userimg ? true : false;
+		$has_video   = (bool) get_field( 'video', 'user_' . $userid );
 		$video_class = $has_video ? 'has-video' : '';
-		$tagline = get_field( 'tagline', 'user_' . $userid );
-		$counter++;
+		$tagline     = get_field( 'tagline', 'user_' . $userid );
+		++$counter;
 		if ( $offset >= $counter ) { // if offsetting, skip ahead
 			continue;
 		}
-		$username = esc_html( $user->display_name );
+		$username   = esc_html( $user->display_name );
 		$registered = $user->user_registered;
 		// echo $registered;
 		$user_class = '';
-		$diff = (int) abs( time() - strtotime($registered) );
+		$diff       = (int) abs( time() - strtotime( $registered ) );
 		if ( $diff < WEEK_IN_SECONDS ) {
 			$user_class .= ' user-week';
-		} else if ( $diff < MONTH_IN_SECONDS ) {
+		} elseif ( $diff < MONTH_IN_SECONDS ) {
 			$user_class .= ' user-month';
 		}
 
 		$fresh_class = '';
-		$last_save = intval( get_user_meta( $userid, 'last_save', true ) );
-		$diff = (int) abs( time() - $last_save );
+		$last_save   = intval( get_user_meta( $userid, 'last_save', true ) );
+		$diff        = (int) abs( time() - $last_save );
 		if ( $diff < WEEK_IN_SECONDS ) {
 			$fresh_class .= ' updated-week';
-		} else if ( $diff < MONTH_IN_SECONDS ) {
+		} elseif ( $diff < MONTH_IN_SECONDS ) {
 			$fresh_class .= ' updated-month';
-		} else {
-			// $fresh_class .= ' updated-old';
 		}
 
 		$lazy_class = '';
-		if ( $lazy && !$showall ) {
+		if ( $lazy && ! $showall ) {
 			if ( $counter > $max_profiles ) {
 				$lazy_class = 'lazy-load-profile';
 			}
@@ -214,25 +213,25 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 		if ( wasmo_user_has_image( $userid ) ) {
 			$image_class = 'has-image';
 		}
-		
-		$the_directory .= '<a title="' . $username . '" class="';
-		$the_directory .= ' person person-' . $counter;
-		$the_directory .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class . ' ' . $image_class . ' ' . $video_class;
-		$the_directory .= '" href="' . get_author_posts_url( $userid ) . '" id="profile-' . $userid . '">';
+
+		$the_directory     .= '<a title="' . $username . '" class="';
+		$the_directory     .= ' person person-' . $counter;
+		$the_directory     .= ' person-id-' . $userid . ' ' . $user_class . ' ' . $fresh_class . ' ' . $lazy_class . ' ' . $image_class . ' ' . $video_class;
+		$the_directory     .= '" href="' . get_author_posts_url( $userid ) . '" id="profile-' . $userid . '">';
 			$the_directory .= '<span class="directory-img">';
 			$the_directory .= wasmo_get_user_image( $userid );
 			$the_directory .= '</span>';
 			$the_directory .= '<span class="directory-name">' . $username . '</span>';
-			if ( $tagline ) {
-				$the_directory .= '<span class="directory-tagline">' . esc_html( wp_strip_all_tags( $tagline ) ) . '</span>';
-			}
-			if ( $has_video ) {
-				$the_directory .= '<span class="video-indicator" aria-label="Includes video">';
-				$the_directory .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
-				$the_directory .= '</span>';
-			}
+		if ( $tagline ) {
+			$the_directory .= '<span class="directory-tagline">' . esc_html( wp_strip_all_tags( $tagline ) ) . '</span>';
+		}
+		if ( $has_video ) {
+			$the_directory .= '<span class="video-indicator" aria-label="Includes video">';
+			$the_directory .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+			$the_directory .= '</span>';
+		}
 		$the_directory .= '</a>';
-		
+
 
 		// check counter against limit
 		if ( ! $lazy && $max_profiles > 0 && $counter >= $max_profiles + $offset ) {
@@ -246,19 +245,19 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	if ( ! $lazy && 'full' === $context && $total_users > $max_profiles ) {
 		$the_directory .= wasmo_pagination( $paged, ceil( $total_users / $max_profiles ), true );
 	}
-	if ( $lazy && !$showall ) {
+	if ( $lazy && ! $showall ) {
 		$the_directory .= '<div class="directory-load-more" data-offset="' . $max_profiles . '" data-total="' . $total_users . '">';
 		$the_directory .= '<button class="load-more-button">Load More</button>';
 		$the_directory .= '<svg class="spinner" viewBox="0 0 50 50"><circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>';
 		$the_directory .= '</div>';
 	}
 	$the_directory .= '</section>';
-	
-	if ( !current_user_can( 'administrator' ) ) { // only save transient if non admin user
+
+	if ( ! current_user_can( 'manage_options' ) ) { // only save transient if non admin user
 		set_transient( $transient_name, $the_directory, $transient_exp );
 	}
 }
-echo $the_directory;
+echo $the_directory; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 // Check if buttons should be shown (can be suppressed by blocks)
 $show_buttons = get_query_var( 'show_buttons', true );
@@ -270,10 +269,10 @@ if ( $show_buttons && $context === 'full' ) { // main directory
 			<p><a href="/login/">Create an account</a> to share your own story.</p>
 			<div class="is-layout-flex wp-block-buttons">
 				<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-					<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
+					<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Share Your Story</a>
 				</div>
 				<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-					<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
+					<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Random Story</a>
 				</div>
 			</div>
 		</section>
@@ -286,10 +285,10 @@ if ( $show_buttons && strpos( $context, 'tax-' ) === 0 ) { // taxonomy directory
 		<p><a href="/login/">Create an account</a> to share your own story.</p>
 		<div class="is-layout-flex wp-block-buttons">
 			<div class="wp-block-button has-custom-font-size" style="font-size:20px">
-				<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); ?>" style="border-radius:100px">Share Your Story</a>
+				<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/login/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Share Your Story</a>
 			</div>
 			<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-				<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
+				<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Random Story</a>
 			</div>
 		</div>
 	</section>
@@ -300,11 +299,11 @@ if ( $show_buttons && ( is_front_page() || $context === 'widget' ) ) { // for wi
 	<div class="is-layout-flex wp-block-buttons is-content-justification-center">
 		<?php if ( is_front_page() ) { ?>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); ?>" style="border-radius:100px">Browse Stories</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Browse Stories</a>
 		</div>
 		<?php } ?>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); ?>" style="border-radius:100px">Random Story</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Random Story</a>
 		</div>
 	</div>
 <?php } ?>

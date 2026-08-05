@@ -1,7 +1,7 @@
 <?php
 /**
  * FamilySearch Verification Tool
- * 
+ *
  * Admin page for verifying and completing saint data from FamilySearch.org.
  * Includes ID discovery for saints without FamilySearch IDs.
  *
@@ -34,8 +34,8 @@ add_action( 'admin_menu', 'wasmo_add_fs_verify_page' );
  * @return array Array of saint post IDs.
  */
 function wasmo_get_saints_needing_verification( $days_since = 30 ) {
-	$cutoff = date( 'Y-m-d H:i:s', strtotime( "-{$days_since} days" ) );
-	
+	$cutoff = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days_since} days" ) );
+
 	// Saints with FS ID but not verified or verified before cutoff
 	$args = array(
 		'post_type'      => 'saint',
@@ -69,7 +69,7 @@ function wasmo_get_saints_needing_verification( $days_since = 30 ) {
 		),
 		'fields'         => 'ids',
 	);
-	
+
 	return get_posts( $args );
 }
 
@@ -80,8 +80,8 @@ function wasmo_get_saints_needing_verification( $days_since = 30 ) {
  */
 function wasmo_get_saints_for_fs_discovery() {
 	// Calculate cutoff date (90 years ago) for likely deceased saints
-	$cutoff_date = date( 'Y-m-d', strtotime( '-90 years' ) );
-	
+	$cutoff_date = gmdate( 'Y-m-d', strtotime( '-90 years' ) );
+
 	$args = array(
 		'post_type'      => 'saint',
 		'posts_per_page' => -1,
@@ -122,7 +122,7 @@ function wasmo_get_saints_for_fs_discovery() {
 		'orderby'        => 'title',
 		'order'          => 'ASC',
 	);
-	
+
 	return get_posts( $args );
 }
 
@@ -148,7 +148,7 @@ function wasmo_get_verified_saints() {
 		'order'          => 'DESC',
 		'fields'         => 'ids',
 	);
-	
+
 	return get_posts( $args );
 }
 
@@ -157,19 +157,19 @@ function wasmo_get_verified_saints() {
  */
 function wasmo_render_fs_verify_page() {
 	// Handle tab switching
-	$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'verified';
-	$tabs = array(
+	$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'verified';
+	$tabs        = array(
 		'verified' => 'Verified Saints',
 		'pending'  => 'Needs Verification',
 		'discover' => 'Missing FS IDs',
 		'settings' => 'Settings',
 	);
-	
+
 	// Get stats
-	$saints_verified = wasmo_get_verified_saints();
-	$saints_need_verify = wasmo_get_saints_needing_verification();
+	$saints_verified      = wasmo_get_verified_saints();
+	$saints_need_verify   = wasmo_get_saints_needing_verification();
 	$saints_for_discovery = wasmo_get_saints_for_fs_discovery();
-	
+
 	?>
 	<div class="wrap">
 		<h1>FamilySearch Verification</h1>
@@ -183,7 +183,7 @@ function wasmo_render_fs_verify_page() {
 		<nav class="nav-tab-wrapper wp-clearfix">
 			<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
 				<a href="<?php echo esc_url( add_query_arg( 'tab', $tab_key, admin_url( 'edit.php?post_type=saint&page=familysearch-verify' ) ) ); ?>" 
-				   class="nav-tab <?php echo $current_tab === $tab_key ? 'nav-tab-active' : ''; ?>">
+					class="nav-tab <?php echo $current_tab === $tab_key ? 'nav-tab-active' : ''; ?>">
 					<?php echo esc_html( $tab_label ); ?>
 					<?php if ( $tab_key === 'verified' && count( $saints_verified ) > 0 ) : ?>
 						<span class="count">(<?php echo count( $saints_verified ); ?>)</span>
@@ -264,13 +264,14 @@ function wasmo_render_fs_verified_tab( $saints_verified ) {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $saints_verified as $saint_id ) : 
-						$fs_id = get_field( 'familysearch_id', $saint_id );
+					<?php
+					foreach ( $saints_verified as $saint_id ) :
+						$fs_id     = get_field( 'familysearch_id', $saint_id );
 						$birthdate = get_field( 'birthdate', $saint_id );
 						$deathdate = get_field( 'deathdate', $saint_id );
-						$verified = get_field( 'familysearch_verified', $saint_id );
-						$notes = get_field( 'familysearch_notes', $saint_id );
-					?>
+						$verified  = get_field( 'familysearch_verified', $saint_id );
+						$notes     = get_field( 'familysearch_notes', $saint_id );
+						?>
 						<tr>
 							<td>
 								<a href="<?php echo esc_url( get_edit_post_link( $saint_id ) ); ?>">
@@ -290,11 +291,11 @@ function wasmo_render_fs_verified_tab( $saints_verified ) {
 							<td><?php echo esc_html( $deathdate ?: '—' ); ?></td>
 							<td>
 								<span class="fs-verify-status verified">
-									<?php echo esc_html( date( 'M j, Y g:i a', strtotime( $verified ) ) ); ?>
+									<?php echo esc_html( gmdate( 'M j, Y g:i a', strtotime( $verified ) ) ); ?>
 								</span>
 							</td>
 							<td class="fs-verify-notes">
-								<?php 
+								<?php
 								if ( $notes ) {
 									// Format notes with color coding
 									$formatted = esc_html( $notes );
@@ -303,7 +304,7 @@ function wasmo_render_fs_verified_tab( $saints_verified ) {
 									$formatted = preg_replace( '/(Matched \d+ children)/', '<span class="note-matched">$1</span>', $formatted );
 									$formatted = preg_replace( '/(Portrait uploaded)/', '<span class="note-photo">$1</span>', $formatted );
 									$formatted = str_replace( '. ', '.<br>', $formatted );
-									echo $formatted;
+									echo $formatted; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								} else {
 									echo '—';
 								}
@@ -347,12 +348,13 @@ function wasmo_render_fs_pending_tab( $saints_need_verify ) {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $saints_need_verify as $saint_id ) : 
-						$fs_id = get_field( 'familysearch_id', $saint_id );
+					<?php
+					foreach ( $saints_need_verify as $saint_id ) :
+						$fs_id     = get_field( 'familysearch_id', $saint_id );
 						$birthdate = get_field( 'birthdate', $saint_id );
 						$deathdate = get_field( 'deathdate', $saint_id );
-						$verified = get_field( 'familysearch_verified', $saint_id );
-					?>
+						$verified  = get_field( 'familysearch_verified', $saint_id );
+						?>
 						<tr>
 							<td>
 								<a href="<?php echo esc_url( get_edit_post_link( $saint_id ) ); ?>">
@@ -368,7 +370,7 @@ function wasmo_render_fs_pending_tab( $saints_need_verify ) {
 							<td><?php echo esc_html( $deathdate ?: '—' ); ?></td>
 							<td>
 								<?php if ( $verified ) : ?>
-									<span class="fs-verify-status needs-verify"><?php echo esc_html( date( 'M j, Y', strtotime( $verified ) ) ); ?></span>
+									<span class="fs-verify-status needs-verify"><?php echo esc_html( gmdate( 'M j, Y', strtotime( $verified ) ) ); ?></span>
 								<?php else : ?>
 									<span class="fs-verify-status needs-verify">Never</span>
 								<?php endif; ?>
@@ -390,16 +392,18 @@ function wasmo_render_fs_pending_tab( $saints_need_verify ) {
 			<div style="margin-top: 15px; padding: 15px; background: #f0f0f1; border-radius: 5px;">
 				<strong>Quick Export for fs-verify:</strong>
 				<p>Copy this JSON array of FamilySearch IDs to use with the batch sync command:</p>
-				<textarea readonly style="width: 100%; height: 80px; font-family: monospace; font-size: 12px;"><?php 
+				<textarea readonly style="width: 100%; height: 80px; font-family: monospace; font-size: 12px;">
+				<?php
 					$fs_ids = array();
-					foreach ( $saints_need_verify as $saint_id ) {
-						$fs_id = get_field( 'familysearch_id', $saint_id );
-						if ( $fs_id ) {
-							$fs_ids[] = $fs_id;
-						}
+				foreach ( $saints_need_verify as $saint_id ) {
+					$fs_id = get_field( 'familysearch_id', $saint_id );
+					if ( $fs_id ) {
+						$fs_ids[] = $fs_id;
 					}
+				}
 					echo json_encode( array_slice( $fs_ids, 0, 50 ) ); // Limit to 50 for manageable batches
-				?></textarea>
+				?>
+				</textarea>
 				<?php if ( count( $fs_ids ) > 50 ) : ?>
 					<p class="description">Showing first 50 of <?php echo count( $fs_ids ); ?> IDs.</p>
 				<?php endif; ?>
@@ -434,28 +438,29 @@ function wasmo_render_fs_discover_tab( $saints_for_discovery ) {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $saints_for_discovery as $saint ) : 
-						$birthdate = get_field( 'birthdate', $saint->ID );
-						$deathdate = get_field( 'deathdate', $saint->ID );
-						$gender = get_field( 'gender', $saint->ID );
-						$birth_year = $birthdate ? date( 'Y', strtotime( $birthdate ) ) : '';
-						$death_year = $deathdate ? date( 'Y', strtotime( $deathdate ) ) : '';
-						
+					<?php
+					foreach ( $saints_for_discovery as $saint ) :
+						$birthdate  = get_field( 'birthdate', $saint->ID );
+						$deathdate  = get_field( 'deathdate', $saint->ID );
+						$gender     = get_field( 'gender', $saint->ID );
+						$birth_year = $birthdate ? gmdate( 'Y', strtotime( $birthdate ) ) : '';
+						$death_year = $deathdate ? gmdate( 'Y', strtotime( $deathdate ) ) : '';
+
 						// Build FamilySearch search URL
 						$search_params = array(
 							'q.givenName' => explode( ' ', $saint->post_title )[0],
-							'q.surname' => end( explode( ' ', $saint->post_title ) ),
+							'q.surname'   => end( explode( ' ', $saint->post_title ) ),
 						);
 						if ( $birth_year ) {
 							$search_params['q.birthLikeDate.from'] = $birth_year;
-							$search_params['q.birthLikeDate.to'] = $birth_year;
+							$search_params['q.birthLikeDate.to']   = $birth_year;
 						}
 						if ( $death_year ) {
 							$search_params['q.deathLikeDate.from'] = $death_year;
-							$search_params['q.deathLikeDate.to'] = $death_year;
+							$search_params['q.deathLikeDate.to']   = $death_year;
 						}
 						$search_url = 'https://www.familysearch.org/search/tree/results?' . http_build_query( $search_params );
-					?>
+						?>
 						<tr>
 							<td>
 								<a href="<?php echo esc_url( get_edit_post_link( $saint->ID ) ); ?>">
@@ -558,26 +563,26 @@ function wasmo_render_fs_settings_tab() {
  */
 function wasmo_ajax_apply_fs_data() {
 	check_ajax_referer( 'wasmo_fs_verify', 'nonce' );
-	
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'Permission denied.' );
 	}
-	
+
 	$saint_id = isset( $_POST['saint_id'] ) ? intval( $_POST['saint_id'] ) : 0;
-	$updates = isset( $_POST['updates'] ) ? $_POST['updates'] : array();
-	
+	$updates  = isset( $_POST['updates'] ) ? wp_unslash( $_POST['updates'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 	if ( ! $saint_id ) {
 		wp_send_json_error( 'Invalid saint ID.' );
 	}
-	
+
 	// Apply selected updates
 	foreach ( $updates as $field => $value ) {
 		update_field( $field, sanitize_text_field( $value ), $saint_id );
 	}
-	
+
 	// Set verified timestamp
 	update_field( 'familysearch_verified', current_time( 'mysql' ), $saint_id );
-	
+
 	wp_send_json_success( array( 'message' => 'Saint data updated successfully.' ) );
 }
 add_action( 'wp_ajax_wasmo_apply_fs_data', 'wasmo_ajax_apply_fs_data' );
@@ -587,24 +592,26 @@ add_action( 'wp_ajax_wasmo_apply_fs_data', 'wasmo_ajax_apply_fs_data' );
  */
 function wasmo_ajax_assign_fs_id() {
 	check_ajax_referer( 'wasmo_fs_verify', 'nonce' );
-	
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'Permission denied.' );
 	}
-	
+
 	$saint_id = isset( $_POST['saint_id'] ) ? intval( $_POST['saint_id'] ) : 0;
-	$fs_id = isset( $_POST['fs_id'] ) ? sanitize_text_field( $_POST['fs_id'] ) : '';
-	
+	$fs_id    = isset( $_POST['fs_id'] ) ? sanitize_text_field( wp_unslash( $_POST['fs_id'] ) ) : '';
+
 	if ( ! $saint_id || ! $fs_id ) {
 		wp_send_json_error( 'Invalid parameters.' );
 	}
-	
+
 	update_field( 'familysearch_id', $fs_id, $saint_id );
-	
-	wp_send_json_success( array( 
-		'message' => 'FamilySearch ID assigned.',
-		'fs_id'   => $fs_id,
-	) );
+
+	wp_send_json_success(
+		array(
+			'message' => 'FamilySearch ID assigned.',
+			'fs_id'   => $fs_id,
+		)
+	);
 }
 add_action( 'wp_ajax_wasmo_assign_fs_id', 'wasmo_ajax_assign_fs_id' );
 
@@ -621,7 +628,7 @@ add_action( 'wp_ajax_wasmo_assign_fs_id', 'wasmo_ajax_assign_fs_id' );
  */
 function wasmo_compare_saint_data( $current, $fs_data ) {
 	$differences = array();
-	
+
 	// Compare birthdate
 	if ( isset( $fs_data['birth']['date'] ) && $fs_data['birth']['date'] !== $current['birthdate'] ) {
 		$differences['birthdate'] = array(
@@ -629,7 +636,7 @@ function wasmo_compare_saint_data( $current, $fs_data ) {
 			'new'     => $fs_data['birth']['date'],
 		);
 	}
-	
+
 	// Compare deathdate
 	if ( isset( $fs_data['death']['date'] ) && $fs_data['death']['date'] !== $current['deathdate'] ) {
 		$differences['deathdate'] = array(
@@ -637,7 +644,7 @@ function wasmo_compare_saint_data( $current, $fs_data ) {
 			'new'     => $fs_data['death']['date'],
 		);
 	}
-	
+
 	// Compare gender
 	if ( isset( $fs_data['sex'] ) && $fs_data['sex'] !== $current['gender'] ) {
 		$differences['gender'] = array(
@@ -645,7 +652,7 @@ function wasmo_compare_saint_data( $current, $fs_data ) {
 			'new'     => $fs_data['sex'],
 		);
 	}
-	
+
 	return $differences;
 }
 
@@ -665,19 +672,19 @@ function wasmo_compare_saint_full( $saint_id, $fs_data ) {
 		'missing_children'  => array(),
 		'photo_available'   => ! empty( $fs_data['photo_url'] ),
 	);
-	
+
 	// Basic field comparison
-	$current_data = array(
+	$current_data                = array(
 		'name'      => get_the_title( $saint_id ),
 		'birthdate' => get_field( 'birthdate', $saint_id ),
 		'deathdate' => get_field( 'deathdate', $saint_id ),
 		'gender'    => get_field( 'gender', $saint_id ),
 	);
 	$result['basic_differences'] = wasmo_compare_saint_data( $current_data, $fs_data );
-	
+
 	// Get current marriages (for women who store marriages, or reverse lookup for men)
 	$current_marriages = wasmo_get_all_marriage_data( $saint_id );
-	
+
 	// Compare spouses
 	if ( ! empty( $fs_data['spouses'] ) ) {
 		foreach ( $fs_data['spouses'] as $fs_spouse ) {
@@ -688,11 +695,11 @@ function wasmo_compare_saint_full( $saint_id, $fs_data ) {
 					'local_spouse'  => $match['spouse'],
 					'marriage_diff' => $match['differences'],
 				);
-				
+
 				// Compare children for this marriage
 				if ( ! empty( $fs_spouse['children'] ) ) {
 					foreach ( $fs_spouse['children'] as $fs_child ) {
-						$child_match = wasmo_find_child_match( $fs_child );
+						$child_match               = wasmo_find_child_match( $fs_child );
 						$result['child_matches'][] = array(
 							'fs_child'    => $fs_child,
 							'local_match' => $child_match,
@@ -704,7 +711,7 @@ function wasmo_compare_saint_full( $saint_id, $fs_data ) {
 			}
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -722,26 +729,26 @@ function wasmo_find_spouse_match( $saint_id, $fs_spouse, $current_marriages ) {
 		'spouse'      => null,
 		'differences' => array(),
 	);
-	
+
 	foreach ( $current_marriages as $marriage ) {
-		$spouse_id = null;
+		$spouse_id   = null;
 		$spouse_name = '';
-		
+
 		// Get spouse info from marriage
 		if ( ! empty( $marriage['spouse'] ) ) {
 			$spouse_id = is_array( $marriage['spouse'] ) ? ( $marriage['spouse'][0] ?? null ) : $marriage['spouse'];
 			if ( $spouse_id ) {
-				$spouse_name = get_the_title( $spouse_id );
+				$spouse_name  = get_the_title( $spouse_id );
 				$spouse_fs_id = get_field( 'familysearch_id', $spouse_id );
-				
+
 				// Match by FamilySearch ID first (most reliable)
 				if ( $spouse_fs_id && $spouse_fs_id === $fs_spouse['familysearch_id'] ) {
-					$result['found'] = true;
+					$result['found']  = true;
 					$result['spouse'] = array(
 						'id'   => $spouse_id,
 						'name' => $spouse_name,
 					);
-					
+
 					// Check for marriage date differences
 					if ( isset( $fs_spouse['marriage_date'] ) && $marriage['marriage_date'] !== $fs_spouse['marriage_date'] ) {
 						$result['differences']['marriage_date'] = array(
@@ -749,22 +756,22 @@ function wasmo_find_spouse_match( $saint_id, $fs_spouse, $current_marriages ) {
 							'new'     => $fs_spouse['marriage_date'],
 						);
 					}
-					
+
 					return $result;
 				}
 			}
 		} elseif ( ! empty( $marriage['spouse_name'] ) ) {
 			$spouse_name = $marriage['spouse_name'];
 		}
-		
+
 		// Fallback: Match by name similarity
 		if ( $spouse_name && wasmo_names_match( $spouse_name, $fs_spouse['name'] ) ) {
-			$result['found'] = true;
+			$result['found']  = true;
 			$result['spouse'] = array(
 				'id'   => $spouse_id,
 				'name' => $spouse_name,
 			);
-			
+
 			// Suggest adding FS ID to spouse
 			if ( $spouse_id && empty( get_field( 'familysearch_id', $spouse_id ) ) ) {
 				$result['differences']['spouse_fs_id'] = array(
@@ -773,11 +780,11 @@ function wasmo_find_spouse_match( $saint_id, $fs_spouse, $current_marriages ) {
 					'message' => 'Spouse missing FamilySearch ID',
 				);
 			}
-			
+
 			return $result;
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -790,18 +797,20 @@ function wasmo_find_spouse_match( $saint_id, $fs_spouse, $current_marriages ) {
 function wasmo_find_child_match( $fs_child ) {
 	// Method 1: Match by FamilySearch ID (most reliable)
 	if ( ! empty( $fs_child['familysearch_id'] ) ) {
-		$saints = get_posts( array(
-			'post_type'      => 'saint',
-			'posts_per_page' => 1,
-			'post_status'    => 'publish',
-			'meta_query'     => array(
-				array(
-					'key'   => 'familysearch_id',
-					'value' => $fs_child['familysearch_id'],
+		$saints = get_posts(
+			array(
+				'post_type'      => 'saint',
+				'posts_per_page' => 1,
+				'post_status'    => 'publish',
+				'meta_query'     => array(
+					array(
+						'key'   => 'familysearch_id',
+						'value' => $fs_child['familysearch_id'],
+					),
 				),
-			),
-		) );
-		
+			)
+		);
+
 		if ( ! empty( $saints ) ) {
 			return array(
 				'match_type' => 'familysearch_id',
@@ -811,52 +820,54 @@ function wasmo_find_child_match( $fs_child ) {
 			);
 		}
 	}
-	
+
 	// Method 2: Match by name + birth year
 	if ( ! empty( $fs_child['name'] ) ) {
-		$saints = get_posts( array(
-			'post_type'      => 'saint',
-			'posts_per_page' => 10,
-			'post_status'    => 'publish',
-			's'              => $fs_child['name'],
-		) );
-		
+		$saints = get_posts(
+			array(
+				'post_type'      => 'saint',
+				'posts_per_page' => 10,
+				'post_status'    => 'publish',
+				's'              => $fs_child['name'],
+			)
+		);
+
 		foreach ( $saints as $saint ) {
 			// Check name similarity
 			if ( ! wasmo_names_match( $saint->post_title, $fs_child['name'] ) ) {
 				continue;
 			}
-			
+
 			// Check birth year if available
 			$saint_birthdate = get_field( 'birthdate', $saint->ID );
 			if ( $saint_birthdate && ! empty( $fs_child['birth_year'] ) ) {
-				$saint_birth_year = (int) date( 'Y', strtotime( $saint_birthdate ) );
-				$year_diff = abs( $saint_birth_year - $fs_child['birth_year'] );
-				
+				$saint_birth_year = (int) gmdate( 'Y', strtotime( $saint_birthdate ) );
+				$year_diff        = abs( $saint_birth_year - $fs_child['birth_year'] );
+
 				if ( $year_diff <= 1 ) {
 					return array(
-						'match_type' => 'name_birthdate',
-						'saint_id'   => $saint->ID,
-						'saint_name' => $saint->post_title,
-						'confidence' => $year_diff === 0 ? 'high' : 'medium',
-						'fs_id_missing' => empty( get_field( 'familysearch_id', $saint->ID ) ),
+						'match_type'      => 'name_birthdate',
+						'saint_id'        => $saint->ID,
+						'saint_name'      => $saint->post_title,
+						'confidence'      => $year_diff === 0 ? 'high' : 'medium',
+						'fs_id_missing'   => empty( get_field( 'familysearch_id', $saint->ID ) ),
 						'suggested_fs_id' => $fs_child['familysearch_id'] ?? null,
 					);
 				}
 			} else {
 				// Name match only (lower confidence)
 				return array(
-					'match_type' => 'name_only',
-					'saint_id'   => $saint->ID,
-					'saint_name' => $saint->post_title,
-					'confidence' => 'low',
-					'fs_id_missing' => empty( get_field( 'familysearch_id', $saint->ID ) ),
+					'match_type'      => 'name_only',
+					'saint_id'        => $saint->ID,
+					'saint_name'      => $saint->post_title,
+					'confidence'      => 'low',
+					'fs_id_missing'   => empty( get_field( 'familysearch_id', $saint->ID ) ),
 					'suggested_fs_id' => $fs_child['familysearch_id'] ?? null,
 				);
 			}
 		}
 	}
-	
+
 	return null;
 }
 
@@ -869,40 +880,40 @@ function wasmo_find_child_match( $fs_child ) {
  */
 function wasmo_names_match( $name1, $name2 ) {
 	// Normalize names
-	$normalize = function( $name ) {
+	$normalize = function ( $name ) {
 		$name = strtolower( trim( $name ) );
 		$name = preg_replace( '/[^a-z\s]/', '', $name ); // Remove punctuation
 		$name = preg_replace( '/\s+/', ' ', $name ); // Normalize whitespace
 		return $name;
 	};
-	
+
 	$n1 = $normalize( $name1 );
 	$n2 = $normalize( $name2 );
-	
+
 	// Exact match
 	if ( $n1 === $n2 ) {
 		return true;
 	}
-	
+
 	// One contains the other
 	if ( strpos( $n1, $n2 ) !== false || strpos( $n2, $n1 ) !== false ) {
 		return true;
 	}
-	
+
 	// Compare individual name parts
 	$parts1 = explode( ' ', $n1 );
 	$parts2 = explode( ' ', $n2 );
-	
+
 	// Check if first and last names match
 	if ( count( $parts1 ) >= 2 && count( $parts2 ) >= 2 ) {
 		$first_match = $parts1[0] === $parts2[0];
-		$last_match = end( $parts1 ) === end( $parts2 );
-		
+		$last_match  = end( $parts1 ) === end( $parts2 );
+
 		if ( $first_match && $last_match ) {
 			return true;
 		}
 	}
-	
+
 	// Similarity check (for typos)
 	similar_text( $n1, $n2, $percent );
 	return $percent >= 85;
@@ -925,61 +936,61 @@ function wasmo_sideload_fs_portrait( $saint_id, $image_url, $force = false ) {
 	if ( ! $force && has_post_thumbnail( $saint_id ) ) {
 		return new WP_Error( 'has_image', 'Saint already has a featured image. Use force=true to replace.' );
 	}
-	
+
 	if ( empty( $image_url ) ) {
 		return new WP_Error( 'no_url', 'No image URL provided.' );
 	}
-	
+
 	// Include required files for media_sideload_image
 	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
-	
+
 	// Generate a descriptive filename
 	$saint_slug = sanitize_title( get_the_title( $saint_id ) );
-	$fs_id = get_field( 'familysearch_id', $saint_id );
-	$filename = $saint_slug . '-familysearch-portrait';
+	$fs_id      = get_field( 'familysearch_id', $saint_id );
+	$filename   = $saint_slug . '-familysearch-portrait';
 	if ( $fs_id ) {
 		$filename .= '-' . strtolower( $fs_id );
 	}
-	
+
 	// Get file extension from URL
 	$ext = pathinfo( parse_url( $image_url, PHP_URL_PATH ), PATHINFO_EXTENSION );
 	if ( ! $ext || ! in_array( $ext, array( 'jpg', 'jpeg', 'png', 'gif', 'webp' ), true ) ) {
 		$ext = 'jpg';
 	}
-	
+
 	// Download image to temp file
 	$tmp = download_url( $image_url );
 	if ( is_wp_error( $tmp ) ) {
 		return $tmp;
 	}
-	
+
 	// Prepare file array
 	$file_array = array(
 		'name'     => $filename . '.' . $ext,
 		'tmp_name' => $tmp,
 	);
-	
+
 	// Sideload the image
 	$attachment_id = media_handle_sideload( $file_array, $saint_id, get_the_title( $saint_id ) . ' - FamilySearch Portrait' );
-	
+
 	// Clean up temp file if still exists
 	if ( file_exists( $tmp ) ) {
 		@unlink( $tmp );
 	}
-	
+
 	if ( is_wp_error( $attachment_id ) ) {
 		return $attachment_id;
 	}
-	
+
 	// Set as featured image
 	set_post_thumbnail( $saint_id, $attachment_id );
-	
+
 	// Add metadata to track source
 	update_post_meta( $attachment_id, '_wasmo_source', 'familysearch' );
 	update_post_meta( $attachment_id, '_wasmo_fs_original_url', $image_url );
-	
+
 	return $attachment_id;
 }
 
@@ -988,30 +999,32 @@ function wasmo_sideload_fs_portrait( $saint_id, $image_url, $force = false ) {
  */
 function wasmo_ajax_sideload_portrait() {
 	check_ajax_referer( 'wasmo_fs_verify', 'nonce' );
-	
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'Permission denied.' );
 	}
-	
-	$saint_id = isset( $_POST['saint_id'] ) ? intval( $_POST['saint_id'] ) : 0;
-	$image_url = isset( $_POST['image_url'] ) ? esc_url_raw( $_POST['image_url'] ) : '';
-	$force = isset( $_POST['force'] ) && $_POST['force'] === 'true';
-	
+
+	$saint_id  = isset( $_POST['saint_id'] ) ? intval( $_POST['saint_id'] ) : 0;
+	$image_url = isset( $_POST['image_url'] ) ? esc_url_raw( wp_unslash( $_POST['image_url'] ) ) : '';
+	$force     = isset( $_POST['force'] ) && $_POST['force'] === 'true';
+
 	if ( ! $saint_id || ! $image_url ) {
 		wp_send_json_error( 'Invalid parameters.' );
 	}
-	
+
 	$result = wasmo_sideload_fs_portrait( $saint_id, $image_url, $force );
-	
+
 	if ( is_wp_error( $result ) ) {
 		wp_send_json_error( $result->get_error_message() );
 	}
-	
-	wp_send_json_success( array(
-		'message'       => 'Portrait image sideloaded successfully.',
-		'attachment_id' => $result,
-		'thumbnail_url' => wp_get_attachment_image_url( $result, 'thumbnail' ),
-	) );
+
+	wp_send_json_success(
+		array(
+			'message'       => 'Portrait image sideloaded successfully.',
+			'attachment_id' => $result,
+			'thumbnail_url' => wp_get_attachment_image_url( $result, 'thumbnail' ),
+		)
+	);
 }
 add_action( 'wp_ajax_wasmo_sideload_portrait', 'wasmo_ajax_sideload_portrait' );
 
@@ -1024,30 +1037,36 @@ add_action( 'wp_ajax_wasmo_sideload_portrait', 'wasmo_ajax_sideload_portrait' );
  */
 function wasmo_ajax_batch_verify_start() {
 	check_ajax_referer( 'wasmo_fs_verify', 'nonce' );
-	
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'Permission denied.' );
 	}
-	
+
 	$saint_ids = isset( $_POST['saint_ids'] ) ? array_map( 'intval', $_POST['saint_ids'] ) : array();
-	
+
 	if ( empty( $saint_ids ) ) {
 		wp_send_json_error( 'No saints specified.' );
 	}
-	
+
 	// Store batch in transient
 	$batch_id = 'wasmo_fs_batch_' . wp_generate_password( 8, false );
-	set_transient( $batch_id, array(
-		'saint_ids' => $saint_ids,
-		'current'   => 0,
-		'results'   => array(),
-		'started'   => current_time( 'mysql' ),
-	), HOUR_IN_SECONDS );
-	
-	wp_send_json_success( array(
-		'batch_id' => $batch_id,
-		'total'    => count( $saint_ids ),
-	) );
+	set_transient(
+		$batch_id,
+		array(
+			'saint_ids' => $saint_ids,
+			'current'   => 0,
+			'results'   => array(),
+			'started'   => current_time( 'mysql' ),
+		),
+		HOUR_IN_SECONDS
+	);
+
+	wp_send_json_success(
+		array(
+			'batch_id' => $batch_id,
+			'total'    => count( $saint_ids ),
+		)
+	);
 }
 add_action( 'wp_ajax_wasmo_batch_verify_start', 'wasmo_ajax_batch_verify_start' );
 
@@ -1056,67 +1075,71 @@ add_action( 'wp_ajax_wasmo_batch_verify_start', 'wasmo_ajax_batch_verify_start' 
  */
 function wasmo_ajax_batch_verify_next() {
 	check_ajax_referer( 'wasmo_fs_verify', 'nonce' );
-	
+
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'Permission denied.' );
 	}
-	
-	$batch_id = isset( $_POST['batch_id'] ) ? sanitize_text_field( $_POST['batch_id'] ) : '';
-	
+
+	$batch_id = isset( $_POST['batch_id'] ) ? sanitize_text_field( wp_unslash( $_POST['batch_id'] ) ) : '';
+
 	if ( empty( $batch_id ) ) {
 		wp_send_json_error( 'Invalid batch ID.' );
 	}
-	
+
 	$batch = get_transient( $batch_id );
-	
+
 	if ( ! $batch ) {
 		wp_send_json_error( 'Batch not found or expired.' );
 	}
-	
+
 	$current = $batch['current'];
-	$total = count( $batch['saint_ids'] );
-	
+	$total   = count( $batch['saint_ids'] );
+
 	if ( $current >= $total ) {
 		// Batch complete
 		delete_transient( $batch_id );
-		wp_send_json_success( array(
-			'complete' => true,
-			'results'  => $batch['results'],
-		) );
+		wp_send_json_success(
+			array(
+				'complete' => true,
+				'results'  => $batch['results'],
+			)
+		);
 	}
-	
+
 	$saint_id = $batch['saint_ids'][ $current ];
-	$fs_id = get_field( 'familysearch_id', $saint_id );
-	
+	$fs_id    = get_field( 'familysearch_id', $saint_id );
+
 	// Fetch and compare
 	$fs_data = wasmo_fetch_fs_person( $fs_id, true );
-	$result = array(
+	$result  = array(
 		'saint_id'   => $saint_id,
 		'saint_name' => get_the_title( $saint_id ),
 		'fs_id'      => $fs_id,
 	);
-	
+
 	if ( is_wp_error( $fs_data ) ) {
 		$result['error'] = $fs_data->get_error_message();
 	} else {
 		$result['comparison'] = wasmo_compare_saint_full( $saint_id, $fs_data );
-		$result['fs_data'] = $fs_data;
-		
+		$result['fs_data']    = $fs_data;
+
 		// Auto-update verified timestamp (data was fetched)
 		update_field( 'familysearch_verified', current_time( 'mysql' ), $saint_id );
 	}
-	
+
 	// Update batch
-	$batch['current']++;
+	++$batch['current'];
 	$batch['results'][] = $result;
 	set_transient( $batch_id, $batch, HOUR_IN_SECONDS );
-	
-	wp_send_json_success( array(
-		'complete'  => false,
-		'current'   => $batch['current'],
-		'total'     => $total,
-		'result'    => $result,
-	) );
+
+	wp_send_json_success(
+		array(
+			'complete' => false,
+			'current'  => $batch['current'],
+			'total'    => $total,
+			'result'   => $result,
+		)
+	);
 }
 add_action( 'wp_ajax_wasmo_batch_verify_next', 'wasmo_ajax_batch_verify_next' );
 
@@ -1141,9 +1164,9 @@ function wasmo_enqueue_fs_verify_scripts( $hook ) {
 	if ( 'saint_page_familysearch-verify' !== $hook ) {
 		return;
 	}
-	
+
 	wp_enqueue_script( 'jquery' );
-	
+
 	// Minimal script for copying textarea content
 	$script = "
 	jQuery(document).ready(function($) {
@@ -1153,7 +1176,7 @@ function wasmo_enqueue_fs_verify_scripts( $hook ) {
 		});
 	});
 	";
-	
+
 	wp_add_inline_script( 'jquery', $script );
 }
 add_action( 'admin_enqueue_scripts', 'wasmo_enqueue_fs_verify_scripts' );

@@ -1,7 +1,7 @@
 <?php
 /**
  * Media Auto-Tagging
- * 
+ *
  * Admin page for automatically adding tags to media based on caption/alt text.
  *
  * @package wasmo
@@ -36,10 +36,12 @@ function wasmo_find_tags_in_text( $text ) {
 	// Get all tags
 	static $all_tags = null;
 	if ( $all_tags === null ) {
-		$all_tags = get_terms( array(
-			'taxonomy'   => 'post_tag',
-			'hide_empty' => false,
-		) );
+		$all_tags = get_terms(
+			array(
+				'taxonomy'   => 'post_tag',
+				'hide_empty' => false,
+			)
+		);
 		if ( is_wp_error( $all_tags ) ) {
 			$all_tags = array();
 		}
@@ -50,11 +52,11 @@ function wasmo_find_tags_in_text( $text ) {
 
 	foreach ( $all_tags as $tag ) {
 		$tag_name_lower = strtolower( $tag->name );
-		
+
 		// Check for exact word match (with word boundaries)
 		// This prevents "art" matching "smart" etc.
 		$pattern = '/\b' . preg_quote( $tag_name_lower, '/' ) . '\b/i';
-		
+
 		if ( preg_match( $pattern, $text_lower ) ) {
 			$found_tags[] = $tag;
 		}
@@ -66,8 +68,8 @@ function wasmo_find_tags_in_text( $text ) {
 /**
  * Get media items with their caption/alt text and current tags
  *
- * @param int $limit Number of items to retrieve.
- * @param int $offset Offset for pagination.
+ * @param int    $limit Number of items to retrieve.
+ * @param int    $offset Offset for pagination.
  * @param string $filter Filter type: 'all', 'untagged', 'has_text'.
  * @return array Array of media data.
  */
@@ -95,26 +97,26 @@ function wasmo_get_media_for_tagging( $limit = 50, $offset = 0, $filter = 'all' 
 	}
 
 	$media_items = get_posts( $args );
-	$results = array();
+	$results     = array();
 
 	foreach ( $media_items as $media ) {
-		$alt_text = get_post_meta( $media->ID, '_wp_attachment_image_alt', true );
-		$caption = $media->post_excerpt;
-		$title = $media->post_title;
+		$alt_text    = get_post_meta( $media->ID, '_wp_attachment_image_alt', true );
+		$caption     = $media->post_excerpt;
+		$title       = $media->post_title;
 		$description = $media->post_content;
-		
+
 		// Get the filename (without extension) for matching
 		$attached_file = get_post_meta( $media->ID, '_wp_attached_file', true );
-		$filename = '';
+		$filename      = '';
 		if ( $attached_file ) {
 			$filename = pathinfo( $attached_file, PATHINFO_FILENAME );
 			// Replace common separators with spaces for better matching
 			$filename = str_replace( array( '-', '_', '.', '+' ), ' ', $filename );
 		}
-		
+
 		// Combine all text fields including filename
 		$all_text = implode( ' ', array_filter( array( $title, $alt_text, $caption, $description, $filename ) ) );
-		
+
 		// Skip if no text and filtering for has_text
 		if ( $filter === 'has_text' && empty( trim( $all_text ) ) ) {
 			continue;
@@ -122,27 +124,30 @@ function wasmo_get_media_for_tagging( $limit = 50, $offset = 0, $filter = 'all' 
 
 		// Get current tags
 		$current_tags = wp_get_post_tags( $media->ID, array( 'fields' => 'all' ) );
-		
+
 		// Find potential tags from text
 		$potential_tags = wasmo_find_tags_in_text( $all_text );
-		
+
 		// Filter out tags already assigned
 		$current_tag_ids = wp_list_pluck( $current_tags, 'term_id' );
-		$new_tags = array_filter( $potential_tags, function( $tag ) use ( $current_tag_ids ) {
-			return ! in_array( $tag->term_id, $current_tag_ids );
-		} );
+		$new_tags        = array_filter(
+			$potential_tags,
+			function ( $tag ) use ( $current_tag_ids ) {
+				return ! in_array( $tag->term_id, $current_tag_ids );
+			}
+		);
 
 		$results[] = array(
-			'id'            => $media->ID,
-			'title'         => $title,
-			'alt_text'      => $alt_text,
-			'caption'       => $caption,
-			'description'   => $description,
-			'thumbnail_url' => wp_get_attachment_image_url( $media->ID, 'thumbnail' ),
-			'edit_url'      => get_edit_post_link( $media->ID ),
-			'current_tags'  => $current_tags,
-			'potential_tags'=> $new_tags,
-			'all_text'      => $all_text,
+			'id'             => $media->ID,
+			'title'          => $title,
+			'alt_text'       => $alt_text,
+			'caption'        => $caption,
+			'description'    => $description,
+			'thumbnail_url'  => wp_get_attachment_image_url( $media->ID, 'thumbnail' ),
+			'edit_url'       => get_edit_post_link( $media->ID ),
+			'current_tags'   => $current_tags,
+			'potential_tags' => $new_tags,
+			'all_text'       => $all_text,
 		);
 	}
 
@@ -185,27 +190,27 @@ function wasmo_get_media_count( $filter = 'all' ) {
  */
 function wasmo_preview_auto_tag( $untagged_only = false ) {
 	$media_items = wasmo_get_media_for_tagging( 500, 0, 'all' );
-	
-	$would_tag = 0;
+
+	$would_tag      = 0;
 	$total_new_tags = 0;
-	$samples = array();
-	
+	$samples        = array();
+
 	foreach ( $media_items as $media ) {
 		if ( ! empty( $media['potential_tags'] ) ) {
 			// Skip if filtering for untagged only and this media already has tags
 			if ( $untagged_only && ! empty( $media['current_tags'] ) ) {
 				continue;
 			}
-			
-			$would_tag++;
+
+			++$would_tag;
 			$total_new_tags += count( $media['potential_tags'] );
-			
+
 			if ( count( $samples ) < 20 ) {
 				$samples[] = $media;
 			}
 		}
 	}
-	
+
 	return array(
 		'total_scanned'  => count( $media_items ),
 		'would_tag'      => $would_tag,
@@ -223,18 +228,18 @@ function wasmo_preview_auto_tag( $untagged_only = false ) {
  */
 function wasmo_apply_selected_tags( $media_ids, $selected_tags ) {
 	$results = array(
-		'processed' => 0,
-		'tagged'    => 0,
-		'tags_added'=> 0,
-		'details'   => array(),
+		'processed'  => 0,
+		'tagged'     => 0,
+		'tags_added' => 0,
+		'details'    => array(),
 	);
 
 	foreach ( $media_ids as $media_id ) {
-		$results['processed']++;
-		
+		++$results['processed'];
+
 		// Get the tags selected for this specific media item
 		$tag_ids = isset( $selected_tags[ $media_id ] ) ? array_map( 'absint', (array) $selected_tags[ $media_id ] ) : array();
-		
+
 		if ( empty( $tag_ids ) ) {
 			continue;
 		}
@@ -250,10 +255,10 @@ function wasmo_apply_selected_tags( $media_ids, $selected_tags ) {
 
 		// Append tags (don't replace existing)
 		wp_set_post_tags( $media_id, $tag_ids, true );
-		
-		$results['tagged']++;
+
+		++$results['tagged'];
 		$results['tags_added'] += count( $tag_ids );
-		$results['details'][] = array(
+		$results['details'][]   = array(
 			'id'    => $media_id,
 			'title' => get_the_title( $media_id ),
 			'tags'  => $tag_names,
@@ -272,10 +277,10 @@ function wasmo_apply_selected_tags( $media_ids, $selected_tags ) {
  */
 function wasmo_apply_auto_tags( $media_ids = array(), $dry_run = false ) {
 	$results = array(
-		'processed' => 0,
-		'tagged'    => 0,
-		'tags_added'=> 0,
-		'details'   => array(),
+		'processed'  => 0,
+		'tagged'     => 0,
+		'tags_added' => 0,
+		'details'    => array(),
 	);
 
 	// Get media to process
@@ -285,21 +290,29 @@ function wasmo_apply_auto_tags( $media_ids = array(), $dry_run = false ) {
 			$media = get_post( $id );
 			if ( $media && $media->post_type === 'attachment' ) {
 				$alt_text = get_post_meta( $media->ID, '_wp_attachment_image_alt', true );
-				$all_text = implode( ' ', array_filter( array( 
-					$media->post_title, 
-					$alt_text, 
-					$media->post_excerpt, 
-					$media->post_content 
-				) ) );
-				
-				$current_tags = wp_get_post_tags( $media->ID, array( 'fields' => 'all' ) );
+				$all_text = implode(
+					' ',
+					array_filter(
+						array(
+							$media->post_title,
+							$alt_text,
+							$media->post_excerpt,
+							$media->post_content,
+						)
+					)
+				);
+
+				$current_tags   = wp_get_post_tags( $media->ID, array( 'fields' => 'all' ) );
 				$potential_tags = wasmo_find_tags_in_text( $all_text );
-				
+
 				$current_tag_ids = wp_list_pluck( $current_tags, 'term_id' );
-				$new_tags = array_filter( $potential_tags, function( $tag ) use ( $current_tag_ids ) {
-					return ! in_array( $tag->term_id, $current_tag_ids );
-				} );
-				
+				$new_tags        = array_filter(
+					$potential_tags,
+					function ( $tag ) use ( $current_tag_ids ) {
+						return ! in_array( $tag->term_id, $current_tag_ids );
+					}
+				);
+
 				$media_items[] = array(
 					'id'             => $media->ID,
 					'title'          => $media->post_title,
@@ -312,23 +325,23 @@ function wasmo_apply_auto_tags( $media_ids = array(), $dry_run = false ) {
 	}
 
 	foreach ( $media_items as $media ) {
-		$results['processed']++;
-		
+		++$results['processed'];
+
 		if ( empty( $media['potential_tags'] ) ) {
 			continue;
 		}
 
-		$tag_ids = wp_list_pluck( $media['potential_tags'], 'term_id' );
+		$tag_ids   = wp_list_pluck( $media['potential_tags'], 'term_id' );
 		$tag_names = wp_list_pluck( $media['potential_tags'], 'name' );
-		
+
 		if ( ! $dry_run ) {
 			// Append tags (don't replace existing)
 			wp_set_post_tags( $media['id'], $tag_ids, true );
 		}
-		
-		$results['tagged']++;
+
+		++$results['tagged'];
 		$results['tags_added'] += count( $tag_ids );
-		$results['details'][] = array(
+		$results['details'][]   = array(
 			'id'    => $media['id'],
 			'title' => $media['title'],
 			'tags'  => $tag_names,
@@ -348,8 +361,8 @@ function wasmo_auto_tag_media_ajax() {
 		wp_send_json_error( 'Permission denied' );
 	}
 
-	$action_type = isset( $_POST['action_type'] ) ? sanitize_text_field( $_POST['action_type'] ) : '';
-	$media_ids = isset( $_POST['media_ids'] ) ? array_map( 'absint', (array) $_POST['media_ids'] ) : array();
+	$action_type = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
+	$media_ids   = isset( $_POST['media_ids'] ) ? array_map( 'absint', (array) $_POST['media_ids'] ) : array();
 
 	if ( $action_type === 'preview' ) {
 		$preview = wasmo_preview_auto_tag();
@@ -370,21 +383,21 @@ add_action( 'wp_ajax_wasmo_auto_tag_media', 'wasmo_auto_tag_media_ajax' );
  * Render the media auto-tag admin page
  */
 function wasmo_render_media_auto_tag_page() {
-	$message = '';
+	$message      = '';
 	$message_type = 'info';
 
 	// Handle form submission
 	if ( isset( $_POST['wasmo_auto_tag_submit'] ) && check_admin_referer( 'wasmo_auto_tag_nonce' ) ) {
-		$selected_ids = isset( $_POST['media_ids'] ) ? array_map( 'absint', (array) $_POST['media_ids'] ) : array();
-		$selected_tags = isset( $_POST['tags'] ) ? $_POST['tags'] : array();
-		
+		$selected_ids  = isset( $_POST['media_ids'] ) ? array_map( 'absint', (array) $_POST['media_ids'] ) : array();
+		$selected_tags = isset( $_POST['tags'] ) ? wp_unslash( $_POST['tags'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 		if ( empty( $selected_ids ) ) {
-			$message = 'No media items selected.';
+			$message      = 'No media items selected.';
 			$message_type = 'warning';
 		} else {
 			// Apply only the specifically selected tags
-			$results = wasmo_apply_selected_tags( $selected_ids, $selected_tags );
-			$message = sprintf(
+			$results      = wasmo_apply_selected_tags( $selected_ids, $selected_tags );
+			$message      = sprintf(
 				'Auto-tagging complete: %d items processed, %d items tagged with %d total tags added.',
 				$results['processed'],
 				$results['tagged'],
@@ -396,8 +409,8 @@ function wasmo_render_media_auto_tag_page() {
 
 	// Handle "Tag All" submission
 	if ( isset( $_POST['wasmo_auto_tag_all'] ) && check_admin_referer( 'wasmo_auto_tag_nonce' ) ) {
-		$results = wasmo_apply_auto_tags( array(), false );
-		$message = sprintf(
+		$results      = wasmo_apply_auto_tags( array(), false );
+		$message      = sprintf(
 			'Auto-tagging complete: %d items processed, %d items tagged with %d total tags added.',
 			$results['processed'],
 			$results['tagged'],
@@ -410,9 +423,9 @@ function wasmo_render_media_auto_tag_page() {
 	$show_untagged_only = isset( $_GET['untagged_only'] ) ? $_GET['untagged_only'] === '1' : true; // Default to untagged only
 
 	// Get statistics
-	$total_images = wasmo_get_media_count( 'all' );
+	$total_images    = wasmo_get_media_count( 'all' );
 	$untagged_images = wasmo_get_media_count( 'untagged' );
-	$tagged_images = $total_images - $untagged_images;
+	$tagged_images   = $total_images - $untagged_images;
 
 	// Get preview data with filter
 	$preview = wasmo_preview_auto_tag( $show_untagged_only );
@@ -462,9 +475,9 @@ function wasmo_render_media_auto_tag_page() {
 				<?php wp_nonce_field( 'wasmo_auto_tag_nonce' ); ?>
 				<p>
 					<button type="submit" name="wasmo_auto_tag_all" class="button button-primary button-hero" 
-					        onclick="return confirm('This will auto-tag up to 1000 images. Continue?');"
-					        <?php echo $preview['would_tag'] === 0 ? 'disabled' : ''; ?>>
-						🏷️ Auto-Tag All Media (<?php echo $preview['would_tag']; ?> items)
+							onclick="return confirm('This will auto-tag up to 1000 images. Continue?');"
+							<?php echo $preview['would_tag'] === 0 ? 'disabled' : ''; ?>>
+						🏷️ Auto-Tag All Media (<?php echo $preview['would_tag']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> items)
 					</button>
 				</p>
 				<p class="description">
@@ -523,7 +536,7 @@ function wasmo_render_media_auto_tag_page() {
 								<?php if ( $media['thumbnail_url'] ) : ?>
 									<a href="<?php echo esc_url( $media['edit_url'] ); ?>" target="_blank">
 										<img src="<?php echo esc_url( $media['thumbnail_url'] ); ?>" 
-										     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+											style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
 									</a>
 								<?php endif; ?>
 							</td>
@@ -550,10 +563,10 @@ function wasmo_render_media_auto_tag_page() {
 							<td class="tags-to-add-cell">
 								<?php foreach ( $media['potential_tags'] as $tag ) : ?>
 									<span class="tag potential-tag" 
-									      data-tag-id="<?php echo esc_attr( $tag->term_id ); ?>"
-									      data-media-id="<?php echo esc_attr( $media['id'] ); ?>"
-									      style="background: #c6f6d5; padding: 2px 8px; border-radius: 3px; margin: 2px; display: inline-block; font-size: 12px; color: #22543d; cursor: pointer;"
-									      title="Click to remove this tag">
+											data-tag-id="<?php echo esc_attr( $tag->term_id ); ?>"
+											data-media-id="<?php echo esc_attr( $media['id'] ); ?>"
+											style="background: #c6f6d5; padding: 2px 8px; border-radius: 3px; margin: 2px; display: inline-block; font-size: 12px; color: #22543d; cursor: pointer;"
+											title="Click to remove this tag">
 										+ <?php echo esc_html( $tag->name ); ?>
 										<input type="hidden" name="tags[<?php echo esc_attr( $media['id'] ); ?>][]" value="<?php echo esc_attr( $tag->term_id ); ?>">
 									</span>
@@ -567,7 +580,7 @@ function wasmo_render_media_auto_tag_page() {
 				
 				<?php if ( $preview['would_tag'] > count( $preview['samples'] ) ) : ?>
 					<p style="margin-top: 15px;">
-						<em>Showing <?php echo count( $preview['samples'] ); ?> of <?php echo $preview['would_tag']; ?> items that can be tagged.</em>
+						<em>Showing <?php echo count( $preview['samples'] ); ?> of <?php echo $preview['would_tag']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> items that can be tagged.</em>
 					</p>
 				<?php endif; ?>
 			</form>

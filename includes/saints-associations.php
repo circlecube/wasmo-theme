@@ -1,7 +1,7 @@
 <?php
 /**
  * Saints Association Tool
- * 
+ *
  * Admin page for bulk associating existing posts and media with church leaders
  * based on existing tag relationships.
  *
@@ -33,16 +33,16 @@ function wasmo_render_leader_associations_page() {
 	// Handle preview request
 	if ( isset( $_POST['wasmo_preview_associations'] ) && check_admin_referer( 'wasmo_associations_nonce' ) ) {
 		$include_text = isset( $_POST['include_text_search'] );
-		$results = wasmo_preview_leader_associations( $include_text );
+		$results      = wasmo_preview_leader_associations( $include_text );
 	}
 
 	// Handle bulk association
 	if ( isset( $_POST['wasmo_run_associations'] ) && check_admin_referer( 'wasmo_associations_nonce' ) ) {
-		$post_type = sanitize_text_field( $_POST['content_type'] );
+		$post_type    = sanitize_text_field( wp_unslash( $_POST['content_type'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		$include_text = isset( $_POST['include_text_search'] );
-		$result = wasmo_run_leader_associations( $post_type, $include_text );
-		
-		$message = '<div class="notice notice-success"><p>';
+		$result       = wasmo_run_leader_associations( $post_type, $include_text );
+
+		$message  = '<div class="notice notice-success"><p>';
 		$message .= sprintf( '<strong>Association complete!</strong> %d items updated.<br>', $result['updated'] );
 		$message .= sprintf( '&bull; Posts (by tag): %d<br>', $result['updated_posts'] );
 		$message .= sprintf( '&bull; Media (by tag): %d<br>', $result['updated_media_tag'] );
@@ -56,7 +56,7 @@ function wasmo_render_leader_associations_page() {
 	<div class="wrap">
 		<h1>Associate Content with Saints</h1>
 		
-		<?php echo $message; ?>
+		<?php echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 		<div class="card" style="max-width: 900px; margin-bottom: 20px;">
 			<h2>How It Works</h2>
@@ -90,17 +90,17 @@ function wasmo_render_leader_associations_page() {
 						<?php foreach ( $leaders_with_tags as $leader ) : ?>
 							<tr>
 								<td>
-									<a href="<?php echo get_edit_post_link( $leader['id'] ); ?>">
+									<a href="<?php echo get_edit_post_link( $leader['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 										<?php echo esc_html( $leader['name'] ); ?>
 									</a>
 								</td>
 								<td>
-									<a href="<?php echo get_edit_term_link( $leader['tag_id'], 'post_tag' ); ?>">
+									<a href="<?php echo get_edit_term_link( $leader['tag_id'], 'post_tag' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 										<?php echo esc_html( $leader['tag_name'] ); ?>
 									</a>
 								</td>
-								<td><?php echo $leader['post_count']; ?></td>
-								<td><?php echo $leader['media_count']; ?></td>
+								<td><?php echo $leader['post_count']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+								<td><?php echo $leader['media_count']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -128,22 +128,22 @@ function wasmo_render_leader_associations_page() {
 			</form>
 
 			<?php if ( ! empty( $results ) ) : ?>
-				<?php 
-				$total_posts = 0;
-				$total_media_tag = 0;
+				<?php
+				$total_posts      = 0;
+				$total_media_tag  = 0;
 				$total_media_text = 0;
 				foreach ( $results as $data ) {
-					$total_posts += count( $data['posts'] );
-					$total_media_tag += count( $data['media_by_tag'] );
+					$total_posts      += count( $data['posts'] );
+					$total_media_tag  += count( $data['media_by_tag'] );
 					$total_media_text += count( $data['media_by_text'] );
 				}
 				?>
 				<h3>Preview Results Summary</h3>
 				<p>
-					<strong>Total items found:</strong> <?php echo $total_posts + $total_media_tag + $total_media_text; ?><br>
-					&bull; Posts (by tag): <?php echo $total_posts; ?><br>
-					&bull; Media (by tag): <?php echo $total_media_tag; ?><br>
-					&bull; Media (by text search): <?php echo $total_media_text; ?>
+					<strong>Total items found:</strong> <?php echo $total_posts + $total_media_tag + $total_media_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><br>
+					&bull; Posts (by tag): <?php echo $total_posts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><br>
+					&bull; Media (by tag): <?php echo $total_media_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><br>
+					&bull; Media (by text search): <?php echo $total_media_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
 				
 				<div style="max-height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #f9f9f9;">
@@ -156,7 +156,7 @@ function wasmo_render_leader_associations_page() {
 								<ul style="margin-left: 20px; margin-bottom: 10px;">
 									<?php foreach ( array_slice( $data['posts'], 0, 5 ) as $post_id ) : ?>
 										<li>
-											<a href="<?php echo get_edit_post_link( $post_id ); ?>" target="_blank">
+											<a href="<?php echo get_edit_post_link( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" target="_blank">
 												<?php echo esc_html( get_the_title( $post_id ) ); ?>
 											</a>
 										</li>
@@ -172,7 +172,7 @@ function wasmo_render_leader_associations_page() {
 								<ul style="margin-left: 20px; margin-bottom: 10px;">
 									<?php foreach ( array_slice( $data['media_by_tag'], 0, 5 ) as $media_id ) : ?>
 										<li>
-											<a href="<?php echo get_edit_post_link( $media_id ); ?>" target="_blank">
+											<a href="<?php echo get_edit_post_link( $media_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" target="_blank">
 												<?php echo esc_html( get_the_title( $media_id ) ); ?>
 											</a>
 										</li>
@@ -186,14 +186,16 @@ function wasmo_render_leader_associations_page() {
 							<?php if ( ! empty( $data['media_by_text'] ) ) : ?>
 								<p><strong>🔍 Media by text search (<?php echo count( $data['media_by_text'] ); ?>):</strong></p>
 								<ul style="margin-left: 20px; margin-bottom: 0;">
-									<?php 
+									<?php
 									$count = 0;
-									foreach ( $data['media_by_text'] as $media_id => $match_info ) : 
-										if ( $count >= 5 ) break;
-										$count++;
-									?>
+									foreach ( $data['media_by_text'] as $media_id => $match_info ) :
+										if ( $count >= 5 ) {
+											break;
+										}
+										++$count;
+										?>
 										<li>
-											<a href="<?php echo get_edit_post_link( $media_id ); ?>" target="_blank">
+											<a href="<?php echo get_edit_post_link( $media_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" target="_blank">
 												<?php echo esc_html( get_the_title( $media_id ) ); ?>
 											</a>
 											<br>
@@ -264,8 +266,8 @@ function wasmo_render_leader_associations_page() {
 				and selecting leaders in the "Related Leaders" field in the sidebar.
 			</p>
 			<p>
-				<a href="<?php echo admin_url( 'edit.php' ); ?>" class="button">Edit Posts</a>
-				<a href="<?php echo admin_url( 'upload.php' ); ?>" class="button">Edit Media</a>
+				<a href="<?php echo admin_url( 'edit.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="button">Edit Posts</a>
+				<a href="<?php echo admin_url( 'upload.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="button">Edit Media</a>
 			</p>
 		</div>
 	</div>
@@ -278,22 +280,24 @@ function wasmo_render_leader_associations_page() {
  * @return array Array of leader data with tag info.
  */
 function wasmo_get_leaders_with_tags() {
-	$leaders = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-		'meta_query'     => array(
-			array(
-				'key'     => 'leader_tag',
-				'compare' => 'EXISTS',
+	$leaders = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'meta_query'     => array(
+				array(
+					'key'     => 'leader_tag',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'leader_tag',
+					'value'   => '',
+					'compare' => '!=',
+				),
 			),
-			array(
-				'key'     => 'leader_tag',
-				'value'   => '',
-				'compare' => '!=',
-			),
-		),
-	) );
+		)
+	);
 
 	$result = array();
 
@@ -309,34 +313,38 @@ function wasmo_get_leaders_with_tags() {
 		}
 
 		// Count posts with this tag
-		$post_count = get_posts( array(
-			'post_type'      => 'post',
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'tax_query'      => array(
-				array(
-					'taxonomy' => 'post_tag',
-					'field'    => 'term_id',
-					'terms'    => $tag_id,
+		$post_count = get_posts(
+			array(
+				'post_type'      => 'post',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'post_tag',
+						'field'    => 'term_id',
+						'terms'    => $tag_id,
+					),
 				),
-			),
-			'fields'         => 'ids',
-		) );
+				'fields'         => 'ids',
+			)
+		);
 
 		// Count media with this tag
-		$media_count = get_posts( array(
-			'post_type'      => 'attachment',
-			'posts_per_page' => -1,
-			'post_status'    => 'inherit',
-			'tax_query'      => array(
-				array(
-					'taxonomy' => 'post_tag',
-					'field'    => 'term_id',
-					'terms'    => $tag_id,
+		$media_count = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'posts_per_page' => -1,
+				'post_status'    => 'inherit',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'post_tag',
+						'field'    => 'term_id',
+						'terms'    => $tag_id,
+					),
 				),
-			),
-			'fields'         => 'ids',
-		) );
+				'fields'         => 'ids',
+			)
+		);
 
 		$result[] = array(
 			'id'          => $leader->ID,
@@ -349,9 +357,12 @@ function wasmo_get_leaders_with_tags() {
 	}
 
 	// Sort by name
-	usort( $result, function( $a, $b ) {
-		return strcmp( $a['name'], $b['name'] );
-	} );
+	usort(
+		$result,
+		function ( $a, $b ) {
+			return strcmp( $a['name'], $b['name'] );
+		}
+	);
 
 	return $result;
 }
@@ -362,21 +373,23 @@ function wasmo_get_leaders_with_tags() {
  * @return array Array of leader data with search terms.
  */
 function wasmo_get_all_leaders_for_search() {
-	$leaders = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-	) );
+	$leaders = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+		)
+	);
 
 	$result = array();
 
 	foreach ( $leaders as $leader ) {
-		$first_name = get_field( 'first_name', $leader->ID );
+		$first_name  = get_field( 'first_name', $leader->ID );
 		$middle_name = get_field( 'middle_name', $leader->ID );
-		$last_name = get_field( 'last_name', $leader->ID );
-		$tag_id = get_field( 'leader_tag', $leader->ID );
-		$tag_name = '';
-		
+		$last_name   = get_field( 'last_name', $leader->ID );
+		$tag_id      = get_field( 'leader_tag', $leader->ID );
+		$tag_name    = '';
+
 		if ( $tag_id ) {
 			$tag = get_term( $tag_id, 'post_tag' );
 			if ( $tag && ! is_wp_error( $tag ) ) {
@@ -386,22 +399,22 @@ function wasmo_get_all_leaders_for_search() {
 
 		// Build search terms - various name combinations
 		$search_terms = array();
-		
+
 		// Full name from post title
 		$search_terms[] = $leader->post_title;
-		
+
 		// Tag name if different
 		if ( $tag_name && $tag_name !== $leader->post_title ) {
 			$search_terms[] = $tag_name;
 		}
-		
+
 		// Last name + first name
 		if ( $first_name && $last_name ) {
 			$search_terms[] = $first_name . ' ' . $last_name;
 			// $search_terms[] = $last_name . ', ' . $first_name;
 			// $search_terms[] = $last_name . ' ' . $first_name;
 		}
-		
+
 		// With middle name/initial
 		if ( $first_name && $middle_name && $last_name ) {
 			$search_terms[] = $first_name . ' ' . $middle_name . ' ' . $last_name;
@@ -423,9 +436,12 @@ function wasmo_get_all_leaders_for_search() {
 	}
 
 	// Sort by name
-	usort( $result, function( $a, $b ) {
-		return strcmp( $a['name'], $b['name'] );
-	} );
+	usort(
+		$result,
+		function ( $a, $b ) {
+			return strcmp( $a['name'], $b['name'] );
+		}
+	);
 
 	return $result;
 }
@@ -438,18 +454,18 @@ function wasmo_get_all_leaders_for_search() {
  */
 function wasmo_search_media_for_leader( $leader ) {
 	global $wpdb;
-	
-	$matches = array();
+
+	$matches   = array();
 	$found_ids = array();
-	
+
 	foreach ( $leader['search_terms'] as $search_term ) {
 		// Skip very short terms (like single initials) to avoid false positives
 		if ( strlen( $search_term ) < 4 ) {
 			continue;
 		}
-		
+
 		$like_term = '%' . $wpdb->esc_like( $search_term ) . '%';
-		
+
 		// Search in post_title, post_excerpt (caption), and post_content (description)
 		$sql = $wpdb->prepare(
 			"SELECT ID, post_title, post_excerpt, post_content 
@@ -465,14 +481,14 @@ function wasmo_search_media_for_leader( $leader ) {
 			$like_term,
 			$like_term
 		);
-		
-		$results = $wpdb->get_results( $sql );
-		
+
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 		foreach ( $results as $row ) {
 			if ( ! in_array( $row->ID, $found_ids ) ) {
-				$found_ids[] = $row->ID;
+				$found_ids[]     = $row->ID;
 				$match_locations = array();
-				
+
 				if ( stripos( $row->post_title, $search_term ) !== false ) {
 					$match_locations[] = 'title';
 				}
@@ -482,7 +498,7 @@ function wasmo_search_media_for_leader( $leader ) {
 				if ( stripos( $row->post_content, $search_term ) !== false ) {
 					$match_locations[] = 'description';
 				}
-				
+
 				$matches[ $row->ID ] = array(
 					'id'         => $row->ID,
 					'match_term' => $search_term,
@@ -490,7 +506,7 @@ function wasmo_search_media_for_leader( $leader ) {
 				);
 			}
 		}
-		
+
 		// Search in alt text (post meta _wp_attachment_image_alt)
 		$alt_sql = $wpdb->prepare(
 			"SELECT p.ID, p.post_title, m.meta_value as alt_text
@@ -502,12 +518,12 @@ function wasmo_search_media_for_leader( $leader ) {
 			 AND m.meta_value LIKE %s",
 			$like_term
 		);
-		
-		$alt_results = $wpdb->get_results( $alt_sql );
-		
+
+		$alt_results = $wpdb->get_results( $alt_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 		foreach ( $alt_results as $row ) {
 			if ( ! in_array( $row->ID, $found_ids ) ) {
-				$found_ids[] = $row->ID;
+				$found_ids[]         = $row->ID;
 				$matches[ $row->ID ] = array(
 					'id'         => $row->ID,
 					'match_term' => $search_term,
@@ -517,7 +533,7 @@ function wasmo_search_media_for_leader( $leader ) {
 				$matches[ $row->ID ]['match_in'][] = 'alt_text';
 			}
 		}
-		
+
 		// Search in filename (stored in guid or _wp_attached_file meta)
 		$file_sql = $wpdb->prepare(
 			"SELECT p.ID, p.post_title, m.meta_value as file_path
@@ -529,12 +545,12 @@ function wasmo_search_media_for_leader( $leader ) {
 			 AND m.meta_value LIKE %s",
 			$like_term
 		);
-		
-		$file_results = $wpdb->get_results( $file_sql );
-		
+
+		$file_results = $wpdb->get_results( $file_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 		foreach ( $file_results as $row ) {
 			if ( ! in_array( $row->ID, $found_ids ) ) {
-				$found_ids[] = $row->ID;
+				$found_ids[]         = $row->ID;
 				$matches[ $row->ID ] = array(
 					'id'         => $row->ID,
 					'match_term' => $search_term,
@@ -545,7 +561,7 @@ function wasmo_search_media_for_leader( $leader ) {
 			}
 		}
 	}
-	
+
 	return $matches;
 }
 
@@ -557,42 +573,46 @@ function wasmo_search_media_for_leader( $leader ) {
  */
 function wasmo_preview_leader_associations( $include_text_search = true ) {
 	$leaders_with_tags = wasmo_get_leaders_with_tags();
-	$all_leaders = wasmo_get_all_leaders_for_search();
-	$results = array();
+	$all_leaders       = wasmo_get_all_leaders_for_search();
+	$results           = array();
 
 	// First, process tag-based associations
 	foreach ( $leaders_with_tags as $leader ) {
 		$tag_id = $leader['tag_id'];
 
 		// Get posts with this tag
-		$posts = get_posts( array(
-			'post_type'      => 'post',
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'tax_query'      => array(
-				array(
-					'taxonomy' => 'post_tag',
-					'field'    => 'term_id',
-					'terms'    => $tag_id,
+		$posts = get_posts(
+			array(
+				'post_type'      => 'post',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'post_tag',
+						'field'    => 'term_id',
+						'terms'    => $tag_id,
+					),
 				),
-			),
-			'fields'         => 'ids',
-		) );
+				'fields'         => 'ids',
+			)
+		);
 
 		// Get media with this tag
-		$media_by_tag = get_posts( array(
-			'post_type'      => 'attachment',
-			'posts_per_page' => -1,
-			'post_status'    => 'inherit',
-			'tax_query'      => array(
-				array(
-					'taxonomy' => 'post_tag',
-					'field'    => 'term_id',
-					'terms'    => $tag_id,
+		$media_by_tag = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'posts_per_page' => -1,
+				'post_status'    => 'inherit',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'post_tag',
+						'field'    => 'term_id',
+						'terms'    => $tag_id,
+					),
 				),
-			),
-			'fields'         => 'ids',
-		) );
+				'fields'         => 'ids',
+			)
+		);
 
 		if ( ! empty( $posts ) || ! empty( $media_by_tag ) ) {
 			$results[ $leader['id'] ] = array(
@@ -608,20 +628,20 @@ function wasmo_preview_leader_associations( $include_text_search = true ) {
 	if ( $include_text_search ) {
 		foreach ( $all_leaders as $leader ) {
 			$text_matches = wasmo_search_media_for_leader( $leader );
-			
+
 			if ( ! empty( $text_matches ) ) {
 				// Filter out any already found by tag
-				$existing_media = isset( $results[ $leader['id'] ]['media_by_tag'] ) 
-					? $results[ $leader['id'] ]['media_by_tag'] 
+				$existing_media = isset( $results[ $leader['id'] ]['media_by_tag'] )
+					? $results[ $leader['id'] ]['media_by_tag']
 					: array();
-				
+
 				$new_matches = array();
 				foreach ( $text_matches as $media_id => $match_info ) {
 					if ( ! in_array( $media_id, $existing_media ) ) {
 						$new_matches[ $media_id ] = $match_info;
 					}
 				}
-				
+
 				if ( ! empty( $new_matches ) ) {
 					if ( ! isset( $results[ $leader['id'] ] ) ) {
 						$results[ $leader['id'] ] = array(
@@ -639,9 +659,12 @@ function wasmo_preview_leader_associations( $include_text_search = true ) {
 	}
 
 	// Sort results by leader name
-	uasort( $results, function( $a, $b ) {
-		return strcmp( $a['leader_name'], $b['leader_name'] );
-	} );
+	uasort(
+		$results,
+		function ( $a, $b ) {
+			return strcmp( $a['leader_name'], $b['leader_name'] );
+		}
+	);
 
 	return $results;
 }
@@ -650,65 +673,69 @@ function wasmo_preview_leader_associations( $include_text_search = true ) {
  * Run bulk associations
  *
  * @param string $post_type Post type to process ('post', 'attachment', or 'all').
- * @param bool $include_text_search Include text-based media search.
+ * @param bool   $include_text_search Include text-based media search.
  * @return array Result with counts.
  */
 function wasmo_run_leader_associations( $post_type = 'all', $include_text_search = true ) {
-	$leaders_with_tags = wasmo_get_leaders_with_tags();
-	$all_leaders = wasmo_get_all_leaders_for_search();
-	$updated_posts = 0;
-	$updated_media_tag = 0;
+	$leaders_with_tags  = wasmo_get_leaders_with_tags();
+	$all_leaders        = wasmo_get_all_leaders_for_search();
+	$updated_posts      = 0;
+	$updated_media_tag  = 0;
 	$updated_media_text = 0;
 
 	// Process tag-based associations
 	foreach ( $leaders_with_tags as $leader ) {
-		$tag_id = $leader['tag_id'];
+		$tag_id    = $leader['tag_id'];
 		$leader_id = $leader['id'];
 
 		// Process posts
 		if ( $post_type === 'all' || $post_type === 'post' ) {
-			$posts = get_posts( array(
-				'post_type'      => 'post',
-				'posts_per_page' => -1,
-				'post_status'    => 'publish',
-				'tax_query'      => array(
-					array(
-						'taxonomy' => 'post_tag',
-						'field'    => 'term_id',
-						'terms'    => $tag_id,
+			$posts = get_posts(
+				array(
+					'post_type'      => 'post',
+					'posts_per_page' => -1,
+					'post_status'    => 'publish',
+					'tax_query'      => array(
+						array(
+							'taxonomy' => 'post_tag',
+							'field'    => 'term_id',
+							'terms'    => $tag_id,
+						),
 					),
-				),
-				'fields'         => 'ids',
-			) );
+					'fields'         => 'ids',
+				)
+			);
 
 			foreach ( $posts as $post_id ) {
 				$result = wasmo_add_leader_to_content( $post_id, $leader_id );
 				if ( $result ) {
-					$updated_posts++;
+					++$updated_posts;
 				}
 			}
 		}
 
 		// Process media by tag
 		if ( $post_type === 'all' || $post_type === 'attachment' ) {
-			$media = get_posts( array(
-				'post_type'      => 'attachment',
-				'posts_per_page' => -1,
-				'post_status'    => 'inherit',
-				'tax_query'      => array(
-					array(
-						'taxonomy' => 'post_tag',
-						'field'    => 'term_id',
-						'terms'    => $tag_id,
+			$media = get_posts(
+				array(
+					'post_type'      => 'attachment',
+					'posts_per_page' => -1,
+					'post_status'    => 'inherit',
+					'tax_query'      => array(
+						array(
+							'taxonomy' => 'post_tag',
+							'field'    => 'term_id',
+							'terms'    => $tag_id,
+						),
 					),
-				),
-				'fields'         => 'ids',
-			) );
+					'fields'         => 'ids',
+				)
+			);
 
 			foreach ( $media as $media_id ) {
 				$result = wasmo_add_leader_to_content( $media_id, $leader_id );
 				if ( $result ) {
-					$updated_media_tag++;
+					++$updated_media_tag;
 				}
 			}
 		}
@@ -718,17 +745,17 @@ function wasmo_run_leader_associations( $post_type = 'all', $include_text_search
 	if ( $include_text_search && ( $post_type === 'all' || $post_type === 'attachment' ) ) {
 		foreach ( $all_leaders as $leader ) {
 			$text_matches = wasmo_search_media_for_leader( $leader );
-			
+
 			foreach ( $text_matches as $media_id => $match_info ) {
 				$result = wasmo_add_leader_to_content( $media_id, $leader['id'] );
 				if ( $result ) {
-					$updated_media_text++;
+					++$updated_media_text;
 				}
 			}
 		}
 	}
 
-	return array( 
+	return array(
 		'updated'            => $updated_posts + $updated_media_tag + $updated_media_text,
 		'updated_posts'      => $updated_posts,
 		'updated_media_tag'  => $updated_media_tag,
@@ -745,7 +772,7 @@ function wasmo_run_leader_associations( $post_type = 'all', $include_text_search
  */
 function wasmo_add_leader_to_content( $content_id, $leader_id ) {
 	$existing = get_field( 'related_leaders', $content_id );
-	
+
 	if ( ! is_array( $existing ) ) {
 		$existing = array();
 	}
@@ -768,25 +795,29 @@ function wasmo_add_leader_to_content( $content_id, $leader_id ) {
 function wasmo_ajax_check_tag_match() {
 	check_ajax_referer( 'wasmo_tag_match_nonce', 'nonce' );
 
-	$leader_name = sanitize_text_field( $_POST['leader_name'] );
-	
+	$leader_name = sanitize_text_field( wp_unslash( $_POST['leader_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+
 	// Try to find matching tag
 	$tag = get_term_by( 'name', $leader_name, 'post_tag' );
-	
+
 	if ( $tag ) {
-		wp_send_json_success( array(
-			'found'    => true,
-			'tag_id'   => $tag->term_id,
-			'tag_name' => $tag->name,
-			'count'    => $tag->count,
-		) );
+		wp_send_json_success(
+			array(
+				'found'    => true,
+				'tag_id'   => $tag->term_id,
+				'tag_name' => $tag->name,
+				'count'    => $tag->count,
+			)
+		);
 	} else {
 		// Try partial match
-		$tags = get_terms( array(
-			'taxonomy'   => 'post_tag',
-			'name__like' => $leader_name,
-			'hide_empty' => false,
-		) );
+		$tags = get_terms(
+			array(
+				'taxonomy'   => 'post_tag',
+				'name__like' => $leader_name,
+				'hide_empty' => false,
+			)
+		);
 
 		if ( ! empty( $tags ) ) {
 			$suggestions = array();
@@ -797,10 +828,12 @@ function wasmo_ajax_check_tag_match() {
 					'count' => $t->count,
 				);
 			}
-			wp_send_json_success( array(
-				'found'       => false,
-				'suggestions' => $suggestions,
-			) );
+			wp_send_json_success(
+				array(
+					'found'       => false,
+					'suggestions' => $suggestions,
+				)
+			);
 		}
 
 		wp_send_json_success( array( 'found' => false ) );

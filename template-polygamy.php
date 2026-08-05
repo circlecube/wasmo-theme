@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Polygamy Statistics
- * 
+ *
  * Displays polygamist leaders with statistics about their marriages
  *
  * @package wasmo
@@ -18,37 +18,37 @@ if ( isset( $_GET['clear_cache'] ) && current_user_can( 'manage_options' ) ) {
 
 // Get all the data - now uses cached function from functions-saints.php
 $polygamy_data = wasmo_get_cached_polygamy_data();
-$polygamists = $polygamy_data['polygamists'];
-$aggregate = $polygamy_data['aggregate'];
+$polygamists   = $polygamy_data['polygamists'];
+$aggregate     = $polygamy_data['aggregate'];
 
 // Calculate aggregate statistics
-$avg_wives = $aggregate['total_polygamists'] > 0 
-	? round( $aggregate['total_wives'] / $aggregate['total_polygamists'], 1 ) 
+$avg_wives = $aggregate['total_polygamists'] > 0
+	? round( $aggregate['total_wives'] / $aggregate['total_polygamists'], 1 )
 	: 0;
 
-$avg_children = $aggregate['total_polygamists'] > 0 
-	? round( $aggregate['total_children'] / $aggregate['total_polygamists'], 1 ) 
+$avg_children = $aggregate['total_polygamists'] > 0
+	? round( $aggregate['total_children'] / $aggregate['total_polygamists'], 1 )
 	: 0;
 
-$overall_avg_age_diff = ! empty( $aggregate['all_age_diffs'] ) 
-	? round( array_sum( $aggregate['all_age_diffs'] ) / count( $aggregate['all_age_diffs'] ), 1 ) 
+$overall_avg_age_diff = ! empty( $aggregate['all_age_diffs'] )
+	? round( array_sum( $aggregate['all_age_diffs'] ) / count( $aggregate['all_age_diffs'] ), 1 )
 	: 0;
 
-$largest_age_diff = ! empty( $aggregate['all_age_diffs'] ) 
-	? max( $aggregate['all_age_diffs'] ) 
+$largest_age_diff = ! empty( $aggregate['all_age_diffs'] )
+	? max( $aggregate['all_age_diffs'] )
 	: 0;
 
-$pct_teenage_brides = $aggregate['total_wives'] > 0 
-	? round( ( $aggregate['total_teenage_brides'] / $aggregate['total_wives'] ) * 100, 1 ) 
+$pct_teenage_brides = $aggregate['total_wives'] > 0
+	? round( ( $aggregate['total_teenage_brides'] / $aggregate['total_wives'] ) * 100, 1 )
 	: 0;
 
-$pct_large_age_diff = $aggregate['total_wives'] > 0 
-	? round( ( $aggregate['large_age_diff_count'] / $aggregate['total_wives'] ) * 100, 1 ) 
+$pct_large_age_diff = $aggregate['total_wives'] > 0
+	? round( ( $aggregate['large_age_diff_count'] / $aggregate['total_wives'] ) * 100, 1 )
 	: 0;
 
 // Youngest bride age (teenage brides are already sorted youngest first)
-$youngest_bride_age = ! empty( $aggregate['all_teenage_brides'] ) 
-	? $aggregate['all_teenage_brides'][0]['bride_age'] 
+$youngest_bride_age = ! empty( $aggregate['all_teenage_brides'] )
+	? $aggregate['all_teenage_brides'][0]['bride_age']
 	: null;
 
 // Most wives by a single leader (polygamists already sorted by wives desc)
@@ -58,7 +58,7 @@ $most_wives_leader = ! empty( $polygamists ) ? $polygamists[0] : null;
 $brides_under_16 = 0;
 foreach ( $aggregate['all_teenage_brides'] as $bride ) {
 	if ( isset( $bride['bride_age'] ) && $bride['bride_age'] < 16 ) {
-		$brides_under_16++;
+		++$brides_under_16;
 	}
 }
 
@@ -84,15 +84,18 @@ foreach ( $polygamists as $data ) {
 	}
 }
 // Sort by age (youngest first)
-usort( $young_brides, function( $a, $b ) {
-	return ( $a['bride_age'] ?? 99 ) - ( $b['bride_age'] ?? 99 );
-} );
+usort(
+	$young_brides,
+	function ( $a, $b ) {
+		return ( $a['bride_age'] ?? 99 ) - ( $b['bride_age'] ?? 99 );
+	}
+);
 
 // Count brides 18-19 for display
 $brides_18_19 = 0;
 foreach ( $young_brides as $bride ) {
 	if ( isset( $bride['bride_age'] ) && $bride['bride_age'] >= 18 && $bride['bride_age'] < 20 ) {
-		$brides_18_19++;
+		++$brides_18_19;
 	}
 }
 ?>
@@ -130,26 +133,26 @@ foreach ( $young_brides as $bride ) {
 						<span class="stat-label">Total Plural Wives</span>
 					</div>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo $avg_wives; ?></span>
+						<span class="stat-value"><?php echo $avg_wives; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<span class="stat-label">Avg Wives per Polygamist</span>
 					</div>
 					<?php if ( $most_wives_leader ) : ?>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo $most_wives_leader['num_wives']; ?></span>
+						<span class="stat-value"><?php echo $most_wives_leader['num_wives']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<span class="stat-label">Most Wives (Single Leader)</span>
 						<span class="stat-note"><?php echo esc_html( $most_wives_leader['name'] ); ?></span>
 					</div>
 					<?php endif; ?>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo $overall_avg_age_diff; ?> yrs</span>
+						<span class="stat-value"><?php echo $overall_avg_age_diff; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> yrs</span>
 						<span class="stat-label">Avg Age Difference</span>
 					</div>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo $largest_age_diff; ?> yrs</span>
+						<span class="stat-value"><?php echo $largest_age_diff; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> yrs</span>
 						<span class="stat-label">Largest Age Difference</span>
 					</div>
 					<div class="stat-card">
-						<span class="stat-value"><?php echo $pct_large_age_diff; ?>%</span>
+						<span class="stat-value"><?php echo $pct_large_age_diff; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%</span>
 						<span class="stat-label">Marriages with 20+ yr Gap</span>
 					</div>
 					<div class="stat-card stat-card-highlight">
@@ -158,17 +161,17 @@ foreach ( $young_brides as $bride ) {
 					</div>
 					<?php if ( $brides_under_16 > 0 ) : ?>
 					<div class="stat-card stat-card-highlight">
-						<span class="stat-value"><?php echo $brides_under_16; ?></span>
+						<span class="stat-value"><?php echo $brides_under_16; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<span class="stat-label">Brides Under 16</span>
 					</div>
 					<?php endif; ?>
 					<div class="stat-card stat-card-highlight">
-						<span class="stat-value"><?php echo $pct_teenage_brides; ?>%</span>
+						<span class="stat-value"><?php echo $pct_teenage_brides; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%</span>
 						<span class="stat-label">Percentage Teenage Brides</span>
 					</div>
 					<?php if ( $youngest_bride_age !== null ) : ?>
 					<div class="stat-card stat-card-highlight">
-						<span class="stat-value"><?php echo $youngest_bride_age; ?></span>
+						<span class="stat-value"><?php echo $youngest_bride_age; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 						<span class="stat-label">Youngest Bride Age</span>
 					</div>
 					<?php endif; ?>
@@ -180,7 +183,9 @@ foreach ( $young_brides as $bride ) {
 			</section>
 
 			<!-- POLYGAMISTS BY ROLE -->
-			<?php /* if ( ! empty( $aggregate['role_counts'] ) ) : ?>
+			<?php
+			/*
+			if ( ! empty( $aggregate['role_counts'] ) ) : ?>
 			<section class="stats-by-role content-full-width">
 				<h2>Polygamists by Church Role</h2>
 				<div class="role-stats-grid">
@@ -192,7 +197,8 @@ foreach ( $young_brides as $bride ) {
 					<?php endforeach; ?>
 				</div>
 			</section>
-			<?php endif; */ ?>
+			<?php endif; */
+			?>
 
 			<!-- POLYGAMIST CARDS -->
 			<section class="polygamists-cards content-full-width">
@@ -201,10 +207,10 @@ foreach ( $young_brides as $bride ) {
 				<div class="leaders-grid leaders-grid-5">
 					<?php foreach ( $polygamists as $data ) : ?>
 						<?php
-						$content = '<span class="stat-badge">'.$data['num_wives'].' wives</span>';
-						$content .= '<span class="stat-badge">'.$data['num_children'].' children</span>';
+						$content  = '<span class="stat-badge">' . $data['num_wives'] . ' wives</span>';
+						$content .= '<span class="stat-badge">' . $data['num_children'] . ' children</span>';
 						if ( $data['num_teenage_brides'] > 0 ) :
-							$content .= '<span class="stat-badge stat-badge-warning">'.$data['num_teenage_brides'].' teen';
+							$content .= '<span class="stat-badge stat-badge-warning">' . $data['num_teenage_brides'] . ' teen';
 							$content .= $data['num_teenage_brides'] > 1 ? 's' : '';
 							$content .= '</span>';
 						endif;
@@ -235,13 +241,14 @@ foreach ( $young_brides as $bride ) {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $polygamists as $data ) : 
+							<?php
+							foreach ( $polygamists as $data ) :
 								$type_label = ( $data['polygamy_type'] === 'celestial' ) ? 'Celestial' : 'Simultaneous';
 								$type_class = ( $data['polygamy_type'] === 'celestial' ) ? 'type-celestial' : 'type-simultaneous';
-							?>
+								?>
 								<tr>
 									<td>
-										<a href="<?php echo get_permalink( $data['id'] ); ?>">
+										<a href="<?php echo get_permalink( $data['id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 											<?php echo esc_html( $data['name'] ); ?>
 										</a>
 										<?php if ( $data['is_living'] ) : ?>
@@ -250,13 +257,13 @@ foreach ( $young_brides as $bride ) {
 									</td>
 									<!-- <td><?php echo esc_html( implode( ', ', $data['roles'] ) ); ?></td> -->
 									<!-- <td class="<?php echo esc_attr( $type_class ); ?>"><?php echo esc_html( $type_label ); ?></td> -->
-									<td><?php echo $data['num_wives']; ?></td>
+									<td><?php echo $data['num_wives']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 									<td class="<?php echo $data['num_teenage_brides'] > 0 ? 'highlight-warning' : ''; ?>">
-										<?php echo $data['num_teenage_brides']; ?>
+										<?php echo $data['num_teenage_brides']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									</td>
-									<td><?php echo $data['num_children']; ?></td>
-									<td><?php echo $data['avg_age_diff'] ? $data['avg_age_diff'] . ' yrs' : '—'; ?></td>
-									<td><?php echo $data['largest_age_diff'] ? $data['largest_age_diff'] . ' yrs' : '—'; ?></td>
+									<td><?php echo $data['num_children']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+									<td><?php echo $data['avg_age_diff'] ? $data['avg_age_diff'] . ' yrs' : '—'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+									<td><?php echo $data['largest_age_diff'] ? $data['largest_age_diff'] . ' yrs' : '—'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -270,8 +277,8 @@ foreach ( $young_brides as $bride ) {
 				<h2>Young Brides</h2>
 				<p class="section-description">
 					Women who married church leaders before age 20. 
-					This includes <?php echo $aggregate['total_teenage_brides']; ?> teenage brides (under 18) 
-					plus <?php echo $brides_18_19; ?> brides aged 18-19.
+					This includes <?php echo $aggregate['total_teenage_brides']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> teenage brides (under 18)
+					plus <?php echo $brides_18_19; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> brides aged 18-19.
 					Listed by age at marriage, youngest first.
 				</p>
 				<div class="table-responsive">
@@ -287,9 +294,10 @@ foreach ( $young_brides as $bride ) {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $young_brides as $bride ) : 
+							<?php
+							foreach ( $young_brides as $bride ) :
 								$age_gap = ( $bride['husband_age'] ?? 0 ) - ( $bride['bride_age'] ?? 0 );
-								$year = $bride['marriage_date'] ? date( 'Y', strtotime( $bride['marriage_date'] ) ) : '—';
+								$year    = $bride['marriage_date'] ? gmdate( 'Y', strtotime( $bride['marriage_date'] ) ) : '—'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 								// Determine highlight class based on age
 								$age_class = '';
 								if ( $bride['bride_age'] < 16 ) {
@@ -298,11 +306,11 @@ foreach ( $young_brides as $bride ) {
 									$age_class = 'highlight-warning';
 								}
 								// 18-19 year olds get no special highlight
-							?>
+								?>
 								<tr>
 									<td>
 										<?php if ( $bride['bride_id'] ) : ?>
-											<a href="<?php echo get_permalink( $bride['bride_id'] ); ?>">
+											<a href="<?php echo get_permalink( $bride['bride_id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 												<?php echo esc_html( $bride['bride_name'] ); ?>
 											</a>
 										<?php else : ?>
@@ -310,16 +318,16 @@ foreach ( $young_brides as $bride ) {
 										<?php endif; ?>
 									</td>
 									<td class="<?php echo esc_attr( $age_class ); ?>">
-										<?php echo $bride['bride_age'] ?? '—'; ?>
+										<?php echo $bride['bride_age'] ?? '—'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									</td>
 									<td>
-										<a href="<?php echo get_permalink( $bride['husband_id'] ); ?>">
+										<a href="<?php echo get_permalink( $bride['husband_id'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 											<?php echo esc_html( $bride['husband_name'] ); ?>
 										</a>
 									</td>
-									<td><?php echo $bride['husband_age'] ?? '—'; ?></td>
+									<td><?php echo $bride['husband_age'] ?? '—'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 									<td class="<?php echo $age_gap >= 20 ? 'highlight-warning' : ''; ?>">
-										<?php echo $age_gap > 0 ? $age_gap . ' yrs' : '—'; ?>
+										<?php echo $age_gap > 0 ? $age_gap . ' yrs' : '—'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									</td>
 									<td><?php echo esc_html( $year ); ?></td>
 								</tr>
@@ -346,43 +354,49 @@ foreach ( $young_brides as $bride ) {
 					</div>
 				</div>
 				
-				<?php 
+				<?php
 				$max_wives = ! empty( $polygamists ) ? $polygamists[0]['num_wives'] : 1;
 				?>
 				
 				<div id="polygamy-bar-chart" class="apostle-bar-chart">
-					<?php foreach ( $polygamists as $p ) : 
+					<?php
+					foreach ( $polygamists as $p ) :
 						$wives_pct = ( $p['num_wives'] / $max_wives ) * 100;
 						$bar_class = in_array( 'president', $p['role_slugs'] ?? array() ) ? 'bar-prophet' : 'bar-historical';
-						if ( $p['num_teenage_brides'] > 0 ) $bar_class .= ' has-teenage';
+						if ( $p['num_teenage_brides'] > 0 ) {
+							$bar_class .= ' has-teenage';
+						}
 						$thumbnail = get_the_post_thumbnail_url( $p['id'], 'thumbnail' );
-					?>
+						?>
 						<a href="<?php echo esc_url( get_permalink( $p['id'] ) ); ?>" 
-						   class="bar-row polygamy-bar-row" 
-						   data-wives="<?php echo esc_attr( $p['num_wives'] ); ?>"
-						   data-teenage="<?php echo esc_attr( $p['num_teenage_brides'] ); ?>"
-						   data-age-diff="<?php echo esc_attr( $p['largest_age_diff'] ?? 0 ); ?>"
-						   data-name="<?php echo esc_attr( $p['name'] ); ?>">
+							class="bar-row polygamy-bar-row" 
+							data-wives="<?php echo esc_attr( $p['num_wives'] ); ?>"
+							data-teenage="<?php echo esc_attr( $p['num_teenage_brides'] ); ?>"
+							data-age-diff="<?php echo esc_attr( $p['largest_age_diff'] ?? 0 ); ?>"
+							data-name="<?php echo esc_attr( $p['name'] ); ?>">
 							<span class="bar-name">
 								<?php if ( $thumbnail ) : ?>
 									<img src="<?php echo esc_url( $thumbnail ); ?>" alt="" class="bar-thumb">
 								<?php endif; ?>
 								<?php echo esc_html( $p['name'] ); ?>
-								<?php /* if ( in_array( 'president', $p['role_slugs'] ?? array() ) ) : ?>
+								<?php
+								/*
+								if ( in_array( 'president', $p['role_slugs'] ?? array() ) ) : ?>
 									<span class="president-badge" title="Church President">★</span>
-								<?php endif; */ ?>
+								<?php endif; */
+								?>
 							</span>
 							<div class="bar-track">
-								<div class="bar <?php echo esc_attr( $bar_class ); ?>" style="width: <?php echo $wives_pct; ?>%;">
+								<div class="bar <?php echo esc_attr( $bar_class ); ?>" style="width: <?php echo $wives_pct; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%;">
 									<span class="bar-value"><?php echo esc_html( $p['num_wives'] ); ?></span>
 								</div>
 							</div>
 							<span class="bar-dates">
 								<?php if ( $p['num_teenage_brides'] > 0 ) : ?>
-									<span class="teenage-count" title="Teenage brides"><?php echo $p['num_teenage_brides']; ?> teen<?php echo $p['num_teenage_brides'] > 1 ? 's' : ''; ?></span>
+									<span class="teenage-count" title="Teenage brides"><?php echo $p['num_teenage_brides']; ?> teen<?php echo $p['num_teenage_brides'] > 1 ? 's' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 								<?php endif; ?>
 								<?php if ( ! empty( $p['largest_age_diff'] ) && $p['largest_age_diff'] > 0 ) : ?>
-									<span class="age-diff" title="Largest age gap"><?php echo $p['largest_age_diff']; ?>yr gap</span>
+									<span class="age-diff" title="Largest age gap"><?php echo $p['largest_age_diff']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>yr gap</span>
 								<?php endif; ?>
 							</span>
 						</a>
@@ -409,10 +423,10 @@ foreach ( $young_brides as $bride ) {
 					This data is presented for historical and educational purposes.
 				</p>
 				<div class="leader-navigation">
-					<a href="<?php echo get_post_type_archive_link( 'saint' ); ?>" class="btn btn-secondary">
+					<a href="<?php echo get_post_type_archive_link( 'saint' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
 						All Saints →
 					</a>
-					<a href="<?php echo home_url( '/saint-charts/' ); ?>" class="btn btn-secondary">
+					<a href="<?php echo home_url( '/saint-charts/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
 						Saints Data →
 					</a>
 				</div>

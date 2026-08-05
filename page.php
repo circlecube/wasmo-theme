@@ -31,7 +31,7 @@ get_header();
 			endwhile; // End of the loop.
 			?>
 
-			<?php //get_template_part( 'template-parts/sidebar/sidebar' ); ?>
+			<?php // get_template_part( 'template-parts/sidebar/sidebar' ); ?>
 		</main><!-- #main -->
 	</section><!-- #primary -->
 <?php

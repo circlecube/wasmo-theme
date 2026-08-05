@@ -1,9 +1,9 @@
 <?php
 /**
-  * Title: Profile Spotlight
-  * Slug: wasmo/profile-spotlight
-  * Categories: featured, wasmormon
-  */
+ * Title: Profile Spotlight
+ * Slug: wasmo/profile-spotlight
+ * Categories: featured, wasmormon
+ */
 
 ?><!-- wp:group {"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"><!-- wp:paragraph -->
