@@ -49,6 +49,15 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Check RELEASE_PAT is configured
+        env:
+          RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
+        run: |
+          if [ -z "${RELEASE_PAT}" ]; then
+            echo "::error::RELEASE_PAT secret is not set. Create a fine-grained PAT with Contents: write and Pull requests: write on this repo, then add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v7
         with:
