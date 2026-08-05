@@ -12,6 +12,10 @@ tests
 .gitattributes
 .gitignore
 .nvm
+.wp-env.json
+phpcs.xml.dist
+phpunit.xml.dist
+playwright.config.js
 
 # File Types
 *.lock

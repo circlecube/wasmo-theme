@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="WasmoTheme">
+    <description>PHP_CodeSniffer rules for wasmo-theme.</description>
+
+    <!-- Files to check — expand as legacy files are cleaned up -->
+    <file>includes/updates.php</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <config name="minimum_supported_wp_version" value="6.2"/>
+
+    <rule ref="WordPress">
+        <!-- Allow short array syntax (PSR/modern PHP preference) -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
+    <!-- Variable names in this file use camelCase (vendor convention); relax the sniff -->
+    <rule ref="WordPress.NamingConventions.ValidVariableName">
+        <properties>
+            <property name="allowed_custom_properties" type="array">
+                <element value="setDataMap"/>
+                <element value="setDataOverrides"/>
+            </property>
+        </properties>
+    </rule>
+
+</ruleset>

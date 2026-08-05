@@ -6,7 +6,14 @@
     "scripts": {
         "build": "wp-scripts build",
         "start": "wp-scripts start",
-        "dev": "wp-scripts start"
+        "dev": "wp-scripts start",
+        "lint:js": "wp-scripts lint-js src",
+        "lint:js:fix": "wp-scripts lint-js src --fix",
+        "lint:css": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css'",
+        "lint:css:fix": "wp-scripts lint-style 'src/**/*.scss' 'src/**/*.css' --fix",
+        "env:start": "wp-env start",
+        "env:stop": "wp-env stop",
+        "test:e2e": "playwright test"
     },
     "keywords": [
         "wordpress",
@@ -16,6 +23,8 @@
     "author": "wasmormon.org",
     "license": "GPL-2.0-or-later",
     "devDependencies": {
+        "@playwright/test": "^1.50.0",
+        "@wordpress/env": "^10.0.0",
         "@wordpress/scripts": "^34.0.0",
         "ajv": "^8.17.1"
     },
