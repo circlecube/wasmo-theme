@@ -405,14 +405,28 @@ body.logged-in .menu-item.logged-in {
 	position: absolute;
 	right: 6px;
 	top: 6px;
+	transition: background-color 0.2s ease;
 	width: 26px;
 	z-index: 2;
 }
 .directory .person.has-video .video-indicator svg {
-	fill: white;
-	height: 16px;
-	margin-left: 2px;
-	width: 16px;
+	fill: var(--color-white);
+	height: 14px;
+	transition: fill 0.2s ease, transform 0.2s ease;
+	width: 14px;
+}
+.directory .person.has-video:hover .video-indicator,
+.directory .person.has-video:focus .video-indicator,
+.directory .person.has-video:focus-visible .video-indicator,
+.directory .person.has-video:focus-within .video-indicator {
+	background: rgba(0, 0, 0, 0.85);
+}
+.directory .person.has-video:hover .video-indicator svg,
+.directory .person.has-video:focus .video-indicator svg,
+.directory .person.has-video:focus-visible .video-indicator svg,
+.directory .person.has-video:focus-within .video-indicator svg {
+	fill: var(--color-orange);
+	transform: scale(1.08);
 }
 
 /* Directory: tagline strip above name, fades in on hover on desktop */
@@ -5356,6 +5370,8 @@ details[open] .story-progress-arrow {
 	padding: 0.3rem 0.75rem;
 	transition: opacity 0.2s;
 	float: right;
+	position: relative;
+	z-index: 1;
 }
 .story-restore-btn:hover {
 	opacity: 0.75;

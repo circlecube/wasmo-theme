@@ -1,7 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, ToggleControl, FormTokenField } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
 // Import styles
@@ -10,17 +10,25 @@ import './style.scss';
 
 registerBlockType( 'wasmo/user-directory', {
     edit: ( { attributes, setAttributes } ) => {
-        const { context, maxProfiles, showLoadMore, showButtons, taxonomyFilter, termId, requireImage, videoOnly } = attributes;
+        const { context, maxProfiles, showLoadMore, showButtons, taxonomyFilter, termId, requireImage, videoOnly, excludeUserIds, featuredUserIds } = attributes;
         const blockProps = useBlockProps();
 
-        // Fetch users for preview
+        // Fetch users for preview and profile selection
         const users = useSelect( ( select ) => {
             return select( 'core' ).getUsers( {
-                per_page: Math.min( maxProfiles, 12 ),
-                orderby: 'registered',
-                order: 'desc',
+                per_page: 100,
+                orderby: 'name',
+                order: 'asc',
             } );
-        }, [ maxProfiles ] );
+        }, [] );
+
+        const userSuggestions = ( users || [] ).map( ( user ) => user.name );
+        const excludedUserNames = ( excludeUserIds || [] )
+            .map( ( id ) => users?.find( ( user ) => user.id === id )?.name )
+            .filter( Boolean );
+        const featuredUserNames = ( featuredUserIds || [] )
+            .map( ( id ) => users?.find( ( user ) => user.id === id )?.name )
+            .filter( Boolean );
 
         const displayCount = Math.min( maxProfiles, 12 );
 
@@ -101,6 +109,39 @@ registerBlockType( 'wasmo/user-directory', {
                             />
                         ) }
                     </PanelBody>
+
+                    <PanelBody title={ __( 'Profile Curation', 'wasmo-theme' ) } initialOpen={ false }>
+                        <FormTokenField
+                            label={ __( 'Featured Profiles (up to 3)', 'wasmo-theme' ) }
+                            value={ featuredUserNames }
+                            suggestions={ userSuggestions }
+                            onChange={ ( tokens ) => {
+                                const newFeaturedIds = tokens
+                                    .slice( 0, 3 )
+                                    .map( ( name ) => users?.find( ( user ) => user.name === name )?.id )
+                                    .filter( Boolean );
+                                setAttributes( { featuredUserIds: newFeaturedIds } );
+                            } }
+                            __experimentalExpandOnFocus={ true }
+                            __experimentalShowHowTo={ false }
+                            help={ __( 'Pin up to 3 profiles to the top of the grid.', 'wasmo-theme' ) }
+                        />
+
+                        <FormTokenField
+                            label={ __( 'Exclude Profiles', 'wasmo-theme' ) }
+                            value={ excludedUserNames }
+                            suggestions={ userSuggestions }
+                            onChange={ ( tokens ) => {
+                                const newExcludeIds = tokens
+                                    .map( ( name ) => users?.find( ( user ) => user.name === name )?.id )
+                                    .filter( Boolean );
+                                setAttributes( { excludeUserIds: newExcludeIds } );
+                            } }
+                            __experimentalExpandOnFocus={ true }
+                            __experimentalShowHowTo={ false }
+                            help={ __( 'Remove selected profiles from this grid.', 'wasmo-theme' ) }
+                        />
+                    </PanelBody>
                 </InspectorControls>
 
                 <div className="user-directory-preview">
@@ -118,6 +159,12 @@ registerBlockType( 'wasmo/user-directory', {
                         { showButtons && <span className="feature-badge">🔘 Buttons</span> }
                         { !requireImage && <span className="feature-badge feature-warning">🖼️ No image required</span> }
                         { videoOnly && <span className="filter-badge">🎥 Video Only</span> }
+                        { featuredUserNames.length > 0 && (
+                            <span className="filter-badge">⭐ { featuredUserNames.join( ', ' ) }</span>
+                        ) }
+                        { excludedUserNames.length > 0 && (
+                            <span className="filter-badge">🚫 { excludedUserNames.join( ', ' ) }</span>
+                        ) }
                         { taxonomyFilter && (
                             <span className="filter-badge">🏷️ { taxonomyFilter }: { termId }</span>
                         ) }

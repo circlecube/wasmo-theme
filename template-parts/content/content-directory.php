@@ -7,7 +7,9 @@ $termid      = get_query_var( 'termid' );
 $paged       = get_query_var( 'paged' );
 $lazy		 = get_query_var( 'lazy' );
 $showall     = get_query_var( 'showall' );
-$video_only  = get_query_var( 'video_only', false );
+$video_only         = get_query_var( 'video_only', false );
+$exclude_user_ids   = get_query_var( 'exclude_user_ids', array() );
+$featured_user_ids  = get_query_var( 'featured_user_ids', array() );
 
 // Initialize the remaining vars
 $offset = 0;
@@ -132,7 +134,22 @@ function wasmo_filter_directory_has_video( $user ) {
 }}
 
 
-$transient_name = implode('-', array( 'wasmo_directory', $state, $context, $lazy, $showall, $max_profiles, 'page_' . $paged, $video_only ? 'video' : '', $tax && $termid ? $tax . '-' . $termid : '' ) );
+$exclude_user_ids  = array_values( array_filter( array_map( 'intval', (array) $exclude_user_ids ) ) );
+$featured_user_ids = array_slice( array_values( array_filter( array_map( 'intval', (array) $featured_user_ids ) ) ), 0, 3 );
+
+$transient_name = implode('-', array(
+	'wasmo_directory',
+	$state,
+	$context,
+	$lazy,
+	$showall,
+	$max_profiles,
+	'page_' . $paged,
+	$video_only ? 'video' : '',
+	$tax && $termid ? $tax . '-' . $termid : '',
+	! empty( $exclude_user_ids ) ? 'ex-' . implode( '_', $exclude_user_ids ) : '',
+	! empty( $featured_user_ids ) ? 'feat-' . implode( '_', $featured_user_ids ) : '',
+) );
 $transient_exp = WEEK_IN_SECONDS;
 
 // Only skip cache for admin users in debug mode
@@ -164,6 +181,43 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 	if ( $video_only ) {
 		$filtered_users = array_filter( $filtered_users, "wasmo_filter_directory_has_video" );
 	}
+
+	// exclude selected profiles
+	if ( ! empty( $exclude_user_ids ) ) {
+		$filtered_users = array_filter(
+			$filtered_users,
+			function( $user ) use ( $exclude_user_ids ) {
+				return ! in_array( (int) $user->ID, $exclude_user_ids, true );
+			}
+		);
+	}
+
+	// pin featured profiles to the top while preserving default order for the rest
+	if ( ! empty( $featured_user_ids ) ) {
+		$featured_users = array();
+		$remaining_users = array();
+		$users_by_id = array();
+
+		foreach ( $filtered_users as $user ) {
+			$users_by_id[ (int) $user->ID ] = $user;
+		}
+
+		foreach ( $featured_user_ids as $featured_user_id ) {
+			if ( isset( $users_by_id[ $featured_user_id ] ) ) {
+				$featured_users[] = $users_by_id[ $featured_user_id ];
+				unset( $users_by_id[ $featured_user_id ] );
+			}
+		}
+
+		foreach ( $filtered_users as $user ) {
+			if ( isset( $users_by_id[ (int) $user->ID ] ) ) {
+				$remaining_users[] = $user;
+			}
+		}
+
+		$filtered_users = array_merge( $featured_users, $remaining_users );
+	}
+
 	$total_users = count($filtered_users);
 	$counter = 0;
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
@@ -228,7 +282,7 @@ if ( false === ( $the_directory = get_transient( $transient_name ) ) ) {
 			}
 			if ( $has_video ) {
 				$the_directory .= '<span class="video-indicator" aria-label="Includes video">';
-				$the_directory .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+				$the_directory .= wasmo_get_icon_svg( 'video', 16 );
 				$the_directory .= '</span>';
 			}
 		$the_directory .= '</a>';
