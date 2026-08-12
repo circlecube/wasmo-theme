@@ -1,17 +1,17 @@
 <?php
 /**
  * Blocks Index
- * 
+ *
  * This file includes all block registration files.
  * Add new blocks by including their register.php file here.
- * 
+ *
  * @package Wasmo_Theme
  * @subpackage Blocks
  */
 
 // Prevent direct access
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 // Include block registration files

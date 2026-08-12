@@ -1,0 +1,9 @@
+{
+    "core": null,
+    "themes": [
+        "."
+    ],
+    "plugins": [],
+    "port": 8888,
+    "testsPort": 8889
+}

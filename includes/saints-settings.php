@@ -1,7 +1,7 @@
 <?php
 /**
  * Saints Settings
- * 
+ *
  * Admin page for configuring the current First Presidency and other leadership settings.
  *
  * @package wasmo
@@ -36,7 +36,7 @@ add_action( 'admin_init', 'wasmo_register_leader_settings' );
  * Clear First Presidency transient when settings are saved
  */
 function wasmo_clear_fp_transient_on_save( $old_value, $value, $option ) {
-	if ( in_array( $option, array( 'wasmo_current_president', 'wasmo_current_first_counselor', 'wasmo_current_second_counselor' ) ) ) {
+	if ( in_array( $option, array( 'wasmo_current_president', 'wasmo_current_first_counselor', 'wasmo_current_second_counselor' ), true ) ) {
 		delete_transient( 'wasmo_first_presidency' );
 	}
 }
@@ -47,18 +47,20 @@ add_action( 'update_option', 'wasmo_clear_fp_transient_on_save', 10, 3 );
  */
 function wasmo_render_leader_settings_page() {
 	// Get all church leaders for the dropdown
-	$all_leaders = get_posts( array(
-		'post_type'      => 'saint',
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-		'orderby'        => 'title',
-		'order'          => 'ASC',
-	) );
+	$all_leaders = get_posts(
+		array(
+			'post_type'      => 'saint',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		)
+	);
 
 	// Separate living and deceased for better UX
-	$living_leaders = array();
+	$living_leaders   = array();
 	$deceased_leaders = array();
-	
+
 	foreach ( $all_leaders as $leader ) {
 		if ( wasmo_is_saint_living( $leader->ID ) ) {
 			$living_leaders[] = $leader;
@@ -68,10 +70,10 @@ function wasmo_render_leader_settings_page() {
 	}
 
 	// Get current settings
-	$current_president = get_option( 'wasmo_current_president', '' );
-	$current_first_counselor = get_option( 'wasmo_current_first_counselor', '' );
+	$current_president        = get_option( 'wasmo_current_president', '' );
+	$current_first_counselor  = get_option( 'wasmo_current_first_counselor', '' );
 	$current_second_counselor = get_option( 'wasmo_current_second_counselor', '' );
-	
+
 	// Get the computed First Presidency for comparison
 	$computed_fp = wasmo_get_current_first_presidency();
 	?>
@@ -186,7 +188,7 @@ function wasmo_render_leader_settings_page() {
 			<h3>Current First Presidency Display</h3>
 			<p>This is how the First Presidency will appear on the site:</p>
 			
-			<?php 
+			<?php
 			// Re-fetch after potential save
 			$display_fp = wasmo_get_current_first_presidency();
 			?>
@@ -194,9 +196,10 @@ function wasmo_render_leader_settings_page() {
 			<div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
 				<?php if ( $display_fp['president'] ) : ?>
 					<div style="text-align: center;">
-						<?php 
+						<?php
 						$thumb = get_the_post_thumbnail_url( $display_fp['president'], 'thumbnail' );
-						if ( $thumb ) : ?>
+						if ( $thumb ) :
+							?>
 							<img src="<?php echo esc_url( $thumb ); ?>" alt="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
 						<?php endif; ?>
 						<p style="margin: 5px 0 0;"><strong><?php echo esc_html( get_the_title( $display_fp['president'] ) ); ?></strong></p>
@@ -212,9 +215,10 @@ function wasmo_render_leader_settings_page() {
 
 				<?php if ( $display_fp['first-counselor'] ) : ?>
 					<div style="text-align: center;">
-						<?php 
+						<?php
 						$thumb = get_the_post_thumbnail_url( $display_fp['first-counselor'], 'thumbnail' );
-						if ( $thumb ) : ?>
+						if ( $thumb ) :
+							?>
 							<img src="<?php echo esc_url( $thumb ); ?>" alt="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
 						<?php endif; ?>
 						<p style="margin: 5px 0 0;"><strong><?php echo esc_html( get_the_title( $display_fp['first-counselor'] ) ); ?></strong></p>
@@ -230,9 +234,10 @@ function wasmo_render_leader_settings_page() {
 
 				<?php if ( $display_fp['second-counselor'] ) : ?>
 					<div style="text-align: center;">
-						<?php 
+						<?php
 						$thumb = get_the_post_thumbnail_url( $display_fp['second-counselor'], 'thumbnail' );
-						if ( $thumb ) : ?>
+						if ( $thumb ) :
+							?>
 							<img src="<?php echo esc_url( $thumb ); ?>" alt="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
 						<?php endif; ?>
 						<p style="margin: 5px 0 0;"><strong><?php echo esc_html( get_the_title( $display_fp['second-counselor'] ) ); ?></strong></p>

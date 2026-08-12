@@ -24,25 +24,25 @@ get_header();
 				get_template_part( 'template-parts/content/content', 'single' );
 
 				// if ( is_singular( 'attachment' ) ) {
-				// 	// Parent post navigation.
-				// 	the_post_navigation(
-				// 		array(
-				// 			/* translators: %s: parent post link */
-				// 			'prev_text' => sprintf( __( '<span class="meta-nav">Published in</span><span class="post-title">%s</span>', 'twentynineteen' ), '%title' ),
-				// 		)
-				// 	);
+				//  // Parent post navigation.
+				//  the_post_navigation(
+				//      array(
+				//          /* translators: %s: parent post link */
+				//          'prev_text' => sprintf( __( '<span class="meta-nav">Published in</span><span class="post-title">%s</span>', 'wasmo-theme' ), '%title' ),
+				//      )
+				//  );
 				// } elseif ( is_singular( 'post' ) ) {
-				// 	// Previous/next post navigation.
-				// 	the_post_navigation(
-				// 		array(
-				// 			'next_text' => '<span class="meta-nav" aria-hidden="true">' . __( 'Next Post', 'twentynineteen' ) . '</span> ' .
-				// 				'<span class="screen-reader-text">' . __( 'Next post:', 'twentynineteen' ) . '</span> <br/>' .
-				// 				'<span class="post-title">%title</span>',
-				// 			'prev_text' => '<span class="meta-nav" aria-hidden="true">' . __( 'Previous Post', 'twentynineteen' ) . '</span> ' .
-				// 				'<span class="screen-reader-text">' . __( 'Previous post:', 'twentynineteen' ) . '</span> <br/>' .
-				// 				'<span class="post-title">%title</span>',
-				// 		)
-				// 	);
+				//  // Previous/next post navigation.
+				//  the_post_navigation(
+				//      array(
+				//          'next_text' => '<span class="meta-nav" aria-hidden="true">' . __( 'Next Post', 'wasmo-theme' ) . '</span> ' .
+				//              '<span class="screen-reader-text">' . __( 'Next post:', 'wasmo-theme' ) . '</span> <br/>' .
+				//              '<span class="post-title">%title</span>',
+				//          'prev_text' => '<span class="meta-nav" aria-hidden="true">' . __( 'Previous Post', 'wasmo-theme' ) . '</span> ' .
+				//              '<span class="screen-reader-text">' . __( 'Previous post:', 'wasmo-theme' ) . '</span> <br/>' .
+				//              '<span class="post-title">%title</span>',
+				//      )
+				//  );
 				// }
 
 			endwhile; // End of the loop.

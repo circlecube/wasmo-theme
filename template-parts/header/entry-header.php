@@ -13,12 +13,12 @@ $discussion = ! is_page() && twentynineteen_can_show_post_thumbnail() ? twentyni
 
 <?php if ( ! is_page() ) : ?>
 <div class="entry-meta">
-	<?php 
+	<?php
 		$author = get_post_field( 'post_author', get_the_ID() );
-		$user = get_user_by('id', $author);
-		if ( !$user->has_cap( 'manage_options' ) ) {
-			twentynineteen_posted_by();
-		}
+		$user   = get_user_by( 'id', $author );
+	if ( ! $user->has_cap( 'manage_options' ) ) {
+		twentynineteen_posted_by();
+	}
 	?>
 	<?php twentynineteen_posted_on(); ?>
 	<span class="comment-count">
@@ -35,7 +35,7 @@ $discussion = ! is_page() && twentynineteen_can_show_post_thumbnail() ? twentyni
 			sprintf(
 				wp_kses(
 					/* translators: %s: Name of current post. Only visible to screen readers. */
-					__( 'Edit <span class="screen-reader-text">%s</span>', 'twentynineteen' ),
+					__( 'Edit <span class="screen-reader-text">%s</span>', 'wasmo-theme' ),
 					array(
 						'span' => array(
 							'class' => array(),

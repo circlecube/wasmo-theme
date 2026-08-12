@@ -1,0 +1,129 @@
+# Auto-creates a GitHub Release (with built ZIP) when a release/* branch merges to main.
+#
+# Based on circlecube/bandiverse's reusable-auto-release.yml but runs inline because
+# wasmo-theme vendors wp-forge/wp-update-handler and the distributable ZIP must include
+# the vendor/ directory. The reusable workflow skips Composer install since bandiverse
+# child themes have no PHP vendor deps.
+#
+# The existing build-on-release.yml is kept as a fallback for releases created manually
+# through the GitHub UI (GitHub blocks release:published events for GITHUB_TOKEN-created
+# releases to prevent loops).
+
+name: Auto-release on merge
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  auto-release:
+    name: Create release and attach ZIP
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.message, '/release/') ||
+      startsWith(github.event.head_commit.message, 'chore(release):') ||
+      startsWith(github.event.head_commit.message, 'Release prep:')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Read version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Check if release tag already exists
+        id: tag_check
+        run: |
+          if git ls-remote --tags origin "refs/tags/${{ steps.version.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag ${{ steps.version.outputs.version }} already exists — skipping."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup PHP
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install PHP dependencies (production)
+        if: steps.tag_check.outputs.exists == 'false'
+        run: composer install --no-progress --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Setup Node.js
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install JS dependencies and build
+        if: steps.tag_check.outputs.exists == 'false'
+        run: npm ci && npm run build
+
+      - name: Verify build output
+        if: steps.tag_check.outputs.exists == 'false'
+        run: test -f build/index.js
+
+      - name: Validate version matches style.css
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          TAGGED_VERSION="${{ steps.version.outputs.version }}"
+          THEME_VERSION=$(grep -E "^\s*Version:\s*" style.css | sed -E 's/.*Version:\s*([0-9.]+).*/\1/')
+          echo "Package version: ${TAGGED_VERSION}"
+          echo "style.css version: ${THEME_VERSION}"
+          [[ "${TAGGED_VERSION}" == "${THEME_VERSION}" ]] || { echo "::error::Version mismatch: package.json ${TAGGED_VERSION} != style.css ${THEME_VERSION}"; exit 1; }
+
+      - name: Package theme into ZIP
+        if: steps.tag_check.outputs.exists == 'false'
+        id: prep
+        run: |
+          PACKAGE="${GITHUB_REPOSITORY##*/}"
+          VERSION="${{ steps.version.outputs.version }}"
+          DIST="${{ runner.temp }}/dist"
+          ZIP_NAME="${PACKAGE}.${VERSION}.zip"
+          mkdir -p "${DIST}"
+          rsync -r --exclude-from=.distignore . "${DIST}/${PACKAGE}/"
+          cd "${DIST}"
+          zip -r "${ZIP_NAME}" "${PACKAGE}"
+          echo "dist=${DIST}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release and upload ZIP
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --generate-notes \
+            "${{ steps.prep.outputs.dist }}/${{ steps.prep.outputs.zip_name }}"
+
+      - name: Workflow summary
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          TAG_EXISTS: ${{ steps.tag_check.outputs.exists }}
+          ZIP_NAME: ${{ steps.prep.outputs.zip_name }}
+        run: |
+          {
+            echo "## Auto-release summary"
+            echo ""
+            if [ "${TAG_EXISTS}" == "true" ]; then
+              echo "- Tag \`${TAG}\` already existed — no new release created."
+            else
+              echo "- Created GitHub release \`${TAG}\`"
+              echo "- Built and attached \`${ZIP_NAME}\`"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

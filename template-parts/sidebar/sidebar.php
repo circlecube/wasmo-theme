@@ -9,7 +9,7 @@
 
 if ( is_active_sidebar( 'sidebar' ) ) : ?>
 
-	<aside class="widget-area sidebar entry" role="complementary" aria-label="<?php esc_attr_e( 'Sidebar', 'twentynineteen' ); ?>">
+	<aside class="widget-area sidebar entry" role="complementary" aria-label="<?php esc_attr_e( 'Sidebar', 'wasmo-theme' ); ?>">
 		<?php
 		if ( is_active_sidebar( 'sidebar' ) ) {
 			?>

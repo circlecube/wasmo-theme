@@ -1,7 +1,7 @@
 <?php
 /**
  * Render callback for the User Directory block
- * 
+ *
  * @package Wasmo_Theme
  * @subpackage Blocks
  */
@@ -31,19 +31,21 @@ set_query_var( 'featured_user_ids', is_array( $featured_user_ids ) ? $featured_u
 
 // Set taxonomy filter if provided
 if ( ! empty( $tax_filter ) && $term_id > 0 ) {
-    set_query_var( 'tax', $tax_filter );
-    set_query_var( 'termid', $term_id );
+	set_query_var( 'tax', $tax_filter );
+	set_query_var( 'termid', $term_id );
 }
 
 // Get wrapper attributes for block supports (spacing, alignment, etc.)
-$wrapper_attributes = get_block_wrapper_attributes( array(
-    'class' => 'wp-block-wasmo-user-directory',
-) );
+$wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class' => 'wp-block-wasmo-user-directory',
+	)
+);
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
-    <?php
-    // Load the existing directory template part (buttons handled by template based on show_buttons)
-    get_template_part( 'template-parts/content/content', 'directory' );
-    ?>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php
+	// Load the existing directory template part (buttons handled by template based on show_buttons)
+	get_template_part( 'template-parts/content/content', 'directory' );
+	?>
 </div>

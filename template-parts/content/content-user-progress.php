@@ -31,11 +31,11 @@ $completed['why_left'] = (bool) get_field( 'why_i_left', 'user_' . $userid );
 $completed['about_me'] = (bool) get_field( 'about_me', 'user_' . $userid );
 
 $question_rows = get_field( 'questions', 'user_' . $userid );
-$answered = 0;
+$answered      = 0;
 if ( is_array( $question_rows ) ) {
 	foreach ( $question_rows as $row ) {
 		if ( ! empty( $row['answer'] ) ) {
-			$answered++;
+			++$answered;
 		}
 	}
 }
@@ -86,10 +86,10 @@ if ( $box_states_raw ) {
 		$box_states = $decoded;
 	}
 }
-$progress_open      = isset( $box_states['progress_open'] )      ? (bool) $box_states['progress_open']      : true;
+$progress_open      = isset( $box_states['progress_open'] ) ? (bool) $box_states['progress_open'] : true;
 $progress_dismissed = isset( $box_states['progress_dismissed'] ) ? (bool) $box_states['progress_dismissed'] : false;
-$further_open       = isset( $box_states['further_open'] )       ? (bool) $box_states['further_open']       : false;
-$further_dismissed  = isset( $box_states['further_dismissed'] )  ? (bool) $box_states['further_dismissed']  : false;
+$further_open       = isset( $box_states['further_open'] ) ? (bool) $box_states['further_open'] : false;
+$further_dismissed  = isset( $box_states['further_dismissed'] ) ? (bool) $box_states['further_dismissed'] : false;
 
 // Whether the further box is eligible to show
 $show_further = ( $done >= 8 );
@@ -169,7 +169,7 @@ $further_items = [
 	<details<?php echo $progress_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
-				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; ?></span>
+				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . esc_html( $username ) : ''; ?></span>
 				<span class="story-progress-right">
 					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
 					<span class="story-progress-arrow" aria-hidden="true"></span>
@@ -200,12 +200,12 @@ $further_items = [
 $any_dismissed = $progress_dismissed || ( $show_further && $further_dismissed );
 ?>
 <button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist"<?php echo ! $any_dismissed ? ' style="display:none"' : ''; ?>>
-	<?php echo wasmo_get_icon_svg( 'checklist', 16 ); ?>
+	<?php wasmo_echo_icon_svg( 'checklist', 16 ); ?>
 	<span class="screen-reader-text">My Checklist</span>
 </button>
 
 <?php if ( $show_further ) : ?>
-<?php // Further box: always in DOM when eligible; hidden via inline style when dismissed ?>
+	<?php // Further box: always in DOM when eligible; hidden via inline style when dismissed ?>
 <aside class="story-further" id="story-further-box"<?php echo $further_dismissed ? ' style="display:none"' : ''; ?>>
 	<details<?php echo $further_open ? ' open' : ''; ?>>
 		<summary>
@@ -274,12 +274,18 @@ $any_dismissed = $progress_dismissed || ( $show_further && $further_dismissed );
 	// ── Box state: open/closed/dismissed ──────────────────────────────────────
 
 	// Seed from server (embedded in PHP), then layer localStorage on top
-	var serverStates = <?php echo wp_json_encode([
-		'progress_open'      => $progress_open,
-		'further_open'       => $further_open,
-		'progress_dismissed' => $progress_dismissed,
-		'further_dismissed'  => $further_dismissed,
-	]); ?>;
+	var serverStates = 
+	<?php
+	echo wp_json_encode(
+		[
+			'progress_open'      => $progress_open,
+			'further_open'       => $further_open,
+			'progress_dismissed' => $progress_dismissed,
+			'further_dismissed'  => $further_dismissed,
+		]
+	);
+	?>
+	;
 	var localStates = {};
 	try { localStates = JSON.parse(localStorage.getItem(stateKey) || '{}'); } catch (e) {}
 

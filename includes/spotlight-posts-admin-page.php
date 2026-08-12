@@ -1,291 +1,279 @@
 <?php
 
-if( is_admin() )
-{
-    new wasmo_spotlight_posts_Wp_List_Table();
+if ( is_admin() ) {
+	new wasmo_spotlight_posts_Wp_List_Table();
 }
 
 /**
  * wasmo_spotlight_posts_Wp_List_Table class will create the page to load the table
  */
-class wasmo_spotlight_posts_Wp_List_Table
-{
-    /**
-     * Constructor will create the menu item
-     */
-    public function __construct()
-    {
-        add_action( 'admin_menu', array($this, 'add_menu_spotlight_posts' ));
-    }
+class wasmo_spotlight_posts_Wp_List_Table {
 
-    /**
-     * Menu item will allow us to load the page to display the table
-     */
-    public function add_menu_spotlight_posts()
-    {
-        add_submenu_page(
-            'wasmormon',
-            'Spotlights',
-            'Spotlight List',
-            'manage_options',
-            'wasmormon',
-            array($this, 'list_table_page')
-        );
-    }
+	/**
+	 * Constructor will create the menu item
+	 */
+	public function __construct() {
+		add_action( 'admin_menu', array( $this, 'add_menu_spotlight_posts' ) );
+	}
 
-    /**
-     * Display the list table page
-     *
-     * @return Void
-     */
-    public function list_table_page()
-    {
-        $wasmo_spotlight_posts_table = new Wasmo_Spotlight_Post_List_Table();
-        $wasmo_spotlight_posts_table->prepare_items();
-        ?>
-            <div class="wrap">
-                <h2>Users Ready for a Spotlight Post</h2>
-                <?php $wasmo_spotlight_posts_table->display(); ?>
-            </div>
-        <?php
-    }
+	/**
+	 * Menu item will allow us to load the page to display the table
+	 */
+	public function add_menu_spotlight_posts() {
+		add_submenu_page(
+			'wasmormon',
+			'Spotlights',
+			'Spotlight List',
+			'manage_options',
+			'wasmormon',
+			array( $this, 'list_table_page' )
+		);
+	}
+
+	/**
+	 * Display the list table page
+	 *
+	 * @return Void
+	 */
+	public function list_table_page() {
+		$wasmo_spotlight_posts_table = new Wasmo_Spotlight_Post_List_Table();
+		$wasmo_spotlight_posts_table->prepare_items();
+		?>
+			<div class="wrap">
+				<h2>Users Ready for a Spotlight Post</h2>
+				<?php $wasmo_spotlight_posts_table->display(); ?>
+			</div>
+		<?php
+	}
 }
 
 // WP_List_Table is not loaded automatically so we need to load it in our application
-if( ! class_exists( 'WP_List_Table' ) ) {
-    require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 /**
  * Create a new table class that will extend the WP_List_Table
  */
-class Wasmo_Spotlight_Post_List_Table extends WP_List_Table
-{
-    /**
-     * Prepare the items for the table to process
-     *
-     * @return Void
-     */
-    public function prepare_items()
-    {
-        $columns = $this->get_columns();
-        $hidden = $this->get_hidden_columns();
-        $sortable = $this->get_sortable_columns();
+class Wasmo_Spotlight_Post_List_Table extends WP_List_Table {
 
-        $data = $this->table_data();
-        usort( $data, array( &$this, 'sort_data' ) );
+	/**
+	 * Prepare the items for the table to process
+	 *
+	 * @return Void
+	 */
+	public function prepare_items() {
+		$columns  = $this->get_columns();
+		$hidden   = $this->get_hidden_columns();
+		$sortable = $this->get_sortable_columns();
 
-        $perPage = 100;
-        $currentPage = $this->get_pagenum();
-        $totalItems = count($data);
+		$data = $this->table_data();
+		usort( $data, array( &$this, 'sort_data' ) );
 
-        $this->set_pagination_args( array(
-            'total_items' => $totalItems,
-            'per_page'    => $perPage
-        ) );
+		$perPage     = 100;
+		$currentPage = $this->get_pagenum();
+		$totalItems  = count( $data );
 
-        $data = array_slice($data,(($currentPage-1)*$perPage),$perPage);
+		$this->set_pagination_args(
+			array(
+				'total_items' => $totalItems,
+				'per_page'    => $perPage,
+			)
+		);
 
-        $this->_column_headers = array($columns, $hidden, $sortable);
-        $this->items = $data;
-    }
+		$data = array_slice( $data, ( ( $currentPage - 1 ) * $perPage ), $perPage );
 
-    /**
-     * Override the parent columns method. Defines the columns to use in your listing table
-     *
-     * @return Array
-     */
-    public function get_columns()
-    {
-        $columns = array(
-            // 'id'         => 'ID',
-            // 'public'     => 'Visibility',
-            // 'contribute' => 'Wants to Contribute',
-            'image'      => 'Photo',
-            'username'   => 'Username',
-            'display'    => 'Display Name',
-            'rdate'      => 'Registered',
-            'ldate'      => 'Last Login',
-            'sdate'      => 'Last Save',
-            'saves'      => 'Saves',
-        );
+		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->items           = $data;
+	}
 
-        return $columns;
-    }
+	/**
+	 * Override the parent columns method. Defines the columns to use in your listing table
+	 *
+	 * @return Array
+	 */
+	public function get_columns() {
+		$columns = array(
+			// 'id'         => 'ID',
+			// 'public'     => 'Visibility',
+			// 'contribute' => 'Wants to Contribute',
+			'image'    => 'Photo',
+			'username' => 'Username',
+			'display'  => 'Display Name',
+			'rdate'    => 'Registered',
+			'ldate'    => 'Last Login',
+			'sdate'    => 'Last Save',
+			'saves'    => 'Saves',
+		);
 
-    /**
-     * Define which columns are hidden
-     *
-     * @return Array
-     */
-    public function get_hidden_columns()
-    {
-        return array();
-    }
+		return $columns;
+	}
 
-    /**
-     * Define the sortable columns
-     *
-     * @return Array
-     */
-    public function get_sortable_columns()
-    {
-        return array(
-            'id'         => array('id', false),
-            'username'   => array('username', false),
-            'display'    => array('display', false),
-            'rdate'      => array('rdate', false),
-            'ldate'      => array('ldate', false),
-            'sdate'      => array('sdate', false),
-            'pubilc'     => array('pubilc', false),
-            'contribute' => array('contribute', false),
-            'saves'      => array('saves', false),
-            'image'      => array('image', false),
-        );
-    }
+	/**
+	 * Define which columns are hidden
+	 *
+	 * @return Array
+	 */
+	public function get_hidden_columns() {
+		return array();
+	}
 
-    /**
-     * Get the table data
-     *
-     * @return Array
-     */
-    private function table_data()
-    {
-        $data = array();
+	/**
+	 * Define the sortable columns
+	 *
+	 * @return Array
+	 */
+	public function get_sortable_columns() {
+		return array(
+			'id'         => array( 'id', false ),
+			'username'   => array( 'username', false ),
+			'display'    => array( 'display', false ),
+			'rdate'      => array( 'rdate', false ),
+			'ldate'      => array( 'ldate', false ),
+			'sdate'      => array( 'sdate', false ),
+			'pubilc'     => array( 'pubilc', false ),
+			'contribute' => array( 'contribute', false ),
+			'saves'      => array( 'saves', false ),
+			'image'      => array( 'image', false ),
+		);
+	}
 
-        $args = array(
-            'orderby'  => 'meta_value',
-            'meta_key' => 'last_save',
-            'order'    => 'ASC',
-            'meta_query' => array(
-                'relation' => 'AND',
-                array(
-                    'key' => 'spotlight_post',
-                    'compare' => 'NOT EXISTS'
-                ),
-                array(
-                    'key' => 'in_directory',
-                    'value' => 'true',
-                    'compare' => '='
-                ),
-                array(
-                    'key' => 'hi',
-                    'compare' => 'EXISTS',
-                ),
-                array(
-                    'key' => 'tagline',
-                    'compare' => 'EXISTS',
-                ),
-                array(
-                    'key' => 'about_me',
-                    'value' => '',
-                    'compare' => '!=',
-                ),
-                array(
-                    'key' => 'photo',
-                    'value' => '',
-                    'compare' => '!=',
-                ),
-                array(
-                    'key' => 'import_text',
-                    'compare' => 'NOT EXISTS'
-                ),
-            ),
-            'fields'   => 'all'
-        );
-    
-        // Array of WP_User objects.
-        $users = get_users( $args );
+	/**
+	 * Get the table data
+	 *
+	 * @return Array
+	 */
+	private function table_data() {
+		$data = array();
 
-        foreach ( $users as $user) {
-            $userid = $user->ID;
-            
-            // don't include user 1
-            if ( $user->ID === 1) { continue; }
+		$args = array(
+			'orderby'    => 'meta_value',
+			'meta_key'   => 'last_save',
+			'order'      => 'ASC',
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key'     => 'spotlight_post',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'in_directory',
+					'value'   => 'true',
+					'compare' => '=',
+				),
+				array(
+					'key'     => 'hi',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'tagline',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'about_me',
+					'value'   => '',
+					'compare' => '!=',
+				),
+				array(
+					'key'     => 'photo',
+					'value'   => '',
+					'compare' => '!=',
+				),
+				array(
+					'key'     => 'import_text',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+			'fields'     => 'all',
+		);
 
-            // get data
-            $last_login = date('Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_login', true ) ) );
-            $last_save = date('Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) );
-            $save_count = intval( get_user_meta( $userid, 'save_count', true ) );
-            $in_directory = get_user_meta( $userid, 'in_directory', true );
-            $i_want_to_write_posts = get_user_meta( $userid, 'i_want_to_write_posts', true );
-            $rdate = date( 'Y-m-d H:i:s', strtotime( get_userdata( $userid )->user_registered ) );
-            $view_edit = '<br><a href="' . get_author_posts_url( $userid ) . '">View</a> | <a href="' . get_edit_user_link( $userid ) . '">Edit</a>';
-            
-            $data[] = array(
-                'id'         => $userid,
-                'image'      => '<img width="100" height="100" src="' . wasmo_get_user_image_url( $userid ) . '" style="object-fit: cover;" />',
-                'username'   => get_the_author_meta( 'user_nicename', $userid ) . $view_edit,
-                'display'    => get_the_author_meta( 'display_name', $userid ) . $view_edit,
-                'rdate'      => $rdate === '1970-01-01 00:00:00' ? '' : $rdate,
-                'ldate'      => $last_login === '1970-01-01 00:00:00' ? '' : $last_login,
-                'sdate'      => $last_save === '1970-01-01 00:00:00' ? '' : $last_save,
-                'public'     => $in_directory,
-                'contribute' => $i_want_to_write_posts,
-                'saves'      => $save_count,
-            );
-        }
+		// Array of WP_User objects.
+		$users = get_users( $args );
 
-        return $data;
-    }
+		foreach ( $users as $user ) {
+			$userid = $user->ID;
 
-    /**
-     * Define what data to show on each column of the table
-     *
-     * @param  Array $item        Data
-     * @param  String $column_name - Current column name
-     *
-     * @return Mixed
-     */
-    public function column_default( $item, $column_name )
-    {
-        switch( $column_name ) {
-            case 'image':
-            case 'username':
-            case 'display':
-            case 'rdate':
-            case 'ldate':
-            case 'sdate':
-            case 'saves':
-                return $item[ $column_name ];
+			// don't include user 1
+			if ( $user->ID === 1 ) {
+				continue; }
 
-            default:
-                return print_r( $item, true ) ;
-        }
-    }
+			// get data
+			$last_login            = gmdate( 'Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_login', true ) ) );
+			$last_save             = gmdate( 'Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) );
+			$save_count            = intval( get_user_meta( $userid, 'save_count', true ) );
+			$in_directory          = get_user_meta( $userid, 'in_directory', true );
+			$i_want_to_write_posts = get_user_meta( $userid, 'i_want_to_write_posts', true );
+			$rdate                 = gmdate( 'Y-m-d H:i:s', strtotime( get_userdata( $userid )->user_registered ) );
+			$view_edit             = '<br><a href="' . get_author_posts_url( $userid ) . '">View</a> | <a href="' . get_edit_user_link( $userid ) . '">Edit</a>';
 
-    /**
-     * Allows you to sort the data by the variables set in the $_GET
-     *
-     * @return Mixed
-     */
-    private function sort_data( $a, $b )
-    {
-        // Set defaults
-        $orderby = 'sdate';
-        $order = 'desc';
+			$data[] = array(
+				'id'         => $userid,
+				'image'      => '<img width="100" height="100" src="' . wasmo_get_user_image_url( $userid ) . '" style="object-fit: cover;" />',
+				'username'   => get_the_author_meta( 'user_nicename', $userid ) . $view_edit,
+				'display'    => get_the_author_meta( 'display_name', $userid ) . $view_edit,
+				'rdate'      => $rdate === '1970-01-01 00:00:00' ? '' : $rdate,
+				'ldate'      => $last_login === '1970-01-01 00:00:00' ? '' : $last_login,
+				'sdate'      => $last_save === '1970-01-01 00:00:00' ? '' : $last_save,
+				'public'     => $in_directory,
+				'contribute' => $i_want_to_write_posts,
+				'saves'      => $save_count,
+			);
+		}
 
-        // If orderby is set, use this as the sort column
-        if(!empty($_GET['orderby']))
-        {
-            $orderby = $_GET['orderby'];
-        }
+		return $data;
+	}
 
-        // If order is set use this as the order
-        if(!empty($_GET['order']))
-        {
-            $order = $_GET['order'];
-        }
+	/**
+	 * Define what data to show on each column of the table
+	 *
+	 * @param  Array  $item        Data
+	 * @param  String $column_name - Current column name
+	 *
+	 * @return Mixed
+	 */
+	public function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
+			case 'image':
+			case 'username':
+			case 'display':
+			case 'rdate':
+			case 'ldate':
+			case 'sdate':
+			case 'saves':
+				return $item[ $column_name ];
 
+			default:
+				return wp_json_encode( $item );
+		}
+	}
 
-        $result = strcmp( $a[$orderby], $b[$orderby] );
+	/**
+	 * Allows you to sort the data by the variables set in the $_GET
+	 *
+	 * @return Mixed
+	 */
+	private function sort_data( $a, $b ) {
+		// Set defaults
+		$orderby = 'sdate';
+		$order   = 'desc';
 
-        if($order === 'asc')
-        {
-            return $result;
-        }
+		// If orderby is set, use this as the sort column
+		if ( ! empty( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$orderby = wp_unslash( $_GET['orderby'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		}
 
-        return -$result;
-    }
+		// If order is set use this as the order
+		if ( ! empty( $_GET['order'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$order = wp_unslash( $_GET['order'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		}
+
+		$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
+
+		if ( $order === 'asc' ) {
+			return $result;
+		}
+
+		return -$result;
+	}
 }
 ?>

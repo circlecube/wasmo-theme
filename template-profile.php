@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Profile
- * 
+ *
  * The template for displaying all profiles in a directory
  *
  * @subpackage wasmo
@@ -17,7 +17,7 @@ get_header();
 			<article class="entry" itemprop="mainEntity" itemtype="https://schema.org/Person" itemscope>
 				<div class="entry-content">
 				<?php
-					$user = wp_get_current_user();
+					$user   = wp_get_current_user();
 					$userid = $user->ID;
 				?>
 				<?php set_query_var( 'userid', $userid ); ?>

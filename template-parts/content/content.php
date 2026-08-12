@@ -15,7 +15,7 @@
 	<header class="entry-header">
 		<?php
 		if ( is_sticky() && is_home() && ! is_paged() ) {
-			printf( '<span class="sticky-post">%s</span>', _x( 'Featured', 'post', 'twentynineteen' ) );
+			printf( '<span class="sticky-post">%s</span>', esc_html( _x( 'Featured', 'post', 'wasmo-theme' ) ) );
 		}
 		if ( is_singular() ) :
 			the_title( '<h1 class="entry-title">', '</h1>' );
@@ -33,7 +33,7 @@
 			sprintf(
 				wp_kses(
 					/* translators: %s: Name of current post. Only visible to screen readers */
-					__( 'Continue reading<span class="screen-reader-text"> "%s"</span>', 'twentynineteen' ),
+					__( 'Continue reading<span class="screen-reader-text"> "%s"</span>', 'wasmo-theme' ),
 					array(
 						'span' => array(
 							'class' => array(),
@@ -46,7 +46,7 @@
 
 		wp_link_pages(
 			array(
-				'before' => '<div class="page-links">' . __( 'Pages:', 'twentynineteen' ),
+				'before' => '<div class="page-links">' . __( 'Pages:', 'wasmo-theme' ),
 				'after'  => '</div>',
 			)
 		);

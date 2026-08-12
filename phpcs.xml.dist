@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<ruleset name="WasmoTheme">
+    <description>PHP_CodeSniffer rules for wasmo-theme.</description>
+
+    <file>.</file>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <config name="minimum_supported_wp_version" value="6.6"/>
+
+    <rule ref="WordPress">
+        <!-- Short array syntax allowed (modern PHP preference) -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+
+        <!-- Short ternary (?:): bulk conversion to ?? is semantically risky in legacy code -->
+        <exclude name="Universal.Operators.DisallowShortTernary.Found"/>
+
+        <!-- Yoda conditions: style preference; phpcbf handles simple cases automatically -->
+        <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+
+        <!-- Inline/block comment punctuation: style-only, too noisy for legacy codebase -->
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+        <exclude name="Squiz.Commenting.InlineComment.SpacingBefore"/>
+
+        <!-- Function docblock rules: style-only, legacy functions predate doc requirements -->
+        <exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+        <exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
+        <exclude name="Squiz.Commenting.FunctionComment.InvalidNoReturn"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamNameNoMatch"/>
+
+        <!-- File docblock rules: style-only -->
+        <exclude name="Squiz.Commenting.FileComment.Missing"/>
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+        <exclude name="Squiz.Commenting.FileComment.SpacingAfterComment"/>
+        <exclude name="Squiz.Commenting.FileComment.SpacingAfterOpen"/>
+        <exclude name="Squiz.Commenting.FileComment.WrongStyle"/>
+        <exclude name="Squiz.Commenting.BlockComment.CloserSameLine"/>
+        <exclude name="Squiz.Commenting.BlockComment.NoCapital"/>
+        <exclude name="Generic.Commenting.DocComment.MissingShort"/>
+        <exclude name="Generic.Commenting.DocComment.ShortNotCapital"/>
+        <exclude name="Generic.Commenting.DocComment.LongNotCapital"/>
+
+        <!-- Global variable prefix: WP theme templates legitimately use $post, $query, etc. -->
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound"/>
+
+        <!-- Variable snake_case: camelCase properties come from vendor/WP_Forge conventions -->
+        <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
+
+        <!-- File/class naming: template file names are dictated by WordPress conventions -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="PEAR.NamingConventions.ValidClassName.Invalid"/>
+        <exclude name="PEAR.NamingConventions.ValidClassName.StartWithCapital"/>
+
+        <!-- One-class-per-file: legacy widget files bundle related classes -->
+        <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
+
+        <!-- Direct DB queries: this theme intentionally uses $wpdb directly; blanket caching
+             would require significant refactor and is better handled case-by-case -->
+        <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+        <exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+
+        <!-- Slow DB queries: meta_query/tax_query/meta_key are necessary for this codebase's
+             data model; adding indexes is a server-config concern, not a code-style issue -->
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/>
+        <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/>
+
+        <!-- Commented-out code: generates false positives on HTML and SQL fragments in comments -->
+        <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+    </rule>
+
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="wasmo"/>
+                <element value="wasmo_theme"/>
+                <element value="WASMO"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="wasmo-theme"/>
+                <element value="wasmo"/>
+            </property>
+        </properties>
+    </rule>
+
+</ruleset>

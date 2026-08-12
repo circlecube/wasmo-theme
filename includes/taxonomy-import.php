@@ -1,7 +1,7 @@
 <?php
 /**
  * Taxonomy JSON Import/Export
- * 
+ *
  * Admin page for importing/exporting taxonomy terms (tags, spectrum, shelf-items) from/to JSON data.
  *
  * @package wasmo
@@ -42,12 +42,14 @@ function wasmo_get_exportable_taxonomies() {
  * @return array Array of term data.
  */
 function wasmo_export_taxonomy_terms( $taxonomy ) {
-	$terms = get_terms( array(
-		'taxonomy'   => $taxonomy,
-		'hide_empty' => false,
-		'orderby'    => 'name',
-		'order'      => 'ASC',
-	) );
+	$terms = get_terms(
+		array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false,
+			'orderby'    => 'name',
+			'order'      => 'ASC',
+		)
+	);
 
 	if ( is_wp_error( $terms ) || empty( $terms ) ) {
 		return array();
@@ -117,16 +119,16 @@ function wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing =
 
 	// First pass: create/update terms without parents
 	$slug_to_id = array();
-	
+
 	foreach ( $terms_data as $term_data ) {
 		if ( empty( $term_data['name'] ) ) {
 			$results['errors'][] = 'Skipped term with empty name.';
-			$results['skipped']++;
+			++$results['skipped'];
 			continue;
 		}
 
-		$name = sanitize_text_field( $term_data['name'] );
-		$slug = ! empty( $term_data['slug'] ) ? sanitize_title( $term_data['slug'] ) : sanitize_title( $name );
+		$name        = sanitize_text_field( $term_data['name'] );
+		$slug        = ! empty( $term_data['slug'] ) ? sanitize_title( $term_data['slug'] ) : sanitize_title( $name );
 		$description = isset( $term_data['description'] ) ? wp_kses_post( $term_data['description'] ) : '';
 
 		// Check if term exists by slug
@@ -146,19 +148,19 @@ function wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing =
 					$results['errors'][] = "Failed to update term '{$name}': " . $result->get_error_message();
 				} else {
 					$slug_to_id[ $slug ] = $existing_term->term_id;
-					
+
 					// Update term meta if provided
 					if ( ! empty( $term_data['meta'] ) && is_array( $term_data['meta'] ) ) {
 						foreach ( $term_data['meta'] as $meta_key => $meta_value ) {
 							update_term_meta( $existing_term->term_id, $meta_key, $meta_value );
 						}
 					}
-					
-					$results['updated']++;
+
+					++$results['updated'];
 				}
 			} else {
 				$slug_to_id[ $slug ] = $existing_term->term_id;
-				$results['skipped']++;
+				++$results['skipped'];
 			}
 		} else {
 			// Create new term
@@ -173,15 +175,15 @@ function wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing =
 				$results['errors'][] = "Failed to create term '{$name}': " . $result->get_error_message();
 			} else {
 				$slug_to_id[ $slug ] = $result['term_id'];
-				
+
 				// Add term meta if provided
 				if ( ! empty( $term_data['meta'] ) && is_array( $term_data['meta'] ) ) {
 					foreach ( $term_data['meta'] as $meta_key => $meta_value ) {
 						add_term_meta( $result['term_id'], $meta_key, $meta_value );
 					}
 				}
-				
-				$results['imported']++;
+
+				++$results['imported'];
 			}
 		}
 	}
@@ -193,17 +195,17 @@ function wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing =
 		}
 
 		$slug = ! empty( $term_data['slug'] ) ? sanitize_title( $term_data['slug'] ) : sanitize_title( $term_data['name'] );
-		
+
 		if ( ! isset( $slug_to_id[ $slug ] ) ) {
 			continue;
 		}
 
-		$term_id = $slug_to_id[ $slug ];
+		$term_id     = $slug_to_id[ $slug ];
 		$parent_slug = sanitize_title( $term_data['parent_slug'] );
 
 		// Find parent term
 		$parent_term = get_term_by( 'slug', $parent_slug, $taxonomy );
-		
+
 		if ( $parent_term && ! is_wp_error( $parent_term ) ) {
 			wp_update_term( $term_id, $taxonomy, array( 'parent' => $parent_term->term_id ) );
 		}
@@ -216,7 +218,7 @@ function wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing =
  * Handle AJAX export request
  */
 function wasmo_export_taxonomy_ajax() {
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'wasmo_export_taxonomy' ) ) {
+	if ( ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'wasmo_export_taxonomy' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		wp_die( 'Security check failed' );
 	}
 
@@ -224,7 +226,7 @@ function wasmo_export_taxonomy_ajax() {
 		wp_die( 'Permission denied' );
 	}
 
-	$taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_key( $_GET['taxonomy'] ) : '';
+	$taxonomy   = isset( $_GET['taxonomy'] ) ? sanitize_key( $_GET['taxonomy'] ) : '';
 	$taxonomies = wasmo_get_exportable_taxonomies();
 
 	if ( empty( $taxonomy ) || ! isset( $taxonomies[ $taxonomy ] ) ) {
@@ -233,14 +235,14 @@ function wasmo_export_taxonomy_ajax() {
 
 	$export_data = wasmo_export_taxonomy_terms( $taxonomy );
 
-	$filename = $taxonomy . '-export-' . date( 'Y-m-d' ) . '.json';
+	$filename = $taxonomy . '-export-' . gmdate( 'Y-m-d' ) . '.json';
 
 	header( 'Content-Type: application/json' );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
-	echo json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	echo wp_json_encode( $export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	exit;
 }
 add_action( 'wp_ajax_wasmo_export_taxonomy', 'wasmo_export_taxonomy_ajax' );
@@ -249,27 +251,27 @@ add_action( 'wp_ajax_wasmo_export_taxonomy', 'wasmo_export_taxonomy_ajax' );
  * Render the taxonomy import/export admin page
  */
 function wasmo_render_taxonomy_import_page() {
-	$message = '';
+	$message      = '';
 	$message_type = 'info';
-	$taxonomies = wasmo_get_exportable_taxonomies();
+	$taxonomies   = wasmo_get_exportable_taxonomies();
 
 	// Handle import form submission
 	if ( isset( $_POST['wasmo_import_taxonomy'] ) && check_admin_referer( 'wasmo_import_taxonomy_nonce' ) ) {
-		$taxonomy = isset( $_POST['import_taxonomy'] ) ? sanitize_key( $_POST['import_taxonomy'] ) : '';
+		$taxonomy        = isset( $_POST['import_taxonomy'] ) ? sanitize_key( $_POST['import_taxonomy'] ) : '';
 		$update_existing = isset( $_POST['update_existing'] );
 
 		if ( empty( $taxonomy ) || ! isset( $taxonomies[ $taxonomy ] ) ) {
-			$message = 'Please select a valid taxonomy.';
+			$message      = 'Please select a valid taxonomy.';
 			$message_type = 'error';
 		} elseif ( empty( $_FILES['json_file']['tmp_name'] ) ) {
-			$message = 'Please select a JSON file to import.';
+			$message      = 'Please select a JSON file to import.';
 			$message_type = 'error';
 		} else {
-			$json_content = file_get_contents( $_FILES['json_file']['tmp_name'] );
-			$terms_data = json_decode( $json_content, true );
+			$json_content = file_get_contents( $_FILES['json_file']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$terms_data   = json_decode( $json_content, true );
 
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				$message = 'Invalid JSON file: ' . json_last_error_msg();
+				$message      = 'Invalid JSON file: ' . json_last_error_msg();
 				$message_type = 'error';
 			} else {
 				$results = wasmo_import_taxonomy_terms( $taxonomy, $terms_data, $update_existing );
@@ -313,19 +315,25 @@ function wasmo_render_taxonomy_import_page() {
 				<h2>📤 Export Taxonomy</h2>
 				<p>Export all terms from a taxonomy to JSON format. The export includes name, slug, description, parent relationships, and any term meta.</p>
 				
-				<form method="get" action="<?php echo admin_url( 'admin-ajax.php' ); ?>">
+				<form method="get" action="<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 					<input type="hidden" name="action" value="wasmo_export_taxonomy">
-					<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'wasmo_export_taxonomy' ); ?>">
+					<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce( 'wasmo_export_taxonomy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 					
 					<p>
 						<label for="export_taxonomy"><strong>Select Taxonomy:</strong></label><br>
 						<select name="taxonomy" id="export_taxonomy" style="width: 100%; margin-top: 5px;">
-							<?php foreach ( $taxonomies as $slug => $label ) : 
-								$term_count = wp_count_terms( array( 'taxonomy' => $slug, 'hide_empty' => false ) );
+							<?php
+							foreach ( $taxonomies as $slug => $label ) :
+								$term_count = wp_count_terms(
+									array(
+										'taxonomy'   => $slug,
+										'hide_empty' => false,
+									)
+								);
 								$term_count = is_wp_error( $term_count ) ? 0 : $term_count;
-							?>
+								?>
 								<option value="<?php echo esc_attr( $slug ); ?>">
-									<?php echo esc_html( $label ); ?> (<?php echo $term_count; ?> terms)
+									<?php echo esc_html( $label ); ?> (<?php echo $term_count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> terms)
 								</option>
 							<?php endforeach; ?>
 						</select>
@@ -388,37 +396,40 @@ function wasmo_render_taxonomy_import_page() {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $taxonomies as $slug => $label ) : 
-						$terms = get_terms( array(
-							'taxonomy'   => $slug,
-							'hide_empty' => false,
-						) );
-						
+					<?php
+					foreach ( $taxonomies as $slug => $label ) :
+						$terms = get_terms(
+							array(
+								'taxonomy'   => $slug,
+								'hide_empty' => false,
+							)
+						);
+
 						if ( is_wp_error( $terms ) ) {
 							$terms = array();
 						}
-						
-						$total = count( $terms );
-						$with_desc = 0;
+
+						$total        = count( $terms );
+						$with_desc    = 0;
 						$without_desc = 0;
-						
+
 						foreach ( $terms as $term ) {
 							if ( ! empty( trim( $term->description ) ) ) {
-								$with_desc++;
+								++$with_desc;
 							} else {
-								$without_desc++;
+								++$without_desc;
 							}
 						}
-						
+
 						$pct_complete = $total > 0 ? round( ( $with_desc / $total ) * 100, 1 ) : 0;
-						$pct_class = $pct_complete >= 80 ? 'color: green;' : ( $pct_complete >= 50 ? 'color: orange;' : 'color: red;' );
-					?>
+						$pct_class    = $pct_complete >= 80 ? 'color: green;' : ( $pct_complete >= 50 ? 'color: orange;' : 'color: red;' );
+						?>
 					<tr>
 						<td><strong><?php echo esc_html( $label ); ?></strong></td>
-						<td><?php echo $total; ?></td>
-						<td><?php echo $with_desc; ?></td>
-						<td><?php echo $without_desc; ?></td>
-						<td style="<?php echo $pct_class; ?> font-weight: bold;"><?php echo $pct_complete; ?>%</td>
+						<td><?php echo $total; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo $with_desc; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo $without_desc; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td style="<?php echo $pct_class; ?> font-weight: bold;"><?php echo $pct_complete; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>%</td>
 					</tr>
 					<?php endforeach; ?>
 				</tbody>
@@ -430,20 +441,20 @@ function wasmo_render_taxonomy_import_page() {
 			<h2>📋 JSON Format</h2>
 			<p>The JSON file should be an array of term objects with the following structure:</p>
 			<pre style="background: #f5f5f5; padding: 15px; overflow: auto; max-height: 300px;">[
-    {
-        "name": "Term Name",
-        "slug": "term-slug",
-        "description": "The description for this term. Can include HTML.",
-        "parent_slug": "parent-term-slug",
-        "meta": {
-            "custom_field": "value"
-        }
-    },
-    {
-        "name": "Another Term",
-        "slug": "another-term",
-        "description": "Another description here."
-    }
+	{
+		"name": "Term Name",
+		"slug": "term-slug",
+		"description": "The description for this term. Can include HTML.",
+		"parent_slug": "parent-term-slug",
+		"meta": {
+			"custom_field": "value"
+		}
+	},
+	{
+		"name": "Another Term",
+		"slug": "another-term",
+		"description": "Another description here."
+	}
 ]</pre>
 			<p><strong>Notes:</strong></p>
 			<ul>
