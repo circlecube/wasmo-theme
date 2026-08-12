@@ -73,15 +73,15 @@ $shelf_items = get_field( 'my_shelf', 'user_' . $userid );
 if ( $shelf_items ) {
 	?>
 	<h4>	
-		<?php echo wasmo_get_icon_svg( 'shelf', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php wasmo_echo_icon_svg( 'shelf', 20 ); ?>
 		On my shelf
 	</h4>
 	<ul class="tags">
 	<?php
-	foreach ( $shelf_items as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	foreach ( $shelf_items as $shelf_term ) :
 		?>
-		<!-- <li><span class="tag"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
-		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+		<!-- <li><span class="tag"><?php echo $shelf_term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
+		<li><a class="tag" href="<?php echo esc_url( get_term_link( $shelf_term ) ); ?>"><?php echo esc_html( $shelf_term->name ); ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 	<?php
@@ -94,15 +94,15 @@ $spectrum_terms = get_field( 'mormon_spectrum', 'user_' . $userid );
 if ( $spectrum_terms ) {
 	?>
 	<h4>
-		<?php echo wasmo_get_icon_svg( 'spectrum', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php wasmo_echo_icon_svg( 'spectrum', 20 ); ?>
 		On the Mormon Spectrum
 	</h4>
 	<ul class="tags">
 	<?php
-	foreach ( $spectrum_terms as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	foreach ( $spectrum_terms as $spectrum_term ) :
 		?>
-		<!-- <li><span class="tag"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
-		<li><a class="tag" href="<?php echo get_term_link( $term ); ?>"><?php echo $term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+		<!-- <li><span class="tag"><?php echo $spectrum_term->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></li> -->
+		<li><a class="tag" href="<?php echo esc_url( get_term_link( $spectrum_term ) ); ?>"><?php echo esc_html( $spectrum_term->name ); ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 	<?php
@@ -122,7 +122,7 @@ if ( $spectrum_terms ) {
 			</a>
 			Why I left
 			<a href="/why-i-left/" class="question_link_inline" title="<?php echo esc_attr( $more_desc ); ?>">
-				<?php echo wasmo_get_icon_svg( 'link', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php wasmo_echo_icon_svg( 'link', 20 ); ?>
 				<span class="screen-reader-text"><?php echo esc_html( $more_desc ); ?></span>
 			</a>
 		</h3>
@@ -151,12 +151,12 @@ if ( have_rows( 'questions', 'user_' . $userid ) ) :
 		<a 
 			href="/questions/"
 			class="question_link_inline"
-			title="<?php echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
+			title="<?php echo esc_attr( $description ); ?>"
 		>
 		<?php
-		echo wasmo_get_icon_svg( 'question', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		wasmo_echo_icon_svg( 'question', 26 );
 		?>
-		<span class="screen-reader-text"><?php echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span></a>
+		<span class="screen-reader-text"><?php echo esc_html( $description ); ?></span></a>
 		My Answers to Questions about Mormonism
 	</h3>
 	
@@ -172,12 +172,12 @@ if ( have_rows( 'questions', 'user_' . $userid ) ) :
 			$description  = "See more answers about '" . wp_kses_post( $questionterm->name ) . "'";
 			echo '<div class="profile-section question-section" id="' . esc_attr( $questionterm->slug ) . '">';
 			echo '<h4 class="question">';
-			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . $anchor . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<sup>#</sup><span class="screen-reader-text">' . $anchor . '</span></a> '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<a href="#' . esc_attr( $questionterm->slug ) . '" class="question_link_inline question_anchor" title="' . esc_attr( $anchor ) . '">';
+			echo '<sup>#</sup><span class="screen-reader-text">' . esc_html( $anchor ) . '</span></a> ';
 			echo wp_kses_post( $questionterm->name );
-			echo ' <a href="' . get_term_link( $termtaxid, 'question' ) . '" class="question_link_inline" title="' . $description . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo wasmo_get_icon_svg( 'link', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<span class="screen-reader-text">' . $description . '</span></a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo ' <a href="' . esc_url( get_term_link( $termtaxid, 'question' ) ) . '" class="question_link_inline" title="' . esc_attr( $description ) . '">';
+			wasmo_echo_icon_svg( 'link', 20 );
+			echo '<span class="screen-reader-text">' . esc_html( $description ) . '</span></a>';
 			echo '</h4>';
 			echo '<div class="answer">';
 			echo wasmo_auto_htmlize_text( wasmo_auto_link_text( wp_kses_post( $answer ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -247,11 +247,11 @@ get_template_part( 'template-parts/content/content', 'user-comments' );
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size" style="font-size:20px">
 			<?php if ( is_user_logged_in() ) { ?>
-				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/edit/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo esc_url( home_url( '/edit/' ) ); ?>">
 					Edit Your <?php echo $is_this_user ? '' : 'Own'; ?> Profile
 				</a>
 			<?php } else { ?>
-				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo home_url( '/login/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+				<a class="wp-block-button__link wp-element-button" style="border-radius:100px" href="<?php echo esc_url( home_url( '/login/' ) ); ?>">
 					Contribute your own story
 				</a>
 			<?php } ?>
@@ -260,10 +260,10 @@ get_template_part( 'template-parts/content/content', 'user-comments' );
 
 	<div class="is-layout-flex wp-block-buttons">
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo home_url( '/profiles/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Browse Stories</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( home_url( '/profiles/' ) ); ?>" style="border-radius:100px">Browse Stories</a>
 		</div>
 		<div class="wp-block-button has-custom-font-size is-style-outline" style="font-size:20px">
-			<a class="wp-block-button__link wp-element-button" href="<?php echo wasmo_get_random_profile_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" style="border-radius:100px">Random Story</a>
+			<a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( wasmo_get_random_profile_url() ); ?>" style="border-radius:100px">Random Story</a>
 		</div>
 	</div>
 

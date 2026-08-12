@@ -7,14 +7,16 @@
  */
 
 // Get block attributes with defaults
-$context        = $attributes['context'] ?? 'widget';
-$max_profiles   = $attributes['maxProfiles'] ?? 9;
-$show_load_more = $attributes['showLoadMore'] ?? false;
-$show_buttons   = $attributes['showButtons'] ?? true;
-$tax_filter     = $attributes['taxonomyFilter'] ?? '';
-$term_id        = $attributes['termId'] ?? 0;
-$require_image  = $attributes['requireImage'] ?? true;
-$video_only     = $attributes['videoOnly'] ?? false;
+$context           = $attributes['context'] ?? 'widget';
+$max_profiles      = $attributes['maxProfiles'] ?? 9;
+$show_load_more    = $attributes['showLoadMore'] ?? false;
+$show_buttons      = $attributes['showButtons'] ?? true;
+$tax_filter        = $attributes['taxonomyFilter'] ?? '';
+$term_id           = $attributes['termId'] ?? 0;
+$require_image     = $attributes['requireImage'] ?? true;
+$video_only        = $attributes['videoOnly'] ?? false;
+$exclude_user_ids  = $attributes['excludeUserIds'] ?? array();
+$featured_user_ids = $attributes['featuredUserIds'] ?? array();
 
 // Set query vars for the template part
 set_query_var( 'context', $context );
@@ -24,6 +26,8 @@ set_query_var( 'showall', false );
 set_query_var( 'require_image', $require_image );
 set_query_var( 'show_buttons', $show_buttons );
 set_query_var( 'video_only', $video_only );
+set_query_var( 'exclude_user_ids', is_array( $exclude_user_ids ) ? $exclude_user_ids : array() );
+set_query_var( 'featured_user_ids', is_array( $featured_user_ids ) ? $featured_user_ids : array() );
 
 // Set taxonomy filter if provided
 if ( ! empty( $tax_filter ) && $term_id > 0 ) {

@@ -60,6 +60,14 @@
         "videoOnly": {
             "type": "boolean",
             "default": false
+        },
+        "excludeUserIds": {
+            "type": "array",
+            "default": []
+        },
+        "featuredUserIds": {
+            "type": "array",
+            "default": []
         }
     }
 }

@@ -7,7 +7,7 @@
 $userid       = get_query_var( 'userid' );
 $is_this_user = get_query_var( 'is_this_user' );
 $name         = get_query_var( 'name' );
-$link         = get_query_var( 'link' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+$share_link   = get_query_var( 'link' );
 
 // true = public
 // private = only to a logged in user
@@ -38,11 +38,11 @@ if ( $is_this_user ) {
 }
 
 // find and replace placeholders with content in each link
-$_facebook = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_facebook );
-$_tweet    = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_tweet );
-// $_toot     = str_replace(['{link}', '{name}'], [$link, $name], $_toot );
-$_reddit = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_reddit );
-$_email  = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_email );
+$_facebook = str_replace( [ '{link}', '{name}' ], [ $share_link, $name ], $_facebook );
+$_tweet    = str_replace( [ '{link}', '{name}' ], [ $share_link, $name ], $_tweet );
+// $_toot     = str_replace(['{link}', '{name}'], [$share_link, $name], $_toot );
+$_reddit = str_replace( [ '{link}', '{name}' ], [ $share_link, $name ], $_reddit );
+$_email  = str_replace( [ '{link}', '{name}' ], [ $share_link, $name ], $_email );
 
 ?>
 
@@ -66,7 +66,7 @@ $_email  = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_email );
 			title="Share a link on facebook" 
 		>
 			<span class="screen-reader-text">Share link on Facebook</span>
-			<?php echo twentynineteen_get_social_link_svg( 'facebook.com', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php wasmo_echo_svg( twentynineteen_get_social_link_svg( 'facebook.com', 36 ) ); ?>
 		</a>
 	</li>
 	
@@ -78,7 +78,7 @@ $_email  = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_email );
 			title="Share a link on twitter"
 		>
 			<span class="screen-reader-text">Share link on twitter</span>
-			<?php echo twentynineteen_get_social_link_svg( 'twitter.com', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php wasmo_echo_svg( twentynineteen_get_social_link_svg( 'twitter.com', 36 ) ); ?>
 		</a>
 	</li>
 	
@@ -90,7 +90,7 @@ $_email  = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_email );
 			title="Share link on reddit"
 		>
 			<span class="screen-reader-text">Share link on reddit</span>
-			<?php echo twentynineteen_get_social_link_svg( 'reddit.com', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php wasmo_echo_svg( twentynineteen_get_social_link_svg( 'reddit.com', 36 ) ); ?>
 		</a>
 	</li>
 	
@@ -102,7 +102,7 @@ $_email  = str_replace( [ '{link}', '{name}' ], [ $link, $name ], $_email );
 			title="Share link via email"
 		>
 			<span class="screen-reader-text">Share link via email</span>
-			<?php echo twentynineteen_get_social_link_svg( 'mailto:', 36 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php wasmo_echo_svg( twentynineteen_get_social_link_svg( 'mailto:', 36 ) ); ?>
 		</a>
 	</li>
 

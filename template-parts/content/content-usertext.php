@@ -23,7 +23,7 @@ $userid = get_query_var( 'userid' );
 <?php } ?>
 <?php if ( get_field( 'about_me', 'user_' . $userid ) ) { ?>
 About me
-	<?php echo wp_strip_all_tags( get_field( 'about_me', 'user_' . $userid ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<?php echo esc_html( wp_strip_all_tags( get_field( 'about_me', 'user_' . $userid ) ) ); ?>
 
 
 <?php } ?>
@@ -31,9 +31,9 @@ About me
 <?php if ( $shelf_items ) { ?>
 On my shelf
 	<?php
-	foreach ( $shelf_items as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	foreach ( $shelf_items as $shelf_term ) :
 		?>
-<?php echo $term->name; ?>, <?php endforeach; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php echo esc_html( $shelf_term->name ); ?>, <?php endforeach; ?>
 
 
 <?php } ?>
@@ -41,15 +41,15 @@ On my shelf
 <?php if ( $spectrum_terms ) { ?>
 On the Mormon Spectrum
 	<?php
-	foreach ( $spectrum_terms as $term ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	foreach ( $spectrum_terms as $spectrum_term ) :
 		?>
-<?php echo $term->name; ?>, <?php endforeach; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<?php echo esc_html( $spectrum_term->name ); ?>, <?php endforeach; ?>
 
 
 <?php } ?>
 <?php if ( get_field( 'why_i_left', 'user_' . $userid ) ) { ?>
 Why I left
-	<?php echo wp_strip_all_tags( get_field( 'why_i_left', 'user_' . $userid ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<?php echo esc_html( wp_strip_all_tags( get_field( 'why_i_left', 'user_' . $userid ) ) ); ?>
 
 
 <?php } ?>
@@ -65,7 +65,7 @@ Questions
 			?>
 
 			<?php
-			echo wp_strip_all_tags( get_sub_field( 'answer', 'users_' . $userid ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo esc_html( wp_strip_all_tags( get_sub_field( 'answer', 'users_' . $userid ) ) );
 			?>
 
 

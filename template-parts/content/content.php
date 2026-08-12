@@ -15,7 +15,7 @@
 	<header class="entry-header">
 		<?php
 		if ( is_sticky() && is_home() && ! is_paged() ) {
-			printf( '<span class="sticky-post">%s</span>', _x( 'Featured', 'post', 'wasmo-theme' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			printf( '<span class="sticky-post">%s</span>', esc_html( _x( 'Featured', 'post', 'wasmo-theme' ) ) );
 		}
 		if ( is_singular() ) :
 			the_title( '<h1 class="entry-title">', '</h1>' );

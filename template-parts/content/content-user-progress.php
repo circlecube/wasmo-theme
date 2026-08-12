@@ -169,7 +169,7 @@ $further_items = [
 	<details<?php echo $progress_open ? ' open' : ''; ?>>
 		<summary>
 			<div class="story-progress-header">
-				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . $username : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+				<span class="story-progress-title">Complete Your Story<?php echo $username ? ', ' . esc_html( $username ) : ''; ?></span>
 				<span class="story-progress-right">
 					<span class="story-progress-count"><?php echo esc_html( $done . '/' . $total ); ?></span>
 					<span class="story-progress-arrow" aria-hidden="true"></span>
@@ -200,7 +200,7 @@ $further_items = [
 $any_dismissed = $progress_dismissed || ( $show_further && $further_dismissed );
 ?>
 <button class="story-restore-btn" id="story-restore-btn" aria-label="Restore profile checklist"<?php echo ! $any_dismissed ? ' style="display:none"' : ''; ?>>
-	<?php echo wasmo_get_icon_svg( 'checklist', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<?php wasmo_echo_icon_svg( 'checklist', 16 ); ?>
 	<span class="screen-reader-text">My Checklist</span>
 </button>
 

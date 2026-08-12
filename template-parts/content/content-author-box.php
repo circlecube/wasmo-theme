@@ -4,14 +4,14 @@
  */
 ?>
 <section class="author-box-section">
-	<p><?php twentynineteen_get_icon_svg( 'person', 16 ); ?> This post is by <a href="<?php echo get_author_posts_url( $user->ID ); ?>"><?php echo $user->display_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>.</p>
+	<p><?php twentynineteen_get_icon_svg( 'person', 16 ); ?> This post is by <a href="<?php echo esc_url( get_author_posts_url( $user->ID ) ); ?>"><?php echo esc_html( $user->display_name ); ?></a>.</p>
 	<hr />
 	<div class="author-box">
 		<div class="content-right">
 			<?php if ( get_field( 'hi', 'user_' . $user->ID ) ) { ?>
 				<h3 class="hi"><?php echo wp_kses_post( get_field( 'hi', 'user_' . $user->ID ) ); ?></h3>
 			<?php } else { ?>
-				<h3 class="hi">Hi, I'm <?php echo $user->user_login; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></h3>
+				<h3 class="hi">Hi, I'm <?php echo esc_html( $user->user_login ); ?></h3>
 			<?php } ?>
 
 			<?php if ( get_field( 'tagline', 'user_' . $user->ID ) ) { ?>
@@ -23,7 +23,7 @@
 			<?php if ( get_field( 'location', 'user_' . $user->ID ) ) { ?>
 				<div class="location">
 					<?php
-						echo wasmo_get_icon_svg( 'location', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						wasmo_echo_icon_svg( 'location', 16 );
 						echo wp_kses_post( get_field( 'location', 'user_' . $user->ID ) );
 					?>
 				</div>
@@ -31,8 +31,8 @@
 		</div>
 		<div class="content-left">
 			<div class="user_photo">
-				<a href="<?php echo get_author_posts_url( $user->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
-					<?php echo wasmo_get_user_image( $user->ID, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<a href="<?php echo esc_url( get_author_posts_url( $user->ID ) ); ?>">
+					<?php wasmo_echo_user_image( $user->ID, true ); ?>
 				</a>
 			</div>
 			<?php
@@ -48,7 +48,7 @@
 					<?php
 						echo esc_url( $links['facebook'] );
 					?>
-					"><span class="screen-reader-text">Facebook</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+					"><span class="screen-reader-text">Facebook</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 				<?php } ?>
 				<?php
 				if ( $links['instagram'] ) {
@@ -58,7 +58,7 @@
 					<?php
 						echo esc_url( $links['instagram'] );
 					?>
-					"><span class="screen-reader-text">instagram</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+					"><span class="screen-reader-text">instagram</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 				<?php } ?>
 				<?php
 				if ( $links['reddit'] ) {
@@ -68,7 +68,7 @@
 					<?php
 						echo esc_url( $links['reddit'] );
 					?>
-					"><span class="screen-reader-text">reddit</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+					"><span class="screen-reader-text">reddit</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 				<?php } ?>
 				<?php
 				if ( $links['twitter'] ) {
@@ -78,7 +78,7 @@
 					<?php
 						echo esc_url( $links['twitter'] );
 					?>
-					"><span class="screen-reader-text">twitter</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+					"><span class="screen-reader-text">twitter</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 				<?php } ?>
 				<?php
 				if ( $links['other'] ) {
@@ -91,7 +91,7 @@
 					<?php
 						echo esc_url( $links['other'] );
 					?>
-					"><span class="screen-reader-text">other</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+					"><span class="screen-reader-text">other</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 				<?php } ?>
 				</ul>
 			<?php } ?>
@@ -102,7 +102,7 @@
 		<div class="wp-block-button">
 			<a
 				class="wp-block-button__link has-white-color has-primary-background-color has-text-color has-background wp-element-button"
-				href="<?php echo get_author_posts_url( $user->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
+				href="<?php echo esc_url( get_author_posts_url( $user->ID ) ); ?>"
 			>Read My 'I was a Mormon' Story</a>
 		</div>
 		<div class="wp-block-button">

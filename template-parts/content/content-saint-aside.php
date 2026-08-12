@@ -184,7 +184,7 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 				<dt>FamilySearch</dt>
 				<dd>
 					<a href="https://www.familysearch.org/tree/person/details/<?php echo esc_attr( $familysearch_id ); ?>" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-						<?php echo wasmo_get_icon_svg( 'familysearch', 32 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php wasmo_echo_icon_svg( 'familysearch', 32 ); ?>
 						<?php echo esc_html( $familysearch_id ); ?>
 					</a>
 				</dd>
@@ -255,14 +255,14 @@ $polygamy_display = $args['polygamy_display'] ?? wasmo_get_polygamy_display( $sa
 	</div>
 
 	<div class="leader-navigation">
-		<a href="<?php echo get_post_type_archive_link( 'saint' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
+		<a href="<?php echo esc_url( get_post_type_archive_link( 'saint' ) ); ?>" class="btn btn-secondary">
 			All Saints →
 		</a>
-		<a href="<?php echo home_url( '/saint-charts/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
+		<a href="<?php echo esc_url( home_url( '/saint-charts/' ) ); ?>" class="btn btn-secondary">
 			Saints Data →
 		</a>
 		<?php if ( ! empty( $polygamy_display['was_polygamist'] ) || ! empty( $polygamy_stats['was_polygamist'] ) ) : ?>
-			<a href="<?php echo home_url( '/plural-wives-and-polygamy/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="btn btn-secondary">
+			<a href="<?php echo esc_url( home_url( '/plural-wives-and-polygamy/' ) ); ?>" class="btn btn-secondary">
 				Polygamy Stats →
 			</a>
 		<?php endif; ?>
