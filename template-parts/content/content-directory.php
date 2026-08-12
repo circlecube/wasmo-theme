@@ -1,15 +1,15 @@
 <?php
 // Get vars from query
-$context            = get_query_var( 'context' );
-$max_profiles       = get_query_var( 'max_profiles' );
-$directory_tax      = get_query_var( 'tax' );
-$termid             = get_query_var( 'termid' );
-$directory_paged    = get_query_var( 'paged' );
-$lazy               = get_query_var( 'lazy' );
-$showall            = get_query_var( 'showall' );
-$video_only         = get_query_var( 'video_only', false );
-$exclude_user_ids   = get_query_var( 'exclude_user_ids', array() );
-$featured_user_ids  = get_query_var( 'featured_user_ids', array() );
+$context           = get_query_var( 'context' );
+$max_profiles      = get_query_var( 'max_profiles' );
+$directory_tax     = get_query_var( 'tax' );
+$termid            = get_query_var( 'termid' );
+$directory_paged   = get_query_var( 'paged' );
+$lazy              = get_query_var( 'lazy' );
+$showall           = get_query_var( 'showall' );
+$video_only        = get_query_var( 'video_only', false );
+$exclude_user_ids  = get_query_var( 'exclude_user_ids', array() );
+$featured_user_ids = get_query_var( 'featured_user_ids', array() );
 
 // Initialize the remaining vars
 $offset = 0;
@@ -95,7 +95,7 @@ if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
 		// global $directory_tax, $termid;
 		$directory_tax = get_query_var( 'tax' );
 		$termid        = get_query_var( 'termid' );
-		$userid = $user->ID;
+		$userid        = $user->ID;
 
 		// skip if $context doesn't start with `taxonomy`
 		// if ( strpos( $context, 'taxonomy' ) !== 0 ) {
@@ -189,7 +189,7 @@ if ( false === $the_directory ) {
 	if ( ! empty( $exclude_user_ids ) ) {
 		$filtered_users = array_filter(
 			$filtered_users,
-			function( $user ) use ( $exclude_user_ids ) {
+			function ( $user ) use ( $exclude_user_ids ) {
 				return ! in_array( (int) $user->ID, $exclude_user_ids, true );
 			}
 		);

@@ -7,13 +7,13 @@
  */
 
 // Get block attributes with defaults
-$context        = $attributes['context'] ?? 'widget';
-$max_profiles   = $attributes['maxProfiles'] ?? 9;
-$show_load_more = $attributes['showLoadMore'] ?? false;
-$show_buttons   = $attributes['showButtons'] ?? true;
-$tax_filter     = $attributes['taxonomyFilter'] ?? '';
-$term_id        = $attributes['termId'] ?? 0;
-$require_image  = $attributes['requireImage'] ?? true;
+$context           = $attributes['context'] ?? 'widget';
+$max_profiles      = $attributes['maxProfiles'] ?? 9;
+$show_load_more    = $attributes['showLoadMore'] ?? false;
+$show_buttons      = $attributes['showButtons'] ?? true;
+$tax_filter        = $attributes['taxonomyFilter'] ?? '';
+$term_id           = $attributes['termId'] ?? 0;
+$require_image     = $attributes['requireImage'] ?? true;
 $video_only        = $attributes['videoOnly'] ?? false;
 $exclude_user_ids  = $attributes['excludeUserIds'] ?? array();
 $featured_user_ids = $attributes['featuredUserIds'] ?? array();

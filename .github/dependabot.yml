@@ -43,3 +43,8 @@ updates:
     versioning-strategy: increase
     commit-message:
       prefix: "npm"
+      prefix-development: "npm Dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "javascript"

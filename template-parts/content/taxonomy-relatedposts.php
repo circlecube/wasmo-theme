@@ -3,8 +3,8 @@
  * Template part to load related posts for the sepecified taxonomy term.
  */
 
-$related_tax      = get_query_var( 'tax' );
-$related_term_id  = get_query_var( 'termid' );
+$related_tax     = get_query_var( 'tax' );
+$related_term_id = get_query_var( 'termid' );
 
 
 $args = array(
