@@ -808,6 +808,280 @@ h2.tagline {
 	border-left-color: var(--color-gray-1);
 }
 
+.directory-filters {
+	margin-bottom: 0.5rem;
+	max-width: 100%;
+}
+
+.directory-filters .directory-filter-accordion {
+	margin: 0 !important;
+}
+.directory-filters form.directory-filter-form,
+.directory-filters .directory-filter-accordion,
+.directory-filters .directory-filter-meta-bar {
+	max-width: 100%;
+	width: 100%;
+}
+
+.directory-filter-accordion-toggle {
+	align-items: center;
+	background: var(--color-gray-0);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	color: var(--color-gray-4);
+	cursor: pointer;
+	display: flex;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.85rem;
+	font-weight: 400;
+	gap: 0.5rem;
+	justify-content: space-between;
+	line-height: 1;
+	margin: 0;
+	padding: 0.65rem 0.8rem .5rem;
+	text-align: left;
+	width: 100%;
+}
+
+.directory-filter-accordion-toggle:hover,
+.directory-filter-accordion-toggle:focus {
+	background: var(--color-gray-1);
+}
+
+.directory-filter-accordion-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	transform: rotate(90deg);
+	transition: transform 0.2s ease;
+}
+
+.directory-filter-accordion.is-open .directory-filter-accordion-icon {
+	transform: rotate(-90deg);
+}
+
+.directory-filter-accordion-panel {
+	margin-top: 0.5rem;
+}
+
+.directory-filter-accordion-panel[hidden] {
+	display: none;
+}
+
+.directory-filter-meta-bar {
+	align-items: center;
+	background: var(--color-gray-0);
+	display: flex;
+	flex-wrap: wrap;
+	font-size: 0.75rem;
+	gap: 0.35rem 0.5rem;
+	margin: 1rem 0 -0.5rem;
+	max-width: 100%;
+	padding: 0.25rem 0.5rem;
+}
+
+.directory-filter-meta-bar .directory-filter-count {
+	color: var(--color-gray-3);
+	flex: 0 0 auto;
+	line-height: 1.4;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.directory-filter-form {
+	margin: 0;
+	max-width: 100%;
+}
+
+.directory-filter-row {
+	align-items: flex-end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 0.75rem;
+}
+
+.directory-filter-field {
+	flex: 1 1 140px;
+	margin: 0;
+	min-width: 0;
+}
+
+.directory-filter-field-sort {
+	flex: 0 1 170px;
+}
+
+.directory-filter-field-media {
+	flex: 0 1 160px;
+}
+
+.directory-filter-field-shelf,
+.directory-filter-field-spectrum {
+	flex: 1 1 180px;
+	min-width: 180px;
+}
+
+.directory-filter-label {
+	align-items: center;
+	color: var(--color-gray-3);
+	display: flex;
+	font-size: 0.8rem;
+	gap: 0.35rem;
+	margin-bottom: 0.25rem;
+	white-space: nowrap;
+}
+
+.directory-filter-control {
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	max-width: 100%;
+	padding: 0.4rem 0.6rem;
+	width: 100%;
+}
+
+.directory-filter-actions {
+	align-items: center;
+	display: flex;
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
+	gap: 0.75rem;
+	margin-left: auto;
+}
+
+.directory-filter-submit {
+	font-size: 0.9rem;
+	margin: 0;
+	padding: 0.4rem 0.85rem;
+	white-space: nowrap;
+}
+
+@media (min-width: 960px) {
+	.directory-filter-row {
+		flex-wrap: nowrap;
+	}
+
+	.directory-filter-field-shelf,
+	.directory-filter-field-spectrum {
+		flex: 1 1 0;
+	}
+}
+
+.directory-filter-meta-bar .directory-filter-pills {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.directory-filter-meta-bar .directory-filter-pill {
+	align-items: center;
+	background-color: var(--color-blue);
+	border-radius: 999px;
+	color: white;
+	display: inline-flex;
+	font-family: sans-serif;
+	font-size: 0.7rem;
+	gap: 0.2rem;
+	line-height: 1;
+	margin: 0;
+	padding: 0.3rem 0.25rem 0.3rem 0.55rem;
+	text-decoration: none !important;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	white-space: nowrap;
+}
+
+.directory-filter-meta-bar .directory-filter-pill-label {
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.directory-filter-meta-bar .directory-filter-remove {
+	align-items: center;
+	box-sizing: border-box;
+	display: inline-flex;
+	flex: 0 0 1.1em;
+	font-size: 1em;
+	font-weight: 600;
+	height: 1.1em;
+	justify-content: center;
+	line-height: 1;
+	opacity: 0.9;
+	text-decoration: none;
+	width: 1.1em;
+}
+
+.directory-filter-meta-bar .directory-filter-pills li:nth-of-type(5n+2) .directory-filter-pill {
+	background-color: var(--color-orange);
+}
+
+.directory-filter-meta-bar .directory-filter-pills li:nth-of-type(5n+3) .directory-filter-pill {
+	background-color: var(--color-blue-2);
+}
+
+.directory-filter-meta-bar .directory-filter-pills li:nth-of-type(5n+4) .directory-filter-pill {
+	background-color: var(--color-pink);
+}
+
+.directory-filter-meta-bar .directory-filter-pills li:nth-of-type(5n+5) .directory-filter-pill {
+	background-color: var(--color-blue-3);
+}
+
+.directory-filter-meta-bar .directory-filter-pill:hover,
+.directory-filter-meta-bar .directory-filter-pill:focus {
+	background-color: var(--color-gray-1) !important;
+	color: var(--color-gray-3) !important;
+	text-decoration: none !important;
+}
+
+.directory-filter-meta-bar .directory-filter-pill:hover .directory-filter-remove,
+.directory-filter-meta-bar .directory-filter-pill:focus .directory-filter-remove {
+	opacity: 1;
+}
+
+.directory-filter-pills {
+	display: flex;
+	flex: 1 1 auto;
+	flex-wrap: wrap;
+	gap: 0.35rem 0.5rem;
+	list-style: none;
+	margin: 0;
+	overflow: visible;
+	padding: 0;
+}
+
+.directory-filter-pills li {
+	float: none;
+}
+
+.directory-filter-meta-bar .directory-filter-clear {
+	margin-left: auto;
+}
+
+.directory-filter-clear {
+	align-items: center;
+	color: var(--color-gray-3);
+	display: inline-flex;
+	flex: 0 0 auto;
+	height: 1.25rem;
+	justify-content: center;
+	text-decoration: none;
+	width: 1.25rem;
+}
+
+.directory-filter-clear:hover,
+.directory-filter-clear:focus {
+	color: var(--color-gray-3);
+	opacity: 0.75;
+}
+
+.directory-filter-clear .svg-icon {
+	display: block;
+	fill: currentColor;
+}
+
+.directory-filter-clear .svg-icon path {
+	fill: currentColor;
+	fill-rule: evenodd;
+}
 
 cite {
 	text-align: right;
