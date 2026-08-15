@@ -175,8 +175,8 @@ if ( ! empty( $directory_filter_state['spectrum'] ) ) {
 					printf(
 						/* translators: 1: filtered profile count, 2: total profile count */
 						esc_html__( 'Showing %1$s of %2$s profiles', 'wasmo-theme' ),
-						number_format_i18n( $filtered_total ),
-						number_format_i18n( $directory_total )
+						esc_html( number_format_i18n( $filtered_total ) ),
+						esc_html( number_format_i18n( $directory_total ) )
 					);
 					?>
 				</span>

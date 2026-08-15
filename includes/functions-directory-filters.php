@@ -80,13 +80,14 @@ function wasmo_get_directory_filter_state() {
 		return $state;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only public GET filter params; nonces are inappropriate for bookmarkable URLs.
 	$sort = isset( $_GET['sort'] ) ? sanitize_key( wp_unslash( $_GET['sort'] ) ) : 'updated';
 	if ( ! in_array( $sort, array( 'updated', 'name' ), true ) ) {
 		$sort = 'updated';
 	}
 
-	$video = ! empty( $_GET['video'] ) && '1' === (string) wp_unslash( $_GET['video'] );
-	$photo = ! empty( $_GET['photo'] ) && '1' === (string) wp_unslash( $_GET['photo'] );
+	$video = ! empty( $_GET['video'] ) && '1' === sanitize_key( wp_unslash( $_GET['video'] ) );
+	$photo = ! empty( $_GET['photo'] ) && '1' === sanitize_key( wp_unslash( $_GET['photo'] ) );
 
 	$media = 'all';
 	if ( isset( $_GET['media'] ) ) {
@@ -100,10 +101,11 @@ function wasmo_get_directory_filter_state() {
 		$media = 'photo';
 	}
 
-	$imported = ! empty( $_GET['imported'] ) && '1' === (string) wp_unslash( $_GET['imported'] );
+	$imported = ! empty( $_GET['imported'] ) && '1' === sanitize_key( wp_unslash( $_GET['imported'] ) );
 
 	$shelf_slug    = isset( $_GET['shelf'] ) ? sanitize_title( wp_unslash( $_GET['shelf'] ) ) : '';
 	$spectrum_slug = isset( $_GET['spectrum'] ) ? sanitize_title( wp_unslash( $_GET['spectrum'] ) ) : '';
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	$shelf_term_id    = 0;
 	$spectrum_term_id = 0;

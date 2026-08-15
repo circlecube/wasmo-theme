@@ -742,10 +742,10 @@ function wasmo_get_icon_svg_allowed_html() {
 			'enable-background' => true,
 		),
 		'path'     => array(
-			'd'           => true,
-			'fill'        => true,
-			'fill-rule'   => true,
-			'clip-path'   => true,
+			'd'         => true,
+			'fill'      => true,
+			'fill-rule' => true,
+			'clip-path' => true,
 		),
 		'g'        => array(
 			'clip-path' => true,
