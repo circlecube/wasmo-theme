@@ -9,7 +9,7 @@
 		<?php if ( get_field( 'hi', 'user_' . $userid ) ) { ?>
 			<h1 class="hi"><?php echo wp_kses_post( get_field( 'hi', 'user_' . $userid ) ); ?></h1>
 		<?php } else { ?>
-			<h1 class="hi">Hi, I'm <?php echo $curauth->user_login; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></h1>
+			<h1 class="hi">Hi, I'm <?php echo esc_html( $curauth->user_login ); ?></h1>
 		<?php } ?>
 
 		<?php if ( get_field( 'tagline', 'user_' . $userid ) ) { ?>
@@ -21,22 +21,22 @@
 		<?php if ( get_field( 'location', 'user_' . $userid ) ) { ?>
 			<div class="location">
 				<?php
-					echo wasmo_get_icon_svg( 'location', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					wasmo_echo_icon_svg( 'location', 16 );
 					echo wp_kses_post( get_field( 'location', 'user_' . $userid ) );
 				?>
 			</div>
 		<?php } ?>
-		<meta itemprop="identifier" content="<?php echo $userid; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-		<meta itemprop="name" id="real-name" content="<?php echo $curauth->display_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-		<meta itemprop="alternateName" id="handle" content="<?php echo get_query_var( 'author_name' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-		<meta itemprop="url" content="<?php echo get_author_posts_url( $userid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-		<meta itemprop="image" content="<?php echo wasmo_get_user_image_url( $userid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
-		<meta itemprop="datePublished" content="<?php echo $curauth->user_registered; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" />
+		<meta itemprop="identifier" content="<?php echo esc_attr( $userid ); ?>" />
+		<meta itemprop="name" id="real-name" content="<?php echo esc_attr( $curauth->display_name ); ?>" />
+		<meta itemprop="alternateName" id="handle" content="<?php echo esc_attr( get_query_var( 'author_name' ) ); ?>" />
+		<meta itemprop="url" content="<?php echo esc_url( get_author_posts_url( $userid ) ); ?>" />
+		<meta itemprop="image" content="<?php echo esc_url( wasmo_get_user_image_url( $userid ) ); ?>" />
+		<meta itemprop="datePublished" content="<?php echo esc_attr( $curauth->user_registered ); ?>" />
 		<meta itemprop="dateModified" content="<?php echo esc_attr( gmdate( 'Y-m-d H:i:s', intval( get_user_meta( $userid, 'last_save', true ) ) ) ); ?>" />
 	</div>
 
 	<div class="content-left">
-		<div class="user_photo"><?php echo wasmo_get_user_image( $userid, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+		<div class="user_photo"><?php wasmo_echo_user_image( $userid, true ); ?></div>
 		<?php
 		$links = get_field( 'links', 'user_' . $userid );
 		if ( $links ) {
@@ -50,7 +50,7 @@
 				<?php
 					echo esc_url( $links['facebook'] );
 				?>
-				"><span class="screen-reader-text">Facebook</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+				"><span class="screen-reader-text">Facebook</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 			<?php } ?>
 			<?php
 			if ( $links['instagram'] ) {
@@ -60,7 +60,7 @@
 				<?php
 					echo esc_url( $links['instagram'] );
 				?>
-				"><span class="screen-reader-text">instagram</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+				"><span class="screen-reader-text">instagram</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 			<?php } ?>
 			<?php
 			if ( $links['reddit'] ) {
@@ -70,7 +70,7 @@
 				<?php
 					echo esc_url( $links['reddit'] );
 				?>
-				"><span class="screen-reader-text">reddit</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+				"><span class="screen-reader-text">reddit</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 			<?php } ?>
 			<?php
 			if ( $links['twitter'] ) {
@@ -80,7 +80,7 @@
 				<?php
 					echo esc_url( $links['twitter'] );
 				?>
-				"><span class="screen-reader-text">twitter</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+				"><span class="screen-reader-text">twitter</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 			<?php } ?>
 			<?php
 			if ( $links['other'] ) {
@@ -93,7 +93,7 @@
 				<?php
 					echo esc_url( $links['other'] );
 				?>
-				"><span class="screen-reader-text">other</span><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></li>
+				"><span class="screen-reader-text">other</span><?php wasmo_echo_svg( $svg ); ?></a></li>
 			<?php } ?>
 			</ul>
 		<?php } ?>

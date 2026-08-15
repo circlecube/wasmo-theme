@@ -158,7 +158,7 @@ function wasmo_entry_footer() {
  * @param Boolean $profile   Flag for profile nav, this updates the baseurl and format so they work for the custom pagination
  * @return String Pagination links
  */
-function wasmo_pagination( $paged = '', $max_page = '', $profiles = false ) {
+function wasmo_pagination( $paged = '', $max_page = '', $profiles = false, $query_args = array() ) {
 	$big = 999999999; // need an unlikely integer
 
 	if ( ! $paged ) {
@@ -182,28 +182,32 @@ function wasmo_pagination( $paged = '', $max_page = '', $profiles = false ) {
 		$base_url = get_permalink( get_page_by_path( 'profiles' ) ) . 'page/%_%';
 		$format   = '%#%';
 	}
-	$paginated_links = paginate_links(
-		array(
-			'base'      => $base_url,
-			'format'    => $format,
-			'current'   => max( 1, $paged ),
-			'total'     => $max_page,
-			'mid_size'  => 1,
-			'end_size'  => 1,
-			'prev_text' => sprintf(
-				'%s <span class="screen-reader-text">%s</span>',
-				wasmo_get_icon_svg( 'chevron_left', 22 ),
-				__( 'Newer', 'wasmo-theme' )
-			),
-			'next_text' => sprintf(
-				'<span class="screen-reader-text">%s</span> %s',
-				__( 'Older', 'wasmo-theme' ),
-				wasmo_get_icon_svg( 'chevron_right', 22 )
-			),
-			'type'      => 'list',
-			'show_all'  => $show_all,
-		)
+	$paginate_args = array(
+		'base'      => $base_url,
+		'format'    => $format,
+		'current'   => max( 1, $paged ),
+		'total'     => $max_page,
+		'mid_size'  => 1,
+		'end_size'  => 1,
+		'prev_text' => sprintf(
+			'%s <span class="screen-reader-text">%s</span>',
+			wasmo_get_icon_svg( 'chevron_left', 22 ),
+			__( 'Newer', 'wasmo-theme' )
+		),
+		'next_text' => sprintf(
+			'<span class="screen-reader-text">%s</span> %s',
+			__( 'Older', 'wasmo-theme' ),
+			wasmo_get_icon_svg( 'chevron_right', 22 )
+		),
+		'type'      => 'list',
+		'show_all'  => $show_all,
 	);
+
+	if ( ! empty( $query_args ) ) {
+		$paginate_args['add_args'] = $query_args;
+	}
+
+	$paginated_links = paginate_links( $paginate_args );
 
 	return '<div class="wasmo-pagination">' . $paginated_links . '</div>';
 }
@@ -629,6 +633,22 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 	<path d="M0 0h24v24H0z" fill="none"></path>
 	<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
 </svg>',
+		'video'                 => /* dashicon video-alt3 */ '
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+	<path d="M19 15v-10c0-1.1-0.9-2-2-2h-13c-1.1 0-2 0.9-2 2v10c0 1.1 0.9 2 2 2h13c1.1 0 2-0.9 2-2zM8 14v-8l6 4z"/>
+</svg>',
+		'format-image'          => /* dashicon format-image */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+	<path d="M2.5 4v12h15V4h-15zm13.5 1.5v8.5h-12V5.5h12zM6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm8.5 4.5l-2.91-3.2-2.5 3.01-1.94-2.38L5.5 14h9v-1.5z"/>
+</svg>',
+		'sort'                  => /* dashicon sort */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+	<path d="M9 11l-4 4-4-4h8zm0-2l4-4 4 4H5z"/>
+</svg>',
+		'dismiss'               => /* dashicon dismiss */ '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+	<path fill-rule="evenodd" d="M10 2c4.42 0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 3.58-8 8-8zm5 11l-3-3 3-3-2-2-3 3-3-3-2 2 3 3-3 3 2 2 3-3 3 3z"/>
+</svg>',
 		'leader'                => /* dashicon businessperson */ '
 <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 20 20">
   <path d="M13.2 10 11 13l-1-1.4L9 13l-2.2-3C3 11 3 13 3 16.9c0 0 3 1.1 6.4 1.1h1.2c3.4-.1 6.4-1.1 6.4-1.1 0-3.9 0-5.9-3.8-6.9zm-3.2.7L8.4 10l1.6 1.6 1.6-1.6-1.6.7zm0-8.6c-1.9 0-3 1.8-2.7 3.8.3 2 1.3 3.4 2.7 3.4s2.4-1.4 2.7-3.4c.3-2.1-.8-3.8-2.7-3.8z"/>
@@ -695,6 +715,98 @@ function wasmo_get_icon_svg( $icon, $size = 24, $styles = '' ) {
 	}
 
 	return null;
+}
+
+/**
+ * Allowed HTML for theme SVG icons.
+ *
+ * @return array
+ */
+function wasmo_get_icon_svg_allowed_html() {
+	return array(
+		'svg'      => array(
+			'class'             => true,
+			'width'             => true,
+			'height'            => true,
+			'viewbox'           => true,
+			'viewBox'           => true,
+			'xmlns'             => true,
+			'xmlns:xlink'       => true,
+			'version'           => true,
+			'aria-hidden'       => true,
+			'role'              => true,
+			'focusable'         => true,
+			'fill'              => true,
+			'xml:space'         => true,
+			'style'             => true,
+			'enable-background' => true,
+		),
+		'path'     => array(
+			'd'           => true,
+			'fill'        => true,
+			'fill-rule'   => true,
+			'clip-path'   => true,
+		),
+		'g'        => array(
+			'clip-path' => true,
+		),
+		'rect'     => array(
+			'fill'   => true,
+			'height' => true,
+			'width'  => true,
+		),
+		'ellipse'  => array(
+			'cx'   => true,
+			'cy'   => true,
+			'rx'   => true,
+			'ry'   => true,
+			'fill' => true,
+		),
+		'defs'     => array(),
+		'clipPath' => array(
+			'id' => true,
+		),
+		'use'      => array(
+			'xlink:href' => true,
+			'href'       => true,
+			'overflow'   => true,
+		),
+	);
+}
+
+/**
+ * Echo a theme icon SVG with appropriate escaping.
+ *
+ * @param string $icon Icon key.
+ * @param int    $size Icon size in pixels.
+ * @param string $styles Optional inline styles attribute.
+ */
+function wasmo_echo_icon_svg( $icon, $size = 24, $styles = '' ) {
+	$svg = wasmo_get_icon_svg( $icon, $size, $styles );
+	if ( $svg ) {
+		echo wp_kses( $svg, wasmo_get_icon_svg_allowed_html() );
+	}
+}
+
+/**
+ * Echo trusted SVG markup with theme icon allowances.
+ *
+ * @param string $svg SVG markup.
+ */
+function wasmo_echo_svg( $svg ) {
+	if ( $svg ) {
+		echo wp_kses( $svg, wasmo_get_icon_svg_allowed_html() );
+	}
+}
+
+/**
+ * Echo a user profile image with appropriate escaping.
+ *
+ * @param int  $userid User ID.
+ * @param bool $is_itemprop_image Whether to include itemProp=image.
+ */
+function wasmo_echo_user_image( $userid, $is_itemprop_image = false ) {
+	echo wp_kses( wasmo_get_user_image( $userid, $is_itemprop_image ), wp_kses_allowed_html( 'post' ) );
 }
 
 /**

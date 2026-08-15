@@ -22,7 +22,7 @@ if ( ! $comment_post_id ) {
 }
 
 // Get comments for this profile's shadow post
-$comments = get_comments( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+$profile_comments = get_comments(
 	array(
 		'post_id' => $comment_post_id,
 		'status'  => 'approve',
@@ -31,7 +31,7 @@ $comments = get_comments( // phpcs:ignore WordPress.WP.GlobalVariablesOverride.P
 	)
 );
 
-$comment_count = count( $comments );
+$comment_count = count( $profile_comments );
 $profile_owner = get_userdata( $userid );
 ?>
 
@@ -39,18 +39,18 @@ $profile_owner = get_userdata( $userid );
 	<h3>
 		Comments
 		<?php if ( $comment_count > 0 ) : ?>
-			<span class="comment-count">(<?php echo $comment_count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>)</span>
+			<span class="comment-count">(<?php echo esc_html( $comment_count ); ?>)</span>
 		<?php endif; ?>
 	</h3>
 
-	<?php if ( ! empty( $comments ) ) : ?>
+	<?php if ( ! empty( $profile_comments ) ) : ?>
 		<ul class="profile-comment-list">
 			<?php
-			foreach ( $comments as $comment ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-				$commenter        = get_user_by( 'email', $comment->comment_author_email );
-				$commenter_name   = $comment->comment_author;
+			foreach ( $profile_comments as $profile_comment ) :
+				$commenter        = get_user_by( 'email', $profile_comment->comment_author_email );
+				$commenter_name   = $profile_comment->comment_author;
 				$commenter_link   = '#';
-				$commenter_avatar = get_avatar( $comment->comment_author_email, 48, '', $commenter_name );
+				$commenter_avatar = get_avatar( $profile_comment->comment_author_email, 48, '', $commenter_name );
 
 				// If commenter is a registered user, link to their profile
 				if ( $commenter ) {
@@ -58,14 +58,14 @@ $profile_owner = get_userdata( $userid );
 					$commenter_link = get_author_posts_url( $commenter->ID );
 				}
 				?>
-				<li class="profile-comment" id="comment-<?php echo $comment->comment_ID; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+				<li class="profile-comment" id="comment-<?php echo esc_attr( $profile_comment->comment_ID ); ?>">
 					<div class="comment-avatar">
 						<?php if ( $commenter ) : ?>
 							<a href="<?php echo esc_url( $commenter_link ); ?>" title="View <?php echo esc_attr( $commenter_name ); ?>'s profile">
-								<?php echo $commenter_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php echo wp_kses( $commenter_avatar, wp_kses_allowed_html( 'post' ) ); ?>
 							</a>
 						<?php else : ?>
-							<?php echo $commenter_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							<?php echo wp_kses( $commenter_avatar, wp_kses_allowed_html( 'post' ) ); ?>
 						<?php endif; ?>
 					</div>
 					<div class="comment-content">
@@ -77,12 +77,12 @@ $profile_owner = get_userdata( $userid );
 							<?php else : ?>
 								<span class="comment-author"><?php echo esc_html( $commenter_name ); ?></span>
 							<?php endif; ?>
-							<span class="comment-date" title="<?php echo $comment->comment_date; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
-								<?php echo human_time_diff( strtotime( $comment->comment_date_gmt ), time() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ago
+							<span class="comment-date" title="<?php echo esc_attr( $profile_comment->comment_date ); ?>">
+								<?php echo esc_html( human_time_diff( strtotime( $profile_comment->comment_date_gmt ), time() ) ); ?> ago
 							</span>
 						</div>
 						<div class="comment-text">
-							<?php echo wpautop( wp_kses_post( $comment->comment_content ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							<?php echo wp_kses_post( wpautop( wp_kses_post( $profile_comment->comment_content ) ) ); ?>
 						</div>
 						<?php
 						// Show moderation options to admins or profile owner
@@ -90,11 +90,11 @@ $profile_owner = get_userdata( $userid );
 							?>
 							<div class="comment-actions">
 								<?php if ( current_user_can( 'moderate_comments' ) ) : ?>
-									<a href="<?php echo admin_url( 'comment.php?action=editcomment&c=' . $comment->comment_ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>" class="comment-edit-link">
+									<a href="<?php echo esc_url( admin_url( 'comment.php?action=editcomment&c=' . $profile_comment->comment_ID ) ); ?>" class="comment-edit-link">
 										Edit
 									</a>
 								<?php endif; ?>
-								<a href="<?php echo esc_url( wasmo_get_comment_delete_url( $comment->comment_ID ) ); ?>" class="comment-delete-link" onclick="return confirm('Delete this comment?');">
+								<a href="<?php echo esc_url( wasmo_get_comment_delete_url( $profile_comment->comment_ID ) ); ?>" class="comment-delete-link" onclick="return confirm('Delete this comment?');">
 									Delete
 								</a>
 							</div>

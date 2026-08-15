@@ -15,6 +15,6 @@ if ( $import_source || $import_text ) {
 	?>
 	<div class="user-attribution">
 		<h4>Attribution</h4>
-		<p><?php echo $import_text; ?> <?php echo wasmo_auto_link_text( $import_source ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+		<p><?php echo esc_html( $import_text ); ?> <?php echo wasmo_auto_link_text( $import_source ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 	</div>
 <?php } ?>

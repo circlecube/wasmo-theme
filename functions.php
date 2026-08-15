@@ -10,6 +10,7 @@ require_once get_stylesheet_directory() . '/includes/functions-acf.php';
 require_once get_stylesheet_directory() . '/includes/functions-email.php';
 require_once get_stylesheet_directory() . '/includes/functions-login.php';
 require_once get_stylesheet_directory() . '/includes/functions-template-tags.php';
+require_once get_stylesheet_directory() . '/includes/functions-directory-filters.php';
 require_once get_stylesheet_directory() . '/includes/functions-theme.php';
 require_once get_stylesheet_directory() . '/includes/functions-seo.php';
 require_once get_stylesheet_directory() . '/includes/functions-saints.php';

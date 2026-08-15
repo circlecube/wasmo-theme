@@ -21,9 +21,9 @@ if ( $userposts && ! $user->has_cap( 'manage_options' ) ) {
 			<h4>Posts by <?php echo esc_html( $user->display_name ); ?></h4>
 			<ul class="user_recent_posts entry">
 				<?php
-				foreach ( $userposts as $post ) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				foreach ( $userposts as $user_post ) :
 					?>
-					<?php setup_postdata( $post ); ?>
+					<?php setup_postdata( $user_post ); ?>
 					<li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
 					<?php // echo wp_oembed_get( get_the_permalink() ); ?>
 				<?php endforeach; ?>
