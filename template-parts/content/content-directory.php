@@ -31,6 +31,15 @@ if ( empty( $max_profiles ) ) {
 	$max_profiles = $max;
 }
 
+$directory_filter_state = null;
+$show_directory_filters = ( 'full' === $context );
+$directory_total        = 0;
+$filtered_total         = 0;
+
+if ( $show_directory_filters ) {
+	$directory_filter_state = wasmo_get_directory_filter_state();
+}
+
 if ( $context === 'tax' ) {
 	$context = 'tax-' . $directory_tax . '_term-' . $termid;
 	$showall = true;
@@ -151,6 +160,7 @@ $transient_name = implode(
 		$directory_tax && $termid ? $directory_tax . '-' . $termid : '',
 		! empty( $exclude_user_ids ) ? 'ex-' . implode( '_', $exclude_user_ids ) : '',
 		! empty( $featured_user_ids ) ? 'feat-' . implode( '_', $featured_user_ids ) : '',
+		$show_directory_filters && $directory_filter_state ? wasmo_directory_filter_transient_suffix( $directory_filter_state ) : '',
 	)
 );
 $transient_exp  = WEEK_IN_SECONDS;
@@ -160,17 +170,36 @@ if ( current_user_can( 'manage_options' ) && WP_DEBUG ) {
 	$transient_name = time();
 }
 // use transient to cache data
-$the_directory = get_transient( $transient_name );
-if ( false === $the_directory ) {
+$cached_directory = get_transient( $transient_name );
+$the_directory    = '';
+$directory_html   = '';
+
+if ( false !== $cached_directory ) {
+	if ( is_array( $cached_directory ) ) {
+		$directory_html  = $cached_directory['html'];
+		$directory_total = (int) $cached_directory['directory_total'];
+		$filtered_total  = (int) $cached_directory['filtered_total'];
+	} else {
+		$directory_html = $cached_directory;
+	}
+}
+
+if ( '' === $directory_html ) {
 	$the_directory = '';
 
 	/* Start the Loop */
 	$args = array(
-		'orderby'  => 'meta_value',
-		'meta_key' => 'last_save',
-		'order'    => 'DESC',
-		'fields'   => 'all',
+		'fields' => 'all',
 	);
+
+	if ( $show_directory_filters && $directory_filter_state && 'name' === $directory_filter_state['sort'] ) {
+		$args['orderby'] = 'display_name';
+		$args['order']   = 'ASC';
+	} else {
+		$args['orderby']  = 'meta_value';
+		$args['meta_key'] = 'last_save';
+		$args['order']    = 'DESC';
+	}
 
 	// Array of WP_User objects.
 	$users = get_users( $args );
@@ -181,7 +210,7 @@ if ( false === $the_directory ) {
 		$tax_filtered_users = array_filter( $filtered_users, 'wasmo_filter_directory_for_tax' );
 		$filtered_users     = $tax_filtered_users;
 	}
-	// filter to only profiles with video if requested
+	// filter to only profiles with video if requested by block
 	if ( $video_only ) {
 		$filtered_users = array_filter( $filtered_users, 'wasmo_filter_directory_has_video' );
 	}
@@ -221,7 +250,14 @@ if ( false === $the_directory ) {
 		$filtered_users = array_merge( $featured_users, $remaining_users );
 	}
 
-	$total_users    = count( $filtered_users );
+	$directory_total = count( $filtered_users );
+
+	if ( $show_directory_filters && $directory_filter_state ) {
+		$filtered_users = wasmo_apply_directory_url_filters( $filtered_users, $directory_filter_state );
+	}
+
+	$filtered_total = count( $filtered_users );
+	$total_users    = $filtered_total;
 	$counter        = 0;
 	$the_directory .= '<section class="entry-content the-directory directory-' . $context . ' directory-' . $state . ' directory-' . $max_profiles . '">';
 	$the_directory .= '<div class="directory directory-' . $context . ' ' . ( $lazy === true ? 'is-lazy' : 'not-lazy' ) . '" data-offset="' . $offset . '" data-total="' . $total_users . '" data-lazy="' . $lazy . '" data-lazy="' . $lazy . '">';
@@ -295,11 +331,18 @@ if ( false === $the_directory ) {
 		}
 	}
 	if ( $total_users === 0 ) {
-		$the_directory .= '<p>No profiles found here</p>';
+		if ( $show_directory_filters && $directory_filter_state && wasmo_directory_filter_is_active( $directory_filter_state ) ) {
+			$the_directory .= '<p>' . esc_html__( 'No profiles match these filters.', 'wasmo-theme' ) . ' <a href="' . esc_url( wasmo_get_directory_base_url() ) . '">' . esc_html__( 'Clear filters', 'wasmo-theme' ) . '</a></p>';
+		} else {
+			$the_directory .= '<p>' . esc_html__( 'No profiles found here', 'wasmo-theme' ) . '</p>';
+		}
 	}
 	$the_directory .= '</div>';
 	if ( ! $lazy && 'full' === $context && $total_users > $max_profiles ) {
-		$the_directory .= wasmo_pagination( $directory_paged, ceil( $total_users / $max_profiles ), true );
+		$filter_query_args = $show_directory_filters && $directory_filter_state
+			? wasmo_get_directory_filter_query_args( $directory_filter_state )
+			: array();
+		$the_directory    .= wasmo_pagination( $directory_paged, ceil( $total_users / $max_profiles ), true, $filter_query_args );
 	}
 	if ( $lazy && ! $showall ) {
 		$the_directory .= '<div class="directory-load-more" data-offset="' . $max_profiles . '" data-total="' . $total_users . '">';
@@ -309,11 +352,29 @@ if ( false === $the_directory ) {
 	}
 	$the_directory .= '</section>';
 
+	$directory_html = $the_directory;
+
 	if ( ! current_user_can( 'manage_options' ) ) { // only save transient if non admin user
-		set_transient( $transient_name, $the_directory, $transient_exp );
+		set_transient(
+			$transient_name,
+			array(
+				'html'            => $directory_html,
+				'directory_total' => $directory_total,
+				'filtered_total'  => $filtered_total,
+			),
+			$transient_exp
+		);
 	}
 }
-echo $the_directory; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+if ( $show_directory_filters && $directory_filter_state ) {
+	set_query_var( 'directory_filter_state', $directory_filter_state );
+	set_query_var( 'directory_total', $directory_total );
+	set_query_var( 'filtered_total', $filtered_total );
+	get_template_part( 'template-parts/content/content', 'directory-filters' );
+}
+
+echo $directory_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 // Check if buttons should be shown (can be suppressed by blocks)
 $show_buttons = get_query_var( 'show_buttons', true );

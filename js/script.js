@@ -25,8 +25,68 @@ document.addEventListener('DOMContentLoaded', function () {
 	if (loadMoreButton) {
 		loadMoreButton.addEventListener('click', directoryLoadMore);
 	}
+	initDirectoryFilterForm();
+	initDirectoryFilterAccordion();
 	window.addEventListener('scroll', directoryAutoLoad);
 	window.addEventListener('resize', directoryAutoLoad);
+
+	/**
+	 * Directory filter form auto-submit on change.
+	 *
+	 * @returns {void}
+	 */
+	function initDirectoryFilterForm() {
+		const form = document.querySelector('.directory-filter-form');
+		if (!form) {
+			return;
+		}
+
+		form.querySelectorAll('select').forEach(function (control) {
+			control.addEventListener('change', function () {
+				form.submit();
+			});
+		});
+	}
+
+	/**
+	 * Directory filter accordion with localStorage open state.
+	 *
+	 * @returns {void}
+	 */
+	function initDirectoryFilterAccordion() {
+		const accordion = document.getElementById('directory-filter-accordion');
+		const toggle = document.getElementById('directory-filter-toggle');
+		const panel = document.getElementById('directory-filter-panel');
+		if (!accordion || !toggle || !panel) {
+			return;
+		}
+
+		const storageKey = 'wasmo_directory_filters_open';
+
+		function setOpen(isOpen) {
+			toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+			panel.hidden = !isOpen;
+			accordion.classList.toggle('is-open', isOpen);
+
+			try {
+				localStorage.setItem(storageKey, isOpen ? '1' : '0');
+			} catch (error) {
+				// Ignore storage failures (private browsing, etc.).
+			}
+		}
+
+		try {
+			if (localStorage.getItem(storageKey) === '1') {
+				setOpen(true);
+			}
+		} catch (error) {
+			// Ignore storage failures.
+		}
+
+		toggle.addEventListener('click', function () {
+			setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+		});
+	}
 
 	/**
 	 * Handle navigation login link clicks

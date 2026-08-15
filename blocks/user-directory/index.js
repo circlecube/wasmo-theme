@@ -3,31 +3,183 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, ToggleControl, FormTokenField } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import apiFetch from '@wordpress/api-fetch';
+import { useEffect, useMemo, useState } from '@wordpress/element';
 
 // Import styles
 import './editor.scss';
 import './style.scss';
 
+const USERS_PER_PAGE = 100;
+const MAX_USER_PAGES = 50;
+
+function getUserLabel( user ) {
+    if ( ! user ) {
+        return '';
+    }
+
+    if ( user.slug ) {
+        return `${ user.name } (@${ user.slug })`;
+    }
+
+    return user.name;
+}
+
+function findUserByLabel( users, label ) {
+    return users.find( ( user ) => getUserLabel( user ) === label );
+}
+
+function mergeUsersById( ...userLists ) {
+    const map = new Map();
+
+    userLists.forEach( ( users ) => {
+        ( users || [] ).forEach( ( user ) => {
+            if ( user?.id ) {
+                map.set( user.id, user );
+            }
+        } );
+    } );
+
+    return Array.from( map.values() ).sort( ( a, b ) => a.name.localeCompare( b.name ) );
+}
+
+async function fetchUsersPage( page, context = 'edit' ) {
+    const params = new URLSearchParams( {
+        per_page: String( USERS_PER_PAGE ),
+        page: String( page ),
+        orderby: 'name',
+        order: 'asc',
+        context,
+    } );
+
+    const response = await apiFetch( {
+        path: `/wp/v2/users?${ params.toString() }`,
+        parse: false,
+    } );
+
+    if ( ! response.ok ) {
+        throw new Error( `Users request failed (${ response.status })` );
+    }
+
+    const users = await response.json();
+
+    return {
+        users: Array.isArray( users ) ? users : [],
+        totalPages: parseInt( response.headers.get( 'X-WP-TotalPages' ) || '1', 10 ),
+    };
+}
+
+async function fetchAllUsers() {
+    const users = [];
+    let page = 1;
+    let totalPages = 1;
+
+    while ( page <= totalPages && page <= MAX_USER_PAGES ) {
+        const batch = await fetchUsersPage( page, 'edit' );
+        totalPages = batch.totalPages;
+
+        if ( batch.users.length ) {
+            users.push( ...batch.users );
+        }
+
+        page += 1;
+    }
+
+    return users;
+}
+
+async function fetchUsersByIds( userIds ) {
+    const ids = ( userIds || [] ).filter( Boolean );
+
+    if ( ! ids.length ) {
+        return [];
+    }
+
+    const params = new URLSearchParams( {
+        include: ids.join( ',' ),
+        per_page: String( ids.length ),
+        context: 'edit',
+    } );
+
+    const users = await apiFetch( { path: `/wp/v2/users?${ params.toString() }` } );
+
+    return Array.isArray( users ) ? users : [];
+}
+
+function useAllUsers( savedUserIds ) {
+    const [ allUsers, setAllUsers ] = useState( [] );
+    const [ isLoading, setIsLoading ] = useState( true );
+    const [ loadError, setLoadError ] = useState( '' );
+
+    useEffect( () => {
+        let cancelled = false;
+
+        async function loadUsers() {
+            setIsLoading( true );
+            setLoadError( '' );
+
+            try {
+                const users = await fetchAllUsers();
+                const savedUsers = await fetchUsersByIds( savedUserIds );
+
+                if ( ! cancelled ) {
+                    setAllUsers( mergeUsersById( users, savedUsers ) );
+                    setIsLoading( false );
+                }
+            } catch ( error ) {
+                if ( ! cancelled ) {
+                    setLoadError( __( 'Unable to load users.', 'wasmo-theme' ) );
+                    setIsLoading( false );
+                }
+            }
+        }
+
+        loadUsers();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [ savedUserIds.join( ',' ) ] );
+
+    return { allUsers, isLoading, loadError };
+}
+
 registerBlockType( 'wasmo/user-directory', {
     edit: ( { attributes, setAttributes } ) => {
         const { context, maxProfiles, showLoadMore, showButtons, taxonomyFilter, termId, requireImage, videoOnly, excludeUserIds, featuredUserIds } = attributes;
         const blockProps = useBlockProps();
+        const savedUserIds = useMemo(
+            () => [ ...( featuredUserIds || [] ), ...( excludeUserIds || [] ) ],
+            [ featuredUserIds, excludeUserIds ]
+        );
+        const { allUsers, isLoading, loadError } = useAllUsers( savedUserIds );
 
-        // Fetch users for preview and profile selection
-        const users = useSelect( ( select ) => {
+        const previewUsers = useSelect( ( select ) => {
             return select( 'core' ).getUsers( {
-                per_page: 100,
-                orderby: 'name',
-                order: 'asc',
+                per_page: Math.min( maxProfiles, 12 ),
+                orderby: 'registered',
+                order: 'desc',
             } );
-        }, [] );
+        }, [ maxProfiles ] );
 
-        const userSuggestions = ( users || [] ).map( ( user ) => user.name );
+        const usersForPreview = allUsers.length > 0 ? allUsers : ( previewUsers || [] );
+
+        const usersById = useMemo( () => {
+            const map = new Map();
+            allUsers.forEach( ( user ) => map.set( user.id, user ) );
+            return map;
+        }, [ allUsers ] );
+
+        const userSuggestions = useMemo(
+            () => allUsers.map( ( user ) => getUserLabel( user ) ),
+            [ allUsers ]
+        );
+
         const excludedUserNames = ( excludeUserIds || [] )
-            .map( ( id ) => users?.find( ( user ) => user.id === id )?.name )
+            .map( ( id ) => getUserLabel( usersById.get( id ) ) )
             .filter( Boolean );
         const featuredUserNames = ( featuredUserIds || [] )
-            .map( ( id ) => users?.find( ( user ) => user.id === id )?.name )
+            .map( ( id ) => getUserLabel( usersById.get( id ) ) )
             .filter( Boolean );
 
         const displayCount = Math.min( maxProfiles, 12 );
@@ -118,13 +270,14 @@ registerBlockType( 'wasmo/user-directory', {
                             onChange={ ( tokens ) => {
                                 const newFeaturedIds = tokens
                                     .slice( 0, 3 )
-                                    .map( ( name ) => users?.find( ( user ) => user.name === name )?.id )
+                                    .map( ( label ) => findUserByLabel( allUsers, label )?.id )
                                     .filter( Boolean );
                                 setAttributes( { featuredUserIds: newFeaturedIds } );
                             } }
                             __experimentalExpandOnFocus={ true }
                             __experimentalShowHowTo={ false }
-                            help={ __( 'Pin up to 3 profiles to the top of the grid.', 'wasmo-theme' ) }
+                            disabled={ !! loadError }
+                            help={ isLoading ? __( 'Loading all users…', 'wasmo-theme' ) : loadError ? loadError : __( 'Pin up to 3 profiles to the top of the grid. Search by display name or username (@slug).', 'wasmo-theme' ) }
                         />
 
                         <FormTokenField
@@ -133,13 +286,14 @@ registerBlockType( 'wasmo/user-directory', {
                             suggestions={ userSuggestions }
                             onChange={ ( tokens ) => {
                                 const newExcludeIds = tokens
-                                    .map( ( name ) => users?.find( ( user ) => user.name === name )?.id )
+                                    .map( ( label ) => findUserByLabel( allUsers, label )?.id )
                                     .filter( Boolean );
                                 setAttributes( { excludeUserIds: newExcludeIds } );
                             } }
                             __experimentalExpandOnFocus={ true }
                             __experimentalShowHowTo={ false }
-                            help={ __( 'Remove selected profiles from this grid.', 'wasmo-theme' ) }
+                            disabled={ !! loadError }
+                            help={ isLoading ? __( 'Loading all users…', 'wasmo-theme' ) : loadError ? loadError : __( 'Remove selected profiles from this grid. Search by display name or username (@slug).', 'wasmo-theme' ) }
                         />
                     </PanelBody>
                 </InspectorControls>
@@ -171,9 +325,9 @@ registerBlockType( 'wasmo/user-directory', {
                     </div>
 
                     <div className="preview-users">
-                        { users && users.length > 0 ? (
-                            users.slice( 0, displayCount ).map( ( user ) => (
-                                <div key={ user.id } className="preview-user" title={ user.name }>
+                        { usersForPreview && usersForPreview.length > 0 ? (
+                            usersForPreview.slice( 0, displayCount ).map( ( user ) => (
+                                <div key={ user.id } className="preview-user" title={ getUserLabel( user ) }>
                                     <img 
                                         src={ user.avatar_urls?.['96'] || user.avatar_urls?.['48'] } 
                                         alt={ user.name }
