@@ -18,7 +18,7 @@ $wasmoThemeUpdater->setDataMap(
 $wasmoThemeUpdater->setDataOverrides(
 	array(
 		'requires'     => '6.6',
-		'requires_php' => '8.2',
+		'requires_php' => '8.1',
 		'tested'       => '7.0',
 	)
 );
