@@ -67,7 +67,7 @@ if ( current_user_can( 'manage_options' ) ) {
 		data-value="<?php echo esc_attr( $in_directory ); ?>"
 	>
 		<dt>In Directory?</dt>
-		<dd><?php echo $in_directory; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></dd>
+		<dd><?php echo esc_html( $in_directory ); ?></dd>
 	</span>
 	<?php } ?>
 	<?php if ( $i_want_to_write_posts ) { ?>
@@ -76,19 +76,19 @@ if ( current_user_can( 'manage_options' ) ) {
 		data-value="<?php echo esc_attr( $i_want_to_write_posts ); ?>"
 	>
 		<dt>I want to write posts?</dt>
-		<dd><?php echo $i_want_to_write_posts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></dd>
+		<dd><?php echo esc_html( $i_want_to_write_posts ); ?></dd>
 	</span>
 	<?php } ?>
 	<span class="user-meta"
 		data-key="edit"
-		data-value="<?php echo $curauth->user_login; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"
+		data-value="<?php echo esc_attr( $curauth->user_login ); ?>"
 	>
 		<dt>Edit Profile</dt>
 		<dd>
 			<a 
 				href="<?php echo esc_url( get_edit_user_link( $userid ) ); ?>"
 				target="_blank"
-			><?php echo $curauth->user_login; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+			><?php echo esc_html( $curauth->user_login ); ?></a>
 		</dd>
 	</span>
 	</dl>

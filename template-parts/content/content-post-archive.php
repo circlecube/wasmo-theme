@@ -71,8 +71,8 @@ $blog_query = new WP_Query( $blog_args );
 
 // The Loop
 if ( $blog_query->have_posts() ) {
-	$year  = ''; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-	$month = '';
+	$archive_year  = '';
+	$archive_month = '';
 	?>
 	<h2 id="all-posts" class="has-regular-font-size">Post Archive:</h2>
 	<div class="wp-block-query alignwide is-layout-flow">
@@ -82,17 +82,17 @@ if ( $blog_query->have_posts() ) {
 		$blog_query->the_post();
 		$this_month = get_the_date( 'F' );
 		$this_year  = get_the_date( 'Y' );
-		if ( $this_month !== $month ) {
-			$month = $this_month;
+		if ( $this_month !== $archive_month ) {
+			$archive_month = $this_month;
 			echo '</ul>'; // close list
-			if ( $this_year !== $year ) {
-				$year = $this_year; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-				echo '<h3>' . esc_html( $year ) . '</h3>';
+			if ( $this_year !== $archive_year ) {
+				$archive_year = $this_year;
+				echo '<h3>' . esc_html( $archive_year ) . '</h3>';
 			}
-			echo '<h4>' . esc_html( $month ) . '</h4>';
+			echo '<h4>' . esc_html( $archive_month ) . '</h4>';
 			echo '<ul class="blog-posts-archive">'; // reopen list
 		}
-		echo '<li><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></li>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<li><a href="' . esc_url( get_the_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></li>';
 	}
 	?>
 		</ul>

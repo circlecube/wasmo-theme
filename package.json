@@ -1,6 +1,6 @@
 {
     "name": "wasmo-theme",
-    "version": "2.6.4",
+    "version": "2.7.5",
     "description": "wasmormon.org WordPress Theme",
     "main": "index.js",
     "scripts": {
@@ -24,16 +24,16 @@
     "license": "GPL-2.0-or-later",
     "devDependencies": {
         "@playwright/test": "^1.50.0",
-        "@wordpress/env": "^10.0.0",
-        "@wordpress/scripts": "^34.0.0",
+        "@wordpress/env": "^11.13.0",
+        "@wordpress/scripts": "^34.1.0",
         "ajv": "^8.17.1"
     },
     "dependencies": {
         "@wordpress/block-editor": "^16.1.0",
         "@wordpress/blocks": "^15.25.0",
-        "@wordpress/components": "^38.0.0",
+        "@wordpress/components": "^39.0.0",
         "@wordpress/data": "^10.36.0",
         "@wordpress/element": "^8.4.0",
-        "@wordpress/i18n": "^6.20.0"
+        "@wordpress/i18n": "^6.26.0"
     }
 }

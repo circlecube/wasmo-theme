@@ -3,8 +3,8 @@
  * Template part to load related posts for the sepecified taxonomy term.
  */
 
-$tax    = get_query_var( 'tax' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-$termid = get_query_var( 'termid' );
+$related_tax     = get_query_var( 'tax' );
+$related_term_id = get_query_var( 'termid' );
 
 
 $args = array(
@@ -12,9 +12,9 @@ $args = array(
 	'post_status' => 'publish',
 	'tax_query'   => array(
 		array(
-			'taxonomy' => $tax,
+			'taxonomy' => $related_tax,
 			'field'    => 'term_id',
-			'terms'    => $termid,
+			'terms'    => $related_term_id,
 		),
 	),
 );
@@ -22,7 +22,7 @@ $args = array(
 $query = new WP_Query( $args );
 
 if ( $query->have_posts() ) : ?>
-	<h3><em><?php echo get_term( $termid )->name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></em><br>
+	<h3><em><?php echo esc_html( get_term( $related_term_id )->name ); ?></em><br>
 	Related Blog Posts:</h3>
 	<ul>
 		<?php while ( $query->have_posts() ) : ?>

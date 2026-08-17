@@ -96,7 +96,7 @@ if ( $is_sc ) {
 			<span class="saint-card-dates"><?php echo esc_html( wasmo_get_saint_service_date( $saint_id ) ); ?></span>
 		<?php endif; ?>
 		<?php if ( ! empty( $content ) ) : ?>
-			<div class="saint-card-content"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+			<div class="saint-card-content"><?php echo wp_kses_post( $content ); ?></div>
 		<?php endif; ?>
 	</div>
 </a>
