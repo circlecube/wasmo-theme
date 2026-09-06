@@ -191,7 +191,7 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ) {
 				. '</div>';
 		} else {
 			// Subsequent saves — show before/after diff.
-			$legend = '<p style="margin:0 0 8px;font-size:12px;color:#6c757d;">'
+			$legend    = '<p style="margin:0 0 8px;font-size:12px;color:#6c757d;">'
 				. '<span style="background:#d4edda;color:#155724;padding:2px 6px;border-radius:3px;font-weight:bold;">green = added</span>'
 				. '&nbsp;&nbsp;'
 				. '<span style="background:#f8d7da;color:#721c24;padding:2px 6px;border-radius:3px;text-decoration:line-through;">red = removed</span>'
