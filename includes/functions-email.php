@@ -52,6 +52,107 @@ Best,
 }
 
 /**
+ * Static cache for profile text captured before ACF saves new values.
+ * Called by wasmo_capture_pre_save_profile_text() (functions-acf.php) to store,
+ * and by wasmo_send_admin_email__profile_update() to retrieve.
+ *
+ * @param int|null    $user_id User ID key; null returns the whole cache array.
+ * @param string|null $text    Text to store; omit to retrieve only.
+ * @return string Cached text for $user_id, or '' if not set.
+ */
+function wasmo_pre_save_profile_text( $user_id = null, $text = null ) {
+	static $cache = array();
+	if ( null !== $user_id && null !== $text ) {
+		$cache[ $user_id ] = $text;
+	}
+	return ( null !== $user_id ) ? ( isset( $cache[ $user_id ] ) ? $cache[ $user_id ] : '' ) : $cache;
+}
+
+/**
+ * Build a side-by-side HTML diff table from two plain-text strings.
+ * Uses word-level LCS to identify changes: removed words are highlighted red in the
+ * "Before" column, added words are highlighted green in the "After" column.
+ *
+ * @param string $old_text Original profile text.
+ * @param string $new_text Updated profile text.
+ * @return string HTML <table> with before/after columns.
+ */
+function wasmo_build_side_by_side_diff_html( $old_text, $new_text ) {
+	// Tokenize on whitespace boundaries, keeping whitespace as tokens so spacing is preserved.
+	$old_tokens = preg_split( '/(\s+)/', trim( $old_text ), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+	$new_tokens = preg_split( '/(\s+)/', trim( $new_text ), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+
+	$m = count( $old_tokens );
+	$n = count( $new_tokens );
+
+	// LCS DP table — O(m*n); profile texts are short enough for this to be fast.
+	$dp = array_fill( 0, $m + 1, array_fill( 0, $n + 1, 0 ) );
+	for ( $i = 1; $i <= $m; $i++ ) {
+		for ( $j = 1; $j <= $n; $j++ ) {
+			$dp[ $i ][ $j ] = ( $old_tokens[ $i - 1 ] === $new_tokens[ $j - 1 ] )
+				? $dp[ $i - 1 ][ $j - 1 ] + 1
+				: max( $dp[ $i - 1 ][ $j ], $dp[ $i ][ $j - 1 ] );
+		}
+	}
+
+	// Backtrack to produce the diff sequence (collected in reverse, then flipped).
+	$diff = array();
+	$i    = $m;
+	$j    = $n;
+	while ( $i > 0 || $j > 0 ) {
+		if ( $i > 0 && $j > 0 && $old_tokens[ $i - 1 ] === $new_tokens[ $j - 1 ] ) {
+			$diff[] = array( '=', $old_tokens[ $i - 1 ] );
+			--$i;
+			--$j;
+		} elseif ( $j > 0 && ( 0 === $i || $dp[ $i ][ $j - 1 ] >= $dp[ $i - 1 ][ $j ] ) ) {
+			$diff[] = array( '+', $new_tokens[ $j - 1 ] );
+			--$j;
+		} else {
+			$diff[] = array( '-', $old_tokens[ $i - 1 ] );
+			--$i;
+		}
+	}
+	$diff = array_reverse( $diff );
+
+	// Build the before (left) and after (right) column HTML from the same diff.
+	$left  = '';
+	$right = '';
+	foreach ( $diff as $entry ) {
+		$op      = $entry[0];
+		$token   = $entry[1];
+		$is_ws   = (bool) preg_match( '/^\s+$/', $token );
+		$escaped = $is_ws ? str_replace( "\n", '<br>', esc_html( $token ) ) : esc_html( $token );
+
+		if ( $is_ws ) {
+			// Whitespace tokens: include on the side(s) where the adjacent content appears.
+			if ( '=' === $op || '-' === $op ) {
+				$left .= $escaped;
+			}
+			if ( '=' === $op || '+' === $op ) {
+				$right .= $escaped;
+			}
+		} elseif ( '=' === $op ) {
+			$left  .= $escaped;
+			$right .= $escaped;
+		} elseif ( '-' === $op ) {
+			$left .= '<del style="background:#f8d7da;color:#721c24;">' . $escaped . '</del>';
+		} else { // '+'
+			$right .= '<ins style="background:#d4edda;color:#155724;text-decoration:none;font-weight:bold;">' . $escaped . '</ins>';
+		}
+	}
+
+	return '<table style="width:100%;border-collapse:collapse;font-family:monospace;font-size:13px;line-height:1.6;">'
+		. '<thead><tr>'
+		. '<th style="background:#f8d7da;color:#721c24;padding:8px 12px;text-align:left;width:50%;border:1px solid #e0b4ba;">Before</th>'
+		. '<th style="background:#d4edda;color:#155724;padding:8px 12px;text-align:left;width:50%;border:1px solid #b2d8bb;">After</th>'
+		. '</tr></thead>'
+		. '<tbody><tr>'
+		. '<td style="background:#fff8f8;padding:12px;vertical-align:top;white-space:pre-wrap;border:1px solid #e0b4ba;">' . $left . '</td>'
+		. '<td style="background:#f8fff8;padding:12px;vertical-align:top;white-space:pre-wrap;border:1px solid #b2d8bb;">' . $right . '</td>'
+		. '</tr></tbody></table>';
+}
+
+/**
  * Send admin email when profile is updated
  *
  * @param int $user_id The user ID.
@@ -62,26 +163,55 @@ function wasmo_send_admin_email__profile_update( $user_id, $save_count ) {
 	$user_nicename  = $user_info->user_nicename;
 	$notify_mail_to = get_bloginfo( 'admin_email' );
 	$sitename       = get_bloginfo( 'name' );
-	$headers        = 'From: ' . $notify_mail_to;
-	if ( $user_info ) {
-		$notify_mail_message = '';
-		if ( $save_count <= 1 ) {
-			$notify_mail_subject  = $sitename . ' New Profile Added: ' . $user_nicename;
-			$notify_mail_message .= 'New profile created ';
-		}
-		if ( $save_count > 1 ) {
-			$notify_mail_subject  = $sitename . ' Profile Update (#' . $save_count . '): ' . $user_nicename;
-			$notify_mail_message .= 'Profile updated ';
-		}
-		$notify_mail_message .= 'by ' . $user_nicename . ': ' . get_author_posts_url( $user_id );
-		// profile content
-		ob_start();
-		set_query_var( 'userid', $user_id );
-		get_template_part( 'template-parts/content/content', 'usertext' );
-		$notify_mail_message .= ob_get_clean();
-		$notify_mail_message .= get_author_posts_url( $user_id );
+	$profile_url    = get_author_posts_url( $user_id );
+	$headers        = array(
+		'From: ' . $notify_mail_to,
+		'Content-Type: text/html; charset=UTF-8',
+	);
 
-		// send mail
+	if ( $user_info ) {
+		$is_new = $save_count <= 1;
+
+		$notify_mail_subject = $is_new
+			? $sitename . ' New Profile Added: ' . $user_nicename
+			: $sitename . ' Profile Update (#' . $save_count . '): ' . $user_nicename;
+
+		$action_label = $is_new
+			? 'New profile created'
+			: 'Profile updated (edit #' . $save_count . ')';
+
+		$old_text = wasmo_pre_save_profile_text( $user_id );
+		$new_text = wasmo_get_profile_text( $user_id );
+
+		if ( $is_new || '' === trim( $old_text ) ) {
+			// First save — no prior text to diff against; show full profile.
+			$body_html = '<div style="white-space:pre-wrap;font-family:monospace;font-size:13px;'
+				. 'background:#f8f9fa;padding:16px;border-radius:4px;line-height:1.6;">'
+				. nl2br( esc_html( trim( $new_text ) ) )
+				. '</div>';
+		} else {
+			// Subsequent saves — show before/after diff.
+			$legend = '<p style="margin:0 0 8px;font-size:12px;color:#6c757d;">'
+				. '<span style="background:#d4edda;color:#155724;padding:2px 6px;border-radius:3px;font-weight:bold;">green = added</span>'
+				. '&nbsp;&nbsp;'
+				. '<span style="background:#f8d7da;color:#721c24;padding:2px 6px;border-radius:3px;text-decoration:line-through;">red = removed</span>'
+				. '</p>';
+			$body_html = $legend . wasmo_build_side_by_side_diff_html( $old_text, $new_text );
+		}
+
+		$notify_mail_message = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
+			. '<body style="font-family:sans-serif;max-width:900px;margin:0 auto;padding:16px;color:#212529;">'
+			. '<h2 style="margin-bottom:4px;">' . esc_html( $action_label ) . '</h2>'
+			. '<p style="margin-top:0;">'
+			. '<strong>' . esc_html( $user_nicename ) . '</strong> &mdash; '
+			. '<a href="' . esc_url( $profile_url ) . '">' . esc_html( $profile_url ) . '</a>'
+			. '</p>'
+			. $body_html
+			. '<p style="margin-top:16px;font-size:12px;color:#6c757d;">'
+			. '<a href="' . esc_url( $profile_url ) . '">' . esc_html( $profile_url ) . '</a>'
+			. '</p>'
+			. '</body></html>';
+
 		wp_mail( $notify_mail_to, $notify_mail_subject, $notify_mail_message, $headers );
 	}
 }

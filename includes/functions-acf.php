@@ -380,6 +380,21 @@ function wasmo_update_user( $post_id ) {
 add_action( 'acf/save_post', 'wasmo_update_user', 10 );
 
 /**
+ * Capture profile text before ACF writes new values so the admin email can diff it.
+ * Runs at priority 1, before ACF's own save at priority 10.
+ *
+ * @param string $post_id ACF post ID (e.g. 'user_42').
+ */
+function wasmo_capture_pre_save_profile_text( $post_id ) {
+	if ( strpos( $post_id, 'user_' ) !== 0 ) {
+		return;
+	}
+	$user_id = intval( substr( $post_id, 5 ) );
+	wasmo_pre_save_profile_text( $user_id, wasmo_get_profile_text( $user_id ) );
+}
+add_action( 'acf/save_post', 'wasmo_capture_pre_save_profile_text', 1 );
+
+/**
  * Update spotlight post for user
  *
  * @param int $post_id The post ID.
