@@ -23,11 +23,9 @@ if ( $userposts && ! $user->has_cap( 'manage_options' ) ) {
 				<?php
 				foreach ( $userposts as $user_post ) :
 					?>
-					<?php setup_postdata( $user_post ); ?>
-					<li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
-					<?php // echo wp_oembed_get( get_the_permalink() ); ?>
+					<li><a href="<?php echo esc_url( get_the_permalink( $user_post ) ); ?>"><?php echo esc_html( get_the_title( $user_post ) ); ?></a></li>
+					<?php // echo wp_oembed_get( get_the_permalink( $user_post ) ); ?>
 				<?php endforeach; ?>
-				<?php wp_reset_postdata(); ?>
 			</ul>
 		</section>
 	</aside>
