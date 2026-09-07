@@ -758,8 +758,7 @@ function wasmo_get_saint_related_posts( $saint_id, $limit = 10 ) {
 
 	$result = array_slice( $related_posts, 0, $limit );
 
-	// Cache for 12 hours
-	set_transient( $transient_key, $result, 12 * HOUR_IN_SECONDS );
+	set_transient( $transient_key, $result, DAY_IN_SECONDS );
 
 	return $result;
 }
@@ -830,8 +829,7 @@ function wasmo_get_saint_related_media( $saint_id, $limit = 20 ) {
 
 	$result = array_slice( $related_media, 0, $limit );
 
-	// Cache for 12 hours
-	set_transient( $transient_key, $result, 12 * HOUR_IN_SECONDS );
+	set_transient( $transient_key, $result, DAY_IN_SECONDS );
 
 	return $result;
 }
@@ -1325,6 +1323,10 @@ function wasmo_clear_saint_transients( $post_id ) {
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_posts_{$post_id}_%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wasmo_saint_media_{$post_id}_%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wasmo_saint_media_{$post_id}_%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	// Pre-warm relationship transients so the next request hits cache, not a LIKE scan.
+	wasmo_get_saint_related_posts( $post_id );
+	wasmo_get_saint_related_media( $post_id );
 
 	// Clear single saint page transient
 	delete_transient( 'wasmo_saint_page_' . $post_id );
