@@ -460,22 +460,32 @@ add_action( 'template_redirect', 'wasmo_random_profile_template' );
  * Get random profile url
  */
 function wasmo_get_random_profile_url() {
-	$args = array(
-		'orderby' => 'rand',
-		// 'numberposts' => 1
-	);
-	$users = get_users( $args );
-	foreach ( $users as $user ) {
-		// check that user has content and is public
-		if (
-			! get_field( 'hi', 'user_' . $user->ID ) ||
-			'private' === get_user_meta( $user->ID, 'in_directory', true ) ||
-			'false' === get_user_meta( $user->ID, 'in_directory', true )
-		) {
-			continue;
+	// Cache a pool of eligible public user IDs; pick one at random in PHP
+	// rather than running ORDER BY RAND() on the full user table every request.
+	$eligible = get_transient( 'wasmo_random_profile_pool' );
+
+	if ( false === $eligible ) {
+		$user_ids = get_users( [ 'fields' => 'ID' ] );
+		$eligible = array();
+		foreach ( $user_ids as $uid ) {
+			if (
+				! get_field( 'hi', 'user_' . $uid ) ||
+				'private' === get_user_meta( $uid, 'in_directory', true ) ||
+				'false' === get_user_meta( $uid, 'in_directory', true )
+			) {
+				continue;
+			}
+			$eligible[] = (int) $uid;
 		}
-		return get_author_posts_url( $user->ID );
+		set_transient( 'wasmo_random_profile_pool', $eligible, HOUR_IN_SECONDS );
 	}
+
+	if ( empty( $eligible ) ) {
+		return home_url( '/profiles/' );
+	}
+
+	$uid = $eligible[ array_rand( $eligible ) ];
+	return get_author_posts_url( $uid );
 }
 
 /**

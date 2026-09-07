@@ -23,7 +23,7 @@ function wasmo_enqueue() {
 	wp_enqueue_script(
 		'wasmo-script',
 		get_stylesheet_directory_uri() . '/js/script.js',
-		null,
+		array(),
 		wp_get_theme()->get( 'Version' ),
 		true
 	);
@@ -40,12 +40,21 @@ add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
 function wasmo_add_google_fonts() {
 	wp_enqueue_style(
 		'wasmo-google-fonts',
-		'https://fonts.googleapis.com/css?family=Josefin+Sans:ital,wght@0,100..700;1,100..700|Crimson+Text:400,700|Open+Sans:400,700&display=swap',
+		'https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Crimson+Text:wght@400;700&family=Open+Sans:wght@400;700&display=swap',
 		array(),
-		wp_get_theme()->get( 'Version' )
+		null
 	);
 }
 add_action( 'wp_enqueue_scripts', 'wasmo_add_google_fonts' );
+
+/**
+ * Add preconnect hints for Google Fonts to reduce connection latency.
+ */
+function wasmo_google_fonts_preconnect() {
+	echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+	echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+}
+add_action( 'wp_head', 'wasmo_google_fonts_preconnect', 1 );
 /**
  * Setup theme
  */
@@ -98,16 +107,16 @@ function wasmo_get_profile_count() {
 	if ( $cached !== false ) {
 		return (int) $cached;
 	}
-	$users = get_users( [ 'fields' => 'all' ] );
-	$count = 0;
-	foreach ( $users as $user ) {
-		if ( ! get_field( 'hi', 'user_' . $user->ID ) ) {
+	$user_ids = get_users( [ 'fields' => 'ID' ] );
+	$count    = 0;
+	foreach ( $user_ids as $user_id ) {
+		if ( ! get_field( 'hi', 'user_' . $user_id ) ) {
 			continue;
 		}
-		if ( ! get_field( 'tagline', 'user_' . $user->ID ) ) {
+		if ( ! get_field( 'tagline', 'user_' . $user_id ) ) {
 			continue;
 		}
-		$in_dir = get_field( 'in_directory', 'user_' . $user->ID );
+		$in_dir = get_field( 'in_directory', 'user_' . $user_id );
 		if ( 'false' === $in_dir || false === $in_dir ) {
 			continue;
 		}

@@ -334,6 +334,8 @@ function wasmo_update_user( $post_id ) {
 
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
+	delete_transient( 'wasmo_random_profile_pool' );
+	delete_transient( 'wasmo_profile_count' );
 
 	// update question counts if user includes any
 	if ( have_rows( 'questions', 'user_' . $user_id ) ) {
@@ -421,6 +423,8 @@ add_action( 'acf/save_post', 'wasmo_update_spotlight', 10 );
 function wasmo_delete_user() {
 	// clear all directory transients
 	wasmo_delete_transients_with_prefix( 'wasmo_directory-' );
+	delete_transient( 'wasmo_random_profile_pool' );
+	delete_transient( 'wasmo_profile_count' );
 }
 add_action( 'delete_user', 'wasmo_delete_user' );
 
