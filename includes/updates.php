@@ -33,6 +33,28 @@ $wasmoThemeUpdater->setDataOverrides(
 // survives. We bust it when WordPress refreshes its update_themes transient so
 // "Check again" in the admin still fetches a fresh GitHub release.
 
+// Add Authorization header when WASMO_GITHUB_TOKEN is defined in wp-config.php.
+// A token raises the GitHub API rate limit from 60 to 5,000 req/hr and prevents
+// 403 responses from silently breaking update detection.
+// Usage: define( 'WASMO_GITHUB_TOKEN', 'ghp_...' ); in wp-config.php
+add_filter(
+	'http_request_args',
+	function ( $args, $request_url ) use ( $url ) {
+		if ( $request_url !== $url ) {
+			return $args;
+		}
+		if ( defined( 'WASMO_GITHUB_TOKEN' ) && WASMO_GITHUB_TOKEN ) {
+			if ( ! isset( $args['headers'] ) || ! is_array( $args['headers'] ) ) {
+				$args['headers'] = array();
+			}
+			$args['headers']['Authorization'] = 'Bearer ' . WASMO_GITHUB_TOKEN;
+		}
+		return $args;
+	},
+	10,
+	2
+);
+
 add_filter(
 	'pre_http_request',
 	function ( $preempt, $parsed_args, $request_url ) use ( $url, $wasmo_cache_key ) {
@@ -64,11 +86,19 @@ add_filter(
 		if ( $request_url !== $url ) {
 			return $response;
 		}
-		if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $code ) {
 			$body = wp_remote_retrieve_body( $response );
 			if ( $body ) {
 				set_transient( $wasmo_cache_key, $body, HOUR_IN_SECONDS * 6 );
 			}
+		} elseif ( 403 === $code || 429 === $code ) {
+			// Rate-limited: cache an empty-JSON marker for 10 minutes so subsequent
+			// filter runs return immediately instead of hitting GitHub again. The
+			// pre_http_request filter replays this as a synthetic 200 with body '{}',
+			// which gives WP_Forge an empty payload and leaves the theme in no_update
+			// rather than erroring. "Check again" in WP Admin busts this cache too.
+			set_transient( $wasmo_cache_key, '{}', MINUTE_IN_SECONDS * 10 );
 		}
 		return $response;
 	},
@@ -102,8 +132,9 @@ add_filter(
 
 		foreach ( array( 'response', 'no_update' ) as $bucket ) {
 			if ( ! empty( $transient->{$bucket}[ $stylesheet ] ) ) {
-				$version                                        = ltrim( $transient->{$bucket}[ $stylesheet ]['version'] ?? '', 'v' );
-				$transient->{$bucket}[ $stylesheet ]['version'] = $version;
+				$version = ltrim( $transient->{$bucket}[ $stylesheet ]['version'] ?? '', 'v' );
+
+				$transient->{$bucket}[ $stylesheet ]['version']     = $version;
 				$transient->{$bucket}[ $stylesheet ]['new_version'] = $version;
 			}
 		}
