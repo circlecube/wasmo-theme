@@ -256,7 +256,7 @@ if ( '' === $directory_html ) {
 		// wasmo_apply_directory_url_filters expects WP_User objects; hydrate the filtered subset.
 		$hydrated_for_filter = array_filter( array_map( 'get_userdata', $filtered_users ) );
 		$hydrated_for_filter = wasmo_apply_directory_url_filters( $hydrated_for_filter, $directory_filter_state );
-		$filtered_users = array_map(
+		$filtered_users      = array_map(
 			function ( $u ) {
 				return $u->ID;
 			},
