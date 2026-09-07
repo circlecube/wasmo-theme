@@ -37,12 +37,8 @@ if ( is_singular() ) {
 		echo esc_attr( $obj->slug );
 	}
 } elseif ( is_date() ) {
-	$year  = get_query_var( 'year' );
-	$month = get_query_var( 'monthnum' );
-	$day   = get_query_var( 'day' );
-	$parts = array_filter( [ $year, $month, $day ] );
-	$slug  = 'date-' . implode( '-', $parts );
-	echo esc_attr( $slug );
+	$date_parts = array_filter( [ get_query_var( 'year' ), get_query_var( 'monthnum' ), get_query_var( 'day' ) ] );
+	echo esc_attr( 'date-' . implode( '-', $date_parts ) );
 } elseif ( is_search() ) {
 	$obj = get_queried_object();
 	if ( $obj ) {
