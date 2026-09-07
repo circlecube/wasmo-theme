@@ -53,7 +53,7 @@ if ( is_user_logged_in() ) {
 
 // only add to directory if user includes themself and has filled out the first two fields
 if ( ! function_exists( 'wasmo_filter_directory' ) ) {
-	function wasmo_filter_directory( $user ) {
+	function wasmo_filter_directory( $user_id ) {
 		// global $context, $state;
 		$context = get_query_var( 'context' );
 		if ( empty( $context ) ) {
@@ -65,7 +65,7 @@ if ( ! function_exists( 'wasmo_filter_directory' ) ) {
 		} else {
 			$state = 'public';
 		}
-		$userid = $user->ID;
+		$userid = (int) $user_id;
 
 		// require both hi and tagline content, bail early if not present
 		if ( ! get_field( 'hi', 'user_' . $userid ) || ! get_field( 'tagline', 'user_' . $userid ) ) {
@@ -100,11 +100,11 @@ if ( ! function_exists( 'wasmo_filter_directory' ) ) {
 		return true;
 	}}
 if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
-	function wasmo_filter_directory_for_tax( $user ) {
+	function wasmo_filter_directory_for_tax( $user_id ) {
 		// global $directory_tax, $termid;
 		$directory_tax = get_query_var( 'tax' );
 		$termid        = get_query_var( 'termid' );
-		$userid        = $user->ID;
+		$userid        = (int) $user_id;
 
 		// skip if $context doesn't start with `taxonomy`
 		// if ( strpos( $context, 'taxonomy' ) !== 0 ) {
@@ -138,8 +138,8 @@ if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
 		return false;
 	}}
 if ( ! function_exists( 'wasmo_filter_directory_has_video' ) ) {
-	function wasmo_filter_directory_has_video( $user ) {
-		return (bool) get_field( 'video', 'user_' . $user->ID );
+	function wasmo_filter_directory_has_video( $user_id ) {
+		return (bool) get_field( 'video', 'user_' . (int) $user_id );
 	}}
 
 
@@ -189,7 +189,7 @@ if ( '' === $directory_html ) {
 
 	/* Start the Loop */
 	$args = array(
-		'fields' => 'all',
+		'fields' => 'ID',
 	);
 
 	if ( $show_directory_filters && $directory_filter_state && 'name' === $directory_filter_state['sort'] ) {
@@ -201,10 +201,10 @@ if ( '' === $directory_html ) {
 		$args['order']    = 'DESC';
 	}
 
-	// Array of WP_User objects.
-	$users = get_users( $args );
+	// Fetch only IDs; individual user data is loaded on demand via get_userdata().
+	$user_ids = get_users( $args );
 	// filter out users we don't want
-	$filtered_users = array_filter( $users, 'wasmo_filter_directory' );
+	$filtered_users = array_filter( $user_ids, 'wasmo_filter_directory' );
 	// maybe additional filter for taxonomy
 	if ( ! empty( $directory_tax ) ) {
 		$tax_filtered_users = array_filter( $filtered_users, 'wasmo_filter_directory_for_tax' );
@@ -218,8 +218,8 @@ if ( '' === $directory_html ) {
 	if ( ! empty( $exclude_user_ids ) ) {
 		$filtered_users = array_filter(
 			$filtered_users,
-			function ( $user ) use ( $exclude_user_ids ) {
-				return ! in_array( (int) $user->ID, $exclude_user_ids, true );
+			function ( $user_id ) use ( $exclude_user_ids ) {
+				return ! in_array( (int) $user_id, $exclude_user_ids, true );
 			}
 		);
 	}
@@ -230,8 +230,8 @@ if ( '' === $directory_html ) {
 		$remaining_users = array();
 		$users_by_id     = array();
 
-		foreach ( $filtered_users as $user ) {
-			$users_by_id[ (int) $user->ID ] = $user;
+		foreach ( $filtered_users as $user_id ) {
+			$users_by_id[ (int) $user_id ] = (int) $user_id;
 		}
 
 		foreach ( $featured_user_ids as $featured_user_id ) {
@@ -241,9 +241,9 @@ if ( '' === $directory_html ) {
 			}
 		}
 
-		foreach ( $filtered_users as $user ) {
-			if ( isset( $users_by_id[ (int) $user->ID ] ) ) {
-				$remaining_users[] = $user;
+		foreach ( $filtered_users as $user_id ) {
+			if ( isset( $users_by_id[ (int) $user_id ] ) ) {
+				$remaining_users[] = (int) $user_id;
 			}
 		}
 
@@ -253,7 +253,10 @@ if ( '' === $directory_html ) {
 	$directory_total = count( $filtered_users );
 
 	if ( $show_directory_filters && $directory_filter_state ) {
-		$filtered_users = wasmo_apply_directory_url_filters( $filtered_users, $directory_filter_state );
+		// wasmo_apply_directory_url_filters expects WP_User objects; hydrate the filtered subset.
+		$hydrated_for_filter = array_filter( array_map( 'get_userdata', $filtered_users ) );
+		$hydrated_for_filter = wasmo_apply_directory_url_filters( $hydrated_for_filter, $directory_filter_state );
+		$filtered_users      = array_map( function( $u ) { return $u->ID; }, $hydrated_for_filter );
 	}
 
 	$filtered_total = count( $filtered_users );
@@ -263,7 +266,11 @@ if ( '' === $directory_html ) {
 	$the_directory .= '<div class="directory directory-' . $context . ' ' . ( $lazy === true ? 'is-lazy' : 'not-lazy' ) . '" data-offset="' . $offset . '" data-total="' . $total_users . '" data-lazy="' . $lazy . '" data-lazy="' . $lazy . '">';
 
 
-	foreach ( $filtered_users as $user ) {
+	foreach ( $filtered_users as $user_id ) {
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			continue;
+		}
 
 		$userid      = $user->ID;
 		$userimg     = get_field( 'photo', 'user_' . $userid );
