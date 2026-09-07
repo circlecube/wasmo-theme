@@ -86,7 +86,11 @@ function wasmo_loginout_menu_link( $items, $args ) {
 		$profile    = '<li class="view"><a title="View Profile" href="' . get_author_posts_url( $userid ) . '">' . wasmo_get_icon_svg( 'person', 24 ) . 'View</a></li>';
 		$edit       = '<li class="edit"><a title="Edit Profile" href="' . home_url( '/edit/' ) . '">' . wasmo_get_icon_svg( 'edit', 24 ) . 'Edit</a></li>';
 		$post       = '';
-		$writeposts = get_field( 'i_want_to_write_posts', 'user_' . $userid );
+		static $writeposts_cache = [];
+		if ( ! array_key_exists( $userid, $writeposts_cache ) ) {
+			$writeposts_cache[ $userid ] = get_field( 'i_want_to_write_posts', 'user_' . $userid );
+		}
+		$writeposts = $writeposts_cache[ $userid ];
 		if ( ! empty( $writeposts ) &&
 			'No thanks' !== $writeposts
 			) {
