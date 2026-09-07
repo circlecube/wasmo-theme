@@ -273,6 +273,16 @@ add_filter( 'excerpt_more', 'wasmo_excerpt_link' );
  * @return string The modified content.
  */
 function wasmo_before_after( $content ) {
+	static $before = '__not_loaded__';
+	static $after  = '__not_loaded__';
+
+	if ( '__not_loaded__' === $before ) {
+		$before = get_field( 'before_post_callout', 'option' );
+	}
+	if ( '__not_loaded__' === $after ) {
+		$after = get_field( 'after_post_callout', 'option' );
+	}
+
 	// skip if
 	if (
 		is_user_logged_in() // logged in or
@@ -285,9 +295,9 @@ function wasmo_before_after( $content ) {
 	}
 
 	// top
-	if ( get_field( 'before_post_callout', 'option' ) ) {
+	if ( $before ) {
 		$top_callout  = '<aside class="callout callout-top">';
-		$top_callout .= get_field( 'before_post_callout', 'option' );
+		$top_callout .= $before;
 		$top_callout .= '<h5>Recent Profiles</h5>';
 		ob_start();
 		set_query_var( 'max_profiles', 4 );
@@ -308,8 +318,8 @@ function wasmo_before_after( $content ) {
 	}
 
 	// bottom
-	if ( get_field( 'after_post_callout', 'option' ) ) {
-		$bottom_callout = '<aside class="callout callout-bottom">' . get_field( 'after_post_callout', 'option' ) . '</aside>';
+	if ( $after ) {
+		$bottom_callout = '<aside class="callout callout-bottom">' . $after . '</aside>';
 	} else {
 		ob_start();
 		?>
