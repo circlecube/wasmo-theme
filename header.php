@@ -32,11 +32,18 @@ if ( is_singular() ) {
 } elseif ( is_author() ) {
 	echo esc_attr( get_the_author_meta( 'user_nicename', get_the_author_meta( 'ID' ) ) );
 } elseif ( is_category() || is_tag() || is_tax() ) {
-	echo esc_attr( get_queried_object()->slug );
+	$obj = get_queried_object();
+	if ( $obj ) {
+		echo esc_attr( $obj->slug );
+	}
 } elseif ( is_date() ) {
-	echo esc_attr( get_queried_object()->slug );
+	$date_parts = array_filter( [ get_query_var( 'year' ), get_query_var( 'monthnum' ), get_query_var( 'day' ) ] );
+	echo esc_attr( 'date-' . implode( '-', $date_parts ) );
 } elseif ( is_search() ) {
-	echo esc_attr( get_queried_object()->slug );
+	$obj = get_queried_object();
+	if ( $obj ) {
+		echo esc_attr( $obj->slug );
+	}
 } elseif ( is_404() ) {
 	echo esc_attr( 'error error-404' );
 } elseif ( is_home() ) {
