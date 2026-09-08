@@ -23,7 +23,7 @@
     "author": "wasmormon.org",
     "license": "GPL-2.0-or-later",
     "devDependencies": {
-        "@playwright/test": "^1.50.0",
+        "@playwright/test": "^1.63.0",
         "@wordpress/env": "^11.14.0",
         "@wordpress/scripts": "^34.2.0",
         "ajv": "^8.17.1"
