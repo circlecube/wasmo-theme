@@ -54,6 +54,7 @@ if ( is_user_logged_in() ) {
 // only add to directory if user includes themself and has filled out the first two fields
 if ( ! function_exists( 'wasmo_filter_directory' ) ) {
 	function wasmo_filter_directory( $user_id ) {
+		$user_id = wasmo_normalize_user_id( $user_id );
 		// global $context, $state;
 		$context = get_query_var( 'context' );
 		if ( empty( $context ) ) {
@@ -104,7 +105,7 @@ if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
 		// global $directory_tax, $termid;
 		$directory_tax = get_query_var( 'tax' );
 		$termid        = get_query_var( 'termid' );
-		$userid        = (int) $user_id;
+		$userid        = wasmo_normalize_user_id( $user_id );
 
 		// skip if $context doesn't start with `taxonomy`
 		// if ( strpos( $context, 'taxonomy' ) !== 0 ) {
@@ -139,7 +140,7 @@ if ( ! function_exists( 'wasmo_filter_directory_for_tax' ) ) {
 	}}
 if ( ! function_exists( 'wasmo_filter_directory_has_video' ) ) {
 	function wasmo_filter_directory_has_video( $user_id ) {
-		return (bool) get_field( 'video', 'user_' . (int) $user_id );
+		return (bool) get_field( 'video', 'user_' . wasmo_normalize_user_id( $user_id ) );
 	}}
 
 
@@ -272,7 +273,8 @@ if ( '' === $directory_html ) {
 
 
 	foreach ( $filtered_users as $user_id ) {
-		$user = get_userdata( $user_id );
+		$user_id = wasmo_normalize_user_id( $user_id );
+		$user    = get_userdata( $user_id );
 		if ( ! $user ) {
 			continue;
 		}

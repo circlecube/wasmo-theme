@@ -55,6 +55,33 @@ function wasmo_google_fonts_preconnect() {
 	echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 }
 add_action( 'wp_head', 'wasmo_google_fonts_preconnect', 1 );
+
+/**
+ * Preload theme styles so layout CSS is available on first paint.
+ */
+function wasmo_preload_theme_styles() {
+	$version = wp_get_theme()->get( 'Version' );
+	$base    = get_stylesheet_directory_uri();
+
+	echo '<link rel="preload" as="style" href="' . esc_url( $base . '/twentynineteen.css?ver=' . $version ) . '" />' . "\n";
+	echo '<link rel="preload" as="style" href="' . esc_url( $base . '/style.css?ver=' . $version ) . '" />' . "\n";
+}
+add_action( 'wp_head', 'wasmo_preload_theme_styles', 2 );
+
+/**
+ * Keep core theme CSS out of LiteSpeed combine to avoid cold-cache FOUC.
+ *
+ * @param string[] $excludes Existing CSS exclude paths.
+ * @return string[]
+ */
+function wasmo_litespeed_css_excludes( $excludes ) {
+	$excludes[] = 'twentynineteen.css';
+	$excludes[] = 'style.css';
+
+	return $excludes;
+}
+add_filter( 'litespeed_optimize_css_excludes', 'wasmo_litespeed_css_excludes' );
+
 /**
  * Setup theme
  */
