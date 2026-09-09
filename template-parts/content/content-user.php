@@ -44,8 +44,9 @@ if ( is_user_logged_in() && (int) $userid === (int) get_current_user_id() ) {
 
 		// Use preg_match to find iframe src.
 		preg_match( '/src="(.+?)"/', $iframe, $matches );
-		$src = $matches[1];
+		$src = $matches[1] ?? '';
 
+	if ( $src ) {
 		// Add extra parameters to src and replace HTML.
 		$params  = array(
 			'controls' => 0,
@@ -61,10 +62,11 @@ if ( is_user_logged_in() && (int) $userid === (int) get_current_user_id() ) {
 		// Add extra attributes to iframe HTML.
 		$attributes = 'frameborder="0"';
 		$iframe     = str_replace( '></iframe>', ' ' . $attributes . '></iframe>', $iframe );
+	}
 
-		// Display customized HTML.
-		echo $iframe; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		?>
+	// Display customized HTML.
+	echo $iframe; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
 	</div>
 <?php } ?>
 <div class="profile-section content-full-width" id="my-shelf">
@@ -240,8 +242,8 @@ get_template_part( 'template-parts/content/content', 'user-comments' );
 	<?php get_template_part( 'template-parts/content/content', 'socialshares' ); ?>
 	
 	<!-- <p>
-		Joined <?php echo human_time_diff( strtotime( $curauth->user_registered ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ago.<br />
-		Last updated <?php echo human_time_diff( get_user_meta( $userid, 'last_save', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> ago.
+		Joined <?php echo esc_html( wasmo_human_time_diff( strtotime( $curauth->user_registered ) ) ); ?> ago.<br />
+		Last updated <?php echo esc_html( wasmo_human_time_diff( get_user_meta( $userid, 'last_save', true ) ) ); ?> ago.
 	</p> -->
 
 	<div class="is-layout-flex wp-block-buttons">

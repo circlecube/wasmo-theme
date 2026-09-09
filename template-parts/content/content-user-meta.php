@@ -12,11 +12,11 @@ if ( current_user_can( 'manage_options' ) ) {
 	<dl>
 	<?php
 		$registered            = $curauth->user_registered;
-		$registered_rel        = human_time_diff( strtotime( $curauth->user_registered ) );
-		$last_login            = get_user_meta( $userid, 'last_login', true );
-		$last_login_rel        = human_time_diff( intval( $last_login ) );
-		$last_save             = intval( get_user_meta( $userid, 'last_save', true ) );
-		$last_save_rel         = human_time_diff( $last_save );
+		$registered_rel        = wasmo_human_time_diff( strtotime( $curauth->user_registered ) );
+		$last_login            = wasmo_normalize_timestamp( get_user_meta( $userid, 'last_login', true ) );
+		$last_login_rel        = wasmo_human_time_diff( $last_login );
+		$last_save             = wasmo_normalize_timestamp( get_user_meta( $userid, 'last_save', true ) );
+		$last_save_rel         = wasmo_human_time_diff( $last_save );
 		$save_count            = intval( get_user_meta( $userid, 'save_count', true ) );
 		$in_directory          = get_user_meta( $userid, 'in_directory', true );
 		$i_want_to_write_posts = get_user_meta( $userid, 'i_want_to_write_posts', true );

@@ -1,6 +1,59 @@
 <?php
 
 /**
+ * Normalize a user ID from mixed directory/query values.
+ *
+ * @param mixed $user_id User ID or WP_User object.
+ * @return int
+ */
+function wasmo_normalize_user_id( $user_id ) {
+	if ( $user_id instanceof WP_User ) {
+		return (int) $user_id->ID;
+	}
+
+	return (int) $user_id;
+}
+
+/**
+ * Normalize stored timestamps (unix int/string or datetime strings).
+ *
+ * @param mixed $value Timestamp value from user meta or similar.
+ * @return int Unix timestamp, or 0 when invalid.
+ */
+function wasmo_normalize_timestamp( $value ) {
+	if ( empty( $value ) ) {
+		return 0;
+	}
+
+	if ( is_numeric( $value ) ) {
+		return (int) $value;
+	}
+
+	$timestamp = strtotime( (string) $value );
+
+	return $timestamp ? (int) $timestamp : 0;
+}
+
+/**
+ * Safe wrapper around human_time_diff() for theme meta values.
+ *
+ * @param mixed $from Start timestamp.
+ * @param mixed $to   Optional end timestamp. Defaults to now.
+ * @return string Human-readable diff, or empty string when invalid.
+ */
+function wasmo_human_time_diff( $from, $to = 0 ) {
+	$from = wasmo_normalize_timestamp( $from );
+
+	if ( ! $from ) {
+		return '';
+	}
+
+	$to = $to ? wasmo_normalize_timestamp( $to ) : 0;
+
+	return human_time_diff( $from, $to );
+}
+
+/**
  * Posted by
  */
 function wasmo_posted_by() {
@@ -850,11 +903,15 @@ function wasmo_user_has_image( $userid ) {
  * @return String url to image
  */
 function wasmo_get_user_image_url( $userid ) {
+	$userid  = wasmo_normalize_user_id( $userid );
 	$userimg = wasmo_user_has_image( $userid );
 	if ( $userimg ) {
 		return wp_get_attachment_image_url( $userimg, 'medium' );
 	} else {
-		$user        = get_userdata( $userid );
+		$user = get_userdata( $userid );
+		if ( ! $user ) {
+			return 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png';
+		}
 		$hash        = md5( strtolower( trim( $user->user_email ) ) );
 		$default_img = rawurlencode( 'https://raw.githubusercontent.com/circlecube/wasmo-theme/main/img/default.png' );
 		$gravatar    = $hash . '?s=300&d=' . $default_img;
@@ -870,9 +927,13 @@ function wasmo_get_user_image_url( $userid ) {
  * @return String html for image tag
  */
 function wasmo_get_user_image( $userid, $isItempropImage = false ) {
+	$userid  = wasmo_normalize_user_id( $userid );
 	$userimg = wasmo_user_has_image( $userid );
 	$user    = get_userdata( $userid );
-	$alt     = $user->display_name . ' profile image for wasmormon.org';
+	if ( ! $user ) {
+		return '';
+	}
+	$alt = $user->display_name . ' profile image for wasmormon.org';
 
 	if ( $userimg ) {
 		return wp_get_attachment_image(
@@ -898,7 +959,6 @@ function wasmo_get_user_image( $userid, $isItempropImage = false ) {
  * @return string The last login time.
  */
 function wasmo_get_lastlogin() {
-	$last_login     = get_the_author_meta( 'last_login' );
-	$the_login_date = human_time_diff( $last_login );
-	return $the_login_date;
+	$last_login = get_the_author_meta( 'last_login' );
+	return wasmo_human_time_diff( $last_login );
 }
