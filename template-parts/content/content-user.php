@@ -46,27 +46,27 @@ if ( is_user_logged_in() && (int) $userid === (int) get_current_user_id() ) {
 		preg_match( '/src="(.+?)"/', $iframe, $matches );
 		$src = $matches[1] ?? '';
 
-		if ( $src ) {
-			// Add extra parameters to src and replace HTML.
-			$params  = array(
-				'controls' => 0,
-				'hd'       => 1,
-				'autohide' => 1,
-				'autoplay' => 0,
-				'loop'     => 0,
-				'rel'      => 0,
-			);
-			$new_src = add_query_arg( $params, $src );
-			$iframe  = str_replace( $src, $new_src, $iframe );
+	if ( $src ) {
+		// Add extra parameters to src and replace HTML.
+		$params  = array(
+			'controls' => 0,
+			'hd'       => 1,
+			'autohide' => 1,
+			'autoplay' => 0,
+			'loop'     => 0,
+			'rel'      => 0,
+		);
+		$new_src = add_query_arg( $params, $src );
+		$iframe  = str_replace( $src, $new_src, $iframe );
 
-			// Add extra attributes to iframe HTML.
-			$attributes = 'frameborder="0"';
-			$iframe     = str_replace( '></iframe>', ' ' . $attributes . '></iframe>', $iframe );
-		}
+		// Add extra attributes to iframe HTML.
+		$attributes = 'frameborder="0"';
+		$iframe     = str_replace( '></iframe>', ' ' . $attributes . '></iframe>', $iframe );
+	}
 
-		// Display customized HTML.
-		echo $iframe; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		?>
+	// Display customized HTML.
+	echo $iframe; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
 	</div>
 <?php } ?>
 <div class="profile-section content-full-width" id="my-shelf">
