@@ -30,7 +30,7 @@
     },
     "dependencies": {
         "@wordpress/block-editor": "^17.0.0",
-        "@wordpress/blocks": "^15.26.0",
+        "@wordpress/blocks": "^16.0.0",
         "@wordpress/components": "^40.1.0",
         "@wordpress/data": "^10.36.0",
         "@wordpress/element": "^8.7.0",
