@@ -20,25 +20,17 @@ function wasmo_get_build_asset( $handle ) {
 }
 
 /**
- * Enqueue styles: vendored Twenty Nineteen base, then built theme bundle.
+ * Enqueue compiled theme styles (pinned Twenty Nineteen base + wasm overrides in one file).
  */
 function wasmo_enqueue() {
-	$parent_style = 'wasmo-parent-base';
-	$theme_asset  = wasmo_get_build_asset( 'theme' );
-	$theme_css    = get_stylesheet_directory() . '/build/theme.css';
-
-	wp_enqueue_style(
-		$parent_style,
-		get_stylesheet_directory_uri() . '/twentynineteen.css',
-		array(),
-		wp_get_theme()->get( 'Version' )
-	);
+	$theme_asset = wasmo_get_build_asset( 'theme' );
+	$theme_css   = get_stylesheet_directory() . '/build/theme.css';
 
 	if ( file_exists( $theme_css ) ) {
 		wp_enqueue_style(
 			'wasmo-theme',
 			get_stylesheet_directory_uri() . '/build/theme.css',
-			array( $parent_style ),
+			array(),
 			$theme_asset['version']
 		);
 	}
@@ -92,14 +84,11 @@ add_action( 'wp_head', 'wasmo_google_fonts_preconnect', 1 );
  * Preload theme styles so layout CSS is available on first paint.
  */
 function wasmo_preload_theme_styles() {
-	$version = wp_get_theme()->get( 'Version' );
-	$base    = get_stylesheet_directory_uri();
-
+	$child_base  = get_stylesheet_directory_uri();
 	$theme_asset = wasmo_get_build_asset( 'theme' );
 
-	echo '<link rel="preload" as="style" href="' . esc_url( $base . '/twentynineteen.css?ver=' . $version ) . '" />' . "\n";
 	if ( file_exists( get_stylesheet_directory() . '/build/theme.css' ) ) {
-		echo '<link rel="preload" as="style" href="' . esc_url( $base . '/build/theme.css?ver=' . $theme_asset['version'] ) . '" />' . "\n";
+		echo '<link rel="preload" as="style" href="' . esc_url( $child_base . '/build/theme.css?ver=' . $theme_asset['version'] ) . '" />' . "\n";
 	}
 }
 add_action( 'wp_head', 'wasmo_preload_theme_styles', 2 );
@@ -111,7 +100,6 @@ add_action( 'wp_head', 'wasmo_preload_theme_styles', 2 );
  * @return string[]
  */
 function wasmo_litespeed_css_excludes( $excludes ) {
-	$excludes[] = 'twentynineteen.css';
 	$excludes[] = 'build/theme.css';
 
 	return $excludes;

@@ -1,8 +1,9 @@
 /**
  * Theme styles (compiled to build/theme.css).
- * Depends on twentynineteen.css (parent layout) enqueued separately in PHP.
+ * foundation/twentynineteen: pinned Twenty Nineteen base (trim unused rules here over time).
  */
 
+@use 'foundation/twentynineteen';
 @use 'foundation/variables';
 @use 'foundation/base';
 @use 'directory/directory';
