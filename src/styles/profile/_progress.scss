@@ -3,6 +3,7 @@
    ========================================================================== */
 
 /* Profile Sections */
+
 /* Story completion progress checklist + Take Things Further box */
 #story-progress-box,
 #story-further-box {
@@ -11,9 +12,11 @@
 	padding: 0;
 	max-width: 1024px;
 }
+
 .story-progress {
 	border: 2px solid var(--color-orange);
 }
+
 .story-further {
 	border: 2px solid var(--color-blue);
 }
@@ -23,16 +26,19 @@
 .story-further details {
 	padding: 1rem 1.25rem;
 }
+
 .story-progress summary,
 .story-further summary {
 	cursor: pointer;
 	list-style: none;
 	outline: none;
 }
+
 .story-progress summary::-webkit-details-marker,
 .story-further summary::-webkit-details-marker {
 	display: none;
 }
+
 .story-progress summary::marker,
 .story-further summary::marker {
 	display: none;
@@ -45,15 +51,18 @@
 	justify-content: space-between;
 	margin-bottom: 0.6rem;
 }
+
 .story-progress-title {
 	font-size: 1rem;
 	font-weight: 700;
 }
+
 .story-progress-right {
 	align-items: center;
 	display: flex;
 	gap: 0.5rem;
 }
+
 .story-progress-count {
 	font-size: 0.9rem;
 	opacity: 0.75;
@@ -61,8 +70,8 @@
 
 /* collapse arrow — rotates when open */
 .story-progress-arrow {
-	border-bottom: 2px solid currentColor;
-	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentcolor;
+	border-right: 2px solid currentcolor;
 	display: inline-block;
 	flex-shrink: 0;
 	height: 8px;
@@ -71,6 +80,7 @@
 	transition: transform 0.2s ease;
 	width: 8px;
 }
+
 details[open] .story-progress-arrow {
 	transform: rotate(-135deg);
 }
@@ -84,6 +94,7 @@ details[open] .story-progress-arrow {
 	overflow: hidden;
 	width: 100%;
 }
+
 .story-progress .story-progress-bar {
 	background: var(--color-orange);
 	border-radius: 4px;
@@ -108,11 +119,14 @@ details[open] .story-progress-arrow {
 	margin: 0 0 1rem;
 	padding: 0;
 }
+
 @media only screen and (max-width: 600px) {
+
 	.story-progress-checklist {
 		columns: 1;
 	}
 }
+
 .story-progress-item {
 	align-items: center;
 	break-inside: avoid;
@@ -125,31 +139,35 @@ details[open] .story-progress-arrow {
 /* circle check indicator — shared by both boxes */
 .story-progress-check {
 	border-radius: 50%;
-	border: 2px solid currentColor;
+	border: 2px solid currentcolor;
 	flex-shrink: 0;
 	height: 16px;
 	opacity: 0.35;
 	position: relative;
 	width: 16px;
-	margin-top: .35rem;
+	margin-top: 0.35rem;
 }
+
 .story-progress-item.is-done .story-progress-check,
 .story-further-item.is-done .story-progress-check {
 	opacity: 1;
 }
+
 .story-progress .story-progress-item.is-done .story-progress-check {
 	background: var(--color-orange);
 	border-color: var(--color-orange);
 }
+
 .story-further .story-further-item.is-done .story-progress-check {
 	background: var(--color-blue);
 	border-color: var(--color-blue);
 }
+
 .story-progress-item.is-done .story-progress-check::after,
 .story-further-item.is-done .story-progress-check::after {
-	border-bottom: 2px solid white;
-	border-right: 2px solid white;
-	content: '';
+	border-bottom: 2px solid var(--color-white);
+	border-right: 2px solid var(--color-white);
+	content: "";
 	height: 10px;
 	left: 4px;
 	position: absolute;
@@ -157,6 +175,7 @@ details[open] .story-progress-arrow {
 	transform: rotate(45deg);
 	width: 5px;
 }
+
 .story-progress-item.is-done .story-progress-item-label {
 	opacity: 0.6;
 	text-decoration: line-through;
@@ -166,7 +185,7 @@ details[open] .story-progress-arrow {
 .story-progress-cta {
 	background: var(--color-orange);
 	border-radius: 100px;
-	color: white;
+	color: var(--color-white);
 	display: inline-block;
 	font-size: 0.95rem;
 	font-weight: 600;
@@ -174,8 +193,9 @@ details[open] .story-progress-arrow {
 	text-decoration: none;
 	transition: opacity 0.2s ease;
 }
+
 .story-progress-cta:hover {
-	color: white;
+	color: var(--color-white);
 	opacity: 0.85;
 	text-decoration: none;
 }
@@ -186,14 +206,17 @@ details[open] .story-progress-arrow {
 	margin: 0 0 0.5rem;
 	padding: 0;
 }
+
 .story-further-item {
 	border-bottom: 1px solid var(--color-gray-1, #eee);
 	font-size: 0.9rem;
 	padding: 0.25rem 0;
 }
+
 .story-further-item:last-child {
 	border-bottom: none;
 }
+
 .story-further-label {
 	align-items: flex-start;
 	cursor: pointer;
@@ -202,25 +225,31 @@ details[open] .story-progress-arrow {
 	padding: 0.2rem 0;
 	user-select: none;
 }
+
 .story-further-cb {
+
 	/* hide native checkbox — we use .story-progress-check visually */
 	opacity: 0;
 	position: absolute;
 	width: 0;
 }
+
 .story-further-item.is-done .story-further-item-label {
 	opacity: 0.55;
 	text-decoration: line-through;
 }
+
 .story-further-item-label {
 	display: flex;
 	flex-direction: column;
 	gap: 0.1rem;
 }
+
 .story-further-link {
 	font-size: 0.8rem;
 	opacity: 0.7;
 }
+
 .story-further-link:hover {
 	opacity: 1;
 }
@@ -243,12 +272,13 @@ details[open] .story-progress-arrow {
 	padding: 0.15rem 0.35rem;
 	transition: opacity 0.15s;
 }
+
 .story-dismiss-btn:hover {
 	opacity: 1;
 	background: none;
 }
 
-/* Restore button — small pill shown at top of content when a box is dismissed */
+/* Restore pill when a progress/further box is dismissed */
 .story-restore-btn {
 	align-items: center;
 	background: var(--color-gray-1, #f5f5f5);
@@ -267,6 +297,7 @@ details[open] .story-progress-arrow {
 	position: relative;
 	z-index: 1;
 }
+
 .story-restore-btn:hover {
 	opacity: 0.75;
 	background: transparent;
@@ -327,7 +358,7 @@ details[open] .story-progress-arrow {
 
 .reaction-trigger:disabled {
 	cursor: not-allowed;
-	opacity: .91;
+	opacity: 0.91;
 	background-color: var(--color-gray-0);
 }
 
@@ -372,7 +403,7 @@ details[open] .story-progress-arrow {
 }
 
 .reaction-picker::before {
-	content: '';
+	content: "";
 	position: absolute;
 	bottom: -8px;
 	left: 18px;
@@ -409,7 +440,7 @@ details[open] .story-progress-arrow {
 
 .reaction-btn:disabled {
 	cursor: not-allowed;
-	opacity: .91;
+	opacity: 0.91;
 	background-color: var(--color-gray-0);
 }
 
@@ -473,7 +504,7 @@ details[open] .story-progress-arrow {
 	font-size: 0.8rem;
 	padding: 0.15rem 0.35rem;
 	font-weight: 500;
-	transition: all .2s ease;
+	transition: all 0.2s ease;
 }
 
 .reaction-details-toggle:hover,
@@ -488,8 +519,8 @@ details[open] .story-progress-arrow {
 	color: var(--color-gray-3);
 	margin: 0;
 	opacity: 0;
-	font-size: 0rem;
-	transition: all .2s ease;
+	font-size: 0;
+	transition: all 0.2s ease;
 	transition-delay: 2s;
 }
 
@@ -500,7 +531,7 @@ details[open] .story-progress-arrow {
 .entry .entry-content .reaction-picker-wrapper:hover ~ p.reactions-login-prompt {
 	opacity: 1;
 	font-size: 0.7rem;
-	transition-delay: .1s;
+	transition-delay: 0.1s;
 }
 
 /* Reaction Details Panel */
@@ -568,6 +599,7 @@ details[open] .story-progress-arrow {
 
 /* Responsive adjustments for reactions */
 @media (max-width: 480px) {
+
 	.reaction-picker {
 		left: -8px;
 		padding: 5px 6px;

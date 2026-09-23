@@ -14,10 +14,11 @@
 
 /* Mobile: Reduce page title size */
 @media (max-width: 640px) {
+
 	.polygamy-page .page-title {
 		font-size: 1.75rem;
 	}
-	
+
 	.polygamy-page {
 		padding: 1rem 0.5rem;
 	}
@@ -63,10 +64,11 @@
 
 /* Mobile: Stack stat cards */
 @media (max-width: 640px) {
+
 	.stats-grid {
 		grid-template-columns: 1fr;
 	}
-	
+
 	.stat-card.stat-wide {
 		grid-column: span 1;
 	}
@@ -274,27 +276,28 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+
 	.polygamy-page .page-title {
 		font-size: 1.75rem;
 	}
-	
+
 	.stats-overview .stats-grid {
 		grid-template-columns: repeat(2, 1fr);
 	}
-	
+
 	.stat-value {
 		font-size: 1.5rem;
 	}
-	
+
 	.charts-grid {
 		grid-template-columns: 1fr;
 	}
-	
+
 	.polygamists-table,
 	.teenage-brides-table {
 		font-size: 0.8rem;
 	}
-	
+
 	.polygamists-table th,
 	.polygamists-table td,
 	.teenage-brides-table th,

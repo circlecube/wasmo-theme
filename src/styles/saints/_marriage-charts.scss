@@ -23,7 +23,7 @@
 }
 
 .chart-wrapper {
-	background: white;
+	background: var(--color-white);
 	border-radius: 6px;
 	margin-bottom: 1rem;
 	padding: 1rem;
@@ -178,13 +178,7 @@ a.marriage-timeline-name:hover {
 
 /* Ongoing marriage - add pattern/stripe */
 .marriage-ongoing {
-	background-image: repeating-linear-gradient(
-		45deg,
-		transparent,
-		transparent 4px,
-		rgba(255, 255, 255, 0.15) 4px,
-		rgba(255, 255, 255, 0.15) 8px
-	);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255, 255, 255, 0.15) 4px, rgba(255, 255, 255, 0.15) 8px);
 }
 
 .marriage-bar-wife.marriage-ongoing {
@@ -238,7 +232,7 @@ a.marriage-timeline-name:hover {
 	color: var(--color-gray-3);
 	display: block;
 	font-size: 0.65rem;
-	font-weight: normal;
+	font-weight: 400;
 }
 
 /* Child birth markers */
@@ -278,35 +272,30 @@ a.marriage-timeline-name:hover {
 
 .legend-ongoing {
 	background: var(--color-gray-3);
-	background-image: repeating-linear-gradient(
-		45deg,
-		transparent,
-		transparent 2px,
-		rgba(255, 255, 255, 0.3) 2px,
-		rgba(255, 255, 255, 0.3) 4px
-	);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.3) 2px, rgba(255, 255, 255, 0.3) 4px);
 }
 
 /* Mobile responsiveness for marriage charts */
 @media (max-width: 640px) {
+
 	.marriage-timeline-row {
 		flex-wrap: wrap;
 	}
-	
+
 	.marriage-timeline-name {
 		width: 100%;
 	}
-	
+
 	.marriage-timeline-track {
 		order: 3;
 		width: 100%;
 	}
-	
+
 	.marriage-timeline-dates {
 		text-align: left;
 		width: auto;
 	}
-	
+
 	/* Chart toggle buttons: scrollable on mobile */
 	.chart-toggle-container {
 		overflow-x: auto;
@@ -315,28 +304,28 @@ a.marriage-timeline-name:hover {
 		margin: 0 -1rem 1rem;
 		padding: 0 1rem;
 	}
-	
+
 	.chart-toggle {
 		display: inline-flex;
 		min-width: max-content;
 		flex-wrap: nowrap;
 	}
-	
+
 	.chart-toggle-btn {
 		font-size: 0.8rem;
 		padding: 0.4rem 1rem;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
-	
+
 	.timeline-axis-row {
 		flex-wrap: wrap;
 	}
-	
+
 	.timeline-axis-spacer {
 		display: none;
 	}
-	
+
 	.marriage-timeline-axis {
 		width: 100%;
 	}
@@ -385,19 +374,19 @@ a.marriage-timeline-name:hover {
 }
 
 .sortable-table th[data-sort]::after {
-	content: ' ↕';
+	content: " ↕";
 	font-size: 0.7rem;
 	opacity: 0.4;
 	transition: opacity 0.15s ease;
 }
 
 .sortable-table th.sort-asc::after {
-	content: ' ↑';
+	content: " ↑";
 	opacity: 1;
 }
 
 .sortable-table th.sort-desc::after {
-	content: ' ↓';
+	content: " ↓";
 	opacity: 1;
 }
 
@@ -494,12 +483,12 @@ a.marriage-timeline-name:hover {
 
 .mini-portrait-icon {
 	opacity: 0.5;
-    max-width: 24px;
-    max-height: 26px;
+	max-width: 24px;
+	max-height: 26px;
 }
 
 .mini-portrait-icon svg {
-	fill: white;
+	fill: var(--color-white);
 	height: 24px;
 	width: 24px;
 }
@@ -548,21 +537,22 @@ a.marriage-timeline-name:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
+
 	.marriage-chart-section {
 		margin-left: -1rem;
 		margin-right: -1rem;
 		padding: 1rem;
 	}
-	
+
 	.chart-legend {
 		gap: 1rem;
 	}
-	
+
 	.marriages-table th,
 	.marriages-table td {
 		padding: 0.5rem 0.25rem;
 	}
-	
+
 	.marriages-table {
 		font-size: 0.8rem;
 	}

@@ -3,18 +3,20 @@
 	margin-bottom: 8rem;
 	max-width: 100%;
 }
+
 .entry .the-directory.directory-shortcode {
 	margin: 0 auto;
 	padding: 0;
 	max-width: 100%;
 	width: 100%;
 }
+
 .the-directory .directory {
 	width: 100%;
 	max-width: 100%;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	grid-gap: 0 1rem;
+	gap: 0 1rem;
 	justify-content: space-between;
 }
 
@@ -55,24 +57,31 @@
 	margin: 0;
 	padding: 0;
 }
+
 .the-directory.directory-bumper .directory {
 	margin: 0;
 }
 
 @media only screen and (min-width: 1024px) {
+
 	.the-directory .directory {
 		grid-template-columns: repeat(3, 1fr);
 	}
 }
+
 @media only screen and (min-width: 1200px) {
+
 	.the-directory .directory {
 		grid-template-columns: repeat(4, 1fr);
 	}
 }
+
 @media only screen and (min-width: 1600px) {
+
 	.the-directory .directory {
 		grid-template-columns: repeat(6, 1fr);
 	}
+
 	.the-directory .directory.directory-bumper {
 		grid-template-columns: repeat(4, 1fr);
 	}
@@ -87,6 +96,7 @@
 	top: 0;
 	left: 0;
 }
+
 .directory .person .directory-img img {
 	position: absolute;
 	width: 100%;
@@ -96,75 +106,83 @@
 	top: 0;
 	left: 0;
 }
+
 .directory .person .directory-name {
 	background-color: rgba(0, 0, 0, 0.5);
 	bottom: -36px;
 	color: var(--color-white);
 	font-size: 24px;
 	height: 36px;
-	line-height: 1.1rem;
-    max-width: 100%;
+	line-height: 24px;
+	max-width: 100%;
 	opacity: 0;
-    overflow: hidden;
+	overflow: hidden;
 	padding: 0.25rem;
 	position: absolute;
 	text-align: center;
 	text-decoration: none;
-    text-overflow: ellipsis;
-	text-shadow: 1px 1px rgba(0,0,0,.25);
+	text-overflow: ellipsis;
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 	transition: all 0.2s ease;
-    white-space: nowrap;
+	white-space: nowrap;
 	width: 100%;
 	z-index: 1;
 }
+
 .directory > .user-week::after,
 .directory > .user-month::after,
 .directory > .updated-week::after,
 .directory > .updated-month::after {
 	background-color: var(--color-blue);
 	bottom: 0;
-	color: white;
-	content: 'Updated this week';
+	color: var(--color-white);
+	content: "Updated this week";
 	font-family: sans-serif;
 	font-size: 12px;
 	font-weight: 700;
-    height: 24px;
+	height: 24px;
 	letter-spacing: 1px;
-	line-height: 1.1rem;
-	opacity: .85;
-    padding: 0;
+	line-height: 24px;
+	opacity: 0.85;
+	padding: 0;
 	position: absolute;
 	text-align: center;
 	text-transform: uppercase;
-	text-shadow: 1px 1px rgba(0,0,0,.25);
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 	transition: all 0.2s ease;
 	width: 100%;
 }
+
 .directory > .updated-week::after {
 	background-color: var(--color-blue);
-	content: 'Updated this week';
+	content: "Updated this week";
 }
+
 .directory > .updated-month::after {
 	background-color: var(--color-blue-2);
-	content: 'Updated this month';
+	content: "Updated this month";
 }
+
 .directory > .user-week::after {
 	background-color: var(--color-pink);
-	content: 'New this week';
+	content: "New this week";
 }
+
 .directory > .user-month::after {
 	background-color: var(--color-orange);
-	content: 'New this month';
+	content: "New this month";
 }
 
 /* on mobile show name and  */
 @media only screen and (max-width: 769px) {
+
 	.directory > .user-week::after,
 	.directory > .user-month::after,
 	.directory > .updated-week::after,
 	.directory > .updated-month::after {
 		bottom: 36px;
 	}
+
 	.directory .person .directory-name {
 		bottom: 0;
 		opacity: 1;
@@ -173,16 +191,19 @@
 
 /* on desktop show name on hover */
 @media only screen and (min-width: 768px) {
+
 	.directory > .user-week:hover::after,
 	.directory > .user-month:hover::after,
 	.directory > .updated-week:hover::after,
 	.directory > .updated-month:hover::after {
 		bottom: 36px;
 	}
+
 	.directory .person .directory-name {
 		bottom: -36px;
 		opacity: 0;
 	}
+
 	.directory .person:hover .directory-name {
 		bottom: 0;
 		opacity: 1;
@@ -205,18 +226,21 @@
 	width: 26px;
 	z-index: 2;
 }
+
 .directory .person.has-video .video-indicator svg {
 	fill: var(--color-white);
 	height: 14px;
 	transition: fill 0.2s ease, transform 0.2s ease;
 	width: 14px;
 }
+
 .directory .person.has-video:hover .video-indicator,
 .directory .person.has-video:focus .video-indicator,
 .directory .person.has-video:focus-visible .video-indicator,
 .directory .person.has-video:focus-within .video-indicator {
 	background: rgba(0, 0, 0, 0.85);
 }
+
 .directory .person.has-video:hover .video-indicator svg,
 .directory .person.has-video:focus .video-indicator svg,
 .directory .person.has-video:focus-visible .video-indicator svg,
@@ -240,14 +264,14 @@
 	position: absolute;
 	text-align: center;
 	text-overflow: ellipsis;
-	text-shadow: 1px 1px rgba(0,0,0,.25);
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 	transition: opacity 0.2s ease;
 	white-space: nowrap;
 	width: 100%;
 	z-index: 1;
 }
 
-/* Name is always visible; higher specificity (3 classes) overrides the 2-class hide rule */
+/* Name always visible; 3-class specificity overrides 2-class hide rule */
 .the-directory .directory .person .directory-name {
 	bottom: 0;
 	opacity: 1;
@@ -255,22 +279,26 @@
 
 /* Desktop: show tagline on hover; keep badges above always-visible name */
 @media only screen and (min-width: 768px) {
+
 	.the-directory .directory .person .directory-name {
 		bottom: 0;
 		opacity: 1;
 	}
+
 	.the-directory .directory > .user-week::after,
 	.the-directory .directory > .user-month::after,
 	.the-directory .directory > .updated-week::after,
 	.the-directory .directory > .updated-month::after {
 		bottom: 36px;
 	}
+
 	.the-directory .directory > .user-week:hover::after,
 	.the-directory .directory > .user-month:hover::after,
 	.the-directory .directory > .updated-week:hover::after,
 	.the-directory .directory > .updated-month:hover::after {
 		bottom: 64px;
 	}
+
 	.directory .person:hover .directory-tagline {
 		opacity: 1;
 	}
@@ -287,57 +315,67 @@
 .media-main .wasmo-pagination {
 	max-width: 100%;
 }
+
 .wasmo-pagination > .page-numbers {
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
-    justify-content: space-between;
+	justify-content: space-between;
 	list-style: none;
 	margin: 1rem auto !important;
-	padding: 0;;
-    width: 100%;
+	padding: 0;
+	width: 100%;
 }
+
 .wasmo-pagination .page-numbers .page-numbers {
-    border-radius: 100px;
-    background-color: var(--color-blue-2);
-    color: var(--color-gray-0);
-    display: block;
-    height: 2rem;
-    margin: 0;
-    min-width: 2rem;
-    padding: 0.5rem 0.75rem;
-    text-align: center;
-    text-decoration: none;
-    transition: all .2s ease;
-    line-height: 1;
+	border-radius: 100px;
+	background-color: var(--color-blue-2);
+	color: var(--color-gray-0);
+	display: block;
+	height: 2rem;
+	margin: 0;
+	min-width: 2rem;
+	padding: 0.5rem 0.75rem;
+	text-align: center;
+	text-decoration: none;
+	transition: all 0.2s ease;
+	line-height: 1;
 }
+
 .wasmo-pagination .page-numbers .page-numbers.dots {
 	background: transparent;
 	color: var(--color-blue-3);
 	padding: 0;
-	height:1em;
+	height: 1em;
 }
+
 .wasmo-pagination .page-numbers .page-numbers:not(.dots):not(.current):hover {
 	background-color: var(--color-blue-3);
 }
+
 .wasmo-pagination .page-numbers .page-numbers.current {
 	background-color: var(--color-orange);
 }
+
 .wasmo-pagination .page-numbers .page-numbers.prev,
 .wasmo-pagination .page-numbers .page-numbers.next {
 	background-color: var(--color-gray-0);
 	color: var(--color-blue-2);
 }
+
 .wasmo-pagination .page-numbers .page-numbers.prev:hover,
 .wasmo-pagination .page-numbers .page-numbers.next:hover {
 	background-color: var(--color-gray-1) !important;
 	color: var(--color-blue-3) !important;
 }
+
 /* on mobile only show next/prev buttons */
 @media only screen and (max-width: 500px) {
+
 	.wasmo-pagination .page-numbers .page-numbers {
 		display: none;
 	}
+
 	.wasmo-pagination .page-numbers li .page-numbers.prev,
 	.wasmo-pagination .page-numbers li:nth-child(2) .page-numbers,
 	.wasmo-pagination .page-numbers li .page-numbers.current,
@@ -353,42 +391,52 @@
 }
 
 .sidebar.entry .widget-column.entry-content {
-    margin: 3rem 0;
-    max-width: 100%;
-    padding: 0;
+	margin: 3rem 0;
+	max-width: 100%;
+	padding: 0;
 }
+
 .sidebar.entry .widget-column.entry-content > *,
 .sidebar.entry .the-directory.entry-content > * {
-    margin: 0;
+	margin: 0;
 	max-width: 100%;
 }
+
 .sidebar.entry .widget-column.entry-content .widget {
-    margin: 0 0 1rem;
+	margin: 0 0 1rem;
 }
+
 .entry .entry-content .wp-block-image figure {
 	max-width: 100% !important;
 }
+
 /* directory widget */
 .widget .the-directory {
 	margin: 0 auto 2rem;
 }
+
 .widget .the-directory .directory {
 	grid-template-columns: repeat(1, 1fr);
 }
+
 /* desktop - sidebar */
 
 @media only screen and (min-width: 512px) {
+
 	.widget .the-directory .directory {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
+
 @media only screen and (min-width: 768px) {
+
 	.widget .the-directory {
 		margin: 0 auto 2rem;
 	}
+
 	.widget .the-directory .directory {
 		grid-template-columns: repeat(3, 1fr);
-		grid-gap: 2%;
+		gap: 2%;
 	}
 }
 

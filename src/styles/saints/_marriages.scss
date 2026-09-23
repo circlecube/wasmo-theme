@@ -34,9 +34,9 @@
 .marriage-order {
 	background: var(--color-orange);
 	border-radius: 50%;
-	color: white;
+	color: var(--color-white);
 	font-size: 0.7rem;
-	font-weight: bold;
+	font-weight: 700;
 	height: 24px;
 	line-height: 24px;
 	position: absolute;
@@ -69,9 +69,9 @@
 	align-items: center;
 	background: var(--color-gray-2);
 	border-radius: 50%;
-	color: white;
+	color: var(--color-white);
 	display: flex;
-	font-weight: bold;
+	font-weight: 700;
 	height: 50px;
 	justify-content: center;
 	width: 50px;
@@ -104,9 +104,9 @@
 .teenage-badge {
 	background: var(--color-orange);
 	border-radius: 3px;
-	color: white;
+	color: var(--color-white);
 	font-size: 0.65rem;
-	font-weight: bold;
+	font-weight: 700;
 	margin-left: 0.25rem;
 	padding: 1px 4px;
 	text-transform: uppercase;
@@ -157,6 +157,7 @@
 }
 
 @media (max-width: 600px) {
+
 	.children-list {
 		columns: 1;
 	}
