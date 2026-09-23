@@ -4,6 +4,7 @@ module.exports = {
     ...defaultConfig,
     entry: {
         'build/index': './src/index.js',
+        'build/theme': './src/styles/main.scss',
     },
     output: {
         path: __dirname,
