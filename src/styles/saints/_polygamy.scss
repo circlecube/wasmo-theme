@@ -1,0 +1,319 @@
+/* ============================================
+   SAINT CARD COMPONENT
+   ============================================ */
+
+.saint-card,
+a.saint-card,
+a.saint-card:link,
+a.saint-card:visited,
+a.saint-card:hover,
+a.saint-card:active {
+	background: var(--color-white);
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+	display: block;
+	overflow: hidden;
+	text-decoration: none !important;
+	transition: box-shadow 0.2s ease;
+}
+
+a.saint-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Image wrapper - always square with dark background */
+.saint-card-image-wrapper {
+	aspect-ratio: 1 / 1;
+	background: var(--color-gray-4, #1e293b);
+	overflow: hidden;
+	position: relative;
+}
+
+.saint-card-image {
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+	width: 100%;
+}
+
+/* Placeholder when no image */
+.saint-card-placeholder {
+	align-items: center;
+	background: linear-gradient(145deg, var(--color-blue-2) 0%, var(--color-blue-3) 50%, var(--color-blue-2) 100%);
+	color: var(--color-white);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	justify-content: center;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+
+/* Gender-specific placeholder colors */
+.saint-card-placeholder.placeholder-male,
+.leader-card-placeholder.placeholder-male {
+	background: linear-gradient(145deg, var(--color-blue-2) 0%, var(--color-blue-3) 50%, var(--color-blue-2) 100%);
+}
+
+.saint-card-placeholder.placeholder-female,
+.leader-card-placeholder.placeholder-female {
+	background: linear-gradient(145deg, var(--color-pink-2) 0%, var(--color-pink-3) 50%, var(--color-pink-2) 100%);
+}
+
+.saint-card-placeholder .placeholder-icon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80%;
+	height: 80%;
+	opacity: 0.12;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.saint-card-placeholder .placeholder-icon svg {
+	width: 100%;
+	height: 100%;
+	fill: currentcolor;
+}
+
+.saint-card-placeholder .placeholder-initials {
+	font-family: var(--font-heading);
+	font-size: 2rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	position: relative;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	z-index: 1;
+}
+
+/* Info section - centered text */
+.saint-card-info {
+	padding: 0.75rem;
+	text-align: center;
+	text-decoration: none;
+}
+
+.saint-card-name {
+	color: var(--color-gray-4);
+	display: block;
+	font-family: var(--font-heading);
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.25;
+	text-decoration: none;
+}
+
+.saint-card-dates,
+.saint-card-role {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.8rem;
+	line-height: 1.3;
+	margin-top: 0.2rem;
+	text-decoration: none;
+}
+
+.saint-card-role {
+	color: var(--color-blue-2);
+	font-weight: 500;
+}
+
+/* Size variations */
+.saint-card-small .saint-card-info {
+	padding: 0.5rem;
+}
+
+.saint-card-small .saint-card-name {
+	font-size: 0.8rem;
+}
+
+.saint-card-small .saint-card-dates,
+.saint-card-small .saint-card-role {
+	font-size: 0.7rem;
+}
+
+.saint-card-small .saint-card-placeholder .placeholder-initials {
+	font-size: 1.5rem;
+}
+
+.saint-card-large .saint-card-info {
+	padding: 1rem;
+}
+
+.saint-card-large .saint-card-dates,
+.saint-card-large .saint-card-role {
+	font-size: 0.85rem;
+}
+
+/* Living saint indicator - green bottom border (default) */
+.saint-card.saint-living {
+	border-bottom: 3px solid var(--color-green, #10b981);
+}
+
+/* President - orange bottom border (overrides living) */
+.saint-card.saint-president {
+	border-bottom: 3px solid var(--color-orange);
+}
+
+/* Counselors - blue bottom border (overrides living) */
+.saint-card.saint-first-counselor,
+.saint-card.saint-second-counselor {
+	border-bottom: 3px solid var(--color-blue-2);
+}
+
+/* Role-specific accents */
+.saint-card.saint-wife {
+	border-left: 3px solid var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-wife {
+	background: var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-child {
+	background: var(--color-green, #10b981);
+}
+
+.saint-role-badge.saint-role-historical-figure {
+	background: var(--color-purple, #8b5cf6);
+}
+
+.saint-role-badge.saint-role-relief-society-president {
+	background: var(--color-pink, #ec4899);
+}
+
+.saint-role-badge.saint-role-church-historian {
+	background: var(--color-teal, #14b8a6);
+}
+
+/* ============================================
+   POLYGAMY CHARTS STYLES
+   ============================================ */
+
+/* Polygamy Stats */
+.polygamy-stats {
+	margin-bottom: 2rem;
+}
+
+.polygamy-chart {
+	margin-bottom: 3rem;
+}
+
+/* Bar thumbnail */
+.bar-thumb {
+	border-radius: 50%;
+	height: 24px;
+	margin-right: 0.5rem;
+	object-fit: cover;
+	vertical-align: middle;
+	width: 24px;
+}
+
+/* President badge in polygamy chart */
+.president-badge {
+	color: var(--color-orange);
+	font-size: 0.8rem;
+	margin-left: 0.25rem;
+}
+
+/* Teenage count and age diff badges */
+.teenage-count,
+.age-diff {
+	background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.15);
+	border-radius: 3px;
+	color: var(--color-orange);
+	font-size: 0.7rem;
+	margin-left: 0.5rem;
+	padding: 2px 6px;
+}
+
+.age-diff {
+	background: rgba(var(--color-blue-2-rgb, 59, 130, 246), 0.1);
+	color: var(--color-blue-2);
+}
+
+/* Bar with teenage brides */
+.bar-row.has-teenage .bar {
+	background: linear-gradient(90deg, var(--color-orange) 0%, var(--color-orange) 100%);
+}
+
+/* Teenage Brides Section */
+.teenage-brides-section {
+
+	/* background: rgba(var(--color-orange-rgb, 237, 137, 54), 0.05); */
+
+	/* border-radius: 8px; */
+	margin-top: 4rem;
+
+	/* padding: 1.5rem; */
+}
+
+.teenage-brides-section h3 {
+	color: var(--color-orange);
+	margin-bottom: 0.5rem;
+}
+
+.teenage-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	margin-top: 1rem;
+}
+
+.teenage-card {
+	align-items: center;
+	background: var(--color-white);
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	color: inherit;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.75rem;
+	text-decoration: none;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.teenage-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
+.teenage-card-thumb {
+	border-radius: 50%;
+	height: 48px;
+	object-fit: cover;
+	width: 48px;
+}
+
+.teenage-card-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.teenage-card-name {
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.teenage-card-stat {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+.teenage-card-stat strong {
+	color: var(--color-orange);
+}
+
+/* Teenage marker in legend */
+.teenage-marker {
+	color: var(--color-orange);
+	font-size: 0.8rem;
+	margin-right: 0.25rem;
+}
+

@@ -1,0 +1,7 @@
+{
+	"extends": "@wordpress/stylelint-config/scss-stylistic",
+	"ignoreFiles": [ "src/styles/foundation/_twentynineteen.scss" ],
+	"rules": {
+		"selector-class-pattern": null
+	}
+}

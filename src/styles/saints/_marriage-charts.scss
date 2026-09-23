@@ -1,0 +1,560 @@
+/* ============================================
+   MARRIAGE CHART STYLES (Single Saint)
+   ============================================ */
+
+.marriage-chart-section {
+	background: var(--color-gray-5);
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.marriage-chart-section h3 {
+	font-size: 1.25rem;
+	margin-bottom: 0.25rem;
+}
+
+.chart-subtitle {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.chart-wrapper {
+	background: var(--color-white);
+	border-radius: 6px;
+	margin-bottom: 1rem;
+	padding: 1rem;
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.chart-wrapper canvas {
+	cursor: pointer;
+	display: block;
+	max-width: 100%;
+}
+
+.chart-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+}
+
+.legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+
+.legend-color {
+	border-radius: 3px;
+	display: inline-block;
+	height: 14px;
+	width: 14px;
+}
+
+.legend-her {
+	background: rgba(14, 165, 233, 0.85);
+	border: 2px solid #0ea5e9;
+}
+
+.legend-his {
+	background: rgba(100, 116, 139, 0.4);
+	border: 1px solid #64748b;
+}
+
+.legend-teen {
+	background: rgba(194, 65, 12, 0.85);
+	border: 2px solid #c2410c;
+}
+
+/* Marriage Charts Container & Toggle */
+.marriage-charts-container {
+	margin-bottom: 2rem;
+}
+
+.chart-toggle-container {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.chart-toggle {
+	background: var(--color-gray-0);
+	border-radius: 100px;
+	display: inline-flex;
+	padding: 4px;
+}
+
+.chart-toggle-btn {
+	background: transparent;
+	border: none;
+	border-radius: 100px;
+	color: var(--color-gray-3);
+	cursor: pointer;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	padding: 0.5rem 1.25rem;
+	transition: all 0.2s ease;
+}
+
+.chart-toggle-btn.active {
+	background: var(--color-blue-2);
+	color: var(--color-white);
+}
+
+.chart-toggle-btn:hover:not(.active) {
+	background: var(--color-gray-1);
+}
+
+.marriage-chart-panel {
+	display: none;
+}
+
+.marriage-chart-panel.active {
+	display: block;
+}
+
+/* Marriage Timeline Chart */
+.marriage-timeline-chart {
+	padding-bottom: 2rem;
+	position: relative;
+}
+
+.marriage-timeline-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.marriage-timeline-name {
+	color: var(--color-gray-4) !important;
+	flex-shrink: 0;
+	font-size: 0.9rem;
+	font-weight: 500;
+	overflow: hidden;
+	text-decoration: none !important;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 140px;
+}
+
+a.marriage-timeline-name:hover {
+	color: var(--color-blue-2) !important;
+}
+
+.marriage-timeline-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.marriage-timeline-bar {
+	border-radius: 3px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	transition: all 0.3s ease;
+}
+
+/* Wife bar - pink */
+.marriage-bar-wife {
+	background: linear-gradient(135deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+/* Husband bar - blue */
+.marriage-bar-husband {
+	background: linear-gradient(135deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+/* Ongoing marriage - add pattern/stripe */
+.marriage-ongoing {
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255, 255, 255, 0.15) 4px, rgba(255, 255, 255, 0.15) 8px);
+}
+
+.marriage-bar-wife.marriage-ongoing {
+	background-color: var(--color-pink-2);
+}
+
+.marriage-bar-husband.marriage-ongoing {
+	background-color: var(--color-blue-2);
+}
+
+.marriage-timeline-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.8rem;
+	text-align: right;
+	min-width: 125px;
+}
+
+.marriage-duration {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Axis row to align with bars */
+.timeline-axis-row {
+	align-items: flex-start;
+	display: flex;
+	gap: 0.75rem;
+	margin-top: 0.5rem;
+}
+
+.timeline-axis-spacer {
+	flex-shrink: 0;
+	width: 140px;
+}
+
+.timeline-axis-spacer:last-child {
+	width: 125px;
+}
+
+.marriage-timeline-axis {
+	border-top: 1px solid var(--color-gray-4);
+	flex: 1;
+	padding-top: 0.5rem;
+	position: relative;
+	margin-left: 0;
+	margin-top: 0.5rem;
+}
+
+.marriage-timeline-axis .axis-label small {
+	color: var(--color-gray-3);
+	display: block;
+	font-size: 0.65rem;
+	font-weight: 400;
+}
+
+/* Child birth markers */
+.child-birth-marker {
+	background: var(--color-gray-0);
+	border: 1px solid var(--color-white);
+	border-radius: 50%;
+	height: 10px;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	transition: all 0.3s ease;
+	width: 10px;
+	z-index: 2;
+}
+
+.child-birth-marker:hover {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-0);
+	transform: translate(-50%, -50%) scale(1.3);
+}
+
+.legend-child-marker {
+	background: var(--color-white);
+	border: 2px solid var(--color-gray-0);
+	border-radius: 50%;
+}
+
+/* Legend colors for timeline */
+.legend-wife {
+	background: linear-gradient(135deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+.legend-husband {
+	background: linear-gradient(135deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+.legend-ongoing {
+	background: var(--color-gray-3);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.3) 2px, rgba(255, 255, 255, 0.3) 4px);
+}
+
+/* Mobile responsiveness for marriage charts */
+@media (max-width: 640px) {
+
+	.marriage-timeline-row {
+		flex-wrap: wrap;
+	}
+
+	.marriage-timeline-name {
+		width: 100%;
+	}
+
+	.marriage-timeline-track {
+		order: 3;
+		width: 100%;
+	}
+
+	.marriage-timeline-dates {
+		text-align: left;
+		width: auto;
+	}
+
+	/* Chart toggle buttons: scrollable on mobile */
+	.chart-toggle-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 1rem;
+		padding: 0 1rem;
+	}
+
+	.chart-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+
+	.chart-toggle-btn {
+		font-size: 0.8rem;
+		padding: 0.4rem 1rem;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.timeline-axis-row {
+		flex-wrap: wrap;
+	}
+
+	.timeline-axis-spacer {
+		display: none;
+	}
+
+	.marriage-timeline-axis {
+		width: 100%;
+	}
+}
+
+/* Marriages Table */
+.marriages-table-wrapper {
+	margin-top: 1.5rem;
+	overflow-x: auto;
+	max-width: 100%;
+}
+
+.marriages-table {
+	border-collapse: collapse;
+	font-size: 0.9rem;
+	width: 100%;
+	min-width: 600px; /* Ensures table scrolls horizontally on small screens rather than breaking layout */
+}
+
+.marriages-table th,
+.marriages-table td {
+	border-bottom: 1px solid var(--color-gray-4);
+	padding: 0.75rem 0.5rem;
+	text-align: left;
+	word-break: keep-all;
+}
+
+.marriages-table th {
+	background: var(--color-gray-5);
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+/* Sortable Table Styles (site-wide) */
+.sortable-table th[data-sort] {
+	cursor: pointer;
+	position: relative;
+	user-select: none;
+	transition: background-color 0.15s ease;
+}
+
+.sortable-table th[data-sort]:hover {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.sortable-table th[data-sort]::after {
+	content: " ↕";
+	font-size: 0.7rem;
+	opacity: 0.4;
+	transition: opacity 0.15s ease;
+}
+
+.sortable-table th.sort-asc::after {
+	content: " ↑";
+	opacity: 1;
+}
+
+.sortable-table th.sort-desc::after {
+	content: " ↓";
+	opacity: 1;
+}
+
+.sortable-table .date-cell {
+	white-space: nowrap;
+}
+
+.marriages-table td.num,
+.marriages-table th.num {
+	text-align: center;
+}
+
+.marriages-table tbody tr:hover {
+	background: var(--color-gray-5);
+}
+
+.marriages-table .teenage-row {
+	background: rgba(194, 65, 12, 0.05);
+}
+
+.marriages-table .teenage-row:hover {
+	background: rgba(194, 65, 12, 0.1);
+}
+
+.marriages-table .teenage-age {
+	color: #c2410c;
+	font-weight: 600;
+}
+
+.marriage-order-cell {
+	color: var(--color-gray-2);
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+.teen-marker {
+	color: #c2410c;
+	cursor: help;
+	font-size: 0.9rem;
+	margin-left: 0.25rem;
+}
+
+.non-saint-marker {
+	color: #6b7280;
+	cursor: help;
+	font-size: 0.75rem;
+	font-style: italic;
+	margin-left: 0.25rem;
+}
+
+/* Mini Portrait Circles (32x32px) */
+.mini-portrait {
+	border-radius: 50%;
+	display: inline-flex;
+	flex-shrink: 0;
+	height: 32px;
+	margin-right: 0.5rem;
+	overflow: hidden;
+	vertical-align: middle;
+	width: 32px;
+}
+
+.mini-portrait-img {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+
+/* Gender-specific borders for portraits with images */
+.mini-portrait-male {
+	border: 1px solid var(--color-blue-2);
+}
+
+.mini-portrait-female {
+	border: 1px solid var(--color-pink-2);
+}
+
+.mini-portrait-placeholder {
+	align-items: center;
+	border-radius: 50%;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+.mini-portrait-placeholder.placeholder-male {
+	background: linear-gradient(145deg, var(--color-blue-2) 0%, var(--color-blue-3) 100%);
+}
+
+.mini-portrait-placeholder.placeholder-female {
+	background: linear-gradient(145deg, var(--color-pink-2) 0%, var(--color-pink-3) 100%);
+}
+
+.mini-portrait-icon {
+	opacity: 0.5;
+	max-width: 24px;
+	max-height: 26px;
+}
+
+.mini-portrait-icon svg {
+	fill: var(--color-white);
+	height: 24px;
+	width: 24px;
+}
+
+/* Spouse name cell alignment */
+.spouse-name-cell {
+	align-items: center;
+	display: flex;
+	gap: 0;
+}
+
+.spouse-name-cell a,
+.spouse-name-cell .non-saint-marker,
+.spouse-name-cell .teen-marker {
+	display: inline;
+}
+
+/* Children list with mini portraits */
+.child-item .mini-portrait {
+	margin-left: 0.1rem;
+	margin-right: 0.25rem;
+}
+
+.child-item .child-name {
+	margin-right: 0.25rem;
+}
+
+/* Children group header alignment */
+.children-group-header {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0;
+}
+
+.children-group-header .mini-portrait {
+	margin-left: 0.25rem;
+	margin-right: 0.25rem;
+}
+
+.living-indicator {
+	color: var(--color-blue);
+	cursor: help;
+	font-size: 0.6rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+	.marriage-chart-section {
+		margin-left: -1rem;
+		margin-right: -1rem;
+		padding: 1rem;
+	}
+
+	.chart-legend {
+		gap: 1rem;
+	}
+
+	.marriages-table th,
+	.marriages-table td {
+		padding: 0.5rem 0.25rem;
+	}
+
+	.marriages-table {
+		font-size: 0.8rem;
+	}
+}
+

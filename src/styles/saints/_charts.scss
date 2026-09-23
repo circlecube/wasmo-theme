@@ -1,0 +1,1288 @@
+/* ============================================
+   ARCHIVE CHURCH LEADER TEMPLATE
+   ============================================ */
+.church-leaders-archive {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+.archive-header {
+	margin-bottom: 3rem;
+	text-align: center;
+}
+
+.archive-title {
+	font-size: 2.5rem;
+	margin: 0 0 1rem;
+}
+
+h1.archive-title::before {
+	display: none;
+}
+
+.archive-description {
+	color: var(--color-gray-2);
+	font-size: 1.1rem;
+	margin: 0 auto 1.5rem;
+	max-width: 600px;
+}
+
+.archive-actions {
+	margin-top: 1rem;
+}
+
+.leaders-section {
+	margin-bottom: 4rem;
+}
+
+.section-title {
+	border-bottom: 3px solid var(--color-orange);
+	font-size: 1.75rem;
+	margin-bottom: 2rem;
+	padding-bottom: 0.5rem;
+}
+
+.section-title::before {
+	display: none;
+}
+
+.leadership-group {
+	margin-bottom: 3rem;
+}
+
+.group-title {
+	color: var(--color-gray-3);
+	font-size: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.group-title::before {
+	display: none;
+}
+
+.group-description {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+/* First Presidency Layout */
+.first-presidency-group {
+	text-align: center;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 1.5rem;
+	padding-top: 1rem;
+}
+
+.position-label {
+	color: var(--color-gray-2);
+	display: block;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.85rem;
+	margin-top: 0.5rem;
+	text-transform: uppercase;
+}
+
+
+/* Twelve Apostles Layout */
+.twelve-apostles-group .apostle-card-wrapper {
+	position: relative;
+}
+
+.seniority-number {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	font-weight: 700;
+	height: 24px;
+	left: -8px;
+	line-height: 24px;
+	position: absolute;
+	text-align: center;
+	top: -8px;
+	width: 24px;
+	z-index: 1;
+}
+
+/* First Presidency Badges */
+.fp-card-wrapper {
+	position: relative;
+}
+
+.fp-badge {
+	background: var(--color-blue-2);
+	border-radius: 4px;
+	color: var(--color-white);
+	font-family: var(--font-heading);
+	font-size: 0.7rem;
+	font-weight: 600;
+	left: 50%;
+	letter-spacing: 0.025em;
+	padding: 0.25rem 0.5rem;
+	position: absolute;
+	text-transform: uppercase;
+	top: -12px;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	z-index: 2;
+}
+
+.fp-badge-president {
+	background: var(--color-orange);
+}
+
+.fp-badge-counselor {
+	background: var(--color-blue-2);
+}
+
+/* FP grid: mobile order president, counselors */
+.fp-grid {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+/* FP grid desktop: counselor, president, counselor */
+@media (min-width: 768px) {
+
+	.fp-grid {
+		flex-direction: row;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	/* Reorder: first counselor first, president middle, second counselor last */
+	.fp-president {
+		order: 2;
+	}
+
+	.fp-first-counselor {
+		order: 1;
+	}
+
+	.fp-second-counselor {
+		order: 3;
+	}
+
+	/* Scale president larger, counselors smaller */
+	.fp-president {
+		transform: scale(1.1);
+		z-index: 2;
+	}
+
+	.fp-first-counselor,
+	.fp-second-counselor {
+		transform: scale(0.9);
+		margin-top: 1rem; /* Align visually with larger president */
+	}
+}
+
+/* Timeline Layout */
+.leaders-timeline {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+
+	.leaders-timeline {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+
+	.leaders-timeline {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+.timeline-item {
+	position: relative;
+	text-align: center;
+}
+
+.timeline-number {
+	background: var(--color-orange);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.75rem;
+	font-weight: 700;
+	height: 24px;
+	left: 50%;
+	line-height: 24px;
+	position: absolute;
+	text-align: center;
+	top: -12px;
+	transform: translateX(-50%);
+	width: 24px;
+	z-index: 1;
+}
+
+.presidency-years {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.8rem;
+	margin-top: 0.25rem;
+}
+
+/* Collapsible Sections */
+.collapsible .group-title {
+	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.collapsible .collapse-icon {
+	font-size: 0.8rem;
+	transition: transform 0.2s ease;
+}
+
+.collapsible[data-collapsed="false"] .collapse-icon {
+	transform: rotate(180deg);
+}
+
+.archive-footer {
+	border-top: 1px solid var(--color-gray-4);
+	margin-top: 3rem;
+	padding-top: 2rem;
+}
+
+.archive-footer h3 {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.leader-count {
+	color: var(--color-gray-2);
+}
+
+/* ============================================
+   APOSTLE CHARTS TEMPLATE
+   ============================================ */
+.apostle-charts-page {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+.apostle-charts-page .page-header {
+	margin-bottom: 2rem;
+	text-align: center;
+}
+
+.apostle-charts-page .page-title {
+	font-size: 2.5rem;
+	margin: 0 0 1rem;
+}
+
+/* Mobile: Reduce page title size */
+@media (max-width: 640px) {
+
+	.apostle-charts-page .page-title {
+		font-size: 1.75rem;
+	}
+
+	.apostle-charts-page {
+		padding: 1rem 0.5rem;
+	}
+}
+
+.apostle-charts-page .page-title::before {
+	display: none;
+}
+
+.apostle-charts-page .page-description {
+	color: var(--color-gray-2);
+	font-size: 1.1rem;
+	margin: 0 auto;
+	max-width: 700px;
+}
+
+/* View Toggle */
+.chart-controls {
+	margin-bottom: 2rem;
+	text-align: center;
+}
+
+.view-toggle {
+	display: inline-flex;
+	background: var(--color-gray-0);
+	border-radius: 100px;
+	padding: 4px;
+}
+
+.view-btn {
+	background: transparent;
+	border: none;
+	border-radius: 100px;
+	color: var(--color-gray-3);
+	cursor: pointer;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	padding: 0.5rem 1.25rem;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.view-btn.active {
+	background: var(--color-blue-2);
+	color: var(--color-white);
+}
+
+.view-btn:hover:not(.active) {
+	background: var(--color-gray-1);
+}
+
+/* Mobile: Make view toggle scrollable */
+@media (max-width: 768px) {
+
+	.chart-controls {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 2rem;
+		padding: 0 1rem;
+		text-align: left;
+	}
+
+	.view-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+
+	.view-btn {
+		flex-shrink: 0;
+		font-size: 0.85rem;
+		padding: 0.4rem 1rem;
+	}
+}
+
+.entry .entry-content a.btn {
+	text-decoration: none;
+}
+
+/* Chart Views */
+.chart-view {
+	display: none;
+}
+
+.chart-view.active {
+	display: block;
+}
+
+.chart-view h2 {
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.chart-view h2::before {
+	display: none;
+}
+
+.view-description {
+	color: var(--color-gray-2);
+	margin-bottom: 2rem;
+}
+
+/* Current Apostles Grid */
+.current-apostles-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+	margin-bottom: 2rem;
+}
+
+.legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+
+.legend-dot {
+	border-radius: 50%;
+	display: inline-block;
+	height: 12px;
+	width: 12px;
+}
+
+.legend-prophet .legend-dot {
+	background: var(--color-orange);
+}
+
+.legend-first-presidency .legend-dot {
+	background: var(--color-pink);
+}
+
+.legend-twelve .legend-dot {
+	background: var(--color-blue-2);
+}
+
+.current-apostles-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(2, 1fr);
+	margin-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+
+	.current-apostles-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+
+	.current-apostles-grid {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+.current-apostle-card {
+	background: var(--color-white);
+	border: 2px solid var(--color-blue-2);
+	border-radius: 8px;
+	display: block;
+	overflow: hidden;
+	padding: 1rem;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+
+.current-apostle-card.apostle-prophet {
+	border-color: var(--color-orange);
+}
+
+.current-apostle-card.apostle-first-presidency {
+	border-color: var(--color-pink);
+}
+
+.seniority-badge {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	color: var(--color-white);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.7rem;
+	font-weight: 700;
+	height: 22px;
+	left: 8px;
+	line-height: 22px;
+	position: absolute;
+	text-align: center;
+	top: 8px;
+	width: 22px;
+}
+
+.apostle-prophet .seniority-badge {
+	background: var(--color-orange);
+}
+
+.apostle-first-presidency .seniority-badge {
+	background: var(--color-pink);
+}
+
+.apostle-photo {
+	border-radius: 50%;
+	height: 80px;
+	margin-bottom: 0.75rem;
+	object-fit: cover;
+	width: 80px;
+}
+
+.apostle-photo-placeholder {
+	align-items: center;
+	background: var(--color-gray-1);
+	border-radius: 50%;
+	color: var(--color-gray-3);
+	display: flex;
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 1.5rem;
+	height: 80px;
+	justify-content: center;
+	margin: 0 auto 0.75rem;
+	width: 80px;
+}
+
+.apostle-card-details {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.apostle-name {
+	color: var(--color-gray-4);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.apostle-stat {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Current Timeline */
+.current-timeline {
+	background: var(--color-gray-0);
+	border-radius: 8px;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+}
+
+.current-timeline h3 {
+	font-size: 1.1rem;
+	margin-bottom: 1rem;
+}
+
+.current-timeline h3::before {
+	display: none;
+}
+
+.timeline-chart {
+	position: relative;
+}
+
+.timeline-bar-container {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.timeline-name {
+	color: var(--color-gray-3);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	min-width: 130px;
+	text-align: right;
+}
+
+.timeline-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.timeline-bar {
+	background: var(--color-blue-2);
+	border-radius: 50%;
+	cursor: pointer;
+	height: 16px;
+	position: absolute;
+	top: 2px;
+	transform: translateX(-50%);
+	width: 16px;
+}
+
+.timeline-bar.bar-prophet {
+	background: var(--color-orange);
+}
+
+.timeline-bar.bar-first-presidency {
+	background: var(--color-pink);
+}
+
+.timeline-year {
+	color: var(--color-gray-3);
+	font-size: 0.65rem;
+	left: 50%;
+	position: absolute;
+	top: 20px;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+
+.timeline-axis {
+	border-top: 1px solid var(--color-gray-2);
+	display: flex;
+	justify-content: space-between;
+	margin-left: 130px;
+	margin-top: 2rem;
+	padding-top: 0.5rem;
+}
+
+.timeline-axis span {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+}
+
+/* Current Apostles Charts Container */
+.current-charts-container {
+	margin-top: 2rem;
+}
+
+.current-charts-container .chart-toggle-container {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+/* Mobile: Make chart toggles scrollable */
+@media (max-width: 768px) {
+
+	.current-charts-container .chart-toggle-container,
+	.chart-toggle-container {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		margin: 0 -1rem 1rem;
+		padding: 0 1rem;
+		text-align: left;
+	}
+
+	.current-charts-container .chart-toggle,
+	.chart-toggle {
+		display: inline-flex;
+		min-width: max-content;
+		flex-wrap: nowrap;
+	}
+
+	.current-charts-container .chart-toggle-btn,
+	.chart-toggle-btn {
+		white-space: nowrap;
+		flex-shrink: 0;
+		font-size: 0.85rem;
+		padding: 0.4rem 1rem;
+	}
+}
+
+.current-chart-panel {
+	display: none;
+}
+
+.current-chart-panel.active {
+	display: block;
+}
+
+/* Horizontal Bar Chart (for Service Duration, Age at Call) */
+.horizontal-bar-chart {
+	position: relative;
+}
+
+.horizontal-bar-row {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.5rem;
+}
+
+.horizontal-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.horizontal-bar {
+	background: var(--color-blue-2);
+	border-radius: 4px;
+	height: 100%;
+	min-width: 30px;
+	position: relative;
+	transition: width 0.3s ease;
+}
+
+.horizontal-bar.bar-prophet {
+	background: var(--color-orange);
+}
+
+.horizontal-bar.bar-first-presidency {
+	background: var(--color-pink);
+}
+
+.horizontal-bar .bar-value {
+	color: var(--color-white);
+	font-size: 0.7rem;
+	font-weight: 500;
+	padding: 0 0.5rem;
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	white-space: nowrap;
+}
+
+/* First Presidency Service Chart */
+.fp-service-chart {
+	position: relative;
+}
+
+.fp-service-row {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.fp-service-track {
+	background: var(--color-gray-1);
+	border-radius: 4px;
+	flex: 1;
+	height: 24px;
+	position: relative;
+}
+
+.fp-service-bar {
+	border-radius: 4px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+}
+
+.fp-bar-president {
+	background: var(--color-orange);
+}
+
+.fp-bar-counselor {
+	background: var(--color-pink);
+}
+
+.fp-service-summary {
+	color: var(--color-gray-3);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	text-align: right;
+	width: 50px;
+}
+
+/* Legend bar for FP */
+.legend-bar.fp-bar-president {
+	background: var(--color-orange);
+}
+
+.legend-bar.fp-bar-counselor {
+	background: var(--color-pink);
+}
+
+/* President Probability Chart */
+.probability-chart-wrapper {
+	margin: 1.5rem 0;
+	background: var(--color-white);
+	border-radius: 8px;
+	padding: 1rem;
+}
+
+.probability-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	justify-content: center;
+	margin-top: 1rem;
+	padding: 1rem;
+	background: var(--color-gray-0);
+	border-radius: 8px;
+}
+
+.prob-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.8rem;
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+.prob-legend-item:hover {
+	background: var(--color-gray-1);
+}
+
+.prob-legend-item.legend-hidden {
+	opacity: 0.4;
+	text-decoration: line-through;
+}
+
+.prob-legend-item small {
+	color: var(--color-gray-3);
+	font-size: 0.7rem;
+}
+
+.prob-legend-color {
+	width: 16px;
+	height: 3px;
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+.source-link {
+	color: var(--color-gray-3);
+	font-size: 0.75rem;
+	margin-left: 0.25rem;
+	text-decoration: none;
+}
+
+.source-link:hover {
+	color: var(--color-blue-2);
+}
+
+.probability-methodology {
+	background: var(--color-gray-0);
+	border-radius: 8px;
+	padding: 1.25rem;
+	margin-top: 1.5rem;
+	font-size: 0.9rem;
+	line-height: 1.6;
+}
+
+.probability-methodology p {
+	margin-bottom: 0.75rem;
+}
+
+.probability-methodology p:last-child {
+	margin-bottom: 0;
+}
+
+.probability-methodology strong {
+	color: var(--color-gray-4);
+}
+
+.probability-methodology a {
+	color: var(--color-blue-2);
+}
+
+.probability-methodology a:hover {
+	color: var(--color-blue);
+}
+
+.probability-disclaimer {
+	color: var(--color-gray-3);
+	font-size: 0.85rem;
+	font-style: italic;
+	border-left: 3px solid var(--color-gray-1);
+	padding-left: 0.75rem;
+	margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+
+	.probability-chart-wrapper {
+		height: 350px !important;
+	}
+
+	.probability-legend {
+		gap: 0.35rem 0.75rem;
+	}
+
+	.prob-legend-item {
+		font-size: 0.7rem;
+		padding: 0.2rem 0.35rem;
+	}
+}
+
+/* Bar Chart Options */
+.chart-options {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.option-group {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+}
+
+.option-group label {
+	color: var(--color-gray-3);
+	font-size: 0.9rem;
+}
+
+.option-group select {
+	border: 1px solid var(--color-gray-1);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	padding: 0.5rem 1rem;
+}
+
+/* Mobile: Stack chart options vertically */
+@media (max-width: 640px) {
+
+	.chart-options {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+	}
+
+	.option-group {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.option-group select {
+		flex: 1;
+		max-width: 100%;
+	}
+}
+
+/* Horizontal Bar Chart */
+.bar-chart-container {
+	background: var(--color-white);
+	border: 1px solid var(--color-gray-1);
+	border-radius: 8px;
+	max-height: 600px;
+	overflow-y: auto;
+	padding: 1rem;
+}
+
+.apostle-bar-chart {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.bar-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.25rem 0;
+	text-decoration: none !important;
+	transition: background 0.15s ease;
+}
+
+.bar-row:hover {
+	background: var(--color-gray-0);
+}
+
+.bar-name {
+	color: var(--color-gray-4);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	overflow: hidden;
+	text-align: left;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 140px;
+}
+
+.bar-track {
+	background: var(--color-gray-0);
+	border-radius: 4px;
+	flex: 1;
+	height: 20px;
+	overflow: hidden;
+}
+
+.bar {
+	align-items: center;
+	background: var(--color-gray-2);
+	border-radius: 4px;
+	display: flex;
+	height: 100%;
+	min-width: 30px;
+	padding-right: 0.5rem;
+	transition: width 0.3s ease;
+}
+
+.bar-active {
+	background: var(--color-blue-2);
+}
+
+.bar-historical {
+	background: var(--color-gray-2);
+}
+
+.bar-removed {
+	background: var(--color-red, #c44);
+	opacity: 0.8;
+}
+
+.bar-prophet {
+	background: var(--color-orange) !important;
+}
+
+.bar-value {
+	color: var(--color-white);
+	font-size: 0.7rem;
+	font-weight: 700;
+	margin-left: auto;
+}
+
+.bar-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.7rem;
+	width: 90px;
+}
+
+.removed-indicator {
+	color: var(--color-red, #c44);
+	cursor: help;
+	font-weight: 700;
+}
+
+.service-ended-early .bar-name {
+	font-style: italic;
+}
+
+/* Chart Legend */
+.chart-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+	margin-top: 1.5rem;
+}
+
+.chart-legend .legend-item {
+	align-items: center;
+	display: flex;
+	font-size: 0.85rem;
+	gap: 0.5rem;
+}
+
+.legend-bar {
+	border-radius: 2px;
+	display: inline-block;
+	height: 12px;
+	width: 24px;
+}
+
+.legend-note {
+	color: var(--color-gray-2);
+	font-size: 0.75rem;
+	font-style: italic;
+	margin-top: 0.5rem;
+	text-align: center;
+}
+
+/* Presidents Chart */
+.presidents-timeline {
+	margin-bottom: 3rem;
+}
+
+.presidents-chart {
+	position: relative;
+	padding-bottom: 2rem;
+}
+
+.president-row {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+/* mobile */
+@media (max-width: 640px) {
+
+	.president-row {
+		flex-direction: column;
+	}
+
+	.president-bar-track {
+		min-height: 20px;
+		min-width: 100%;
+	}
+}
+
+.president-number {
+	background: var(--color-gray-1);
+	border-radius: 50%;
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.7rem;
+	font-weight: 700;
+	height: 24px;
+	line-height: 24px;
+	text-align: center;
+	width: 24px;
+}
+
+.president-name {
+	color: var(--color-text);
+	flex-shrink: 0;
+	font-size: 0.85rem;
+	text-decoration: none;
+	width: 150px;
+}
+
+.president-name:hover {
+	color: var(--color-blue-2);
+}
+
+.president-bar-track {
+	background: var(--color-gray-1);
+	border-radius: 3px;
+	flex: 1;
+	height: 20px;
+	position: relative;
+}
+
+.president-bar {
+	background: var(--color-orange);
+	border-radius: 3px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	transition: all 0.3s ease;
+}
+
+.president-current {
+	background: var(--color-blue-2);
+}
+
+.president-dates {
+	color: var(--color-gray-2);
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	text-align: right;
+	width: 110px;
+	white-space: nowrap;
+}
+
+.president-tenure {
+	color: var(--color-gray-3);
+	font-size: 0.7rem;
+}
+
+.presidents-axis {
+	border-top: 1px solid var(--color-gray-1);
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1rem;
+	padding-top: 0.5rem;
+	position: relative;
+}
+
+.axis-label {
+	color: var(--color-gray-2);
+	font-size: 0.7rem;
+	position: absolute;
+	transform: translateX(-50%);
+}
+
+/* Presidents Tenure Bar Chart */
+.presidents-tenure-chart {
+	margin-bottom: 3rem;
+}
+
+.chart-subtitle {
+	color: var(--color-gray-2);
+	font-size: 0.85rem;
+	margin-bottom: 1rem;
+}
+
+.president-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.president-tenure-row {
+	align-items: center;
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.25rem 0;
+	text-decoration: none;
+}
+
+.president-tenure-row:hover {
+	background: rgba(var(--color-blue-2-rgb, 59, 130, 246), 0.05);
+}
+
+/* Presidents Stats */
+.presidents-stats {
+	margin-bottom: 2rem;
+}
+
+.stats-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.stat-card {
+	background: var(--color-gray-1);
+	border-radius: 8px;
+	padding: 1rem;
+	text-align: center;
+}
+
+.stat-card.stat-wide {
+	grid-column: span 2;
+}
+
+/* Mobile: Stack stat cards */
+@media (max-width: 640px) {
+
+	.stats-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.stat-card.stat-wide {
+		grid-column: span 1;
+	}
+}
+
+.stat-value {
+	color: var(--color-orange);
+	display: block;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.stat-wide .stat-value {
+	font-size: 1.1rem;
+}
+
+.stat-label {
+	color: var(--color-gray-2);
+	display: block;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
+}
+
+/* Charts Footer */
+.charts-footer {
+	border-top: 1px solid var(--color-gray-1);
+	margin-top: 3rem;
+	padding-top: 2rem;
+	text-align: center;
+}
+
+.charts-footer p {
+	color: var(--color-gray-2);
+	font-size: 0.9rem;
+}
+
+.charts-footer a {
+	color: var(--color-blue-2);
+}
+
+/* View All Link */
+.view-all-link {
+	margin-top: 1rem;
+	text-align: center;
+}
+
+.view-all-link a {
+	color: var(--color-blue-2);
+	font-family: "Josefin Sans", sans-serif;
+	font-size: 0.9rem;
+}
+

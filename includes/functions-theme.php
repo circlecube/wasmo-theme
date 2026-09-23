@@ -1,24 +1,39 @@
 <?php
 
 /**
- * Enqueue styles - get parent theme styles first.
+ * Load compiled asset metadata from @wordpress/scripts build output.
+ *
+ * @param string $handle Build handle (e.g. theme, index).
+ * @return array{dependencies: string[], version: string}
+ */
+function wasmo_get_build_asset( $handle ) {
+	$path = get_stylesheet_directory() . '/build/' . $handle . '.asset.php';
+
+	if ( file_exists( $path ) ) {
+		return include $path;
+	}
+
+	return array(
+		'dependencies' => array(),
+		'version'      => wp_get_theme()->get( 'Version' ),
+	);
+}
+
+/**
+ * Enqueue compiled theme styles (pinned Twenty Nineteen base + wasm overrides in one file).
  */
 function wasmo_enqueue() {
+	$theme_asset = wasmo_get_build_asset( 'theme' );
+	$theme_css   = get_stylesheet_directory() . '/build/theme.css';
 
-	$parent_style = 'parent-style'; // This is 'twentynineteen-style' for the Twenty Nineteen theme.
-
-	wp_enqueue_style(
-		$parent_style,
-		get_stylesheet_directory_uri() . '/twentynineteen.css',
-		array(),
-		wp_get_theme()->get( 'Version' )
-	);
-	wp_enqueue_style(
-		'wasmo-style',
-		get_stylesheet_directory_uri() . '/style.css',
-		array( $parent_style ),
-		wp_get_theme()->get( 'Version' )
-	);
+	if ( file_exists( $theme_css ) ) {
+		wp_enqueue_style(
+			'wasmo-theme',
+			get_stylesheet_directory_uri() . '/build/theme.css',
+			array(),
+			$theme_asset['version']
+		);
+	}
 
 	wp_enqueue_script(
 		'wasmo-script',
@@ -28,7 +43,18 @@ function wasmo_enqueue() {
 		true
 	);
 }
-add_action( 'wp_enqueue_scripts', 'wasmo_enqueue' );
+add_action( 'wp_enqueue_scripts', 'wasmo_enqueue', 9 );
+
+/**
+ * Remove parent theme front-end styles we replace with build/theme.css (or do not need).
+ */
+function wasmo_dequeue_parent_theme_styles() {
+	wp_dequeue_style( 'twentynineteen-style' );
+	wp_deregister_style( 'twentynineteen-style' );
+	wp_dequeue_style( 'twentynineteen-print-style' );
+	wp_deregister_style( 'twentynineteen-print-style' );
+}
+add_action( 'wp_enqueue_scripts', 'wasmo_dequeue_parent_theme_styles', 20 );
 
 /**
  * Add google fonts
@@ -60,11 +86,12 @@ add_action( 'wp_head', 'wasmo_google_fonts_preconnect', 1 );
  * Preload theme styles so layout CSS is available on first paint.
  */
 function wasmo_preload_theme_styles() {
-	$version = wp_get_theme()->get( 'Version' );
-	$base    = get_stylesheet_directory_uri();
+	$child_base  = get_stylesheet_directory_uri();
+	$theme_asset = wasmo_get_build_asset( 'theme' );
 
-	echo '<link rel="preload" as="style" href="' . esc_url( $base . '/twentynineteen.css?ver=' . $version ) . '" />' . "\n";
-	echo '<link rel="preload" as="style" href="' . esc_url( $base . '/style.css?ver=' . $version ) . '" />' . "\n";
+	if ( file_exists( get_stylesheet_directory() . '/build/theme.css' ) ) {
+		echo '<link rel="preload" as="style" href="' . esc_url( $child_base . '/build/theme.css?ver=' . $theme_asset['version'] ) . '" />' . "\n";
+	}
 }
 add_action( 'wp_head', 'wasmo_preload_theme_styles', 2 );
 
@@ -75,8 +102,7 @@ add_action( 'wp_head', 'wasmo_preload_theme_styles', 2 );
  * @return string[]
  */
 function wasmo_litespeed_css_excludes( $excludes ) {
-	$excludes[] = 'twentynineteen.css';
-	$excludes[] = 'style.css';
+	$excludes[] = 'build/theme.css';
 
 	return $excludes;
 }

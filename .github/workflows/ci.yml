@@ -10,10 +10,6 @@
 #   wpunit     — wordpress-tests-lib + WP_UnitTestCase integration tests
 #   audit      — npm audit + composer audit
 #
-# NOTE: This is intentionally inline rather than calling the reusable-theme-ci.yml from
-# circlecube/bandiverse, because wasmo's build produces build/index.js (via @wordpress/scripts)
-# not build/theme.css (the bandiverse build system). Staying inline avoids a false failure
-# on the output verify step.
 
 
 name: CI
@@ -166,7 +162,7 @@ jobs:
         run: npm run build
 
       - name: Verify build output
-        run: test -f build/index.js
+        run: test -f build/index.js && test -f build/theme.css
 
   phpunit:
     name: PHPUnit (with coverage)
