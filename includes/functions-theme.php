@@ -46,13 +46,15 @@ function wasmo_enqueue() {
 add_action( 'wp_enqueue_scripts', 'wasmo_enqueue', 9 );
 
 /**
- * Parent Twenty Nineteen also enqueues child style.css as twentynineteen-style (duplicate, wrong deps).
+ * Remove parent theme front-end styles we replace with build/theme.css (or do not need).
  */
-function wasmo_dequeue_duplicate_parent_styles() {
+function wasmo_dequeue_parent_theme_styles() {
 	wp_dequeue_style( 'twentynineteen-style' );
 	wp_deregister_style( 'twentynineteen-style' );
+	wp_dequeue_style( 'twentynineteen-print-style' );
+	wp_deregister_style( 'twentynineteen-print-style' );
 }
-add_action( 'wp_enqueue_scripts', 'wasmo_dequeue_duplicate_parent_styles', 20 );
+add_action( 'wp_enqueue_scripts', 'wasmo_dequeue_parent_theme_styles', 20 );
 
 /**
  * Add google fonts
