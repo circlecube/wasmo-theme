@@ -3,19 +3,19 @@
  * Depends on twentynineteen.css (parent layout) enqueued separately in PHP.
  */
 
-@use 'variables';
-@use 'base';
-@use 'directory';
-@use 'profile';
-@use 'blog';
-@use 'footer-and-forms';
-@use 'home';
-@use 'content-misc';
-@use 'saints-leaders';
-@use 'saints-charts';
-@use 'saints-marriages';
-@use 'saints-polygamy';
-@use 'saints-marriage-charts';
-@use 'saints-polygamists-page';
-@use 'profile-progress';
-@use 'profile-comments';
+@use 'foundation/variables';
+@use 'foundation/base';
+@use 'directory/directory';
+@use 'profile/profile';
+@use 'blog/blog';
+@use 'layout/footer-and-forms';
+@use 'pages/home';
+@use 'pages/content-misc';
+@use 'saints/leaders';
+@use 'saints/charts';
+@use 'saints/marriages';
+@use 'saints/polygamy';
+@use 'saints/marriage-charts';
+@use 'saints/polygamists-page';
+@use 'profile/progress';
+@use 'profile/comments';
